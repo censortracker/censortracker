@@ -1,0 +1,22 @@
+{
+  "name": "censortracker",
+  "version": "0.1.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@repo.roskomsvoboda.org:55222/web/browser-extension.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "del": "^5.1.0",
+    "gulp": "^4.0.2",
+    "gulp-clean-css": "^4.2.0",
+    "gulp-uglify-es": "^2.0.0"
+  },
+  "dependencies": {}
+}

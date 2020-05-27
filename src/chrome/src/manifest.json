@@ -1,0 +1,45 @@
+{
+  "name": "Censor Tracker",
+  "version": "0.1.2",
+  "description": "Censor Tracker",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "tabs",
+    "webRequest",
+    "webRequestBlocking",
+    "proxy",
+    "contextMenus",
+    "notifications",
+    "https://api.reserve-rbl.ru/api/v3/domains/json",
+    "https://api.reserve-rbl.ru/api/v3/ori/refused/json",
+    "<all_urls>",
+    "http://*/*",
+    "https://*/*",
+    "*://*/*"
+  ],
+  "background": {
+    "scripts": [
+      "js/storage/localforage.min.js",
+      "js/core/settings.js",
+      "js/core/database.js",
+      "js/core/sessions.js",
+      "js/core/shortcuts.js",
+      "js/core/registry.js",
+      "js/core/proxies.js",
+      "js/core/background.js"
+    ],
+    "persistent": true
+  },
+  "browser_action": {
+    "default_title": "Censor Tracker",
+    "default_popup": "pages/popup.html",
+    "default_icon": {
+      "16": "images/icon.png",
+      "32": "images/icon.png",
+      "48": "images/icon.png",
+      "128": "images/icon.png"
+    }
+  },
+  "manifest_version": 2
+}

@@ -11,35 +11,35 @@ gulp.task('clean', function () {
 });
 
 gulp.task("minify-js", function () {
-    return gulp.src(["src/chrome/src/*.js", "src/js/*/*.js"])
+    return gulp.src(["src/chrome/*.js", "src/js/*/*.js"])
         .pipe(uglify())
         .pipe(gulp.dest("dist/js/"));
 });
 
 gulp.task("copy-js", function () {
-    return gulp.src(["src/chrome/src/js/*/*.js", "src/js/*/*.js"])
+    return gulp.src(["src/chrome/js/*/*.js", "src/js/*/*.js"])
         .pipe(gulp.dest("dist/js/"));
 });
 
 
 gulp.task("copy-html", function () {
-    return gulp.src(["src/chrome/src/*/*.html"])
+    return gulp.src(["src/chrome/*/*.html"])
         .pipe(gulp.dest("dist/"));
 });
 
 gulp.task("copy-images", function () {
-    return gulp.src(["src/chrome/src/images/*.*"])
+    return gulp.src(["src/chrome/images/*.*"])
         .pipe(gulp.dest("dist/images/"));
 });
 
 gulp.task("copy-manifest", function () {
-    return gulp.src(["src/chrome/src/manifest.json"])
+    return gulp.src(["src/chrome/manifest.json"])
         .pipe(gulp.dest("dist/"));
 });
 
 
 gulp.task("minify-css", () => {
-    return gulp.src(["src/chrome/src/css/*.css"])
+    return gulp.src(["src/chrome/css/*.css"])
         .pipe(cleancss())
         .pipe(gulp.dest("dist/css"));
 });

@@ -20,7 +20,7 @@
   },
   "scripts": {
     "gulp": "gulp",
-    "lint": "eslint"
+    "lint": "eslint src/chrome/ --fix"
   },
   "repository": {
     "type": "git",

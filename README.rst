@@ -1,6 +1,6 @@
 |
 
-.. image:: https://user-images.githubusercontent.com/15812620/82992168-71a3d900-a007-11ea-8c5b-f20a54f40666.png
+.. image:: https://raw.githubusercontent.com/roskomsvoboda/censortracker/master/.github/readme-logo.png
      :target: https://example.com
 
 |

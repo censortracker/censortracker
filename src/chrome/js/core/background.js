@@ -16,10 +16,10 @@
 
   const onInstalled = (details) => {
     if (details.reason === 'install') {
-      proxies.openPorts()
-      shortcuts.enableExtension()
-      registry.syncDatabase()
-      proxies.setProxy()
+      window.proxies.openPorts()
+      window.shortcuts.enableExtension()
+      window.registry.syncDatabase()
+      window.proxies.setProxy()
     }
   }
 
@@ -28,12 +28,12 @@
   }
 
   const onStartup = () => {
-    registry.syncDatabase()
+    window.registry.syncDatabase()
     updateState()
   }
 
   const onBeforeRequest = (details) => {
-    if (shortcuts.validURL(details.url)) {
+    if (window.shortcuts.validURL(details.url)) {
       return {
         redirectUrl: details.url.replace(/^http:/, 'https:')
       }
@@ -45,11 +45,11 @@
     const urlObject = new URL(details.url)
     const hostname = urlObject.hostname
 
-    const count = browserSession.getRequest(requestId, 'redirect_count', 0)
+    const count = window.browserSession.getRequest(requestId, 'redirect_count', 0)
     if (count) {
-      browserSession.putRequest(requestId, 'redirect_count', count + 1)
+      window.browserSession.putRequest(requestId, 'redirect_count', count + 1)
     } else {
-      browserSession.putRequest(requestId, 'redirect_count', 1)
+      window.browserSession.putRequest(requestId, 'redirect_count', 1)
     }
 
     if (count >= MAX_REDIRECTIONS_COUNT) {
@@ -86,8 +86,8 @@
 
     // Most likely in this case domain was blocked by DPI
     if (error === ERR_CONNECTION_RESET || error === ERR_CONNECTION_CLOSED) {
-      proxies.setProxy(hostname)
-      registry.reportBlockedByDPI(hostname)
+      window.proxies.setProxy(hostname)
+      window.registry.reportBlockedByDPI(hostname)
       chrome.tabs.update({
         url: chrome.runtime.getURL(`pages/refused.html?${encodedURL}`)
       })
@@ -127,7 +127,7 @@
   }
 
   const onCompleted = (details) => {
-    browserSession.deleteRequest(details.requestId)
+    window.browserSession.deleteRequest(details.requestId)
     if (!chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequest)) {
       chrome.webRequest.onBeforeRequest.addListener(onBeforeRequest, REQUEST_FILTERS, ['blocking'])
     }
@@ -188,7 +188,7 @@
             const urlObject = new URL(activeTab.url)
             if (urlObject.protocol === 'chrome:') return
 
-            const currentHostname = shortcuts.cleanHostname(urlObject.hostname)
+            const currentHostname = window.shortcuts.cleanHostname(urlObject.hostname)
             const ignoredSites = config.ignoredSites
 
             if (ignoredSites.includes(currentHostname)) {
@@ -206,7 +206,7 @@
                 chrome.webRequest.onErrorOccurred.addListener(onErrorOccurred, REQUEST_FILTERS)
               }
 
-              registry.checkDistributors(currentHostname, {
+              window.registry.checkDistributors(currentHostname, {
                 onMatchFound: (cooperationRefused) => {
                   setMatchFoundIcon(tabId)
                   if (!cooperationRefused) {
@@ -216,12 +216,12 @@
                 }
               })
 
-              registry.checkDomains(currentHostname, {
+              window.registry.checkDomains(currentHostname, {
                 onMatchFound: (_data) => {
                   setMatchFoundIcon(tabId)
                 },
                 onMatchNotFound: () => {
-                  registry.checkDistributors(currentHostname, {
+                  window.registry.checkDistributors(currentHostname, {
                     onMatchFound: (cooperationRefused) => {
                       if (!cooperationRefused) {
                         setCooperationAcceptedBadge(tabId)
@@ -308,7 +308,7 @@
       tabId: tabId
     })
     chrome.browserAction.setTitle({
-      title: settings.getTitle(),
+      title: window.settings.getTitle(),
       tabId: tabId
     })
   }
@@ -329,6 +329,6 @@
   chrome.tabs.onUpdated.addListener(updateState)
 
   setInterval(() => {
-    proxies.openPorts()
+    window.proxies.openPorts()
   }, 60 * 1000 * 3)
 })()

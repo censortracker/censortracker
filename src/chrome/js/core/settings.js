@@ -1,21 +1,21 @@
-(function() {
-  const manifest = chrome.runtime.getManifest();
+(function () {
+  const manifest = chrome.runtime.getManifest()
 
   window.settings = {
     getName: () => {
-      return manifest.name;
+      return manifest.name
     },
 
     getDescription: () => {
-      return manifest.description;
+      return manifest.description
     },
 
     getVersion: () => {
-      return manifest.version;
+      return manifest.version
     },
 
     getTitle: () => {
-      return `${manifest.name} v${manifest.version}`;
-    },
-  };
-})();
+      return `${manifest.name} v${manifest.version}`
+    }
+  }
+})()

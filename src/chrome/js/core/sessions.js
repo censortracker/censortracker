@@ -1,29 +1,29 @@
-(function() {
+(function () {
   class BrowserSession {
-    constructor() {
-      this.requests = new Map();
+    constructor () {
+      this.requests = new Map()
     }
 
-    putRequest(requestId, key, value) {
+    putRequest (requestId, key, value) {
       if (!this.requests.has(requestId)) {
-        this.requests.set(requestId, {});
+        this.requests.set(requestId, {})
       }
-      this.requests.get(requestId)[key] = value;
+      this.requests.get(requestId)[key] = value
     }
 
-    getRequest(requestId, key, defaultValue) {
+    getRequest (requestId, key, defaultValue) {
       if (this.requests.has(requestId) && key in this.requests.get(requestId)) {
-        return this.requests.get(requestId)[key];
+        return this.requests.get(requestId)[key]
       }
-      return defaultValue;
+      return defaultValue
     }
 
-    deleteRequest(requestId) {
+    deleteRequest (requestId) {
       if (this.requests.has(requestId)) {
-        this.requests.delete(requestId);
+        this.requests.delete(requestId)
       }
     }
   }
 
-  window.browserSession = new BrowserSession();
-})();
+  window.browserSession = new BrowserSession()
+})()

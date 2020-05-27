@@ -1,32 +1,32 @@
-(function() {
+(function () {
   window.localforage.config({
-    driver: window.localforage.INDEXEDDB,
-  });
+    driver: window.localforage.INDEXEDDB
+  })
 
   const create = (name) => {
-    let defaultName = 'censortracker-db';
+    const defaultName = 'censortracker-db'
 
     if (!name) {
-      console.warn(`Creating database with default name: ${defaultName}`);
+      console.warn(`Creating database with default name: ${defaultName}`)
     }
 
     return window.localforage.createInstance({
-      name: name || defaultName,
-    });
-  };
+      name: name || defaultName
+    })
+  }
 
   const drop = (name) => {
     if (!name) {
-      console.error('You must define name of database to drop.');
-      return;
+      console.error('You must define name of database to drop.')
+      return
     }
     return window.localforage.dropInstance({
-      name: name,
-    });
-  };
+      name: name
+    })
+  }
 
   window.database = {
     create: create,
-    drop: drop,
-  };
-})();
+    drop: drop
+  }
+})()

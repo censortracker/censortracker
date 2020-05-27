@@ -1,116 +1,116 @@
-(function() {
-  const DOMAINS_API_URL = 'https://api.reserve-rbl.ru/api/v3/domains/json';
+(function () {
+  const DOMAINS_API_URL = 'https://api.reserve-rbl.ru/api/v3/domains/json'
 
-  const databaseName = 'censortracker-pac-domains';
-  const db = window.database.create(databaseName);
+  const databaseName = 'censortracker-pac-domains'
+  const db = window.database.create(databaseName)
 
   const setProxy = (hostname) => {
     getBlockedDomains((domains) => {
-      domains = excludeSpecialDomains(domains);
+      domains = excludeSpecialDomains(domains)
       chrome.storage.local.get(
         {
-          blockedDomains: [],
+          blockedDomains: []
         },
         (items) => {
-          let blockedDomains = items.blockedDomains;
+          const blockedDomains = items.blockedDomains
           if (hostname) {
-            let domain = blockedDomains.find((element) => element.domain === hostname);
+            const domain = blockedDomains.find((element) => element.domain === hostname)
 
             if (!domain) {
               blockedDomains.push({
                 domain: hostname,
-                timestamp: new Date().getTime(),
-              });
+                timestamp: new Date().getTime()
+              })
             }
           }
 
           if (blockedDomains) {
-            domains = domains.concat(blockedDomains.map((obj) => obj.domain));
+            domains = domains.concat(blockedDomains.map((obj) => obj.domain))
           }
 
           chrome.storage.local.set(
             {
-              blockedDomains: blockedDomains,
+              blockedDomains: blockedDomains
             },
             () => {
               if (hostname) {
-                console.log(`Site ${hostname} has been added to set of blocked by DPI.`);
+                console.log(`Site ${hostname} has been added to set of blocked by DPI.`)
               }
             }
-          );
-          setProxyAutoConfig(domains);
+          )
+          setProxyAutoConfig(domains)
         }
-      );
-    });
-  };
+      )
+    })
+  }
 
   const getBlockedDomains = (callback) => {
     db.getItem('domains')
       .then((domains) => {
         if (domains) {
-          console.warn('Fetching domains from local database...');
-          callback(domains);
+          console.warn('Fetching domains from local database...')
+          callback(domains)
         } else {
-          console.warn('Fetching domains for PAC from registry API...');
-          syncDatabaseWithRegistry(callback);
+          console.warn('Fetching domains for PAC from registry API...')
+          syncDatabaseWithRegistry(callback)
         }
       })
       .catch((error) => {
-        console.error(error);
-      });
-  };
+        console.error(error)
+      })
+  }
 
   setInterval(() => {
-    syncDatabaseWithRegistry();
-  }, 60 * 60 * 1000 * 2);
+    syncDatabaseWithRegistry()
+  }, 60 * 60 * 1000 * 2)
 
   const syncDatabaseWithRegistry = (callback) => {
     fetch(DOMAINS_API_URL)
       .then((response) => response.json())
       .then((domains) => {
-        db.setItem('domains', domains);
-        let date = new Date();
-        let time = date.getHours() + ':' + date.getMinutes();
-        console.warn(`[${time}] Local database «${databaseName}» synchronized with registry!`);
+        db.setItem('domains', domains)
+        const date = new Date()
+        const time = date.getHours() + ':' + date.getMinutes()
+        console.warn(`[${time}] Local database «${databaseName}» synchronized with registry!`)
         if (callback !== undefined) {
-          callback(domains);
+          callback(domains)
         }
       })
       .catch((error) => {
-        console.error(`Error on fetching data from API: ${error}`);
-      });
-  };
+        console.error(`Error on fetching data from API: ${error}`)
+      })
+  }
 
   const excludeSpecialDomains = (domains) => {
     // ----------------- Testing -----------------
-    domains = domains.filter((item) => item !== 'rutracker.org');
-    domains = domains.filter((item) => item !== 'telegram.org');
-    domains = domains.filter((item) => item !== 'lostfilm.tv');
-    domains = domains.filter((item) => item !== 'tunnelbear.com');
+    domains = domains.filter((item) => item !== 'rutracker.org')
+    domains = domains.filter((item) => item !== 'telegram.org')
+    domains = domains.filter((item) => item !== 'lostfilm.tv')
+    domains = domains.filter((item) => item !== 'tunnelbear.com')
     // --------------------------------------------
 
-    let specialDomains = ['youtube.com'];
+    const specialDomains = ['youtube.com']
     return domains.filter((domain) => {
-      return !specialDomains.includes(domain);
-    });
-  };
+      return !specialDomains.includes(domain)
+    })
+  }
 
   const setProxyAutoConfig = (domains) => {
-    let config = {
+    const config = {
       value: {
         mode: 'pac_script',
         pacScript: {
           data: generatePacScriptData(domains),
-          mandatory: false,
-        },
+          mandatory: false
+        }
       },
-      scope: 'regular',
-    };
+      scope: 'regular'
+    }
 
     chrome.proxy.settings.set(config, () => {
-      console.warn('PAC has been set successfully!');
-    });
-  };
+      console.warn('PAC has been set successfully!')
+    })
+  }
 
   /**
    * ATTENTION: DO NOT MODIFY THIS FUNCTION!
@@ -119,10 +119,10 @@
    */
   const generatePacScriptData = (domains) => {
     // The binary search works only with pre-sorted array.
-    domains.sort();
+    domains.sort()
 
-    const http = 'proxy-nossl.roskomsvoboda.org:33333';
-    const https = 'proxy-ssl.roskomsvoboda.org:33333';
+    const http = 'proxy-nossl.roskomsvoboda.org:33333'
+    const https = 'proxy-ssl.roskomsvoboda.org:33333'
 
     return `
         function FindProxyForURL(url, host) {
@@ -171,62 +171,62 @@
                 return 'DIRECT';
             }
         
-        }`;
-  };
+        }`
+  }
 
   chrome.proxy.onProxyError.addListener((details) => {
-    console.error(`Proxy error: ${JSON.stringify(details)}`);
-  });
+    console.error(`Proxy error: ${JSON.stringify(details)}`)
+  })
 
   const removeProxy = () => {
     chrome.proxy.settings.clear(
       {
-        scope: 'regular',
+        scope: 'regular'
       },
       () => {
-        console.warn('Proxy auto-config disabled!');
+        console.warn('Proxy auto-config disabled!')
       }
-    );
-  };
+    )
+  }
 
   const openPorts = () => {
-    let proxyServerUrl = 'https://163.172.211.183:39263';
-    let request = new XMLHttpRequest();
-    request.open('GET', proxyServerUrl, true);
-    request.onerror = function(e) {
-      console.error(`Error on opening ports: ${e.target.status}`);
-    };
-    request.send(null);
-  };
+    const proxyServerUrl = 'https://163.172.211.183:39263'
+    const request = new XMLHttpRequest()
+    request.open('GET', proxyServerUrl, true)
+    request.onerror = function (e) {
+      console.error(`Error on opening ports: ${e.target.status}`)
+    }
+    request.send(null)
+  }
 
   const removeOutdatedBlockedDomains = () => {
-    let monthInSeconds = 2628000;
+    const monthInSeconds = 2628000
 
-    chrome.storage.local.get({blockedDomains: []}, (items) => {
-      let blockedDomains = items.blockedDomains;
+    chrome.storage.local.get({ blockedDomains: [] }, (items) => {
+      let blockedDomains = items.blockedDomains
 
       if (blockedDomains) {
         blockedDomains = blockedDomains.filter((item) => {
-          let timestamp = new Date().getTime();
-          return (timestamp - item.timestamp) / 1000 < monthInSeconds;
-        });
+          const timestamp = new Date().getTime()
+          return (timestamp - item.timestamp) / 1000 < monthInSeconds
+        })
       }
 
-      chrome.storage.local.set({blockedDomains: blockedDomains}, () => {
-        console.warn('Outdated domains has been removed.');
-        setProxyAutoConfig(blockedDomains);
-      });
-    });
-  };
+      chrome.storage.local.set({ blockedDomains: blockedDomains }, () => {
+        console.warn('Outdated domains has been removed.')
+        setProxyAutoConfig(blockedDomains)
+      })
+    })
+  }
 
   setInterval(() => {
-    removeOutdatedBlockedDomains();
-  }, 60 * 1000 * 60 * 60 * 2);
+    removeOutdatedBlockedDomains()
+  }, 60 * 1000 * 60 * 60 * 2)
 
   window.proxies = {
     setProxy: setProxy,
     removeProxy: removeProxy,
     openPorts: openPorts,
-    db: db,
-  };
-})();
+    db: db
+  }
+})()

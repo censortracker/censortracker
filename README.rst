@@ -5,6 +5,8 @@
 
 |
 
+.. figure:: https://github.com/roskomsvoboda/censortracker/workflows/Node.js%20CI/badge.svg?branch=master&event=push
+   :alt: Node.js
 
 **Censor Tracker** is an extension for `Google Chrome`_ which helps to bypass censorship in Russian Federation and helps to detect resources blocked using DPI.
 

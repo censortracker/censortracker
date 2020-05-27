@@ -1,7 +1,7 @@
 'use strict';
 
 (() => {
-  window.$('body').tooltip({
+  window.jQuery('body').tooltip({
     selector: '[data-toggle="tooltip"]'
   })
 
@@ -19,20 +19,21 @@
   const extensionName = document.getElementById('extensionName')
   const redIcon = chrome.extension.getURL('images/red_icon.png')
 
-  const updateExtensionStatusLabel = () => {
-    let labelText = 'Расширение выключено'
-    let tooltipTitle = 'Censor Tracker выключен'
-
-    if (extensionStatus.checked) {
-      labelText = 'Расширение включено'
-      tooltipTitle = 'Censor Tracker включен'
-    }
-    extensionStatusLabel.innerText = labelText
-    extensionStatusLabel.setAttribute('title', tooltipTitle)
-  }
-
   chrome.runtime.getBackgroundPage((bgWindow) => {
     extensionName.innerText = bgWindow.settings.getTitle()
+
+    const updateExtensionStatusLabel = () => {
+      let labelText = 'Расширение выключено'
+      let tooltipStatus = 'выключен'
+      const extName = bgWindow.settings.getName()
+
+      if (extensionStatus.checked) {
+        labelText = 'Расширение включено'
+        tooltipStatus = 'включен'
+      }
+      extensionStatusLabel.innerText = labelText
+      extensionStatusLabel.setAttribute('title', `${extName} ${tooltipStatus}`)
+    }
 
     document.addEventListener('click', (event) => {
       if (event.target.matches(`#${extensionStatus.id}`)) {
@@ -126,6 +127,6 @@
       document.documentElement.style.visibility = 'initial'
     }
 
-    setTimeout(show, 160)
+    setTimeout(show, 165)
   })
 })()

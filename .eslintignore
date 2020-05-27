@@ -1,0 +1,7 @@
+dist/
+src/chrome/ui/bootstrap.min.js
+src/chrome/ui/jquery.min.js
+src/chrome/ui/mdb.min.js
+src/chrome/ui/popper.min.js
+src/chrome/js/storage/localforage.min.js
+src/firefox/

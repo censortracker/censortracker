@@ -1,12 +1,11 @@
-name: Node.js CI
+name: Build
 
 on: [push]
 
 jobs:
   build:
-
+    name: Test on node ${{ matrix.node_version }} and ${{ matrix.os }}
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
         node-version: [12.14]

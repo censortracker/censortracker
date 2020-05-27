@@ -40,6 +40,6 @@ information.
 
 .. _LICENSE: https://github.com/roskomsvoboda/censortracker/blob/master/LICENSE
 .. _Google Chrome: https://www.google.com/chrome/
-.. _ORI:: https://97-fz.rkn.gov.ru/
+.. _ORI: https://97-fz.rkn.gov.ru/
 .. _registry: https://eais.rkn.gov.ru/
 .. _DPI: https://en.wikipedia.org/wiki/Deep_packet_inspection

@@ -1,22 +1,35 @@
 {
   "name": "censortracker",
-  "version": "0.1.1",
-  "description": "",
-  "main": "index.js",
+  "version": "1.0.0",
+  "description": "|",
+  "main": "Gulpfile.js",
+  "dependencies": {},
+  "devDependencies": {
+    "del": "^5.1.0",
+    "eslint": "^7.1.0",
+    "eslint-config-airbnb-base": "^14.1.0",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "gulp": "^4.0.2",
+    "gulp-clean-css": "^4.3.0",
+    "gulp-uglify-es": "^2.0.0",
+    "prettier": "^2.0.5"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "gulp": "gulp",
+    "lint": "eslint"
   },
   "repository": {
     "type": "git",
-    "url": "ssh://git@repo.roskomsvoboda.org:55222/web/browser-extension.git"
+    "url": "git+https://github.com/roskomsvoboda/censortracker.git"
   },
   "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "del": "^5.1.0",
-    "gulp": "^4.0.2",
-    "gulp-clean-css": "^4.2.0",
-    "gulp-uglify-es": "^2.0.0"
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/roskomsvoboda/censortracker/issues"
   },
-  "dependencies": {}
+  "homepage": "https://github.com/roskomsvoboda/censortracker#readme"
 }

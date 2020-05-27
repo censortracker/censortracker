@@ -24,7 +24,9 @@ Installation
 
 To:
 
-    ~ npm install && gulp dist && ls dist/
+    ~ npm install 
+    ~ npm run build
+    ~ cd dist/
 
 Make sure that "Developer Mode" is enabled and then just "Load unpacked"
 from <span class="title-ref">dist/</span> to your browser.

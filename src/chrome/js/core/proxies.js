@@ -1,4 +1,6 @@
-(function () {
+'use strict';
+
+(() => {
   const DOMAINS_API_URL = 'https://api.reserve-rbl.ru/api/v3/domains/json'
 
   const databaseName = 'censortracker-pac-domains'

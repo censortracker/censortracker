@@ -38,7 +38,7 @@
   const getLastSyncTimestamp = (callback) => {
     db.getItem(DB_DOMAINS_ITEM_NAME)
       .then((data) => {
-        if (data && data.hasOwnProperty('timestamp')) {
+        if (data && Object.prototype.hasOwnProperty.call(data, 'timestamp')) {
           callback(data.timestamp)
         }
       })
@@ -57,7 +57,7 @@
         const domains = data.domains
 
         const matchFound = domains.find(function (domain) {
-          return currentHostname === shortcuts.cleanHostname(domain)
+          return currentHostname === window.shortcuts.cleanHostname(domain)
         })
 
         if (matchFound) {
@@ -85,7 +85,7 @@
         let cooperationRefused = false
 
         const matchFound = domains.find(function (item) {
-          return hostname === shortcuts.cleanHostname(item.url)
+          return hostname === window.shortcuts.cleanHostname(item.url)
         })
 
         if (matchFound) {
@@ -117,7 +117,7 @@
             method: 'POST',
             headers: {
               'Censortracker-D': new Date().getTime(),
-              'Censortracker-V': settings.getVersion(),
+              'Censortracker-V': window.settings.getVersion(),
               'Content-Type': 'application/json'
             },
             body: JSON.stringify({

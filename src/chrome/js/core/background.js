@@ -1,6 +1,6 @@
 'use strict';
 
-(function () {
+(() => {
   const REQUEST_FILTERS = {
     urls: ['*://*/*'],
     types: ['main_frame']

@@ -1,4 +1,6 @@
-(function () {
+'use strict';
+
+(() => {
   const manifest = chrome.runtime.getManifest()
 
   window.settings = {

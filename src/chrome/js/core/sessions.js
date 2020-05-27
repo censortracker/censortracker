@@ -1,4 +1,6 @@
-(function () {
+'use strict';
+
+(() => {
   class BrowserSession {
     constructor () {
       this.requests = new Map()

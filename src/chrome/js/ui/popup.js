@@ -1,5 +1,7 @@
+'use strict';
+
 (() => {
-  $('body').tooltip({
+  window.$('body').tooltip({
     selector: '[data-toggle="tooltip"]'
   })
 

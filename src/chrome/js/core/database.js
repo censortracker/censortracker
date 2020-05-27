@@ -1,4 +1,6 @@
-(function () {
+'use strict';
+
+(() => {
   window.localforage.config({
     driver: window.localforage.INDEXEDDB
   })

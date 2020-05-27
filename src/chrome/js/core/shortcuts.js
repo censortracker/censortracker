@@ -1,4 +1,6 @@
-(function () {
+'use strict';
+
+(() => {
   const validURL = (urlStr) => {
     const pattern = new RegExp(
       '^(https?:\\/\\/)?' +

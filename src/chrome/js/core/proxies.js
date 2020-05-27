@@ -1,10 +1,9 @@
 'use strict';
 
 (() => {
-  const DOMAINS_API_URL = 'https://api.reserve-rbl.ru/api/v3/domains/json'
-
   const databaseName = 'censortracker-pac-domains'
   const db = window.database.create(databaseName)
+  const domainsApiUrl = window.settings.getDomainsApiUrl()
 
   const setProxy = (hostname) => {
     getBlockedDomains((domains) => {
@@ -67,7 +66,7 @@
   }, 60 * 60 * 1000 * 2)
 
   const syncDatabaseWithRegistry = (callback) => {
-    fetch(DOMAINS_API_URL)
+    fetch(domainsApiUrl)
       .then((response) => response.json())
       .then((domains) => {
         db.setItem('domains', domains)

@@ -1,20 +1,17 @@
 (function () {
-  const DB_DOMAINS_ITEM_NAME = 'domains'
-  const DB_DISTRIBUTORS_ITEM_NAME = 'distributors'
-  const API_V3_DISTRIBUTORS = 'https://api.reserve-rbl.ru/api/v3/ori/refused/json'
-  const API_V3_DOMAINS = 'https://api.reserve-rbl.ru/api/v3/domains/json'
-
+  const dbDomainItemName = 'domains'
+  const dbDistributorsItemName = 'distributors'
   const db = window.database.create('censortracker-registry-db')
 
   const syncDatabase = () => {
     const apis = [
       {
-        key: DB_DOMAINS_ITEM_NAME,
-        url: API_V3_DOMAINS
+        key: dbDomainItemName,
+        url: window.settings.getDomainsApiUrl()
       },
       {
-        key: DB_DISTRIBUTORS_ITEM_NAME,
-        url: API_V3_DISTRIBUTORS
+        key: dbDistributorsItemName,
+        url: window.settings.getRefusedApiUrl()
       }
     ]
     for (const api of apis) {
@@ -36,7 +33,7 @@
   }
 
   const getLastSyncTimestamp = (callback) => {
-    db.getItem(DB_DOMAINS_ITEM_NAME)
+    db.getItem(dbDomainItemName)
       .then((data) => {
         if (data && Object.prototype.hasOwnProperty.call(data, 'timestamp')) {
           callback(data.timestamp)
@@ -51,7 +48,7 @@
     const onMatchFoundCallback = callbacks.onMatchFound
     const onMatchNotFoundCallback = callbacks.onMatchNotFound
 
-    db.getItem(DB_DOMAINS_ITEM_NAME)
+    db.getItem(dbDomainItemName)
       .then((data) => {
         if (!data) return
         const domains = data.domains
@@ -78,7 +75,7 @@
     const onMatchFoundCallback = callbacks.onMatchFound
     const onMatchNotFoundCallback = callbacks.onMatchNotFound
 
-    db.getItem(DB_DISTRIBUTORS_ITEM_NAME)
+    db.getItem(dbDistributorsItemName)
       .then((distributors) => {
         if (!distributors) return
         const domains = distributors.domains

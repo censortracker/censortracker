@@ -110,7 +110,7 @@
       (data) => {
         const alreadyReported = data.alreadyReported
         if (!alreadyReported.includes(domain)) {
-          fetch('https://ct-dev.rublacklist.net/api/domain/', {
+          fetch(window.settings.getLoggingApiUrl(), {
             method: 'POST',
             headers: {
               'Censortracker-D': new Date().getTime(),

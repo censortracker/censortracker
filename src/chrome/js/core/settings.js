@@ -27,6 +27,10 @@
 
     getRefusedApiUrl: () => {
       return `${rksUrl}/api/v3/ori/refused/json`
+    },
+
+    getLoggingApiUrl: () => {
+      return 'https://ct-dev.rublacklist.net/api/domain/'
     }
   }
 })()

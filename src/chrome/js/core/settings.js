@@ -31,6 +31,10 @@
 
     getLoggingApiUrl: () => {
       return 'https://ct-dev.rublacklist.net/api/domain/'
+    },
+
+    getIconByName: (iconName) => {
+      return chrome.extension.getURL(`images/${iconName}.png`)
     }
   }
 })()

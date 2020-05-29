@@ -15,8 +15,12 @@
     "eslint-plugin-standard": "^4.0.1",
     "gulp": "^4.0.2",
     "gulp-clean-css": "^4.3.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-json-editor": "^2.5.4",
+    "gulp-json-format": "^2.0.0",
     "gulp-uglify-es": "^2.0.0",
-    "prettier": "^2.0.5"
+    "prettier": "^2.0.5",
+    "yargs": "^15.3.1"
   },
   "scripts": {
     "build": "gulp build",

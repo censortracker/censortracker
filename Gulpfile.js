@@ -9,8 +9,7 @@ const jsonEditor = require('gulp-json-editor')
 const jsonFormat = require('gulp-json-format')
 const argv = require('yargs').argv
 
-const VERSION = argv.version || '0.1.2'
-const BG_SCRIPT_NAME = argv.bg || 'core.min.js'
+const VERSION = argv.version
 
 gulp.task('clean', function () {
   return del('dist/', { force: true })
@@ -25,15 +24,15 @@ gulp.task('concat-core-scripts', function () {
     'src/chrome/js/core/shortcuts.js',
     'src/chrome/js/core/registry.js',
     'src/chrome/js/core/proxies.js',
-    // 'src/chrome/js/core/background.js'
+    'src/chrome/js/core/background.js'
   ])
-    .pipe(concat(BG_SCRIPT_NAME))
+    .pipe(concat('background.js'))
     .pipe(uglify())
     .pipe(gulp.dest('dist/js/core/'))
 })
 
 gulp.task('copy-third-party-scripts', function () {
-  return gulp.src(['src/chrome/js/*/*.js', 'src/chrome/js/core/background.js', 'src/chrome/js/core/*.js'])
+  return gulp.src(['src/chrome/js/*/*.js', '!src/chrome/js/core/*.js'])
     .pipe(gulp.dest('dist/js/'))
 })
 
@@ -45,7 +44,13 @@ gulp.task('copy-assets', function () {
 gulp.task('copy-manifest', function () {
   return gulp.src(['src/chrome/manifest.json'])
     .pipe(jsonEditor(function (json) {
-      json.version = VERSION
+      json.background = [
+        'js/storage/localforage.min.js',
+        'js/core/background.js'
+      ]
+      if (VERSION) {
+        json.version = VERSION
+      }
       return json
     }))
     .pipe(jsonFormat(2))
@@ -61,7 +66,7 @@ gulp.task('minify-css', () => {
 gulp.task(
   'dist', gulp.series(
     'clean',
-    // 'concat-core-scripts',
+    'concat-core-scripts',
     'copy-third-party-scripts',
     'copy-assets',
     'copy-manifest')

@@ -12,6 +12,7 @@
   const ERR_HTTP2_PROTOCOL_ERROR = 'ERR_HTTP2_PROTOCOL_ERROR'
   const ERR_TUNNEL_CONNECTION_FAILED = 'ERR_TUNNEL_CONNECTION_FAILED'
   const ERR_CERT_AUTHORITY_INVALID = 'ERR_CERT_AUTHORITY_INVALID'
+  const ERR_CONNECTION_TIMED_OUT = 'ERR_CONNECTION_TIMED_OUT'
   const RED_ICON = chrome.extension.getURL('images/red_icon.png')
 
   const onInstalled = (details) => {
@@ -85,7 +86,11 @@
     const encodedURL = window.btoa(details.url)
 
     // Most likely in this case domain was blocked by DPI
-    if (error === ERR_CONNECTION_RESET || error === ERR_CONNECTION_CLOSED) {
+    if (
+      error === ERR_CONNECTION_RESET ||
+      error === ERR_CONNECTION_CLOSED ||
+      error === ERR_CONNECTION_TIMED_OUT
+    ) {
       window.proxies.setProxy(hostname)
       window.registry.reportBlockedByDPI(hostname)
       chrome.tabs.update({

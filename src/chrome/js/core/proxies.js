@@ -2,8 +2,8 @@
 
 (() => {
   const databaseName = 'censortracker-pac-domains'
-  const db = window.database.create(databaseName)
-  const domainsApiUrl = window.settings.getDomainsApiUrl()
+  const db = window.censortracker.database.create(databaseName)
+  const domainsApiUrl = window.censortracker.settings.getDomainsApiUrl()
 
   const setProxy = (hostname) => {
     getBlockedDomains((domains) => {
@@ -224,7 +224,7 @@
     removeOutdatedBlockedDomains()
   }, 60 * 1000 * 60 * 60 * 2)
 
-  window.proxies = {
+  window.censortracker.proxies = {
     setProxy: setProxy,
     removeProxy: removeProxy,
     openPorts: openPorts,

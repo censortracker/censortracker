@@ -27,7 +27,7 @@
     })
   }
 
-  window.database = {
+  window.censortracker.database = {
     create: create,
     drop: drop
   }

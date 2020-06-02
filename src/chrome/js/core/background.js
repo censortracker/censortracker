@@ -12,14 +12,15 @@
   const ERR_HTTP2_PROTOCOL_ERROR = 'ERR_HTTP2_PROTOCOL_ERROR'
   const ERR_TUNNEL_CONNECTION_FAILED = 'ERR_TUNNEL_CONNECTION_FAILED'
   const ERR_CERT_AUTHORITY_INVALID = 'ERR_CERT_AUTHORITY_INVALID'
+  const ERR_CONNECTION_TIMED_OUT = 'ERR_CONNECTION_TIMED_OUT'
   const RED_ICON = chrome.extension.getURL('images/red_icon.png')
 
   const onInstalled = (details) => {
     if (details.reason === 'install') {
-      window.proxies.openPorts()
-      window.shortcuts.enableExtension()
-      window.registry.syncDatabase()
-      window.proxies.setProxy()
+      window.censortracker.proxies.openPorts()
+      window.censortracker.shortcuts.enableExtension()
+      window.censortracker.registry.syncDatabase()
+      window.censortracker.proxies.setProxy()
     }
   }
 
@@ -28,12 +29,12 @@
   }
 
   const onStartup = () => {
-    window.registry.syncDatabase()
+    window.censortracker.registry.syncDatabase()
     updateState()
   }
 
   const onBeforeRequest = (details) => {
-    if (window.shortcuts.validURL(details.url)) {
+    if (window.censortracker.shortcuts.validURL(details.url)) {
       return {
         redirectUrl: details.url.replace(/^http:/, 'https:')
       }
@@ -45,11 +46,11 @@
     const urlObject = new URL(details.url)
     const hostname = urlObject.hostname
 
-    const count = window.browserSession.getRequest(requestId, 'redirect_count', 0)
+    const count = window.censortracker.browserSession.getRequest(requestId, 'redirect_count', 0)
     if (count) {
-      window.browserSession.putRequest(requestId, 'redirect_count', count + 1)
+      window.censortracker.browserSession.putRequest(requestId, 'redirect_count', count + 1)
     } else {
-      window.browserSession.putRequest(requestId, 'redirect_count', 1)
+      window.censortracker.browserSession.putRequest(requestId, 'redirect_count', 1)
     }
 
     if (count >= MAX_REDIRECTIONS_COUNT) {
@@ -85,9 +86,13 @@
     const encodedURL = window.btoa(details.url)
 
     // Most likely in this case domain was blocked by DPI
-    if (error === ERR_CONNECTION_RESET || error === ERR_CONNECTION_CLOSED) {
-      window.proxies.setProxy(hostname)
-      window.registry.reportBlockedByDPI(hostname)
+    if (
+      error === ERR_CONNECTION_RESET ||
+      error === ERR_CONNECTION_CLOSED ||
+      error === ERR_CONNECTION_TIMED_OUT
+    ) {
+      window.censortracker.proxies.setProxy(hostname)
+      window.censortracker.registry.reportBlockedByDPI(hostname)
       chrome.tabs.update({
         url: chrome.runtime.getURL(`pages/refused.html?${encodedURL}`)
       })
@@ -127,7 +132,7 @@
   }
 
   const onCompleted = (details) => {
-    window.browserSession.deleteRequest(details.requestId)
+    window.censortracker.browserSession.deleteRequest(details.requestId)
     if (!chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequest)) {
       chrome.webRequest.onBeforeRequest.addListener(onBeforeRequest, REQUEST_FILTERS, ['blocking'])
     }
@@ -188,7 +193,7 @@
             const urlObject = new URL(activeTab.url)
             if (urlObject.protocol === 'chrome:') return
 
-            const currentHostname = window.shortcuts.cleanHostname(urlObject.hostname)
+            const currentHostname = window.censortracker.shortcuts.cleanHostname(urlObject.hostname)
             const ignoredSites = config.ignoredSites
 
             if (ignoredSites.includes(currentHostname)) {
@@ -206,7 +211,7 @@
                 chrome.webRequest.onErrorOccurred.addListener(onErrorOccurred, REQUEST_FILTERS)
               }
 
-              window.registry.checkDistributors(currentHostname, {
+              window.censortracker.registry.checkDistributors(currentHostname, {
                 onMatchFound: (cooperationRefused) => {
                   setMatchFoundIcon(tabId)
                   if (!cooperationRefused) {
@@ -216,12 +221,12 @@
                 }
               })
 
-              window.registry.checkDomains(currentHostname, {
+              window.censortracker.registry.checkDomains(currentHostname, {
                 onMatchFound: (_data) => {
                   setMatchFoundIcon(tabId)
                 },
                 onMatchNotFound: () => {
-                  window.registry.checkDistributors(currentHostname, {
+                  window.censortracker.registry.checkDistributors(currentHostname, {
                     onMatchFound: (cooperationRefused) => {
                       if (!cooperationRefused) {
                         setCooperationAcceptedBadge(tabId)
@@ -308,7 +313,7 @@
       tabId: tabId
     })
     chrome.browserAction.setTitle({
-      title: window.settings.getTitle(),
+      title: window.censortracker.settings.getTitle(),
       tabId: tabId
     })
   }
@@ -329,6 +334,6 @@
   chrome.tabs.onUpdated.addListener(updateState)
 
   setInterval(() => {
-    window.proxies.openPorts()
+    window.censortracker.proxies.openPorts()
   }, 60 * 1000 * 3)
 })()

@@ -4,7 +4,8 @@
   const manifest = chrome.runtime.getManifest()
   const rksUrl = 'https://reestr.rublacklist.net'
 
-  window.settings = {
+  window.censortracker = {}
+  window.censortracker.settings = {
     getName: () => {
       return manifest.name
     },

@@ -1,6 +1,6 @@
-'use strict';
+'use strict'
 
-(() => {
+;(() => {
   const validURL = (urlStr) => {
     const pattern = new RegExp(
       '^(https?:\\/\\/)?' +
@@ -9,7 +9,7 @@
         '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' +
         '(\\?[;&a-z\\d%_.~+=-]*)?' +
         '(\\#[-a-z\\d_]*)?$',
-      'i'
+      'i',
     )
     return !!pattern.test(urlStr)
   }
@@ -27,22 +27,22 @@
   const enableExtension = () => {
     chrome.storage.local.set(
       {
-        enableExtension: true
+        enableExtension: true,
       },
       () => {
         console.warn('Extension enabled')
-      }
+      },
     )
   }
 
   const disableExtension = () => {
     chrome.storage.local.set(
       {
-        enableExtension: false
+        enableExtension: false,
       },
       () => {
         console.warn('Extension disabled')
-      }
+      },
     )
   }
 
@@ -51,6 +51,6 @@
     cleanHostname: cleanHostname,
     enableExtension: enableExtension,
     disableExtension: disableExtension,
-    createSearchLink: createSearchLink
+    createSearchLink: createSearchLink,
   }
 })()

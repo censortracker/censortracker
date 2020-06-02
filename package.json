@@ -21,7 +21,8 @@
   "scripts": {
     "build": "gulp build",
     "dist": "gulp dist",
-    "lint": "eslint src/chrome/"
+    "lint": "eslint --ext=.js ./src/chrome/",
+    "lint:fix": "eslint --fix --ext=.js ./src/chrome/"
   },
   "repository": {
     "type": "git",

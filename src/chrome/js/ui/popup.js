@@ -1,8 +1,8 @@
-'use strict';
+'use strict'
 
-(() => {
+;(() => {
   window.jQuery('body').tooltip({
-    selector: '[data-toggle="tooltip"]'
+    selector: '[data-toggle="tooltip"]',
   })
 
   const statusImage = document.getElementById('statusImage')
@@ -52,19 +52,19 @@
 
     chrome.storage.local.get(
       {
-        enableExtension: true
+        enableExtension: true,
       },
       (config) => {
         if (config.enableExtension) {
           extensionStatus.checked = config.enableExtension
         }
-      }
+      },
     )
 
     chrome.tabs.query(
       {
         active: true,
-        lastFocusedWindow: true
+        lastFocusedWindow: true,
       },
       (tabs) => {
         const activeTab = tabs[0]
@@ -76,11 +76,13 @@
         }
 
         const urlObject = new URL(activeTabUrl)
-        const currentHostname = bgWindow.shortcuts.cleanHostname(urlObject.hostname)
+        const currentHostname = bgWindow.shortcuts.cleanHostname(
+          urlObject.hostname,
+        )
 
         chrome.storage.local.get(
           {
-            enableExtension: true
+            enableExtension: true,
           },
           (config) => {
             if (bgWindow.shortcuts.validURL(currentHostname)) {
@@ -96,15 +98,19 @@
 
               bgWindow.registry.checkDomains(currentHostname, {
                 onMatchFound: (_data) => {
-                  registryMatchFound.innerHTML = bgWindow.shortcuts.createSearchLink(currentHostname)
+                  registryMatchFound.innerHTML = bgWindow.shortcuts.createSearchLink(
+                    currentHostname,
+                  )
                   vpnAdvertising.hidden = false
                   statusImage.setAttribute('src', redIcon)
-                }
+                },
               })
 
               bgWindow.registry.checkDistributors(currentHostname, {
                 onMatchFound: (cooperationRefused) => {
-                  oriMatchFound.innerHTML = bgWindow.shortcuts.createSearchLink(currentHostname)
+                  oriMatchFound.innerHTML = bgWindow.shortcuts.createSearchLink(
+                    currentHostname,
+                  )
                   vpnAdvertising.hidden = false
                   statusImage.setAttribute('src', redIcon)
 
@@ -113,14 +119,14 @@
                   } else {
                     cooperationAccepted.hidden = false
                   }
-                }
+                },
               })
             } else {
               popupFooter.hidden = true
             }
-          }
+          },
         )
-      }
+      },
     )
 
     const show = () => {

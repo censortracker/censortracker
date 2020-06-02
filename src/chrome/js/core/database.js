@@ -1,8 +1,8 @@
-'use strict';
+'use strict'
 
-(() => {
+;(() => {
   window.localforage.config({
-    driver: window.localforage.INDEXEDDB
+    driver: window.localforage.INDEXEDDB,
   })
 
   const create = (name) => {
@@ -13,7 +13,7 @@
     }
 
     return window.localforage.createInstance({
-      name: name || defaultName
+      name: name || defaultName,
     })
   }
 
@@ -23,12 +23,12 @@
       return
     }
     return window.localforage.dropInstance({
-      name: name
+      name: name,
     })
   }
 
   window.database = {
     create: create,
-    drop: drop
+    drop: drop,
   }
 })()

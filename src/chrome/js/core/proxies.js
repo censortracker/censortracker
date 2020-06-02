@@ -1,6 +1,6 @@
-'use strict';
+'use strict'
 
-(() => {
+;(() => {
   const databaseName = 'censortracker-pac-domains'
   const db = window.database.create(databaseName)
   const domainsApiUrl = window.settings.getDomainsApiUrl()
@@ -10,17 +10,19 @@
       domains = excludeSpecialDomains(domains)
       chrome.storage.local.get(
         {
-          blockedDomains: []
+          blockedDomains: [],
         },
         (items) => {
           const blockedDomains = items.blockedDomains
           if (hostname) {
-            const domain = blockedDomains.find((element) => element.domain === hostname)
+            const domain = blockedDomains.find(
+              (element) => element.domain === hostname,
+            )
 
             if (!domain) {
               blockedDomains.push({
                 domain: hostname,
-                timestamp: new Date().getTime()
+                timestamp: new Date().getTime(),
               })
             }
           }
@@ -31,16 +33,18 @@
 
           chrome.storage.local.set(
             {
-              blockedDomains: blockedDomains
+              blockedDomains: blockedDomains,
             },
             () => {
               if (hostname) {
-                console.log(`Site ${hostname} has been added to set of blocked by DPI.`)
+                console.log(
+                  `Site ${hostname} has been added to set of blocked by DPI.`,
+                )
               }
-            }
+            },
           )
           setProxyAutoConfig(domains)
-        }
+        },
       )
     })
   }
@@ -72,7 +76,9 @@
         db.setItem('domains', domains)
         const date = new Date()
         const time = date.getHours() + ':' + date.getMinutes()
-        console.warn(`[${time}] Local database «${databaseName}» synchronized with registry!`)
+        console.warn(
+          `[${time}] Local database «${databaseName}» synchronized with registry!`,
+        )
         if (callback !== undefined) {
           callback(domains)
         }
@@ -102,10 +108,10 @@
         mode: 'pac_script',
         pacScript: {
           data: generatePacScriptData(domains),
-          mandatory: false
-        }
+          mandatory: false,
+        },
       },
-      scope: 'regular'
+      scope: 'regular',
     }
 
     chrome.proxy.settings.set(config, () => {
@@ -126,53 +132,51 @@
     const https = 'proxy-ssl.roskomsvoboda.org:33333'
 
     return `
-        function FindProxyForURL(url, host) {
-        
-            function isHostBlocked(array, target) {
-                let left = 0;
-                let right = array.length - 1;
-        
-                while (left <= right) {
-                    const mid = left + Math.floor((right - left) / 2);
-        
-                    if (array[mid] === target) {
-                        return true;
-                    }
-        
-                    if (array[mid] < target) {
-                        left = mid + 1;
-                    } else {
-                        right = mid - 1;
-                    }
-                }
-                return false;
-            }
-        
-            // Remove ending dot
-            if (host.endsWith('.')) {
-                host = host.substring(0, host.length - 1);
-            }
-        
-            // Make domain second-level.
-            let lastDot = host.lastIndexOf('.');
-            if (lastDot !== -1) {
-                lastDot = host.lastIndexOf('.', lastDot - 1);
-                if (lastDot !== -1) {
-                    host = host.substr(lastDot + 1);
-                }
-            }
-        
-            // Domains, which are blocked.
-            let domains = ${JSON.stringify(domains)};
-        
-            // Return result
-            if (isHostBlocked(domains, host)) {
-                return 'HTTPS ${https}; PROXY ${http};';
-            } else {
-                return 'DIRECT';
-            }
-        
-        }`
+function FindProxyForURL(url, host) {
+  function isHostBlocked(array, target) {
+    let left = 0;
+    let right = array.length - 1;
+
+    while (left <= right) {
+      const mid = left + Math.floor((right - left) / 2);
+
+      if (array[mid] === target) {
+        return true;
+      }
+
+      if (array[mid] < target) {
+        left = mid + 1;
+      } else {
+        right = mid - 1;
+      }
+    }
+    return false;
+  }
+
+  // Remove ending dot
+  if (host.endsWith('.')) {
+    host = host.substring(0, host.length - 1);
+  }
+
+  // Make domain second-level.
+  let lastDot = host.lastIndexOf('.');
+  if (lastDot !== -1) {
+    lastDot = host.lastIndexOf('.', lastDot - 1);
+    if (lastDot !== -1) {
+      host = host.substr(lastDot + 1);
+    }
+  }
+
+  // Domains, which are blocked.
+  let domains = ${JSON.stringify(domains)};
+
+  // Return result
+  if (isHostBlocked(domains, host)) {
+    return 'HTTPS ${https}; PROXY ${http};';
+  } else {
+    return 'DIRECT';
+  }
+}`
   }
 
   chrome.proxy.onProxyError.addListener((details) => {
@@ -180,14 +184,9 @@
   })
 
   const removeProxy = () => {
-    chrome.proxy.settings.clear(
-      {
-        scope: 'regular'
-      },
-      () => {
-        console.warn('Proxy auto-config disabled!')
-      }
-    )
+    chrome.proxy.settings.clear({ scope: 'regular' }, () => {
+      console.warn('Proxy auto-config disabled!')
+    })
   }
 
   const openPorts = () => {
@@ -228,6 +227,6 @@
     setProxy: setProxy,
     removeProxy: removeProxy,
     openPorts: openPorts,
-    db: db
+    db: db,
   }
 })()

@@ -1,4 +1,4 @@
-(function () {
+;(function () {
   const dbDomainItemName = 'domains'
   const dbDistributorsItemName = 'distributors'
   const db = window.database.create('censortracker-registry-db')
@@ -7,26 +7,29 @@
     const apis = [
       {
         key: dbDomainItemName,
-        url: window.settings.getDomainsApiUrl()
+        url: window.settings.getDomainsApiUrl(),
       },
       {
         key: dbDistributorsItemName,
-        url: window.settings.getRefusedApiUrl()
-      }
+        url: window.settings.getRefusedApiUrl(),
+      },
     ]
+
     for (const api of apis) {
       fetch(api.url)
         .then((resp) => resp.json())
         .then((domains) => {
           db.setItem(api.key, {
             domains: domains,
-            timestamp: new Date().toLocaleString()
+            timestamp: new Date().toLocaleString(),
           })
             .then((_value) => {
               console.warn(`Local ${api.key} database updated`)
             })
             .catch((error) => {
-              console.error(`Error on updating local ${api.key} database: ${error}`)
+              console.error(
+                `Error on updating local ${api.key} database: ${error}`,
+              )
             })
         })
     }
@@ -105,7 +108,7 @@
   const reportBlockedByDPI = (domain) => {
     chrome.storage.local.get(
       {
-        alreadyReported: []
+        alreadyReported: [],
       },
       (data) => {
         const alreadyReported = data.alreadyReported
@@ -115,11 +118,11 @@
             headers: {
               'Censortracker-D': new Date().getTime(),
               'Censortracker-V': window.settings.getVersion(),
-              'Content-Type': 'application/json'
+              'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              domain: domain
-            })
+              domain: domain,
+            }),
           })
             .then((response) => response.json())
             .then((data) => {
@@ -127,18 +130,18 @@
                 alreadyReported.push(domain)
                 chrome.storage.local.set(
                   {
-                    alreadyReported: alreadyReported
+                    alreadyReported: alreadyReported,
                   },
                   () => {
                     console.warn(`Reported: ${domain}`)
-                  }
+                  },
                 )
               }
             })
         } else {
           console.warn(`The domain ${domain} reported`)
         }
-      }
+      },
     )
   }
 
@@ -147,6 +150,6 @@
     checkDomains: checkDomains,
     checkDistributors: checkDistributors,
     getLastSyncTimestamp: getLastSyncTimestamp,
-    reportBlockedByDPI: reportBlockedByDPI
+    reportBlockedByDPI: reportBlockedByDPI,
   }
 })()

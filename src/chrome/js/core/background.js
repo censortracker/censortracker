@@ -1,9 +1,9 @@
-'use strict';
+'use strict'
 
-(() => {
+;(() => {
   const REQUEST_FILTERS = {
     urls: ['*://*/*'],
-    types: ['main_frame']
+    types: ['main_frame'],
   }
   const MAX_REDIRECTIONS_COUNT = 6
   const ERR_CONNECTION_RESET = 'ERR_CONNECTION_RESET'
@@ -35,7 +35,7 @@
   const onBeforeRequest = (details) => {
     if (window.shortcuts.validURL(details.url)) {
       return {
-        redirectUrl: details.url.replace(/^http:/, 'https:')
+        redirectUrl: details.url.replace(/^http:/, 'https:'),
       }
     }
   }
@@ -45,7 +45,11 @@
     const urlObject = new URL(details.url)
     const hostname = urlObject.hostname
 
-    const count = window.browserSession.getRequest(requestId, 'redirect_count', 0)
+    const count = window.browserSession.getRequest(
+      requestId,
+      'redirect_count',
+      0,
+    )
     if (count) {
       window.browserSession.putRequest(requestId, 'redirect_count', count + 1)
     } else {
@@ -59,19 +63,21 @@
 
       chrome.storage.local.get(
         {
-          ignoredSites: []
+          ignoredSites: [],
         },
         (data) => {
           const ignoredSites = data.ignoredSites
 
           if (!ignoredSites.includes(hostname)) {
             ignoredSites.push(hostname)
-            console.warn(`Too many redirections. Site ${hostname} add to ignore`)
+            console.warn(
+              `Too many redirections. Site ${hostname} add to ignore`,
+            )
             chrome.storage.local.set({
-              ignoredSites: ignoredSites
+              ignoredSites: ignoredSites,
             })
           }
-        }
+        },
       )
     }
   }
@@ -89,7 +95,7 @@
       window.proxies.setProxy(hostname)
       window.registry.reportBlockedByDPI(hostname)
       chrome.tabs.update({
-        url: chrome.runtime.getURL(`pages/refused.html?${encodedURL}`)
+        url: chrome.runtime.getURL(`pages/refused.html?${encodedURL}`),
       })
     }
 
@@ -102,7 +108,7 @@
       console.warn('Certificate validation issue. Adding hostname to ignore...')
       chrome.storage.local.get(
         {
-          ignoredSites: []
+          ignoredSites: [],
         },
         (data) => {
           const ignoredSites = data.ignoredSites
@@ -110,7 +116,7 @@
           if (!ignoredSites.includes(hostname)) {
             ignoredSites.push(hostname)
             chrome.storage.local.set({
-              ignoredSites: ignoredSites
+              ignoredSites: ignoredSites,
             })
           }
 
@@ -119,9 +125,9 @@
           }
 
           chrome.tabs.update({
-            url: details.url.replace('https:', 'http:')
+            url: details.url.replace('https:', 'http:'),
           })
-        }
+        },
       )
     }
   }
@@ -129,7 +135,11 @@
   const onCompleted = (details) => {
     window.browserSession.deleteRequest(details.requestId)
     if (!chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequest)) {
-      chrome.webRequest.onBeforeRequest.addListener(onBeforeRequest, REQUEST_FILTERS, ['blocking'])
+      chrome.webRequest.onBeforeRequest.addListener(
+        onBeforeRequest,
+        REQUEST_FILTERS,
+        ['blocking'],
+      )
     }
   }
 
@@ -138,7 +148,7 @@
       chrome.tabs.query(
         {
           active: true,
-          lastFocusedWindow: true
+          lastFocusedWindow: true,
         },
         (tabs) => {
           const activeTab = tabs[0]
@@ -147,7 +157,7 @@
 
           chrome.storage.local.get(
             {
-              mutedForever: []
+              mutedForever: [],
             },
             (result) => {
               const mutedForever = result.mutedForever
@@ -155,16 +165,18 @@
                 mutedForever.push(hostname)
                 chrome.storage.local.set(
                   {
-                    mutedForever: mutedForever
+                    mutedForever: mutedForever,
                   },
                   () => {
-                    console.warn(`Resource ${hostname} added to ignore. We won't notify you about it anymore`)
-                  }
+                    console.warn(
+                      `Resource ${hostname} added to ignore. We won't notify you about it anymore`,
+                    )
+                  },
                 )
               }
-            }
+            },
           )
-        }
+        },
       )
     }
   }
@@ -173,13 +185,13 @@
     chrome.storage.local.get(
       {
         enableExtension: true,
-        ignoredSites: []
+        ignoredSites: [],
       },
       (config) => {
         chrome.tabs.query(
           {
             active: true,
-            lastFocusedWindow: true
+            lastFocusedWindow: true,
           },
           (tabs) => {
             const activeTab = tabs[0]
@@ -188,7 +200,9 @@
             const urlObject = new URL(activeTab.url)
             if (urlObject.protocol === 'chrome:') return
 
-            const currentHostname = window.shortcuts.cleanHostname(urlObject.hostname)
+            const currentHostname = window.shortcuts.cleanHostname(
+              urlObject.hostname,
+            )
             const ignoredSites = config.ignoredSites
 
             if (ignoredSites.includes(currentHostname)) {
@@ -198,12 +212,23 @@
             }
 
             if (config.enableExtension) {
-              if (!chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequest)) {
-                chrome.webRequest.onBeforeRequest.addListener(onBeforeRequest, REQUEST_FILTERS, ['blocking'])
+              if (
+                !chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequest)
+              ) {
+                chrome.webRequest.onBeforeRequest.addListener(
+                  onBeforeRequest,
+                  REQUEST_FILTERS,
+                  ['blocking'],
+                )
               }
 
-              if (!chrome.webRequest.onErrorOccurred.hasListener(onErrorOccurred)) {
-                chrome.webRequest.onErrorOccurred.addListener(onErrorOccurred, REQUEST_FILTERS)
+              if (
+                !chrome.webRequest.onErrorOccurred.hasListener(onErrorOccurred)
+              ) {
+                chrome.webRequest.onErrorOccurred.addListener(
+                  onErrorOccurred,
+                  REQUEST_FILTERS,
+                )
               }
 
               window.registry.checkDistributors(currentHostname, {
@@ -213,7 +238,7 @@
                     setCooperationAcceptedBadge(tabId)
                     showCooperationAcceptedWarning(currentHostname)
                   }
-                }
+                },
               })
 
               window.registry.checkDomains(currentHostname, {
@@ -226,45 +251,51 @@
                       if (!cooperationRefused) {
                         setCooperationAcceptedBadge(tabId)
                       }
-                    }
+                    },
                   })
-                }
+                },
               })
             } else {
-              if (chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequest)) {
-                chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequest)
+              if (
+                chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequest)
+              ) {
+                chrome.webRequest.onBeforeRequest.removeListener(
+                  onBeforeRequest,
+                )
               }
 
-              if (chrome.webRequest.onErrorOccurred.hasListener(onErrorOccurred)) {
-                chrome.webRequest.onErrorOccurred.removeListener(onErrorOccurred)
+              if (
+                chrome.webRequest.onErrorOccurred.hasListener(onErrorOccurred)
+              ) {
+                chrome.webRequest.onErrorOccurred.removeListener(
+                  onErrorOccurred,
+                )
               }
             }
-          }
+          },
         )
-      }
+      },
     )
   }
 
   const setMatchFoundIcon = (tabId) => {
     chrome.browserAction.setIcon({
       tabId: tabId,
-      path: RED_ICON
+      path: RED_ICON,
     })
   }
 
   const showCooperationAcceptedWarning = (hostname) => {
     chrome.storage.local.get(
-      {
-        notifiedHosts: [],
-        mutedForever: []
-      },
+      { notifiedHosts: [], mutedForever: [] },
       (result) => {
         if (!result || !hostname) return
 
         const mutedForever = result.mutedForever
+        if (mutedForever.find((item) => item === hostname)) return
+
         const notifiedHosts = result.notifiedHosts
 
-        if (mutedForever.find((item) => item === hostname)) return
         if (!notifiedHosts.find((item) => item === hostname)) {
           chrome.notifications.create({
             type: 'basic',
@@ -272,57 +303,55 @@
             priority: 2,
             message: 'Этот ресурс может передавать информацию третьим лицам.',
             buttons: [
-              {
-                title: '\u2715 Не показывать для этого сайта'
-              },
-              {
-                title: '\u2192 Подробнее'
-              }
+              { title: '\u2715 Не показывать для этого сайта' },
+              { title: '\u2192 Подробнее' },
             ],
-            iconUrl: RED_ICON
+            iconUrl: RED_ICON,
           })
         }
 
         if (!notifiedHosts.includes(hostname)) {
           notifiedHosts.push(hostname)
-          chrome.storage.local.set(
-            {
-              notifiedHosts: notifiedHosts
-            },
-            () => {
-              console.warn('The list of the notified ORI resource updated!')
-            }
-          )
+          chrome.storage.local.set({ notifiedHosts }, () => {
+            console.warn('The list of the notified ORI resource updated!')
+          })
         }
-      }
+      },
     )
   }
 
   const setCooperationAcceptedBadge = (tabId) => {
     chrome.browserAction.setBadgeBackgroundColor({
       color: '#F93E2D',
-      tabId: tabId
+      tabId: tabId,
     })
     chrome.browserAction.setBadgeText({
       text: '\u2691',
-      tabId: tabId
+      tabId: tabId,
     })
     chrome.browserAction.setTitle({
       title: window.settings.getTitle(),
-      tabId: tabId
+      tabId: tabId,
     })
   }
 
   chrome.runtime.onInstalled.addListener(onInstalled)
   chrome.windows.onRemoved.addListener(onWindowsRemoved)
   chrome.runtime.onStartup.addListener(onStartup)
-  chrome.webRequest.onErrorOccurred.addListener(onErrorOccurred, REQUEST_FILTERS)
-  chrome.webRequest.onBeforeRequest.addListener(onBeforeRequest, REQUEST_FILTERS, ['blocking'])
+  chrome.webRequest.onErrorOccurred.addListener(
+    onErrorOccurred,
+    REQUEST_FILTERS,
+  )
+  chrome.webRequest.onBeforeRequest.addListener(
+    onBeforeRequest,
+    REQUEST_FILTERS,
+    ['blocking'],
+  )
   chrome.webRequest.onBeforeRedirect.addListener(onBeforeRedirect, {
-    urls: ['*://*/*']
+    urls: ['*://*/*'],
   })
   chrome.webRequest.onCompleted.addListener(onCompleted, {
-    urls: ['*://*/*']
+    urls: ['*://*/*'],
   })
   chrome.notifications.onButtonClicked.addListener(notificationOnButtonClicked)
   chrome.tabs.onActivated.addListener(updateState)

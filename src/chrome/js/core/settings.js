@@ -1,6 +1,6 @@
-'use strict';
+'use strict'
 
-(() => {
+;(() => {
   const manifest = chrome.runtime.getManifest()
   const rksUrl = 'https://reestr.rublacklist.net'
 
@@ -35,6 +35,6 @@
 
     getIconByName: (iconName) => {
       return chrome.extension.getURL(`images/${iconName}.png`)
-    }
+    },
   }
 })()

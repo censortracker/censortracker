@@ -27,5 +27,5 @@
     }
   }
 
-  window.browserSession = new BrowserSession()
+  window.censortracker.browserSession = new BrowserSession()
 })()

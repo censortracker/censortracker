@@ -1,18 +1,18 @@
 ;(function () {
   const dbDomainItemName = 'domains'
   const dbDistributorsItemName = 'distributors'
-  const db = window.database.create('censortracker-registry-db')
+  const db = window.censortracker.database.create('censortracker-registry-db')
 
   const syncDatabase = () => {
     const apis = [
       {
         key: dbDomainItemName,
-        url: window.settings.getDomainsApiUrl(),
+        url: window.censortracker.settings.getDomainsApiUrl()
       },
       {
         key: dbDistributorsItemName,
-        url: window.settings.getRefusedApiUrl(),
-      },
+        url: window.censortracker.settings.getRefusedApiUrl()
+      }
     ]
 
     for (const api of apis) {
@@ -57,7 +57,7 @@
         const domains = data.domains
 
         const matchFound = domains.find(function (domain) {
-          return currentHostname === window.shortcuts.cleanHostname(domain)
+          return currentHostname === window.censortracker.shortcuts.cleanHostname(domain)
         })
 
         if (matchFound) {
@@ -85,7 +85,7 @@
         let cooperationRefused = false
 
         const matchFound = domains.find(function (item) {
-          return hostname === window.shortcuts.cleanHostname(item.url)
+          return hostname === window.censortracker.shortcuts.cleanHostname(item.url)
         })
 
         if (matchFound) {
@@ -113,12 +113,12 @@
       (data) => {
         const alreadyReported = data.alreadyReported
         if (!alreadyReported.includes(domain)) {
-          fetch(window.settings.getLoggingApiUrl(), {
+          fetch(window.censortracker.settings.getLoggingApiUrl(), {
             method: 'POST',
             headers: {
               'Censortracker-D': new Date().getTime(),
-              'Censortracker-V': window.settings.getVersion(),
-              'Content-Type': 'application/json',
+              'Censortracker-V': window.censortracker.settings.getVersion(),
+              'Content-Type': 'application/json'
             },
             body: JSON.stringify({
               domain: domain,
@@ -145,7 +145,7 @@
     )
   }
 
-  window.registry = {
+  window.censortracker.registry = {
     syncDatabase: syncDatabase,
     checkDomains: checkDomains,
     checkDistributors: checkDistributors,

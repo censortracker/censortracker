@@ -4,12 +4,12 @@
   const validURL = (urlStr) => {
     const pattern = new RegExp(
       '^(https?:\\/\\/)?' +
-        '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' +
-        '((\\d{1,3}\\.){3}\\d{1,3}))' +
-        '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' +
-        '(\\?[;&a-z\\d%_.~+=-]*)?' +
-        '(\\#[-a-z\\d_]*)?$',
-      'i',
+      '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' +
+      '((\\d{1,3}\\.){3}\\d{1,3}))' +
+      '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' +
+      '(\\?[;&a-z\\d%_.~+=-]*)?' +
+      '(\\#[-a-z\\d_]*)?$',
+      'i'
     )
     return !!pattern.test(urlStr)
   }
@@ -46,7 +46,7 @@
     )
   }
 
-  window.shortcuts = {
+  window.censortracker.shortcuts = {
     validURL: validURL,
     cleanHostname: cleanHostname,
     enableExtension: enableExtension,

@@ -2,11 +2,12 @@
   "name": "censortracker",
   "version": "1.0.0",
   "description": "|",
-  "main": "Gulpfile.js",
+  "type": "module",
+  "main": "dist/index.js",
   "dependencies": {},
   "devDependencies": {
     "del": "^5.1.0",
-    "eslint": "^7.1.0",
+    "eslint": "^6",
     "eslint-config-airbnb-base": "^14.1.0",
     "eslint-config-standard": "^14.1.1",
     "eslint-plugin-import": "^2.20.2",
@@ -16,7 +17,9 @@
     "gulp": "^4.0.2",
     "gulp-clean-css": "^4.3.0",
     "gulp-uglify-es": "^2.0.0",
-    "prettier": "^2.0.5"
+    "localforage": "^1.7.3",
+    "prettier": "^2.0.5",
+    "webpack": "^4.43.0"
   },
   "scripts": {
     "build": "gulp build",

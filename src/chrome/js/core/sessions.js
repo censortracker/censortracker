@@ -1,31 +1,31 @@
-'use strict'
+class BrowserSession {
+  constructor () {
+    this.requests = new Map()
+  }
 
-;(() => {
-  class BrowserSession {
-    constructor () {
-      this.requests = new Map()
+  putRequest (id, key, value) {
+    if (!this.requests.has(id)) {
+      this.requests.set(id, {})
     }
 
-    putRequest (requestId, key, value) {
-      if (!this.requests.has(requestId)) {
-        this.requests.set(requestId, {})
-      }
-      this.requests.get(requestId)[key] = value
-    }
+    this.requests.get(id)[key] = value
+  }
 
-    getRequest (requestId, key, defaultValue) {
-      if (this.requests.has(requestId) && key in this.requests.get(requestId)) {
-        return this.requests.get(requestId)[key]
-      }
+  getRequest (id, key, defaultValue) {
+    if (!this.requests.has(id)) {
       return defaultValue
     }
 
-    deleteRequest (requestId) {
-      if (this.requests.has(requestId)) {
-        this.requests.delete(requestId)
-      }
-    }
+    const request = this.requests.get(id)
+
+    return typeof request[key] !== 'undefined' && request[key] || defaultValue
   }
 
-  window.censortracker.browserSession = new BrowserSession()
-})()
+  deleteRequest (id) {
+    if (this.requests.has(id)) {
+      this.requests.delete(id)
+    }
+  }
+}
+
+export default BrowserSession

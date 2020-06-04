@@ -1,13 +1,25 @@
-'use strict'
+const databaseName = 'censortracker-pac-domains'
+const db = window.censortracker.database.create(databaseName)
+const domainsApiUrl = window.censortracker.settings.getDomainsApiUrl()
 
-;(() => {
-  const databaseName = 'censortracker-pac-domains'
-  const db = window.censortracker.database.create(databaseName)
-  const domainsApiUrl = window.censortracker.settings.getDomainsApiUrl()
+class Proxies {
+  constructor () {
+    chrome.proxy.onProxyError.addListener((details) => {
+      console.error(`Proxy error: ${JSON.stringify(details)}`)
+    })
 
-  const setProxy = (hostname) => {
-    getBlockedDomains((domains) => {
-      domains = excludeSpecialDomains(domains)
+    setInterval(() => {
+      this.syncDatabaseWithRegistry()
+    }, 60 * 60 * 1000 * 2)
+
+    setInterval(() => {
+      this.removeOutdatedBlockedDomains()
+    }, 60 * 1000 * 60 * 60 * 2)
+  }
+
+  setProxy = (hostname) => {
+    this.getBlockedDomains((domains) => {
+      domains = this.excludeSpecialDomains(domains)
       chrome.storage.local.get(
         {
           blockedDomains: [],
@@ -44,13 +56,13 @@
               }
             },
           )
-          setProxyAutoConfig(domains)
+          this.setProxyAutoConfig(domains)
         },
       )
     })
   }
 
-  const getBlockedDomains = (callback) => {
+  getBlockedDomains = (callback) => {
     db.getItem('domains')
       .then((domains) => {
         if (domains) {
@@ -58,7 +70,7 @@
           callback(domains)
         } else {
           console.warn('Fetching domains for PAC from registry API...')
-          syncDatabaseWithRegistry(callback)
+          this.syncDatabaseWithRegistry(callback)
         }
       })
       .catch((error) => {
@@ -66,11 +78,7 @@
       })
   }
 
-  setInterval(() => {
-    syncDatabaseWithRegistry()
-  }, 60 * 60 * 1000 * 2)
-
-  const syncDatabaseWithRegistry = (callback) => {
+  syncDatabaseWithRegistry = (callback) => {
     fetch(domainsApiUrl)
       .then((response) => response.json())
       .then((domains) => {
@@ -90,7 +98,7 @@
       })
   }
 
-  const excludeSpecialDomains = (domains) => {
+  excludeSpecialDomains = (domains) => {
     // ----------------- Testing -----------------
     domains = domains.filter((item) => item !== 'rutracker.org')
     domains = domains.filter((item) => item !== 'telegram.org')
@@ -105,12 +113,12 @@
     })
   }
 
-  const setProxyAutoConfig = (domains) => {
+  setProxyAutoConfig = (domains) => {
     const config = {
       value: {
         mode: 'pac_script',
         pacScript: {
-          data: generatePacScriptData(domains),
+          data: this.generatePacScriptData(domains),
           mandatory: false,
         },
       },
@@ -127,7 +135,7 @@
    * @param domains An array of domains.
    * @returns {string} The PAC data.
    */
-  const generatePacScriptData = (domains) => {
+  generatePacScriptData = (domains) => {
     // The binary search works only with pre-sorted array.
     domains.sort()
 
@@ -135,7 +143,7 @@
     const https = 'proxy-ssl.roskomsvoboda.org:33333'
 
     return `
-function FindProxyForURL(url, host) {
+  function FindProxyForURL(url, host) {
   function isHostBlocked(array, target) {
     let left = 0;
     let right = array.length - 1;
@@ -179,20 +187,16 @@ function FindProxyForURL(url, host) {
   } else {
     return 'DIRECT';
   }
-}`
+  }`
   }
 
-  chrome.proxy.onProxyError.addListener((details) => {
-    console.error(`Proxy error: ${JSON.stringify(details)}`)
-  })
-
-  const removeProxy = () => {
+  removeProxy = () => {
     chrome.proxy.settings.clear({ scope: 'regular' }, () => {
       console.warn('Proxy auto-config disabled!')
     })
   }
 
-  const openPorts = () => {
+  openPorts = () => {
     const proxyServerUrl = 'https://163.172.211.183:39263'
     const request = new XMLHttpRequest()
 
@@ -203,7 +207,7 @@ function FindProxyForURL(url, host) {
     request.send(null)
   }
 
-  const removeOutdatedBlockedDomains = () => {
+  removeOutdatedBlockedDomains = () => {
     const monthInSeconds = 2628000
 
     chrome.storage.local.get({ blockedDomains: [] }, (items) => {
@@ -219,19 +223,10 @@ function FindProxyForURL(url, host) {
 
       chrome.storage.local.set({ blockedDomains }, () => {
         console.warn('Outdated domains has been removed.')
-        setProxyAutoConfig(blockedDomains)
+        this.setProxyAutoConfig(blockedDomains)
       })
     })
   }
+}
 
-  setInterval(() => {
-    removeOutdatedBlockedDomains()
-  }, 60 * 1000 * 60 * 60 * 2)
-
-  window.censortracker.proxies = {
-    setProxy,
-    removeProxy,
-    openPorts,
-    db,
-  }
-})()
+export default new Proxies()

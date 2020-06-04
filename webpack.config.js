@@ -3,7 +3,8 @@ require('dotenv').config()
 const path = require('path')
 const webpack = require('webpack')
 const TerserPlugin = require('terser-webpack-plugin')
-// const CopyWebpackPlugin = require('copy-webpack-plugin')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
+// const HTMLWebpackPlugin = require('html-webpack-plugin')
 
 function resolve (dir) {
   return path.join(__dirname, dir)
@@ -69,19 +70,15 @@ const webpackConfig = {
 
   plugins: [
     new webpack.NamedModulesPlugin(),
-    // new CopyWebpackPlugin([
-    //   {
-    //     patterns: [
-    //       {
-    //         from: resolve('src/chrome/manifest.json'),
-    //         to: resolve('dist'),
-    //         toType: 'dir',
-    //       },
-    //     ],
-    //     options: {},
-    //   },
-    // ]),
-    // new HtmlWebpackPlugin({
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: resolve('src/chrome/manifest.json'),
+          to: resolve('dist'),
+        },
+      ],
+    }),
+    // new HTMLWebpackPlugin({
     //   filename: 'index.html',
     //   template: 'index.html',
     //   inject: true,

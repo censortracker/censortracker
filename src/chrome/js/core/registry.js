@@ -7,12 +7,12 @@
     const apis = [
       {
         key: dbDomainItemName,
-        url: window.censortracker.settings.getDomainsApiUrl()
+        url: window.censortracker.settings.getDomainsApiUrl(),
       },
       {
         key: dbDistributorsItemName,
-        url: window.censortracker.settings.getRefusedApiUrl()
-      }
+        url: window.censortracker.settings.getRefusedApiUrl(),
+      },
     ]
 
     for (const api of apis) {
@@ -20,7 +20,7 @@
         .then((resp) => resp.json())
         .then((domains) => {
           db.setItem(api.key, {
-            domains: domains,
+            domains,
             timestamp: new Date().toLocaleString(),
           })
             .then((_value) => {
@@ -53,7 +53,9 @@
 
     db.getItem(dbDomainItemName)
       .then((data) => {
-        if (!data) return
+        if (!data) {
+          return
+        }
         const domains = data.domains
 
         const matchFound = domains.find(function (domain) {
@@ -61,12 +63,10 @@
         })
 
         if (matchFound) {
-          console.warn('Registry match found: ' + currentHostname)
+          console.warn(`Registry match found: ${currentHostname}`)
           onMatchFoundCallback(data)
-        } else {
-          if (onMatchNotFoundCallback !== undefined) {
-            onMatchNotFoundCallback()
-          }
+        } else if (onMatchNotFoundCallback !== undefined) {
+          onMatchNotFoundCallback()
         }
       })
       .catch((error) => {
@@ -80,7 +80,9 @@
 
     db.getItem(dbDistributorsItemName)
       .then((distributors) => {
-        if (!distributors) return
+        if (!distributors) {
+          return
+        }
         const domains = distributors.domains
         let cooperationRefused = false
 
@@ -89,15 +91,13 @@
         })
 
         if (matchFound) {
-          console.warn('Distributor match found: ' + hostname)
+          console.warn(`Distributor match found: ${hostname}`)
           if ('cooperation_refused' in matchFound) {
             cooperationRefused = matchFound.cooperation_refused
           }
           onMatchFoundCallback(cooperationRefused)
-        } else {
-          if (onMatchNotFoundCallback !== undefined) {
-            onMatchNotFoundCallback()
-          }
+        } else if (onMatchNotFoundCallback !== undefined) {
+          onMatchNotFoundCallback()
         }
       })
       .catch((error) => {
@@ -112,16 +112,17 @@
       },
       (data) => {
         const alreadyReported = data.alreadyReported
+
         if (!alreadyReported.includes(domain)) {
           fetch(window.censortracker.settings.getLoggingApiUrl(), {
             method: 'POST',
             headers: {
               'Censortracker-D': new Date().getTime(),
               'Censortracker-V': window.censortracker.settings.getVersion(),
-              'Content-Type': 'application/json'
+              'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              domain: domain,
+              domain,
             }),
           })
             .then((response) => response.json())
@@ -130,7 +131,7 @@
                 alreadyReported.push(domain)
                 chrome.storage.local.set(
                   {
-                    alreadyReported: alreadyReported,
+                    alreadyReported,
                   },
                   () => {
                     console.warn(`Reported: ${domain}`)
@@ -146,10 +147,10 @@
   }
 
   window.censortracker.registry = {
-    syncDatabase: syncDatabase,
-    checkDomains: checkDomains,
-    checkDistributors: checkDistributors,
-    getLastSyncTimestamp: getLastSyncTimestamp,
-    reportBlockedByDPI: reportBlockedByDPI,
+    syncDatabase,
+    checkDomains,
+    checkDistributors,
+    getLastSyncTimestamp,
+    reportBlockedByDPI,
   }
 })()

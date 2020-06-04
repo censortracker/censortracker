@@ -47,6 +47,7 @@
     const hostname = urlObject.hostname
 
     const count = window.censortracker.browserSession.getRequest(requestId, 'redirect_count', 0)
+
     if (count) {
       window.censortracker.browserSession.putRequest(requestId, 'redirect_count', count + 1)
     } else {
@@ -71,7 +72,7 @@
               `Too many redirections. Site ${hostname} add to ignore`,
             )
             chrome.storage.local.set({
-              ignoredSites: ignoredSites,
+              ignoredSites,
             })
           }
         },
@@ -117,7 +118,7 @@
           if (!ignoredSites.includes(hostname)) {
             ignoredSites.push(hostname)
             chrome.storage.local.set({
-              ignoredSites: ignoredSites,
+              ignoredSites,
             })
           }
 
@@ -162,11 +163,12 @@
             },
             (result) => {
               const mutedForever = result.mutedForever
+
               if (!mutedForever.find((item) => item === hostname)) {
                 mutedForever.push(hostname)
                 chrome.storage.local.set(
                   {
-                    mutedForever: mutedForever,
+                    mutedForever,
                   },
                   () => {
                     console.warn(
@@ -197,9 +199,15 @@
           (tabs) => {
             const activeTab = tabs[0]
             const tabId = activeTab.id
-            if (!activeTab.url) return
+
+            if (!activeTab.url) {
+              return
+            }
             const urlObject = new URL(activeTab.url)
-            if (urlObject.protocol === 'chrome:') return
+
+            if (urlObject.protocol === 'chrome:') {
+              return
+            }
 
             const currentHostname = window.censortracker.shortcuts.cleanHostname(urlObject.hostname)
             const ignoredSites = config.ignoredSites
@@ -279,7 +287,7 @@
 
   const setMatchFoundIcon = (tabId) => {
     chrome.browserAction.setIcon({
-      tabId: tabId,
+      tabId,
       path: RED_ICON,
     })
   }
@@ -288,17 +296,22 @@
     chrome.storage.local.get(
       { notifiedHosts: [], mutedForever: [] },
       (result) => {
-        if (!result || !hostname) return
+        if (!result || !hostname) {
+          return
+        }
 
         const mutedForever = result.mutedForever
-        if (mutedForever.find((item) => item === hostname)) return
+
+        if (mutedForever.find((item) => item === hostname)) {
+          return
+        }
 
         const notifiedHosts = result.notifiedHosts
 
         if (!notifiedHosts.find((item) => item === hostname)) {
           chrome.notifications.create({
             type: 'basic',
-            title: 'Censor Tracker: ' + hostname,
+            title: `Censor Tracker: ${hostname}`,
             priority: 2,
             message: 'Этот ресурс может передавать информацию третьим лицам.',
             buttons: [
@@ -322,15 +335,15 @@
   const setCooperationAcceptedBadge = (tabId) => {
     chrome.browserAction.setBadgeBackgroundColor({
       color: '#F93E2D',
-      tabId: tabId,
+      tabId,
     })
     chrome.browserAction.setBadgeText({
       text: '\u2691',
-      tabId: tabId,
+      tabId,
     })
     chrome.browserAction.setTitle({
       title: window.censortracker.settings.getTitle(),
-      tabId: tabId
+      tabId,
     })
   }
 

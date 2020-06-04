@@ -14,6 +14,7 @@
         },
         (items) => {
           const blockedDomains = items.blockedDomains
+
           if (hostname) {
             const domain = blockedDomains.find(
               (element) => element.domain === hostname,
@@ -33,7 +34,7 @@
 
           chrome.storage.local.set(
             {
-              blockedDomains: blockedDomains,
+              blockedDomains,
             },
             () => {
               if (hostname) {
@@ -75,7 +76,8 @@
       .then((domains) => {
         db.setItem('domains', domains)
         const date = new Date()
-        const time = date.getHours() + ':' + date.getMinutes()
+        const time = `${date.getHours()}:${date.getMinutes()}`
+
         console.warn(
           `[${time}] Local database «${databaseName}» synchronized with registry!`,
         )
@@ -97,6 +99,7 @@
     // --------------------------------------------
 
     const specialDomains = ['youtube.com']
+
     return domains.filter((domain) => {
       return !specialDomains.includes(domain)
     })
@@ -192,10 +195,11 @@ function FindProxyForURL(url, host) {
   const openPorts = () => {
     const proxyServerUrl = 'https://163.172.211.183:39263'
     const request = new XMLHttpRequest()
+
     request.open('GET', proxyServerUrl, true)
-    request.onerror = function (e) {
+    request.addEventListener('error', function (e) {
       console.error(`Error on opening ports: ${e.target.status}`)
-    }
+    })
     request.send(null)
   }
 
@@ -208,11 +212,12 @@ function FindProxyForURL(url, host) {
       if (blockedDomains) {
         blockedDomains = blockedDomains.filter((item) => {
           const timestamp = new Date().getTime()
+
           return (timestamp - item.timestamp) / 1000 < monthInSeconds
         })
       }
 
-      chrome.storage.local.set({ blockedDomains: blockedDomains }, () => {
+      chrome.storage.local.set({ blockedDomains }, () => {
         console.warn('Outdated domains has been removed.')
         setProxyAutoConfig(blockedDomains)
       })
@@ -224,9 +229,9 @@ function FindProxyForURL(url, host) {
   }, 60 * 1000 * 60 * 60 * 2)
 
   window.censortracker.proxies = {
-    setProxy: setProxy,
-    removeProxy: removeProxy,
-    openPorts: openPorts,
-    db: db,
+    setProxy,
+    removeProxy,
+    openPorts,
+    db,
   }
 })()

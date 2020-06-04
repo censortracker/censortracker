@@ -9,18 +9,21 @@
       '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' +
       '(\\?[;&a-z\\d%_.~+=-]*)?' +
       '(\\#[-a-z\\d_]*)?$',
-      'i'
+      'i',
     )
+
     return !!pattern.test(urlStr)
   }
 
   const cleanHostname = (hostname) => {
     const regexp = /^(?:https?:\/\/)?(?:www\.)?/i
+
     return hostname.replace(regexp, '').trim()
   }
 
   const createSearchLink = (hostname) => {
     const searchUrl = 'https://reestr.rublacklist.net/search/'
+
     return `<a href="${searchUrl}?q=${hostname}" target="_blank">Да</a>`
   }
 
@@ -47,10 +50,10 @@
   }
 
   window.censortracker.shortcuts = {
-    validURL: validURL,
-    cleanHostname: cleanHostname,
-    enableExtension: enableExtension,
-    disableExtension: disableExtension,
-    createSearchLink: createSearchLink,
+    validURL,
+    cleanHostname,
+    enableExtension,
+    disableExtension,
+    createSearchLink,
   }
 })()

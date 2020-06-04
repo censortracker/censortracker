@@ -21,7 +21,7 @@
   ],
   "background": {
     "scripts": [
-      "js/core/background.js"
+      "js/background.js"
     ],
     "persistent": true
   },

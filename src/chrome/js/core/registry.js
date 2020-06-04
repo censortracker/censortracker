@@ -1,9 +1,9 @@
-;(function () {
-  const dbDomainItemName = 'domains'
-  const dbDistributorsItemName = 'distributors'
-  const db = window.censortracker.database.create('censortracker-registry-db')
+const dbDomainItemName = 'domains'
+const dbDistributorsItemName = 'distributors'
+const db = window.censortracker.database.create('censortracker-registry-db')
 
-  const syncDatabase = () => {
+class Registry {
+  syncDatabase = () => {
     const apis = [
       {
         key: dbDomainItemName,
@@ -35,7 +35,7 @@
     }
   }
 
-  const getLastSyncTimestamp = (callback) => {
+  getLastSyncTimestamp = (callback) => {
     db.getItem(dbDomainItemName)
       .then((data) => {
         if (data && Object.prototype.hasOwnProperty.call(data, 'timestamp')) {
@@ -47,7 +47,7 @@
       })
   }
 
-  const checkDomains = (currentHostname, callbacks) => {
+  checkDomains = (currentHostname, callbacks) => {
     const onMatchFoundCallback = callbacks.onMatchFound
     const onMatchNotFoundCallback = callbacks.onMatchNotFound
 
@@ -74,7 +74,7 @@
       })
   }
 
-  const checkDistributors = (hostname, callbacks) => {
+  checkDistributors = (hostname, callbacks) => {
     const onMatchFoundCallback = callbacks.onMatchFound
     const onMatchNotFoundCallback = callbacks.onMatchNotFound
 
@@ -105,7 +105,7 @@
       })
   }
 
-  const reportBlockedByDPI = (domain) => {
+  reportBlockedByDPI = (domain) => {
     chrome.storage.local.get(
       {
         alreadyReported: [],
@@ -126,8 +126,8 @@
             }),
           })
             .then((response) => response.json())
-            .then((data) => {
-              if (data && data.status === 200) {
+            .then((response) => {
+              if (response && response.status === 200) {
                 alreadyReported.push(domain)
                 chrome.storage.local.set(
                   {
@@ -145,12 +145,6 @@
       },
     )
   }
+}
 
-  window.censortracker.registry = {
-    syncDatabase,
-    checkDomains,
-    checkDistributors,
-    getLastSyncTimestamp,
-    reportBlockedByDPI,
-  }
-})()
+export default new Registry()

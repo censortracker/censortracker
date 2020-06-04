@@ -28,4 +28,4 @@ class BrowserSession {
   }
 }
 
-export default BrowserSession
+export default new BrowserSession()

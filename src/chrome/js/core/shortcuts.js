@@ -1,7 +1,5 @@
-'use strict'
-
-;(() => {
-  const validURL = (urlStr) => {
+class Shortcuts {
+  validURL = (urlStr) => {
     const pattern = new RegExp(
       '^(https?:\\/\\/)?' +
       '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' +
@@ -15,19 +13,19 @@
     return !!pattern.test(urlStr)
   }
 
-  const cleanHostname = (hostname) => {
+  cleanHostname = (hostname) => {
     const regexp = /^(?:https?:\/\/)?(?:www\.)?/i
 
     return hostname.replace(regexp, '').trim()
   }
 
-  const createSearchLink = (hostname) => {
+  createSearchLink = (hostname) => {
     const searchUrl = 'https://reestr.rublacklist.net/search/'
 
     return `<a href="${searchUrl}?q=${hostname}" target="_blank">Да</a>`
   }
 
-  const enableExtension = () => {
+  enableExtension = () => {
     chrome.storage.local.set(
       {
         enableExtension: true,
@@ -38,7 +36,7 @@
     )
   }
 
-  const disableExtension = () => {
+  disableExtension = () => {
     chrome.storage.local.set(
       {
         enableExtension: false,
@@ -48,12 +46,6 @@
       },
     )
   }
+}
 
-  window.censortracker.shortcuts = {
-    validURL,
-    cleanHostname,
-    enableExtension,
-    disableExtension,
-    createSearchLink,
-  }
-})()
+export default new Shortcuts()

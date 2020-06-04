@@ -3,6 +3,7 @@ require('dotenv').config()
 const path = require('path')
 const webpack = require('webpack')
 const TerserPlugin = require('terser-webpack-plugin')
+// const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 function resolve (dir) {
   return path.join(__dirname, dir)
@@ -58,7 +59,7 @@ const webpackConfig = {
             loader: 'file-loader',
             options: {
               name: '[name].[ext]',
-              outputPath: 'img/',
+              outputPath: 'dist/img/',
             },
           },
         ],
@@ -68,22 +69,40 @@ const webpackConfig = {
 
   plugins: [
     new webpack.NamedModulesPlugin(),
+    // new CopyWebpackPlugin([
+    //   {
+    //     patterns: [
+    //       {
+    //         from: resolve('src/chrome/manifest.json'),
+    //         to: resolve('dist'),
+    //         toType: 'dir',
+    //       },
+    //     ],
+    //     options: {},
+    //   },
+    // ]),
+    // new HtmlWebpackPlugin({
+    //   filename: 'index.html',
+    //   template: 'index.html',
+    //   inject: true,
+    //   chunksSortMode: 'dependency',
+    // }),
   ],
 
-  node: {
-    // prevent webpack from injecting mocks to Node native modules
-    // that does not make sense for the client
-    dgram: 'empty',
-    fs: 'empty',
-    net: 'empty',
-    tls: 'empty',
-    child_process: 'empty',
-    // fix "Invalid y value for curve" issue:
-    crypto: true,
-    module: false,
-    process: true,
-    global: true,
-  },
+  // node: {
+  //   // prevent webpack from injecting mocks to Node native modules
+  //   // that does not make sense for the client
+  //   dgram: 'empty',
+  //   fs: 'empty',
+  //   net: 'empty',
+  //   tls: 'empty',
+  //   child_process: 'empty',
+  //   // fix "Invalid y value for curve" issue:
+  //   crypto: true,
+  //   module: false,
+  //   process: true,
+  //   global: true,
+  // },
 
   optimization: {
     minimize: false,

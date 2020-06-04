@@ -4,7 +4,7 @@ const path = require('path')
 const webpack = require('webpack')
 const TerserPlugin = require('terser-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
-// const HTMLWebpackPlugin = require('html-webpack-plugin')
+const HTMLWebpackPlugin = require('html-webpack-plugin')
 
 function resolve (dir) {
   return path.join(__dirname, dir)
@@ -78,12 +78,18 @@ const webpackConfig = {
         },
       ],
     }),
-    // new HTMLWebpackPlugin({
-    //   filename: 'index.html',
-    //   template: 'index.html',
-    //   inject: true,
-    //   chunksSortMode: 'dependency',
-    // }),
+    new HTMLWebpackPlugin({
+      title: 'Censor Tracker',
+      filename: 'popup.html',
+      template: 'src/chrome/pages/popup.html',
+      inject: false,
+    }),
+    new HTMLWebpackPlugin({
+      title: 'Refused | Censor Tracker',
+      filename: 'refused.html',
+      template: 'src/chrome/pages/refused.html',
+      inject: false,
+    }),
   ],
 
   // node: {

@@ -1,6 +1,6 @@
 {
   "name": "Censor Tracker",
-  "version": "0.2.0-alpha01",
+  "version": "0.2.0-alpha02",
   "description": "Censor Tracker",
   "permissions": [
     "activeTab",

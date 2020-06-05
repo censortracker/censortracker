@@ -1,3 +1,11 @@
+import {
+  proxies,
+  registry,
+  sessions,
+  settings,
+  shortcuts,
+} from './core'
+
 const REQUEST_FILTERS = {
   urls: ['*://*/*'],
   types: ['main_frame'],
@@ -14,10 +22,10 @@ const RED_ICON = chrome.extension.getURL('images/red_icon.png')
 
 const onInstalled = (details) => {
   if (details.reason === 'install') {
-    window.censortracker.proxies.openPorts()
-    window.censortracker.shortcuts.enableExtension()
-    window.censortracker.registry.syncDatabase()
-    window.censortracker.proxies.setProxy()
+    proxies.openPorts()
+    shortcuts.enableExtension()
+    registry.syncDatabase()
+    proxies.setProxy()
   }
 }
 
@@ -26,12 +34,12 @@ const onWindowsRemoved = (_windowId) => {
 }
 
 const onStartup = () => {
-  window.censortracker.registry.syncDatabase()
+  registry.syncDatabase()
   updateState()
 }
 
 const onBeforeRequest = (details) => {
-  if (window.censortracker.shortcuts.validURL(details.url)) {
+  if (shortcuts.validURL(details.url)) {
     return {
       redirectUrl: details.url.replace(/^http:/, 'https:'),
     }
@@ -44,12 +52,12 @@ const onBeforeRedirect = (details) => {
   const urlObject = new URL(details.url)
   const hostname = urlObject.hostname
 
-  const count = window.censortracker.browserSession.getRequest(requestId, 'redirect_count', 0)
+  const count = sessions.getRequest(requestId, 'redirect_count', 0)
 
   if (count) {
-    window.censortracker.browserSession.putRequest(requestId, 'redirect_count', count + 1)
+    sessions.putRequest(requestId, 'redirect_count', count + 1)
   } else {
-    window.censortracker.browserSession.putRequest(requestId, 'redirect_count', 1)
+    sessions.putRequest(requestId, 'redirect_count', 1)
   }
 
   if (count >= MAX_REDIRECTIONS_COUNT) {
@@ -91,8 +99,8 @@ const onErrorOccurred = (details) => {
     error === ERR_CONNECTION_CLOSED ||
     error === ERR_CONNECTION_TIMED_OUT
   ) {
-    window.censortracker.proxies.setProxy(hostname)
-    window.censortracker.registry.reportBlockedByDPI(hostname)
+    proxies.setProxy(hostname)
+    registry.reportBlockedByDPI(hostname)
     chrome.tabs.update({
       url: chrome.runtime.getURL(`pages/refused.html?${encodedURL}`),
     })
@@ -132,7 +140,7 @@ const onErrorOccurred = (details) => {
 }
 
 const onCompleted = (details) => {
-  window.censortracker.browserSession.deleteRequest(details.requestId)
+  sessions.deleteRequest(details.requestId)
   if (!chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequest)) {
     chrome.webRequest.onBeforeRequest.addListener(
       onBeforeRequest,
@@ -206,7 +214,7 @@ const updateState = () => {
             return
           }
 
-          const currentHostname = window.censortracker.shortcuts.cleanHostname(urlObject.hostname)
+          const currentHostname = shortcuts.cleanHostname(urlObject.hostname)
           const ignoredSites = config.ignoredSites
 
           if (ignoredSites.includes(currentHostname)) {
@@ -235,7 +243,7 @@ const updateState = () => {
               )
             }
 
-            window.censortracker.registry.checkDistributors(currentHostname, {
+            registry.checkDistributors(currentHostname, {
               onMatchFound: (cooperationRefused) => {
                 setMatchFoundIcon(tabId)
                 if (!cooperationRefused) {
@@ -245,12 +253,12 @@ const updateState = () => {
               },
             })
 
-            window.censortracker.registry.checkDomains(currentHostname, {
+            registry.checkDomains(currentHostname, {
               onMatchFound: (_data) => {
                 setMatchFoundIcon(tabId)
               },
               onMatchNotFound: () => {
-                window.censortracker.registry.checkDistributors(currentHostname, {
+                registry.checkDistributors(currentHostname, {
                   onMatchFound: (cooperationRefused) => {
                     if (!cooperationRefused) {
                       setCooperationAcceptedBadge(tabId)
@@ -339,7 +347,7 @@ const setCooperationAcceptedBadge = (tabId) => {
     tabId,
   })
   chrome.browserAction.setTitle({
-    title: window.censortracker.settings.getTitle(),
+    title: settings.getTitle(),
     tabId,
   })
 }
@@ -367,5 +375,5 @@ chrome.tabs.onActivated.addListener(updateState)
 chrome.tabs.onUpdated.addListener(updateState)
 
 setInterval(() => {
-  window.censortracker.proxies.openPorts()
+  proxies.openPorts()
 }, 60 * 1000 * 3)

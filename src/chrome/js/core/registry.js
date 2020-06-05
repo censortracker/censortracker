@@ -1,9 +1,11 @@
+import Database from './database'
+
 const dbDomainItemName = 'domains'
 const dbDistributorsItemName = 'distributors'
-const db = window.censortracker.database.create('censortracker-registry-db')
+const db = new Database('censortracker-registry-db')
 
 class Registry {
-  syncDatabase = () => {
+  syncDatabase = async () => {
     const apis = [
       {
         key: dbDomainItemName,
@@ -15,37 +17,26 @@ class Registry {
       },
     ]
 
-    for (const api of apis) {
-      fetch(api.url)
-        .then((resp) => resp.json())
-        .then((domains) => {
-          db.setItem(api.key, {
-            domains,
-            timestamp: new Date().toLocaleString(),
-          })
-            .then((_value) => {
-              console.warn(`Local ${api.key} database updated`)
-            })
-            .catch((error) => {
-              console.error(
-                `Error on updating local ${api.key} database: ${error}`,
-              )
-            })
+    for (const { key, url } of apis) {
+      const response = await fetch(url)
+      const domains = await response.json()
+
+      await db.setItem(key, { domains, timestamp: new Date().getTime() })
+        .catch((error) => {
+          console.error(`Error on updating local ${key} database: ${error}`)
         })
     }
   }
 
-  getLastSyncTimestamp = (callback) => {
+  getLastSyncTimestamp = () => new Promise((resolve, reject) => {
     db.getItem(dbDomainItemName)
       .then((data) => {
-        if (data && Object.prototype.hasOwnProperty.call(data, 'timestamp')) {
-          callback(data.timestamp)
+        if (data && data.timestamp) {
+          resolve(data.timestamp)
         }
       })
-      .catch((error) => {
-        console.error(error)
-      })
-  }
+      .catch(reject)
+  })
 
   checkDomains = (currentHostname, callbacks) => {
     const onMatchFoundCallback = callbacks.onMatchFound

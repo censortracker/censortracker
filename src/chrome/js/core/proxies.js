@@ -143,7 +143,7 @@ class Proxies {
     const https = 'proxy-ssl.roskomsvoboda.org:33333'
 
     return `
-  function FindProxyForURL(url, host) {
+function FindProxyForURL(url, host) {
   function isHostBlocked(array, target) {
     let left = 0;
     let right = array.length - 1;
@@ -187,7 +187,7 @@ class Proxies {
   } else {
     return 'DIRECT';
   }
-  }`
+}`
   }
 
   removeProxy = () => {
@@ -201,7 +201,7 @@ class Proxies {
     const request = new XMLHttpRequest()
 
     request.open('GET', proxyServerUrl, true)
-    request.addEventListener('error', function (e) {
+    request.addEventListener('error', (e) => {
       console.error(`Error on opening ports: ${e.target.status}`)
     })
     request.send(null)

@@ -90,7 +90,7 @@
             updateExtensionStatusLabel()
 
             if (config.enableExtension) {
-              bgWindow.censortracker.registry.getLastSyncTimestamp((timestamp) => {
+              bgWindow.censortracker.registry.getLastSyncTimestamp().then((timestamp) => {
                 lastSyncDate.innerText = timestamp.replace(/\//g, '.')
               })
 

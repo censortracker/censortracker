@@ -18,7 +18,7 @@ class BrowserSession {
 
     const request = this.requests.get(id)
 
-    return typeof request[key] !== 'undefined' && request[key] || defaultValue
+    return typeof request[key] !== 'undefined' ? request[key] : defaultValue
   }
 
   deleteRequest (id) {

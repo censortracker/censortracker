@@ -76,6 +76,14 @@ const webpackConfig = {
           from: resolve('src/chrome/manifest.json'),
           to: resolve('dist'),
         },
+        {
+          from: resolve('src/chrome/images'),
+          to: resolve('dist/images'),
+        },
+        {
+          from: resolve('src/chrome/css'),
+          to: resolve('dist/css'),
+        },
       ],
     }),
     new HTMLWebpackPlugin({

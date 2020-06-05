@@ -3,10 +3,7 @@
     [
       "@babel/preset-env",
       {
-        "targets": {
-          "chrome": "73",
-          "node": 12
-        }
+        "targets": "> 0.25%, not dead"
       }
     ]
   ],

@@ -1,5 +1,7 @@
+import { Database } from './index'
+
 const databaseName = 'censortracker-pac-domains'
-const db = window.censortracker.database.create(databaseName)
+const db = new Database(databaseName)
 const domainsApiUrl = window.censortracker.settings.getDomainsApiUrl()
 
 class Proxies {
@@ -63,7 +65,7 @@ class Proxies {
   }
 
   getBlockedDomains = (callback) => {
-    db.getItem('domains')
+    db.get('domains')
       .then((domains) => {
         if (domains) {
           console.warn('Fetching domains from local database...')
@@ -82,7 +84,7 @@ class Proxies {
     fetch(domainsApiUrl)
       .then((response) => response.json())
       .then((domains) => {
-        db.setItem('domains', domains)
+        db.set('domains', domains)
         const date = new Date()
         const time = `${date.getHours()}:${date.getMinutes()}`
 

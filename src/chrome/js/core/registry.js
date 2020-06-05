@@ -1,4 +1,4 @@
-import Database from './database'
+import { Database, settings, shortcuts } from './index'
 
 const dbDomainItemName = 'domains'
 const dbDistributorsItemName = 'distributors'
@@ -9,11 +9,11 @@ class Registry {
     const apis = [
       {
         key: dbDomainItemName,
-        url: window.censortracker.settings.getDomainsApiUrl(),
+        url: settings.getDomainsApiUrl(),
       },
       {
         key: dbDistributorsItemName,
-        url: window.censortracker.settings.getRefusedApiUrl(),
+        url: settings.getRefusedApiUrl(),
       },
     ]
 
@@ -21,7 +21,7 @@ class Registry {
       const response = await fetch(url)
       const domains = await response.json()
 
-      await db.setItem(key, { domains, timestamp: new Date().getTime() })
+      await db.set(key, { domains, timestamp: new Date().getTime() })
         .catch((error) => {
           console.error(`Error on updating local ${key} database: ${error}`)
         })
@@ -29,7 +29,7 @@ class Registry {
   }
 
   getLastSyncTimestamp = () => new Promise((resolve, reject) => {
-    db.getItem(dbDomainItemName)
+    db.get(dbDomainItemName)
       .then((data) => {
         if (data && data.timestamp) {
           resolve(data.timestamp)
@@ -42,15 +42,15 @@ class Registry {
     const onMatchFoundCallback = callbacks.onMatchFound
     const onMatchNotFoundCallback = callbacks.onMatchNotFound
 
-    db.getItem(dbDomainItemName)
+    db.get(dbDomainItemName)
       .then((data) => {
         if (!data) {
           return
         }
         const domains = data.domains
 
-        const matchFound = domains.find(function (domain) {
-          return currentHostname === window.censortracker.shortcuts.cleanHostname(domain)
+        const matchFound = domains.find((domain) => {
+          return currentHostname === shortcuts.cleanHostname(domain)
         })
 
         if (matchFound) {
@@ -69,7 +69,7 @@ class Registry {
     const onMatchFoundCallback = callbacks.onMatchFound
     const onMatchNotFoundCallback = callbacks.onMatchNotFound
 
-    db.getItem(dbDistributorsItemName)
+    db.get(dbDistributorsItemName)
       .then((distributors) => {
         if (!distributors) {
           return
@@ -78,7 +78,7 @@ class Registry {
         let cooperationRefused = false
 
         const matchFound = domains.find(function (item) {
-          return hostname === window.censortracker.shortcuts.cleanHostname(item.url)
+          return hostname === shortcuts.cleanHostname(item.url)
         })
 
         if (matchFound) {
@@ -105,11 +105,11 @@ class Registry {
         const alreadyReported = data.alreadyReported
 
         if (!alreadyReported.includes(domain)) {
-          fetch(window.censortracker.settings.getLoggingApiUrl(), {
+          fetch(settings.getLoggingApiUrl(), {
             method: 'POST',
             headers: {
               'Censortracker-D': new Date().getTime(),
-              'Censortracker-V': window.censortracker.settings.getVersion(),
+              'Censortracker-V': settings.getVersion(),
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({

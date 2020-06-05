@@ -9,7 +9,7 @@ class Database {
     this.db = localforage.createInstance({ name })
   }
 
-  async get (key, defaultValue = '') {
+  async get (key, defaultValue) {
     const result = await this.db.getItem(key)
 
     return result === null ? defaultValue : result

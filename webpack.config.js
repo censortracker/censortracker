@@ -15,8 +15,8 @@ const webpackConfig = {
 
   entry: {
     background: './src/chrome/js/background.js',
-    // 'refused': './src/chrome/js/refused.js',
-    // 'popup': './src/chrome/js/popup.js',
+    refused: './src/chrome/js/ui/refused.js',
+    popup: './src/chrome/js/ui/popup.js',
   },
 
   output: {

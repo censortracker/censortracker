@@ -1,34 +1,29 @@
-'use strict';
+import localforage from 'localforage'
 
-(() => {
-  window.localforage.config({
-    driver: window.localforage.INDEXEDDB
-  })
+const DEFAULT_DB_NAME = 'censortracker-db'
 
-  const create = (name) => {
-    const defaultName = 'censortracker-db'
-
-    if (!name) {
-      console.warn(`Creating database with default name: ${defaultName}`)
-    }
-
-    return window.localforage.createInstance({
-      name: name || defaultName
-    })
+class Database {
+  constructor (name = DEFAULT_DB_NAME, config = { driver: localforage.INDEXEDDB }) {
+    localforage.config(config)
+    this.name = name
+    this.db = localforage.createInstance({ name })
   }
 
-  const drop = (name) => {
-    if (!name) {
-      console.error('You must define name of database to drop.')
-      return
-    }
-    return window.localforage.dropInstance({
-      name: name
-    })
+  async get (key, defaultValue) {
+    const result = await this.db.getItem(key)
+
+    return result === null ? defaultValue : result
   }
 
-  window.censortracker.database = {
-    create: create,
-    drop: drop
+  async set (key, value) {
+    await this.db.setItem(key, value)
+
+    return this
   }
-})()
+
+  async delete () {
+    await localforage.dropInstance({ name: this.name })
+  }
+}
+
+export default Database

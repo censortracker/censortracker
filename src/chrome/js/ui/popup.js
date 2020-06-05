@@ -1,22 +1,22 @@
-'use strict';
+'use strict'
 
-(() => {
+;(() => {
   window.jQuery('body').tooltip({
-    selector: '[data-toggle="tooltip"]'
+    selector: '[data-toggle="tooltip"]',
   })
 
-  const statusImage = document.getElementById('statusImage')
-  const popupFooter = document.getElementById('popupFooter')
-  const lastSyncDate = document.getElementById('lastSyncDate')
-  const oriMatchFound = document.getElementById('oriMatchFound')
-  const registryMatchFound = document.getElementById('matchFound')
-  const vpnAdvertising = document.getElementById('vpnAdvertising')
-  const extensionStatus = document.getElementById('extensionStatus')
-  const extensionStatusLabel = document.getElementById('extensionStatusLabel')
-  const cooperationAccepted = document.getElementById('cooperationAccepted')
-  const cooperationRejected = document.getElementById('cooperationRejected')
-  const currentDomain = document.getElementById('currentDomain')
-  const extensionName = document.getElementById('extensionName')
+  const statusImage = document.querySelector('#statusImage')
+  const popupFooter = document.querySelector('#popupFooter')
+  const lastSyncDate = document.querySelector('#lastSyncDate')
+  const oriMatchFound = document.querySelector('#oriMatchFound')
+  const registryMatchFound = document.querySelector('#matchFound')
+  const vpnAdvertising = document.querySelector('#vpnAdvertising')
+  const extensionStatus = document.querySelector('#extensionStatus')
+  const extensionStatusLabel = document.querySelector('#extensionStatusLabel')
+  const cooperationAccepted = document.querySelector('#cooperationAccepted')
+  const cooperationRejected = document.querySelector('#cooperationRejected')
+  const currentDomain = document.querySelector('#currentDomain')
+  const extensionName = document.querySelector('#extensionName')
   const redIcon = chrome.extension.getURL('images/red_icon.png')
 
   chrome.runtime.getBackgroundPage((bgWindow) => {
@@ -52,19 +52,19 @@
 
     chrome.storage.local.get(
       {
-        enableExtension: true
+        enableExtension: true,
       },
       (config) => {
         if (config.enableExtension) {
           extensionStatus.checked = config.enableExtension
         }
-      }
+      },
     )
 
     chrome.tabs.query(
       {
         active: true,
-        lastFocusedWindow: true
+        lastFocusedWindow: true,
       },
       (tabs) => {
         const activeTab = tabs[0]
@@ -80,7 +80,7 @@
 
         chrome.storage.local.get(
           {
-            enableExtension: true
+            enableExtension: true,
           },
           (config) => {
             if (bgWindow.censortracker.shortcuts.validURL(currentHostname)) {
@@ -90,7 +90,7 @@
             updateExtensionStatusLabel()
 
             if (config.enableExtension) {
-              bgWindow.censortracker.registry.getLastSyncTimestamp((timestamp) => {
+              bgWindow.censortracker.registry.getLastSyncTimestamp().then((timestamp) => {
                 lastSyncDate.innerText = timestamp.replace(/\//g, '.')
               })
 
@@ -99,7 +99,7 @@
                   registryMatchFound.innerHTML = bgWindow.censortracker.shortcuts.createSearchLink(currentHostname)
                   vpnAdvertising.hidden = false
                   statusImage.setAttribute('src', redIcon)
-                }
+                },
               })
 
               bgWindow.censortracker.registry.checkDistributors(currentHostname, {
@@ -113,14 +113,14 @@
                   } else {
                     cooperationAccepted.hidden = false
                   }
-                }
+                },
               })
             } else {
               popupFooter.hidden = true
             }
-          }
+          },
         )
-      }
+      },
     )
 
     const show = () => {

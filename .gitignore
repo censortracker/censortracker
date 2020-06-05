@@ -82,7 +82,7 @@ out
 
 # Nuxt.js build / generate output
 .nuxt
-dist
+# dist
 
 # Gatsby files
 .cache/
@@ -115,6 +115,6 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-dist/
+# dist/
 
 src/firefox/

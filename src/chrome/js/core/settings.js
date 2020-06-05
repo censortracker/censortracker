@@ -1,41 +1,22 @@
-'use strict';
+const manifest = chrome.runtime.getManifest()
+const rksUrl = 'https://reestr.rublacklist.net'
 
-(() => {
-  const manifest = chrome.runtime.getManifest()
-  const rksUrl = 'https://reestr.rublacklist.net'
+class Settings {
+  getName = () => manifest.name
 
-  window.censortracker = {}
-  window.censortracker.settings = {
-    getName: () => {
-      return manifest.name
-    },
+  getDescription = () => manifest.description
 
-    getDescription: () => {
-      return manifest.description
-    },
+  getVersion = () => manifest.version
 
-    getVersion: () => {
-      return manifest.version
-    },
+  getTitle = () => `${manifest.name} v${manifest.version}`
 
-    getTitle: () => {
-      return `${manifest.name} v${manifest.version}`
-    },
+  getDomainsApiUrl = () => `${rksUrl}/api/v3/domains/json`
 
-    getDomainsApiUrl: () => {
-      return `${rksUrl}/api/v3/domains/json`
-    },
+  getRefusedApiUrl = () => `${rksUrl}/api/v3/ori/refused/json`
 
-    getRefusedApiUrl: () => {
-      return `${rksUrl}/api/v3/ori/refused/json`
-    },
+  getLoggingApiUrl = () => 'https://ct-dev.rublacklist.net/api/domain/'
 
-    getLoggingApiUrl: () => {
-      return 'https://ct-dev.rublacklist.net/api/domain/'
-    },
+  getIconByName = (iconName) => chrome.extension.getURL(`images/${iconName}.png`)
+}
 
-    getIconByName: (iconName) => {
-      return chrome.extension.getURL(`images/${iconName}.png`)
-    }
-  }
-})()
+export default new Settings()

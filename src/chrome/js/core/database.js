@@ -22,6 +22,18 @@ class Database {
       }
     })
   }
+
+  remove (key) {
+    return new Promise((resolve, reject) => {
+      try {
+        chrome.storage.local.remove(key, (result) => {
+          resolve(result)
+        })
+      } catch (error) {
+        reject(error)
+      }
+    })
+  }
 }
 
 export default Database

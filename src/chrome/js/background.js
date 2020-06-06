@@ -1,5 +1,6 @@
 import {
   proxies,
+  Database,
   registry,
   sessions,
   settings,
@@ -19,6 +20,20 @@ const ERR_TUNNEL_CONNECTION_FAILED = 'ERR_TUNNEL_CONNECTION_FAILED'
 const ERR_CERT_AUTHORITY_INVALID = 'ERR_CERT_AUTHORITY_INVALID'
 const ERR_CONNECTION_TIMED_OUT = 'ERR_CONNECTION_TIMED_OUT'
 const RED_ICON = chrome.extension.getURL('images/red_icon.png')
+
+window.censortracker = {}
+Object.entries({
+  proxies,
+  Database,
+  registry,
+  sessions,
+  settings,
+  shortcuts,
+}).forEach(([key, value]) => {
+  window.censortracker[key] = value
+})
+
+console.log(window.censortracker)
 
 const onInstalled = (details) => {
   if (details.reason === 'install') {

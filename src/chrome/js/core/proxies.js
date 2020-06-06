@@ -1,8 +1,7 @@
-import { Database } from './index'
+import settings from './settings'
 
 const databaseName = 'censortracker-pac-domains'
-const db = new Database(databaseName)
-const domainsApiUrl = window.censortracker.settings.getDomainsApiUrl()
+const domainsApiUrl = settings.getDomainsApiUrl()
 
 class Proxies {
   constructor () {
@@ -65,35 +64,39 @@ class Proxies {
   }
 
   getBlockedDomains = (callback) => {
-    db.get('domains')
-      .then((domains) => {
-        if (domains) {
-          console.warn('Fetching domains from local database...')
-          callback(domains)
-        } else {
-          console.warn('Fetching domains for PAC from registry API...')
-          this.syncDatabaseWithRegistry(callback)
-        }
-      })
-      .catch((error) => {
-        console.error(error)
-      })
+    chrome.storage.local.get('Database', (db) => {
+      db.get('domains')
+        .then((domains) => {
+          if (domains) {
+            console.warn('Fetching domains from local database...')
+            callback(domains)
+          } else {
+            console.warn('Fetching domains for PAC from registry API...')
+            this.syncDatabaseWithRegistry(callback)
+          }
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+    })
   }
 
   syncDatabaseWithRegistry = (callback) => {
     fetch(domainsApiUrl)
       .then((response) => response.json())
       .then((domains) => {
-        db.set('domains', domains)
-        const date = new Date()
-        const time = `${date.getHours()}:${date.getMinutes()}`
+        chrome.storage.local.get('Database', (db) => {
+          db.set('domains', domains)
+          const date = new Date()
+          const time = `${date.getHours()}:${date.getMinutes()}`
 
-        console.warn(
-          `[${time}] Local database «${databaseName}» synchronized with registry!`,
-        )
-        if (callback !== undefined) {
-          callback(domains)
-        }
+          console.warn(
+            `[${time}] Local database «${databaseName}» synchronized with registry!`,
+          )
+          if (callback !== undefined) {
+            callback(domains)
+          }
+        })
       })
       .catch((error) => {
         console.error(`Error on fetching data from API: ${error}`)

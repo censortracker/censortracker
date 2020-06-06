@@ -1,5 +1,5 @@
 class Database {
-  get (key, defaultValue) {
+  static get (key, defaultValue) {
     return new Promise((resolve, reject) => {
       try {
         chrome.storage.local.get(key, (result) => {
@@ -11,7 +11,7 @@ class Database {
     })
   }
 
-  set (key, value) {
+  static set (key, value) {
     return new Promise((resolve, reject) => {
       try {
         chrome.storage.local.set({ [key]: value }, () => {

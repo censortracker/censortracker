@@ -1,7 +1,6 @@
 // window.jQuery('body').tooltip({
 //   selector: '[data-toggle="tooltip"]',
 // })
-
 const statusImage = document.querySelector('#statusImage')
 const popupFooter = document.querySelector('#popupFooter')
 const lastSyncDate = document.querySelector('#lastSyncDate')
@@ -16,13 +15,15 @@ const currentDomain = document.querySelector('#currentDomain')
 const extensionName = document.querySelector('#extensionName')
 const redIcon = chrome.extension.getURL('images/red_icon.png')
 
-chrome.runtime.getBackgroundPage((bgWindow) => {
-  extensionName.innerText = bgWindow.censortracker.settings.getTitle()
+chrome.runtime.getBackgroundPage(async (bgWindow) => {
+  const { settings, proxies, registry, shortcuts, Database } = bgWindow.censortracker
+
+  extensionName.innerText = settings.getTitle()
 
   const updateExtensionStatusLabel = () => {
     let labelText = 'Расширение выключено'
     let tooltipStatus = 'выключен'
-    const extName = bgWindow.censortracker.settings.getName()
+    const extName = settings.getName()
 
     if (extensionStatus.checked) {
       labelText = 'Расширение включено'
@@ -37,33 +38,28 @@ chrome.runtime.getBackgroundPage((bgWindow) => {
       updateExtensionStatusLabel()
       if (extensionStatus.checked) {
         popupFooter.hidden = false
-        bgWindow.censortracker.shortcuts.enableExtension()
-        bgWindow.censortracker.proxies.setProxy()
+        shortcuts.enableExtension()
+        proxies.setProxy()
       } else {
         popupFooter.hidden = true
-        bgWindow.censortracker.proxies.removeProxy()
-        bgWindow.censortracker.shortcuts.disableExtension()
+        proxies.removeProxy()
+        shortcuts.disableExtension()
       }
     }
   })
 
-  chrome.storage.local.get(
-    {
-      enableExtension: true,
-    },
-    (config) => {
-      if (config.enableExtension) {
-        extensionStatus.checked = config.enableExtension
-      }
-    },
-  )
+  const config = await Database.get(['enableExtension'])
+
+  if (config.enableExtension) {
+    extensionStatus.checked = config.enableExtension
+  }
 
   chrome.tabs.query(
     {
       active: true,
       lastFocusedWindow: true,
     },
-    (tabs) => {
+    async (tabs) => {
       const activeTab = tabs[0]
       const activeTabUrl = activeTab.url
 
@@ -73,50 +69,43 @@ chrome.runtime.getBackgroundPage((bgWindow) => {
       }
 
       const urlObject = new URL(activeTabUrl)
-      const currentHostname = bgWindow.censortracker.shortcuts.cleanHostname(urlObject.hostname)
+      const currentHostname = shortcuts.cleanHostname(urlObject.hostname)
 
-      chrome.storage.local.get(
-        {
-          enableExtension: true,
-        },
-        (config) => {
-          if (bgWindow.censortracker.shortcuts.validURL(currentHostname)) {
-            currentDomain.innerText = currentHostname.replace('www.', '')
-          }
+      if (shortcuts.validURL(currentHostname)) {
+        currentDomain.innerText = currentHostname.replace('www.', '')
+      }
 
-          updateExtensionStatusLabel()
+      updateExtensionStatusLabel()
 
-          if (config.enableExtension) {
-            bgWindow.censortracker.registry.getLastSyncTimestamp().then((timestamp) => {
-              lastSyncDate.innerText = timestamp.replace(/\//g, '.')
-            })
+      if (config.enableExtension) {
+        registry.getLastSyncTimestamp().then((timestamp) => {
+          lastSyncDate.innerText = timestamp.replace(/\//g, '.')
+        })
 
-            bgWindow.censortracker.registry.checkDomains(currentHostname, {
-              onMatchFound: (_data) => {
-                registryMatchFound.innerHTML = bgWindow.censortracker.shortcuts.createSearchLink(currentHostname)
-                vpnAdvertising.hidden = false
-                statusImage.setAttribute('src', redIcon)
-              },
-            })
+        registry.checkDomains(currentHostname, {
+          onMatchFound: (_data) => {
+            registryMatchFound.innerHTML = shortcuts.createSearchLink(currentHostname)
+            vpnAdvertising.hidden = false
+            statusImage.setAttribute('src', redIcon)
+          },
+        })
 
-            bgWindow.censortracker.registry.checkDistributors(currentHostname, {
-              onMatchFound: (cooperationRefused) => {
-                oriMatchFound.innerHTML = bgWindow.censortracker.shortcuts.createSearchLink(currentHostname)
-                vpnAdvertising.hidden = false
-                statusImage.setAttribute('src', redIcon)
+        registry.checkDistributors(currentHostname, {
+          onMatchFound: (cooperationRefused) => {
+            oriMatchFound.innerHTML = shortcuts.createSearchLink(currentHostname)
+            vpnAdvertising.hidden = false
+            statusImage.setAttribute('src', redIcon)
 
-                if (cooperationRefused) {
-                  cooperationRejected.hidden = false
-                } else {
-                  cooperationAccepted.hidden = false
-                }
-              },
-            })
-          } else {
-            popupFooter.hidden = true
-          }
-        },
-      )
+            if (cooperationRefused) {
+              cooperationRejected.hidden = false
+            } else {
+              cooperationAccepted.hidden = false
+            }
+          },
+        })
+      } else {
+        popupFooter.hidden = true
+      }
     },
   )
 

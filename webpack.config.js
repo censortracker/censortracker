@@ -21,7 +21,7 @@ const webpackConfig = {
 
   output: {
     path: resolve('dist'),
-    libraryTarget: 'commonjs2',
+    libraryTarget: 'var',
     filename: process.env.NODE_ENV === 'production' ? '[name].min.js' : '[name].js',
     publicPath: process.env.NODE_ENV === 'production' ? '' : '/',
   },

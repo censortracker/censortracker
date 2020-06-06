@@ -1,6 +1,6 @@
 {
   "name": "Censor Tracker",
-  "version": "0.2.0-alpha03",
+  "version": "2",
   "description": "Censor Tracker",
   "permissions": [
     "tabs",
@@ -21,13 +21,13 @@
   ],
   "background": {
     "scripts": [
-      "js/background.js"
+      "background.js"
     ],
     "persistent": true
   },
   "browser_action": {
     "default_title": "Censor Tracker",
-    "default_popup": "pages/popup.html",
+    "default_popup": "popup.html",
     "default_icon": {
       "16": "images/icon.png",
       "32": "images/icon.png",

@@ -33,8 +33,6 @@ Object.entries({
   window.censortracker[key] = value
 })
 
-console.log(window.censortracker)
-
 const onInstalled = (details) => {
   if (details.reason === 'install') {
     proxies.openPorts()

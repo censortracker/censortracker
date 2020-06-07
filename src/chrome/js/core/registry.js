@@ -1,8 +1,9 @@
-import { Database, settings, shortcuts } from './index'
+import db from './database'
+import settings from './settings'
+import shortcuts from './shortcuts'
 
 const dbDomainItemName = 'domains'
 const dbDistributorsItemName = 'distributors'
-const db = new Database('censortracker-registry-db')
 
 class Registry {
   syncDatabase = async () => {
@@ -21,7 +22,7 @@ class Registry {
       const response = await fetch(url)
       const domains = await response.json()
 
-      await db.set(key, { domains, timestamp: new Date().getTime() })
+      await db.set({ [key]: { domains, timestamp: new Date().getTime() } })
         .catch((error) => {
           console.error(`Error on updating local ${key} database: ${error}`)
         })

@@ -64,39 +64,39 @@ class Proxies {
   }
 
   getBlockedDomains = (callback) => {
-    chrome.storage.local.get('Database', (db) => {
-      db.get('domains')
-        .then((domains) => {
-          if (domains) {
-            console.warn('Fetching domains from local database...')
-            callback(domains)
-          } else {
-            console.warn('Fetching domains for PAC from registry API...')
-            this.syncDatabaseWithRegistry(callback)
-          }
-        })
-        .catch((error) => {
-          console.error(error)
-        })
-    })
+    const db = window.censortracker.Database
+
+    db.get('domains')
+      .then((domains) => {
+        if (domains) {
+          console.warn('Fetching domains from local database...')
+          callback(domains)
+        } else {
+          console.warn('Fetching domains for PAC from registry API...')
+          this.syncDatabaseWithRegistry(callback)
+        }
+      })
+      .catch((error) => {
+        console.error(error)
+      })
   }
 
   syncDatabaseWithRegistry = (callback) => {
     fetch(domainsApiUrl)
       .then((response) => response.json())
       .then((domains) => {
-        chrome.storage.local.get('Database', (db) => {
-          db.set('domains', domains)
-          const date = new Date()
-          const time = `${date.getHours()}:${date.getMinutes()}`
+        const db = window.censortracker.Database
 
-          console.warn(
-            `[${time}] Local database «${databaseName}» synchronized with registry!`,
-          )
-          if (callback !== undefined) {
-            callback(domains)
-          }
-        })
+        db.set('domains', domains)
+        const date = new Date()
+        const time = `${date.getHours()}:${date.getMinutes()}`
+
+        console.warn(
+          `[${time}] Local database «${databaseName}» synchronized with registry!`,
+        )
+        if (callback !== undefined) {
+          callback(domains)
+        }
       })
       .catch((error) => {
         console.error(`Error on fetching data from API: ${error}`)

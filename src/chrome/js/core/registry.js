@@ -77,9 +77,9 @@ class Registry {
         const domains = distributors.domains || []
         let cooperationRefused = false
 
-        const matchFound = domains.find(function (item) {
-          return hostname === shortcuts.cleanHostname(item.url)
-        })
+        const matchFound = domains.find((item) => (
+          hostname === shortcuts.cleanHostname(item.url)
+        ))
 
         if (matchFound) {
           console.warn(`Distributor match found: ${hostname}`)

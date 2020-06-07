@@ -67,7 +67,7 @@ class Proxies {
     const db = window.censortracker.Database
 
     db.get('domains')
-      .then((domains) => {
+      .then(({ domains }) => {
         if (domains) {
           console.warn('Fetching domains from local database...')
           callback(domains)

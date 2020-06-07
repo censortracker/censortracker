@@ -23,7 +23,7 @@ class Database {
     })
   }
 
-  remove (key) {
+  static remove (key) {
     return new Promise((resolve, reject) => {
       try {
         chrome.storage.local.remove(key, (result) => {

@@ -103,7 +103,7 @@ class Proxies {
       })
   }
 
-  excludeSpecialDomains = (domains) => {
+  excludeSpecialDomains = (domains = []) => {
     // ----------------- Testing -----------------
     domains = domains.filter((item) => item !== 'rutracker.org')
     domains = domains.filter((item) => item !== 'telegram.org')
@@ -140,7 +140,7 @@ class Proxies {
    * @param domains An array of domains.
    * @returns {string} The PAC data.
    */
-  generatePacScriptData = (domains) => {
+  generatePacScriptData = (domains = []) => {
     // The binary search works only with pre-sorted array.
     domains.sort()
 

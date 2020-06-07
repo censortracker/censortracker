@@ -48,8 +48,7 @@ class Registry {
         if (!data) {
           return
         }
-        const domains = data.domains
-
+        const domains = data.domains || []
         const matchFound = domains.find((domain) => {
           return currentHostname === shortcuts.cleanHostname(domain)
         })
@@ -75,7 +74,7 @@ class Registry {
         if (!distributors) {
           return
         }
-        const domains = distributors.domains
+        const domains = distributors.domains || []
         let cooperationRefused = false
 
         const matchFound = domains.find(function (item) {

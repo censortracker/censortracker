@@ -390,3 +390,8 @@ chrome.tabs.onUpdated.addListener(updateState)
 setInterval(() => {
   proxies.openPorts()
 }, 60 * 1000 * 3)
+
+// chrome.storage.local.get((data) => {
+//   console.log(data)
+//   console.log(window.censortracker)
+// })

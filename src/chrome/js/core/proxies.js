@@ -1,6 +1,6 @@
+import db from './database'
 import settings from './settings'
 
-const databaseName = 'censortracker-pac-domains'
 const domainsApiUrl = settings.getDomainsApiUrl()
 
 class Proxies {
@@ -18,104 +18,80 @@ class Proxies {
     }, 60 * 1000 * 60 * 60 * 2)
   }
 
-  setProxy = (hostname) => {
-    this.getBlockedDomains((domains) => {
-      domains = this.excludeSpecialDomains(domains)
-      chrome.storage.local.get(
-        {
-          blockedDomains: [],
-        },
-        (items) => {
-          const blockedDomains = items.blockedDomains
+  setProxy = async (hostname) => {
+    let domains = await this.getBlockedDomains()
 
-          if (hostname) {
-            const domain = blockedDomains.find(
-              (element) => element.domain === hostname,
-            )
+    domains = this.excludeSpecialDomains(domains)
+    const { blockedDomains } = await db.get({ blockedDomains: [] })
 
-            if (!domain) {
-              blockedDomains.push({
-                domain: hostname,
-                timestamp: new Date().getTime(),
-              })
-            }
-          }
+    if (hostname) {
+      const domainInBlocked = blockedDomains
+        .find(({ domain }) => domain === hostname)
 
-          if (blockedDomains) {
-            domains = domains.concat(blockedDomains.map((obj) => obj.domain))
-          }
+      if (!domainInBlocked) {
+        blockedDomains.push({
+          domain: hostname,
+          timestamp: new Date().getTime(),
+        })
+      }
+    }
 
-          chrome.storage.local.set(
-            {
-              blockedDomains,
-            },
-            () => {
-              if (hostname) {
-                console.log(
-                  `Site ${hostname} has been added to set of blocked by DPI.`,
-                )
-              }
-            },
-          )
-          this.setProxyAutoConfig(domains)
-        },
+    if (blockedDomains) {
+      domains = domains.concat(blockedDomains.map(({ domain }) => domain))
+    }
+
+    await db.set('blockedDomains', blockedDomains)
+
+    if (hostname) {
+      console.log(
+        `Site ${hostname} has been added to set of blocked by DPI.`,
       )
-    })
+    }
+
+    this.setProxyAutoConfig(domains)
   }
 
-  getBlockedDomains = (callback) => {
-    const db = window.censortracker.Database
-
-    db.get('domains')
-      .then(({ domains }) => {
-        if (domains) {
-          console.warn('Fetching domains from local database...')
-          callback(domains)
-        } else {
-          console.warn('Fetching domains for PAC from registry API...')
-          this.syncDatabaseWithRegistry(callback)
-        }
-      })
+  getBlockedDomains = async () => {
+    let domains = await db.get('domains')
       .catch((error) => {
         console.error(error)
       })
+
+    if (!domains) {
+      console.warn('Fetching domains for PAC from registry API...')
+      domains = await this.syncDatabaseWithRegistry()
+    }
+
+    console.warn('Fetching domains from local database...')
+    return domains
   }
 
-  syncDatabaseWithRegistry = (callback) => {
-    fetch(domainsApiUrl)
-      .then((response) => response.json())
-      .then((domains) => {
-        const db = window.censortracker.Database
-
-        db.set('domains', domains)
-        const date = new Date()
-        const time = `${date.getHours()}:${date.getMinutes()}`
-
-        console.warn(
-          `[${time}] Local database «${databaseName}» synchronized with registry!`,
-        )
-        if (callback !== undefined) {
-          callback(domains)
-        }
-      })
+  syncDatabaseWithRegistry = async () => {
+    const response = await fetch(domainsApiUrl)
       .catch((error) => {
         console.error(`Error on fetching data from API: ${error}`)
       })
+    const domains = await response.json()
+
+    await db.set('domains', domains)
+    const date = new Date()
+    const time = `${date.getHours()}:${date.getMinutes()}`
+
+    console.warn(
+      `[${time}] Local database synchronized with registry!`,
+    )
+    return domains
   }
 
-  excludeSpecialDomains = (domains = []) => {
-    // ----------------- Testing -----------------
-    domains = domains.filter((item) => item !== 'rutracker.org')
-    domains = domains.filter((item) => item !== 'telegram.org')
-    domains = domains.filter((item) => item !== 'lostfilm.tv')
-    domains = domains.filter((item) => item !== 'tunnelbear.com')
-    // --------------------------------------------
-
+  excludeSpecialDomains = ({ domains = [] }) => {
     const specialDomains = ['youtube.com']
 
-    return domains.filter((domain) => {
-      return !specialDomains.includes(domain)
-    })
+    return domains.filter((domain) => (item) => [
+      'rutracker.org',
+      'telegram.org',
+      'lostfilm.tv',
+      'tunnelbear.com',
+    ].includes(item) && !specialDomains.includes(domain))
   }
 
   setProxyAutoConfig = (domains) => {

@@ -1,6 +1,5 @@
 import settings from './settings'
 
-const databaseName = 'censortracker-pac-domains'
 const domainsApiUrl = settings.getDomainsApiUrl()
 
 class Proxies {
@@ -88,12 +87,8 @@ class Proxies {
         const db = window.censortracker.Database
 
         db.set('domains', domains)
-        const date = new Date()
-        const time = `${date.getHours()}:${date.getMinutes()}`
 
-        console.warn(
-          `[${time}] Local database «${databaseName}» synchronized with registry!`,
-        )
+        console.warn('Local storage synchronized with registry!')
         if (callback !== undefined) {
           callback(domains)
         }

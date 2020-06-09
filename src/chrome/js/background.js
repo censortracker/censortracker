@@ -76,24 +76,16 @@ const onBeforeRedirect = (details) => {
       chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequest)
     }
 
-    chrome.storage.local.get(
-      {
-        ignoredSites: [],
-      },
-      (data) => {
-        const ignoredSites = data.ignoredSites
-
+    Database.get('ignoredSites')
+      .then(({ ignoredSites }) => {
         if (!ignoredSites.includes(hostname)) {
           ignoredSites.push(hostname)
           console.warn(
             `Too many redirections. Site ${hostname} add to ignore`,
           )
-          chrome.storage.local.set({
-            ignoredSites,
-          })
+          Database.set('ignoredSites', ignoredSites)
         }
-      },
-    )
+      })
   }
 }
 
@@ -212,19 +204,16 @@ const updateState = async () => {
           active: true,
           lastFocusedWindow: true,
         },
-        (tabs) => {
-          const activeTab = tabs[0]
-          const tabId = activeTab.id
-
-          if (!activeTab.url) {
+        ([tab]) => {
+          if (!tab || !tab.url) {
             return
           }
-          const urlObject = new URL(activeTab.url)
+          const tabId = tab.id
+          const urlObject = new URL(tab.url)
 
           if (urlObject.protocol === 'chrome:') {
             return
           }
-
           const currentHostname = shortcuts.cleanHostname(urlObject.hostname)
           const ignoredSites = config.ignoredSites
 
@@ -254,30 +243,28 @@ const updateState = async () => {
               )
             }
 
-            registry.checkDistributors(currentHostname, {
-              onMatchFound: (cooperationRefused) => {
+            registry.checkDistributors(currentHostname)
+              .then((cooperationRefused) => {
                 setMatchFoundIcon(tabId)
                 if (!cooperationRefused) {
                   setCooperationAcceptedBadge(tabId)
                   showCooperationAcceptedWarning(currentHostname)
                 }
-              },
-            })
+              })
 
-            registry.checkDomains(currentHostname, {
-              onMatchFound: (_data) => {
+            registry.checkDomains(currentHostname)
+              .then((_data) => {
                 setMatchFoundIcon(tabId)
-              },
-              onMatchNotFound: () => {
-                registry.checkDistributors(currentHostname, {
-                  onMatchFound: (cooperationRefused) => {
+              })
+              .catch(() => {
+                registry.checkDistributors(currentHostname)
+                  .then((cooperationRefused) => {
+                    setMatchFoundIcon(tabId)
                     if (!cooperationRefused) {
                       setCooperationAcceptedBadge(tabId)
                     }
-                  },
-                })
-              },
-            })
+                  })
+              })
           } else {
             if (
               chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequest)

@@ -179,13 +179,17 @@ function FindProxyForURL(url, host) {
 
   openPorts = () => {
     const proxyServerUrl = 'https://163.172.211.183:39263'
-    const request = new XMLHttpRequest()
+    const xhr = new XMLHttpRequest()
 
-    request.open('GET', proxyServerUrl, true)
-    request.addEventListener('error', (e) => {
-      console.error(`Error on opening ports: ${e.target.status}`)
+    xhr.open('GET', proxyServerUrl, true)
+    xhr.addEventListener('error', (e) => {
+      console.error(`Error on opening ports: ${e}`)
     })
-    request.send(null)
+    xhr.send(null)
+
+    setTimeout(() => {
+      xhr.abort()
+    }, 3000)
   }
 
   removeOutdatedBlockedDomains = () => {

@@ -78,9 +78,7 @@ class Registry {
   reportBlockedByDPI = async (domain) => {
     const { alreadyReported } = await db.get('alreadyReported')
 
-    console.log(alreadyReported)
-
-    if (!alreadyReported.includes(domain)) {
+    if (alreadyReported && !alreadyReported.includes(domain)) {
       const response = await fetch(settings.getLoggingApiUrl(), {
         method: 'POST',
         headers: {

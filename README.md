@@ -1,5 +1,7 @@
 [![Logo](https://raw.githubusercontent.com/roskomsvoboda/censortracker/master/.github/readme-logo.png)](https://github.com/roskomsvoboda/censortracker)
 
+![Build](https://github.com/roskomsvoboda/censortracker/workflows/Build/badge.svg?branch=master)
+
 **Censor Tracker** is an extension for [Google Chrome](https://www.google.com/chrome/) which helps to
 bypass censorship in Russian Federation and helps to detect resources
 blocked using DPI.

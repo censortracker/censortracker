@@ -52,7 +52,7 @@ class Proxies {
   }
 
   getBlockedDomains = async () => {
-    let domains = await db.get('domains')
+    let { domains } = await db.get('domains')
       .catch((error) => {
         console.error(error)
       })
@@ -73,7 +73,7 @@ class Proxies {
       })
     const domains = await response.json()
 
-    await db.set('domains', domains)
+    await db.set('domains', { domains, timestamp: new Date().getTime() })
     const date = new Date()
     const time = `${date.getHours()}:${date.getMinutes()}`
 

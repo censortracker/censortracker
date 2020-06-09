@@ -21,17 +21,14 @@ const ERR_CERT_AUTHORITY_INVALID = 'ERR_CERT_AUTHORITY_INVALID'
 const ERR_CONNECTION_TIMED_OUT = 'ERR_CONNECTION_TIMED_OUT'
 const RED_ICON = chrome.extension.getURL('images/red_icon.png')
 
-window.censortracker = {}
-Object.entries({
+window.censortracker = {
   proxies,
   Database,
   registry,
   sessions,
   settings,
   shortcuts,
-}).forEach(([key, value]) => {
-  window.censortracker[key] = value
-})
+}
 
 const onInstalled = (details) => {
   if (details.reason === 'install') {
@@ -42,13 +39,14 @@ const onInstalled = (details) => {
   }
 }
 
+// ???
 const onWindowsRemoved = (_windowId) => {
-  chrome.storage.local.remove(['notifiedHosts'])
+  chrome.storage.local.remove(['notifiedHosts']) // wtf notifiedHosts
 }
 
-const onStartup = () => {
-  registry.syncDatabase()
-  updateState()
+const onStartup = async () => {
+  await registry.syncDatabase()
+  await updateState()
 }
 
 const onBeforeRequest = (details) => {
@@ -202,7 +200,7 @@ const notificationOnButtonClicked = (notificationId, buttonIndex) => {
   }
 }
 
-const updateState = () => {
+const updateState = async () => {
   chrome.storage.local.get(
     {
       enableExtension: true,

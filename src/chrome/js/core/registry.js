@@ -22,7 +22,7 @@ class Registry {
       const response = await fetch(url)
       const domains = await response.json()
 
-      await db.set({ [key]: { domains, timestamp: new Date().getTime() } })
+      await db.set(key, { domains, timestamp: new Date().getTime() })
         .catch((error) => {
           console.error(`Error on updating local ${key} database: ${error}`)
         })
@@ -39,102 +39,64 @@ class Registry {
       .catch(reject)
   })
 
-  checkDomains = (currentHostname, callbacks) => {
-    const onMatchFoundCallback = callbacks.onMatchFound
-    const onMatchNotFoundCallback = callbacks.onMatchNotFound
-
+  checkDomains = (host) => new Promise((resolve, reject) => {
     db.get(dbDomainItemName)
-      .then((data) => {
-        if (!data) {
-          return
-        }
-        const domains = data.domains || []
-        const matchFound = domains.find((domain) => {
-          return currentHostname === shortcuts.cleanHostname(domain)
+      .then(({ [dbDomainItemName]: { domains } }) => {
+        const found = domains.find((domain) => {
+          return host === shortcuts.cleanHostname(domain)
         })
 
-        if (matchFound) {
-          console.warn(`Registry match found: ${currentHostname}`)
-          onMatchFoundCallback(data)
-        } else if (onMatchNotFoundCallback !== undefined) {
-          onMatchNotFoundCallback()
+        if (found) {
+          console.warn(`Registry match found: ${host}`)
+          resolve(domains)
         }
       })
-      .catch((error) => {
-        console.error(error)
-      })
-  }
+      .catch(reject)
+  })
 
-  checkDistributors = (hostname, callbacks) => {
-    const onMatchFoundCallback = callbacks.onMatchFound
-    const onMatchNotFoundCallback = callbacks.onMatchNotFound
-
+  checkDistributors = (host) => new Promise((resolve, reject) => {
     db.get(dbDistributorsItemName)
-      .then((distributors) => {
-        if (!distributors) {
-          return
-        }
-        const domains = distributors.domains || []
+      .then(({ [dbDistributorsItemName]: { domains } }) => {
         let cooperationRefused = false
 
-        const matchFound = domains.find((item) => (
-          hostname === shortcuts.cleanHostname(item.url)
+        const found = domains.find((item) => (
+          host === shortcuts.cleanHostname(item.url)
         ))
 
-        if (matchFound) {
-          console.warn(`Distributor match found: ${hostname}`)
-          if ('cooperation_refused' in matchFound) {
-            cooperationRefused = matchFound.cooperation_refused
+        if (found) {
+          console.warn(`Distributor match found: ${host}`)
+          if ('cooperation_refused' in found) {
+            cooperationRefused = found.cooperation_refused
           }
-          onMatchFoundCallback(cooperationRefused)
-        } else if (onMatchNotFoundCallback !== undefined) {
-          onMatchNotFoundCallback()
+          resolve(cooperationRefused)
         }
       })
-      .catch((error) => {
-        console.error(error)
+      .catch(reject)
+  })
+
+  reportBlockedByDPI = async (domain) => {
+    const alreadyReported = await db.get('alreadyReported')
+
+    if (!alreadyReported.includes(domain)) {
+      const response = await fetch(settings.getLoggingApiUrl(), {
+        method: 'POST',
+        headers: {
+          'Censortracker-D': new Date().getTime(),
+          'Censortracker-V': settings.getVersion(),
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ domain }),
       })
-  }
+      const json = await response.json()
 
-  reportBlockedByDPI = (domain) => {
-    chrome.storage.local.get(
-      {
-        alreadyReported: [],
-      },
-      (data) => {
-        const alreadyReported = data.alreadyReported
+      alreadyReported.push(domain)
+      await db.set('alreadyReported', alreadyReported)
 
-        if (!alreadyReported.includes(domain)) {
-          fetch(settings.getLoggingApiUrl(), {
-            method: 'POST',
-            headers: {
-              'Censortracker-D': new Date().getTime(),
-              'Censortracker-V': settings.getVersion(),
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              domain,
-            }),
-          })
-            .then((response) => response.json())
-            .then((response) => {
-              if (response && response.status === 200) {
-                alreadyReported.push(domain)
-                chrome.storage.local.set(
-                  {
-                    alreadyReported,
-                  },
-                  () => {
-                    console.warn(`Reported: ${domain}`)
-                  },
-                )
-              }
-            })
-        } else {
-          console.warn(`The domain ${domain} reported`)
-        }
-      },
-    )
+      return json
+    }
+
+    console.warn(`The domain was already ${domain} reported`)
+    return null
   }
 }
 

@@ -74,12 +74,7 @@ class Proxies {
     const domains = await response.json()
 
     await db.set('domains', { domains, timestamp: new Date().getTime() })
-    const date = new Date()
-    const time = `${date.getHours()}:${date.getMinutes()}`
-
-    console.warn(
-      `[${time}] Local database synchronized with registry!`,
-    )
+    console.warn('Local database synchronized with registry!')
     return domains
   }
 
@@ -87,10 +82,7 @@ class Proxies {
     const specialDomains = ['youtube.com']
 
     return domains.filter((domain) => (item) => [
-      'rutracker.org',
       'telegram.org',
-      'lostfilm.tv',
-      'tunnelbear.com',
     ].includes(item) && !specialDomains.includes(domain))
   }
 

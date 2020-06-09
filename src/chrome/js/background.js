@@ -78,7 +78,7 @@ const onBeforeRedirect = (details) => {
 
     Database.get('ignoredSites')
       .then(({ ignoredSites }) => {
-        if (!ignoredSites.includes(hostname)) {
+        if (ignoredSites && !ignoredSites.includes(hostname)) {
           ignoredSites.push(hostname)
           console.warn(
             `Too many redirections. Site ${hostname} add to ignore`,

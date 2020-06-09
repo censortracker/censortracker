@@ -192,25 +192,21 @@ function FindProxyForURL(url, host) {
     }, 3000)
   }
 
-  removeOutdatedBlockedDomains = () => {
+  removeOutdatedBlockedDomains = async () => {
     const monthInSeconds = 2628000
+    let { blockedDomains } = await db.get('blockedDomains')
 
-    chrome.storage.local.get({ blockedDomains: [] }, (items) => {
-      let blockedDomains = items.blockedDomains
+    if (blockedDomains) {
+      blockedDomains = blockedDomains.filter((item) => {
+        const timestamp = new Date().getTime()
 
-      if (blockedDomains) {
-        blockedDomains = blockedDomains.filter((item) => {
-          const timestamp = new Date().getTime()
-
-          return (timestamp - item.timestamp) / 1000 < monthInSeconds
-        })
-      }
-
-      chrome.storage.local.set({ blockedDomains }, () => {
-        console.warn('Outdated domains has been removed.')
-        this.setProxyAutoConfig(blockedDomains)
+        return (timestamp - item.timestamp) / 1000 < monthInSeconds
       })
-    })
+    }
+
+    await db.set('blockedDomains', blockedDomains)
+    console.warn('Outdated domains has been removed.')
+    this.setProxyAutoConfig(blockedDomains)
   }
 }
 

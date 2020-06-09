@@ -82,16 +82,15 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
           lastSyncDate.innerText = timestamp.replace(/\//g, '.')
         })
 
-        registry.checkDomains(currentHostname, {
-          onMatchFound: (_data) => {
+        registry.checkDomains(currentHostname)
+          .then((_data) => {
             registryMatchFound.innerHTML = shortcuts.createSearchLink(currentHostname)
             vpnAdvertising.hidden = false
             statusImage.setAttribute('src', redIcon)
-          },
-        })
+          })
 
-        registry.checkDistributors(currentHostname, {
-          onMatchFound: (cooperationRefused) => {
+        registry.checkDistributors(currentHostname)
+          .then((cooperationRefused) => {
             oriMatchFound.innerHTML = shortcuts.createSearchLink(currentHostname)
             vpnAdvertising.hidden = false
             statusImage.setAttribute('src', redIcon)
@@ -101,8 +100,7 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
             } else {
               cooperationAccepted.hidden = false
             }
-          },
-        })
+          })
       } else {
         popupFooter.hidden = true
       }

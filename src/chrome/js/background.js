@@ -32,6 +32,7 @@ window.censortracker = {
 
 const onInstalled = (details) => {
   if (details.reason === 'install') {
+    console.log(`Installing ${settings.getName()}...`)
     proxies.openPorts()
     shortcuts.enableExtension()
     registry.syncDatabase()
@@ -39,9 +40,14 @@ const onInstalled = (details) => {
   }
 }
 
-// ???
 const onWindowsRemoved = (_windowId) => {
-  chrome.storage.local.remove(['notifiedHosts']) // wtf notifiedHosts
+  chrome.storage.local.remove(['notifiedHosts'], () => {
+    if (!chrome.runtime.lastError) {
+      console.warn('An array of notified hosts has been cleaned up.')
+    } else {
+      console.error('Error on removing notified hosts.')
+    }
+  })
 }
 
 const onStartup = async () => {
@@ -51,6 +57,7 @@ const onStartup = async () => {
 
 const onBeforeRequest = (details) => {
   if (shortcuts.validURL(details.url)) {
+    console.log('Redirecting request to HTTPS...')
     return {
       redirectUrl: details.url.replace(/^http:/, 'https:'),
     }
@@ -75,14 +82,13 @@ const onBeforeRedirect = (details) => {
     if (chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequest)) {
       chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequest)
     }
+    console.warn('Reached max count of redirects. Adding site to ignore...')
 
     Database.get('ignoredSites')
       .then(({ ignoredSites }) => {
-        if (!ignoredSites.includes(hostname)) {
+        if (ignoredSites && !ignoredSites.includes(hostname)) {
           ignoredSites.push(hostname)
-          console.warn(
-            `Too many redirections. Site ${hostname} add to ignore`,
-          )
+          console.warn(`Site ${hostname} add to ignore`)
           Database.set('ignoredSites', ignoredSites)
         }
       })
@@ -102,6 +108,7 @@ const onErrorOccurred = (details) => {
     error === ERR_CONNECTION_CLOSED ||
     error === ERR_CONNECTION_TIMED_OUT
   ) {
+    console.warn('Possible DPI lock detected: updating PAC file...')
     proxies.setProxy(hostname)
     registry.reportBlockedByDPI(hostname)
     chrome.tabs.update({

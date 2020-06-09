@@ -7,6 +7,7 @@ const dbDistributorsItemName = 'distributors'
 
 class Registry {
   syncDatabase = async () => {
+    console.warn('Synchronizing local database with registry...')
     const apis = [
       {
         key: dbDomainItemName,

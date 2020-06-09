@@ -44,9 +44,10 @@ const onWindowsRemoved = (_windowId) => {
   chrome.storage.local.remove(['notifiedHosts'], () => {
     if (!chrome.runtime.lastError) {
       console.warn('An array of notified hosts has been cleaned up.')
-    } else {
-      console.error('Error on removing notified hosts.')
+      return true
     }
+    console.error('Error on removing notified hosts.')
+    return false
   })
 }
 

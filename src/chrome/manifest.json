@@ -36,5 +36,6 @@
       "128": "images/icon.png"
     }
   },
+  "options_page": "options.html",
   "manifest_version": 2
 }

@@ -1,6 +1,3 @@
-// window.jQuery('body').tooltip({
-//   selector: '[data-toggle="tooltip"]',
-// })
 
 const elById = (id) => document.getElementById(id)
 

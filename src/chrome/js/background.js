@@ -255,7 +255,8 @@ const updateState = async () => {
               .then((cooperationRefused) => {
                 setMatchFoundIcon(tabId)
                 if (!cooperationRefused) {
-                  setCooperationAcceptedBadge(tabId)
+                  // Shows special icon here
+                  setMatchFoundIcon(tabId)
                   showCooperationAcceptedWarning(currentHostname)
                 }
               })
@@ -269,7 +270,8 @@ const updateState = async () => {
                   .then((cooperationRefused) => {
                     setMatchFoundIcon(tabId)
                     if (!cooperationRefused) {
-                      setCooperationAcceptedBadge(tabId)
+                      // Shows special icon here
+                      setMatchFoundIcon(tabId)
                     }
                   })
               })
@@ -297,9 +299,13 @@ const updateState = async () => {
 }
 
 const setMatchFoundIcon = (tabId) => {
-  chrome.browserAction.setIcon({
+  chrome.pageAction.setIcon({
     tabId,
     path: RED_ICON,
+  })
+  chrome.pageAction.setTitle({
+    title: settings.getTitle(),
+    tabId,
   })
 }
 
@@ -341,21 +347,6 @@ const showCooperationAcceptedWarning = (hostname) => {
       }
     },
   )
-}
-
-const setCooperationAcceptedBadge = (tabId) => {
-  chrome.browserAction.setBadgeBackgroundColor({
-    color: '#F93E2D',
-    tabId,
-  })
-  chrome.browserAction.setBadgeText({
-    text: '\u2691',
-    tabId,
-  })
-  chrome.browserAction.setTitle({
-    title: settings.getTitle(),
-    tabId,
-  })
 }
 
 chrome.runtime.onInstalled.addListener(onInstalled)

@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title><%= htmlWebpackPlugin.options.title %></title>
+    <title>Refused | Censor Tracker</title>
     <link
       rel="stylesheet"
       href="//use.fontawesome.com/releases/v5.0.7/css/all.css"
@@ -10,7 +10,7 @@
     <link href="css/bootstrap.min.css" rel="stylesheet" />
     <link href="css/mdb.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="css/refused.css" />
-  </head>
+  <meta name="Content-Security-Policy" content="script-src 'self' 'unsafe-eval'; object-src 'self';"></head>
   <body>
     <div class="container">
       <div class="text-center">
@@ -28,5 +28,5 @@
         </button>
       </div>
     </div>
-  </body>
+  <script src="/refused.js"></script></body>
 </html>

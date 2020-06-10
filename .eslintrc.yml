@@ -29,6 +29,7 @@ rules:
   class-methods-use-this: off
   function-paren-newline: off
   import/no-default-export: off
+  unicorn/prefer-query-selector: off
   brace-style:
     - 2
     - 1tbs

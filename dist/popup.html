@@ -2,7 +2,7 @@
 <html lang="ru" style="visibility: hidden;">
   <head>
     <meta charset="utf-8" />
-    <title><%= htmlWebpackPlugin.options.title %></title>
+    <title>Censor Tracker</title>
     <link
       rel="stylesheet"
       href="//use.fontawesome.com/releases/v5.0.7/css/all.css"
@@ -10,7 +10,7 @@
     <link href="css/bootstrap.min.css" rel="stylesheet" />
     <link href="css/mdb.min.css" rel="stylesheet" />
     <link href="css/main.css" rel="stylesheet" />
-  </head>
+  <meta name="Content-Security-Policy" content="script-src 'self' 'unsafe-eval'; object-src 'self';"></head>
 
   <body>
     <div
@@ -130,5 +130,5 @@
         </div>
       </div>
     </div>
-  </body>
+  <script src="/popup.js"></script></body>
 </html>

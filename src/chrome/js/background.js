@@ -255,7 +255,8 @@ const updateState = async () => {
               .then((cooperationRefused) => {
                 setMatchFoundIcon(tabId)
                 if (!cooperationRefused) {
-                  setCooperationAcceptedBadge(tabId)
+                  // Shows special icon here
+                  setMatchFoundIcon(tabId)
                   showCooperationAcceptedWarning(currentHostname)
                 }
               })
@@ -269,7 +270,8 @@ const updateState = async () => {
                   .then((cooperationRefused) => {
                     setMatchFoundIcon(tabId)
                     if (!cooperationRefused) {
-                      setCooperationAcceptedBadge(tabId)
+                      // Shows special icon here
+                      setMatchFoundIcon(tabId)
                     }
                   })
               })
@@ -297,9 +299,13 @@ const updateState = async () => {
 }
 
 const setMatchFoundIcon = (tabId) => {
-  chrome.browserAction.setIcon({
+  chrome.pageAction.setIcon({
     tabId,
     path: RED_ICON,
+  })
+  chrome.pageAction.setTitle({
+    title: settings.getTitle(),
+    tabId,
   })
 }
 
@@ -343,21 +349,6 @@ const showCooperationAcceptedWarning = (hostname) => {
   )
 }
 
-const setCooperationAcceptedBadge = (tabId) => {
-  chrome.browserAction.setBadgeBackgroundColor({
-    color: '#F93E2D',
-    tabId,
-  })
-  chrome.browserAction.setBadgeText({
-    text: '\u2691',
-    tabId,
-  })
-  chrome.browserAction.setTitle({
-    title: settings.getTitle(),
-    tabId,
-  })
-}
-
 chrome.runtime.onInstalled.addListener(onInstalled)
 chrome.runtime.onInstalled.addListener(() => {
   chrome.declarativeContent.onPageChanged.removeRules(undefined, () => {
@@ -394,29 +385,6 @@ chrome.notifications.onButtonClicked.addListener(notificationOnButtonClicked)
 chrome.tabs.onActivated.addListener(updateState)
 chrome.tabs.onUpdated.addListener(updateState)
 
-// chrome.pageAction.onClicked.addListener((tab) => {
-//   chrome.pageAction.setIcon({path: "icon" + (clicks + 1) + ".png",
-//                              tabId: tab.id})
-//   if (clicks % 2) {
-//     chrome.pageAction.show(tab.id)
-//   } else {
-//     chrome.pageAction.hide(tab.id)
-//     setTimeout(function() { chrome.pageAction.show(tab.id) }, 200)
-//   }
-//   chrome.pageAction.setTitle({title: "click:" + clicks, tabId: tab.id})
-//   // We only have 2 icons, but cycle through 3 icons to test the
-//   // out-of-bounds index bug.
-//   clicks++
-//   if (clicks > 3)
-//     clicks = 0
-//   tab_clicks[tab.id] = clicks
-// })
-
 setInterval(() => {
   proxies.openPorts()
 }, 60 * 1000 * 3)
-
-// chrome.storage.local.get((data) => {
-//   console.log(data)
-//   console.log(window.censortracker)
-// })

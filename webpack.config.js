@@ -15,6 +15,7 @@ const webpackConfig = {
 
   entry: {
     background: './src/chrome/js/background.js',
+    options: './src/chrome/js/ui/options.js',
     refused: './src/chrome/js/ui/refused.js',
     popup: './src/chrome/js/ui/popup.js',
   },
@@ -70,6 +71,7 @@ const webpackConfig = {
 
   plugins: [
     new webpack.NamedModulesPlugin(),
+    new webpack.HotModuleReplacementPlugin(),
     new CopyWebpackPlugin({
       patterns: [
         {
@@ -92,6 +94,9 @@ const webpackConfig = {
       template: 'src/chrome/pages/popup.html',
       inject: true,
       chunks: ['popup'],
+      meta: {
+        'Content-Security-Policy': 'script-src \'self\' \'unsafe-eval\'; object-src \'self\';',
+      },
     }),
     new HTMLWebpackPlugin({
       title: 'Refused | Censor Tracker',
@@ -99,6 +104,9 @@ const webpackConfig = {
       template: 'src/chrome/pages/refused.html',
       inject: true,
       chunks: ['refused'],
+      meta: {
+        'Content-Security-Policy': 'script-src \'self\' \'unsafe-eval\'; object-src \'self\';',
+      },
     }),
     new HTMLWebpackPlugin({
       title: 'Options | Censor Tracker',
@@ -106,6 +114,9 @@ const webpackConfig = {
       template: 'src/chrome/pages/options.html',
       inject: true,
       chunks: ['options'],
+      meta: {
+        'Content-Security-Policy': 'script-src \'self\' \'unsafe-eval\'; object-src \'self\';',
+      },
     }),
   ],
 

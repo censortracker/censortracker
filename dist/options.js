@@ -282,7 +282,7 @@
 /******/ 				};
 /******/ 			});
 /******/ 			hotUpdate = {};
-/******/ 			var chunkId = "refused";
+/******/ 			var chunkId = "options";
 /******/ 			// eslint-disable-next-line no-lone-blocks
 /******/ 			{
 /******/ 				hotEnsureUpdateChunk(chunkId);
@@ -854,19 +854,19 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return hotCreateRequire("./src/chrome/js/ui/refused.js")(__webpack_require__.s = "./src/chrome/js/ui/refused.js");
+/******/ 	return hotCreateRequire("./src/chrome/js/ui/options.js")(__webpack_require__.s = "./src/chrome/js/ui/options.js");
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ "./src/chrome/js/ui/refused.js":
+/***/ "./src/chrome/js/ui/options.js":
 /*!*************************************!*\
-  !*** ./src/chrome/js/ui/refused.js ***!
+  !*** ./src/chrome/js/ui/options.js ***!
   \*************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-eval("document.addEventListener('click', function (event) {\n  chrome.tabs.query({\n    active: true,\n    lastFocusedWindow: true\n  }, function (tabs) {\n    var encodedUrl = tabs[0].url.split('?')[1];\n    var url = window.atob(encodedUrl);\n\n    if (event.target.matches('#enforce_proxy')) {\n      chrome.tabs.create({\n        url: url\n      }, function (_tab) {\n        chrome.tabs.remove(tabs[0].id);\n      });\n    }\n  });\n  event.preventDefault();\n}, false);\n\n//# sourceURL=webpack:///./src/chrome/js/ui/refused.js?");
+eval("console.log(window);\n\n//# sourceURL=webpack:///./src/chrome/js/ui/options.js?");
 
 /***/ })
 

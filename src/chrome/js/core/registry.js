@@ -15,7 +15,7 @@ class Registry {
       },
       {
         key: dbDistributorsItemName,
-        url: settings.getRefusedApiUrl(),
+        url: settings.getDistributorsApiUrl(),
       },
     ]
 

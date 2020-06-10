@@ -12,7 +12,7 @@ class Settings {
 
   getDomainsApiUrl = () => `${rksUrl}/api/v3/domains/json`;
 
-  getRefusedApiUrl = () => `${rksUrl}/api/v3/ori/refused/json`;
+  getDistributorsApiUrl = () => `${rksUrl}/api/v3/ori/refused/json`;
 
   getLoggingApiUrl = () => 'https://ct-dev.rublacklist.net/api/domain/';
 

@@ -253,25 +253,25 @@ const updateState = async () => {
 
             registry.checkDistributors(currentHostname)
               .then((cooperationRefused) => {
-                setMatchFoundIcon(tabId)
+                setDangerIcon(tabId)
                 if (!cooperationRefused) {
                   // Shows special icon here
-                  setMatchFoundIcon(tabId)
+                  setDangerIcon(tabId)
                   showCooperationAcceptedWarning(currentHostname)
                 }
               })
 
             registry.checkDomains(currentHostname)
               .then((_data) => {
-                setMatchFoundIcon(tabId)
+                setDangerIcon(tabId)
               })
               .catch(() => {
                 registry.checkDistributors(currentHostname)
                   .then((cooperationRefused) => {
-                    setMatchFoundIcon(tabId)
+                    setDangerIcon(tabId)
                     if (!cooperationRefused) {
                       // Shows special icon here
-                      setMatchFoundIcon(tabId)
+                      setDangerIcon(tabId)
                     }
                   })
               })
@@ -298,7 +298,7 @@ const updateState = async () => {
   )
 }
 
-const setMatchFoundIcon = (tabId) => {
+const setDangerIcon = (tabId) => {
   chrome.pageAction.setIcon({
     tabId,
     path: RED_ICON,

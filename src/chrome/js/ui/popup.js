@@ -21,16 +21,12 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
   extensionNameEl.innerText = settings.getTitle()
 
   const updateExtensionStatusLabel = () => {
-    let labelText = 'Расширение выключено'
-    let tooltipStatus = 'выключен'
-    const extName = settings.getName()
+    let labelText = 'выключено'
 
     if (extensionStatusEl.checked) {
-      labelText = 'Расширение включено'
-      tooltipStatus = 'включен'
+      labelText = 'включено'
     }
-    extensionStatusLabelEl.innerText = labelText
-    extensionStatusLabelEl.setAttribute('title', `${extName} ${tooltipStatus}`)
+    extensionStatusLabelEl.innerText = `Расширение ${labelText}`
   }
 
   document.addEventListener('click', (event) => {

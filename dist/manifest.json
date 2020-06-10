@@ -15,6 +15,7 @@
     "webRequestBlocking",
     "https://reestr.rublacklist.net/api/v3/domains/json",
     "https://reestr.rublacklist.net/api/v3/ori/refused/json",
+    "*://use.fontawesome.com/releases/v5.0.7/css/all.css",
     "<all_urls>",
     "http://*/*",
     "https://*/*",

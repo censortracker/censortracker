@@ -1,50 +1,47 @@
 // window.jQuery('body').tooltip({
 //   selector: '[data-toggle="tooltip"]',
 // })
-
-const elById = (id) => document.getElementById(id)
-
-const statusImageEl = elById('statusImage')
-const popupFooterEl = elById('popupFooter')
-const lastSyncDateEl = elById('lastSyncDate')
-const oriMatchFoundEl = elById('oriMatchFound')
-const registryMatchFoundEl = elById('matchFound')
-const vpnAdvertisingEl = elById('vpnAdvertising')
-const extensionStatusEl = elById('extensionStatus')
-const extensionStatusLabelEl = elById('extensionStatusLabel')
-const cooperationAcceptedEl = elById('cooperationAccepted')
-const cooperationRejectedEl = elById('cooperationRejected')
-const currentDomainEl = elById('currentDomain')
-const extensionNameEl = elById('extensionName')
+const statusImage = document.querySelector('#statusImage')
+const popupFooter = document.querySelector('#popupFooter')
+const lastSyncDate = document.querySelector('#lastSyncDate')
+const oriMatchFound = document.querySelector('#oriMatchFound')
+const registryMatchFound = document.querySelector('#matchFound')
+const vpnAdvertising = document.querySelector('#vpnAdvertising')
+const extensionStatus = document.querySelector('#extensionStatus')
+const extensionStatusLabel = document.querySelector('#extensionStatusLabel')
+const cooperationAccepted = document.querySelector('#cooperationAccepted')
+const cooperationRejected = document.querySelector('#cooperationRejected')
+const currentDomain = document.querySelector('#currentDomain')
+const extensionName = document.querySelector('#extensionName')
 const redIcon = chrome.extension.getURL('images/red_icon.png')
 
 chrome.runtime.getBackgroundPage(async (bgWindow) => {
   const { settings, proxies, registry, shortcuts, Database } = bgWindow.censortracker
 
-  extensionNameEl.innerText = settings.getTitle()
+  extensionName.innerText = settings.getTitle()
 
   const updateExtensionStatusLabel = () => {
     let labelText = 'Расширение выключено'
     let tooltipStatus = 'выключен'
     const extName = settings.getName()
 
-    if (extensionStatusEl.checked) {
+    if (extensionStatus.checked) {
       labelText = 'Расширение включено'
       tooltipStatus = 'включен'
     }
-    extensionStatusLabelEl.innerText = labelText
-    extensionStatusLabelEl.setAttribute('title', `${extName} ${tooltipStatus}`)
+    extensionStatusLabel.innerText = labelText
+    extensionStatusLabel.setAttribute('title', `${extName} ${tooltipStatus}`)
   }
 
   document.addEventListener('click', (event) => {
-    if (event.target.matches(`#${extensionStatusEl.id}`)) {
+    if (event.target.matches(`#${extensionStatus.id}`)) {
       updateExtensionStatusLabel()
-      if (extensionStatusEl.checked) {
-        popupFooterEl.hidden = false
+      if (extensionStatus.checked) {
+        popupFooter.hidden = false
         shortcuts.enableExtension()
         proxies.setProxy()
       } else {
-        popupFooterEl.hidden = true
+        popupFooter.hidden = true
         proxies.removeProxy()
         shortcuts.disableExtension()
       }
@@ -54,7 +51,7 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
   const config = await Database.get(['enableExtension'])
 
   if (config.enableExtension) {
-    extensionStatusEl.checked = config.enableExtension
+    extensionStatus.checked = config.enableExtension
   }
 
   chrome.tabs.query(
@@ -67,45 +64,45 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
       const activeTabUrl = activeTab.url
 
       if (activeTabUrl.startsWith('chrome-extension://')) {
-        popupFooterEl.hidden = true
+        popupFooter.hidden = true
         return
       }
 
       const urlObject = new URL(activeTabUrl)
-      const hostname = shortcuts.cleanHostname(urlObject.hostname)
+      const currentHostname = shortcuts.cleanHostname(urlObject.hostname)
 
-      if (shortcuts.validURL(hostname)) {
-        currentDomainEl.innerText = hostname.replace('www.', '')
+      if (shortcuts.validURL(currentHostname)) {
+        currentDomain.innerText = currentHostname.replace('www.', '')
       }
 
       updateExtensionStatusLabel()
 
       if (config.enableExtension) {
         registry.getLastSyncTimestamp().then((timestamp) => {
-          lastSyncDateEl.innerText = timestamp.replace(/\//g, '.')
+          lastSyncDate.innerText = timestamp.replace(/\//g, '.')
         })
 
-        registry.checkDomains(hostname)
+        registry.checkDomains(currentHostname)
           .then((_data) => {
-            registryMatchFoundEl.innerHTML = shortcuts.createSearchLink(hostname)
-            vpnAdvertisingEl.hidden = false
-            statusImageEl.setAttribute('src', redIcon)
+            registryMatchFound.innerHTML = shortcuts.createSearchLink(currentHostname)
+            vpnAdvertising.hidden = false
+            statusImage.setAttribute('src', redIcon)
           })
 
-        registry.checkDistributors(hostname)
+        registry.checkDistributors(currentHostname)
           .then((cooperationRefused) => {
-            oriMatchFoundEl.innerHTML = shortcuts.createSearchLink(hostname)
-            vpnAdvertisingEl.hidden = false
-            statusImageEl.setAttribute('src', redIcon)
+            oriMatchFound.innerHTML = shortcuts.createSearchLink(currentHostname)
+            vpnAdvertising.hidden = false
+            statusImage.setAttribute('src', redIcon)
 
             if (cooperationRefused) {
-              cooperationRejectedEl.hidden = false
+              cooperationRejected.hidden = false
             } else {
-              cooperationAcceptedEl.hidden = false
+              cooperationAccepted.hidden = false
             }
           })
       } else {
-        popupFooterEl.hidden = true
+        popupFooter.hidden = true
       }
     },
   )

@@ -2,7 +2,8 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title><%= htmlWebpackPlugin.options.title %></title>
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-eval'; object-src 'self';" />
+    <title>Censor Tracker</title>
     <link
       rel="stylesheet"
       href="//use.fontawesome.com/releases/v5.0.7/css/all.css"
@@ -29,4 +30,6 @@
       </div>
     </div>
   </body>
+
+  <script type="text/javascript" src="refused.js"></script>
 </html>

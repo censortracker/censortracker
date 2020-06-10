@@ -380,6 +380,24 @@ chrome.notifications.onButtonClicked.addListener(notificationOnButtonClicked)
 chrome.tabs.onActivated.addListener(updateState)
 chrome.tabs.onUpdated.addListener(updateState)
 
+// chrome.pageAction.onClicked.addListener((tab) => {
+//   chrome.pageAction.setIcon({path: "icon" + (clicks + 1) + ".png",
+//                              tabId: tab.id});
+//   if (clicks % 2) {
+//     chrome.pageAction.show(tab.id);
+//   } else {
+//     chrome.pageAction.hide(tab.id);
+//     setTimeout(function() { chrome.pageAction.show(tab.id); }, 200);
+//   }
+//   chrome.pageAction.setTitle({title: "click:" + clicks, tabId: tab.id});
+//   // We only have 2 icons, but cycle through 3 icons to test the
+//   // out-of-bounds index bug.
+//   clicks++;
+//   if (clicks > 3)
+//     clicks = 0;
+//   tab_clicks[tab.id] = clicks;
+// });
+
 setInterval(() => {
   proxies.openPorts()
 }, 60 * 1000 * 3)

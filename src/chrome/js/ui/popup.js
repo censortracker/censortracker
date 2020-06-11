@@ -1,4 +1,3 @@
-
 const elById = (id) => document.getElementById(id)
 
 const statusImageEl = elById('statusImage')
@@ -16,16 +15,19 @@ const extensionNameEl = elById('extensionName')
 const redIcon = chrome.extension.getURL('images/red_icon.png')
 
 chrome.runtime.getBackgroundPage(async (bgWindow) => {
-  const { settings, proxies, registry, shortcuts, Database } = bgWindow.censortracker
+  const {
+    settings,
+    proxies,
+    registry,
+    shortcuts,
+    Database,
+  } = bgWindow.censortracker
 
   extensionNameEl.innerText = settings.getTitle()
 
   const updateExtensionStatusLabel = () => {
-    let labelText = 'выключено'
+    const labelText = extensionStatusEl.checked ? 'включено' : 'выключено'
 
-    if (extensionStatusEl.checked) {
-      labelText = 'включено'
-    }
     extensionStatusLabelEl.innerText = `Расширение ${labelText}`
   }
 
@@ -78,25 +80,23 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
           lastSyncDateEl.innerText = timestamp.replace(/\//g, '.')
         })
 
-        registry.checkDomains(hostname)
-          .then((_data) => {
-            registryMatchFoundEl.innerHTML = shortcuts.createSearchLink(hostname)
-            vpnAdvertisingEl.hidden = false
-            statusImageEl.setAttribute('src', redIcon)
-          })
+        registry.checkDomains(hostname).then((_data) => {
+          registryMatchFoundEl.innerHTML = shortcuts.createSearchLink(hostname)
+          vpnAdvertisingEl.hidden = false
+          statusImageEl.setAttribute('src', redIcon)
+        })
 
-        registry.checkDistributors(hostname)
-          .then((cooperationRefused) => {
-            oriMatchFoundEl.innerHTML = shortcuts.createSearchLink(hostname)
-            vpnAdvertisingEl.hidden = true
-            statusImageEl.setAttribute('src', redIcon)
+        registry.checkDistributors(hostname).then((cooperationRefused) => {
+          oriMatchFoundEl.innerHTML = shortcuts.createSearchLink(hostname)
+          vpnAdvertisingEl.hidden = true
+          statusImageEl.setAttribute('src', redIcon)
 
-            if (cooperationRefused) {
-              cooperationRejectedEl.hidden = false
-            } else {
-              cooperationAcceptedEl.hidden = false
-            }
-          })
+          if (cooperationRefused) {
+            cooperationRejectedEl.hidden = false
+          } else {
+            cooperationAcceptedEl.hidden = false
+          }
+        })
       } else {
         popupFooterEl.hidden = true
       }

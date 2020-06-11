@@ -114,7 +114,7 @@ const onErrorOccurred = (details) => {
     proxies.setProxy(hostname)
     registry.reportBlockedByDPI(hostname)
     chrome.tabs.update(tabId, {
-      url: chrome.runtime.getURL(`refused.html?${encodedURL}`),
+      url: chrome.runtime.getURL(`unavailable.html?${encodedURL}`),
     })
   }
 

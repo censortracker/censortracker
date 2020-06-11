@@ -16,7 +16,7 @@ const webpackConfig = {
   entry: {
     background: './src/chrome/js/background.js',
     options: './src/chrome/js/ui/options.js',
-    refused: './src/chrome/js/ui/refused.js',
+    unavailable: './src/chrome/js/ui/unavailable.js',
     popup: './src/chrome/js/ui/popup.js',
   },
 
@@ -99,11 +99,11 @@ const webpackConfig = {
       },
     }),
     new HTMLWebpackPlugin({
-      title: 'Refused | Censor Tracker',
-      filename: 'refused.html',
-      template: 'src/chrome/pages/refused.html',
+      title: 'Unavailable | Censor Tracker',
+      filename: 'unavailable.html',
+      template: 'src/chrome/pages/unavailable.html',
       inject: true,
-      chunks: ['refused'],
+      chunks: ['unavailable'],
       meta: {
         'Content-Security-Policy': 'script-src \'self\' \'unsafe-eval\'; object-src \'self\';',
       },

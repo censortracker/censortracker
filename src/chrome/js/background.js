@@ -79,7 +79,7 @@ const onBeforeRedirect = (details) => {
     sessions.putRequest(requestId, 'redirect_count', 1)
   }
 
-  if (count >= MAX_REDIRECTIONS_COUNT) {
+  if (areMaxRedirectsReached(count)) {
     if (chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequest)) {
       chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequest)
     }
@@ -96,33 +96,25 @@ const onBeforeRedirect = (details) => {
   }
 }
 
+const areMaxRedirectsReached = (count) => count >= MAX_REDIRECTIONS_COUNT
+
 const onErrorOccurred = (details) => {
   // Removes "net::" from string
   const error = details.error.substr(5)
   const urlObject = new URL(details.url)
   const hostname = urlObject.hostname
-  const encodedURL = window.btoa(details.url)
+  const encodedUrl = window.btoa(details.url)
   const tabId = details.tabId
 
-  // Most likely in this case domain was blocked by DPI
-  if (
-    error === ERR_CONNECTION_RESET ||
-    error === ERR_CONNECTION_CLOSED ||
-    error === ERR_CONNECTION_TIMED_OUT
-  ) {
+  if (isThereConnectionError(error)) {
     console.warn('Possible DPI lock detected: updating PAC file...')
     registry.reportBlockedByDPI(hostname)
     chrome.tabs.update(tabId, {
-      url: chrome.runtime.getURL(`unavailable.html?${encodedURL}`),
+      url: chrome.runtime.getURL(`unavailable.html?${encodedUrl}`),
     })
   }
 
-  if (
-    error === ERR_HTTP2_PROTOCOL_ERROR ||
-    error === ERR_CERT_COMMON_NAME_INVALID ||
-    error === ERR_TUNNEL_CONNECTION_FAILED ||
-    error === ERR_CERT_AUTHORITY_INVALID
-  ) {
+  if (isThereCertificateError(error) || isThereAvailabilityError(error)) {
     console.warn('Certificate validation issue. Adding hostname to ignore...')
     chrome.storage.local.get(
       {
@@ -148,6 +140,28 @@ const onErrorOccurred = (details) => {
       },
     )
   }
+}
+
+const isThereConnectionError = (error) => {
+  return [
+    ERR_CONNECTION_RESET,
+    ERR_CONNECTION_CLOSED,
+    ERR_CONNECTION_TIMED_OUT,
+  ].includes(error)
+}
+
+const isThereCertificateError = (error) => {
+  return [
+    ERR_CERT_AUTHORITY_INVALID,
+    ERR_CERT_COMMON_NAME_INVALID,
+  ].includes(error)
+}
+
+const isThereAvailabilityError = (error) => {
+  return [
+    ERR_HTTP2_PROTOCOL_ERROR,
+    ERR_TUNNEL_CONNECTION_FAILED,
+  ].includes(error)
 }
 
 const onCompleted = (details) => {
@@ -311,7 +325,10 @@ const setDangerIcon = (tabId) => {
 
 const showCooperationAcceptedWarning = (hostname) => {
   chrome.storage.local.get(
-    { notifiedHosts: [], mutedForever: [] },
+    {
+      notifiedHosts: [],
+      mutedForever: [],
+    },
     (result) => {
       if (!result || !hostname) {
         return

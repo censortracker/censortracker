@@ -102,6 +102,7 @@ const onErrorOccurred = (details) => {
   const urlObject = new URL(details.url)
   const hostname = urlObject.hostname
   const encodedURL = window.btoa(details.url)
+  const tabId = details.tabId
 
   // Most likely in this case domain was blocked by DPI
   if (
@@ -112,7 +113,7 @@ const onErrorOccurred = (details) => {
     console.warn('Possible DPI lock detected: updating PAC file...')
     proxies.setProxy(hostname)
     registry.reportBlockedByDPI(hostname)
-    chrome.tabs.update({
+    chrome.tabs.update(tabId, {
       url: chrome.runtime.getURL(`refused.html?${encodedURL}`),
     })
   }

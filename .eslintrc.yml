@@ -16,8 +16,6 @@ parserOptions:
     experimentalObjectRestSpread: true
 globals:
   chrome: true
-ignorePatterns:
-  - node_modules/
 rules:
   max-len: off
   import/no-cycle: off

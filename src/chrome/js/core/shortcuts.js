@@ -24,28 +24,6 @@ class Shortcuts {
 
     return `<a href="${searchUrl}?q=${hostname}" target="_blank">Да</a>`
   }
-
-  enableExtension = () => {
-    chrome.storage.local.set(
-      {
-        enableExtension: true,
-      },
-      () => {
-        console.warn('Extension enabled')
-      },
-    )
-  }
-
-  disableExtension = () => {
-    chrome.storage.local.set(
-      {
-        enableExtension: false,
-      },
-      () => {
-        console.warn('Extension disabled')
-      },
-    )
-  }
 }
 
 export default new Shortcuts()

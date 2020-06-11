@@ -34,7 +34,7 @@ const onInstalled = (details) => {
   if (details.reason === 'install') {
     console.log(`Installing ${settings.getName()}...`)
     proxies.openPorts()
-    shortcuts.enableExtension()
+    settings.enableExtension()
     registry.syncDatabase()
     proxies.setProxy()
   }

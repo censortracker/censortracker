@@ -36,12 +36,12 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
       updateExtensionStatusLabel()
       if (extensionStatusEl.checked) {
         popupFooterEl.hidden = false
-        shortcuts.enableExtension()
+        settings.enableExtension()
         proxies.setProxy()
       } else {
         popupFooterEl.hidden = true
         proxies.removeProxy()
-        shortcuts.disableExtension()
+        settings.disableExtension()
       }
     }
   })

@@ -17,6 +17,28 @@ class Settings {
   getLoggingApiUrl = () => 'https://ct-dev.rublacklist.net/api/domain/';
 
   getIconByName = (iconName) => chrome.extension.getURL(`images/${iconName}.png`);
+
+  enableExtension = () => {
+    chrome.storage.local.set(
+      {
+        enableExtension: true,
+      },
+      () => {
+        console.warn('Extension enabled')
+      },
+    )
+  }
+
+  disableExtension = () => {
+    chrome.storage.local.set(
+      {
+        enableExtension: false,
+      },
+      () => {
+        console.warn('Extension disabled')
+      },
+    )
+  }
 }
 
 export default new Settings()

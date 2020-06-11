@@ -111,7 +111,6 @@ const onErrorOccurred = (details) => {
     error === ERR_CONNECTION_TIMED_OUT
   ) {
     console.warn('Possible DPI lock detected: updating PAC file...')
-    proxies.setProxy(hostname)
     registry.reportBlockedByDPI(hostname)
     chrome.tabs.update(tabId, {
       url: chrome.runtime.getURL(`unavailable.html?${encodedURL}`),

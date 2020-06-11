@@ -30,6 +30,7 @@ rules:
   function-paren-newline: off
   import/no-default-export: off
   unicorn/prefer-query-selector: off
+  no-console: off
   brace-style:
     - 2
     - 1tbs

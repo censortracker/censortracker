@@ -18,6 +18,10 @@ document.addEventListener(
           })
         })
       }
+
+      if (event.target.matches('#exitUnavailablePage')) {
+        chrome.tabs.remove(tab.id)
+      }
     })
 
     event.preventDefault()

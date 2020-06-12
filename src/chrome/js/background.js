@@ -99,8 +99,7 @@ const onBeforeRedirect = (details) => {
 const areMaxRedirectsReached = (count) => count >= MAX_REDIRECTIONS_COUNT
 
 const onErrorOccurred = ({ url, error, tabId }) => {
-  // Removes "net::" from string
-  const errorText = error.substr(5)
+  const errorText = error.replace('net::', '')
   const urlObject = new URL(url)
   const hostname = urlObject.hostname
   const encodedUrl = window.btoa(url)

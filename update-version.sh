@@ -9,4 +9,3 @@ sed -i "s/\"version\": $version/\"version\": \"$new_version\"/g" package.json
 sed -i "s/\"version\": $version/\"version\": \"$new_version\"/g" src/chrome/manifest.json
 
 git add .
-git commit -am "Updated version $version -> \"$new_version\""

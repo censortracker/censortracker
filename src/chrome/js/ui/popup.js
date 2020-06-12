@@ -80,13 +80,13 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
           lastSyncDateEl.innerText = timestamp.replace(/\//g, '.')
         })
 
-        registry.checkDomains(hostname).then((_data) => {
+        registry.domainsContains(hostname).then((_data) => {
           registryMatchFoundEl.innerHTML = shortcuts.createSearchLink(hostname)
           vpnAdvertisingEl.hidden = false
           statusImageEl.setAttribute('src', redIcon)
         })
 
-        registry.checkDistributors(hostname).then((cooperationRefused) => {
+        registry.distributorsContains(hostname).then((cooperationRefused) => {
           oriMatchFoundEl.innerHTML = shortcuts.createSearchLink(hostname)
           vpnAdvertisingEl.hidden = true
           statusImageEl.setAttribute('src', redIcon)

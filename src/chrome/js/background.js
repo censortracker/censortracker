@@ -99,14 +99,13 @@ const onBeforeRedirect = (details) => {
 const areMaxRedirectsReached = (count) => count >= MAX_REDIRECTIONS_COUNT
 
 const onErrorOccurred = ({ url, error, tabId }) => {
-  // Removes "net::" from string
-  const errorText = error.substr(5)
+  const errorText = error.replace('net::', '')
   const urlObject = new URL(url)
   const hostname = urlObject.hostname
   const encodedUrl = window.btoa(url)
 
   if (isThereConnectionError(errorText)) {
-    console.warn('Possible DPI lock detected: updating PAC file...')
+    console.warn('Possible DPI lock detected: reporting domain...')
     registry.reportBlockedByDPI(hostname)
     chrome.tabs.update(tabId, {
       url: chrome.runtime.getURL(`unavailable.html?${encodedUrl}`),
@@ -249,7 +248,7 @@ const updateState = async () => {
               )
             }
 
-            registry.checkDistributors(currentHostname)
+            registry.distributorsContains(currentHostname)
               .then((cooperationRefused) => {
                 setDangerIcon(tabId)
                 if (!cooperationRefused) {
@@ -259,12 +258,12 @@ const updateState = async () => {
                 }
               })
 
-            registry.checkDomains(currentHostname)
+            registry.domainsContains(currentHostname)
               .then((_data) => {
                 setDangerIcon(tabId)
               })
               .catch(() => {
-                registry.checkDistributors(currentHostname)
+                registry.distributorsContains(currentHostname)
                   .then((cooperationRefused) => {
                     setDangerIcon(tabId)
                     if (!cooperationRefused) {

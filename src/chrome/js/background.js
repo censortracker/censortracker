@@ -106,7 +106,7 @@ const onErrorOccurred = ({ url, error, tabId }) => {
   const encodedUrl = window.btoa(url)
 
   if (isThereConnectionError(errorText)) {
-    console.warn('Possible DPI lock detected: updating PAC file...')
+    console.warn('Possible DPI lock detected: reporting domain...')
     registry.reportBlockedByDPI(hostname)
     chrome.tabs.update(tabId, {
       url: chrome.runtime.getURL(`unavailable.html?${encodedUrl}`),

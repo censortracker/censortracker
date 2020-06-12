@@ -86,7 +86,7 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
           statusImageEl.setAttribute('src', redIcon)
         })
 
-        registry.checkDistributors(hostname).then((cooperationRefused) => {
+        registry.distributorsContains(hostname).then((cooperationRefused) => {
           oriMatchFoundEl.innerHTML = shortcuts.createSearchLink(hostname)
           vpnAdvertisingEl.hidden = true
           statusImageEl.setAttribute('src', redIcon)

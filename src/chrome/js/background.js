@@ -248,7 +248,7 @@ const updateState = async () => {
               )
             }
 
-            registry.checkDistributors(currentHostname)
+            registry.distributorsContains(currentHostname)
               .then((cooperationRefused) => {
                 setDangerIcon(tabId)
                 if (!cooperationRefused) {
@@ -263,7 +263,7 @@ const updateState = async () => {
                 setDangerIcon(tabId)
               })
               .catch(() => {
-                registry.checkDistributors(currentHostname)
+                registry.distributorsContains(currentHostname)
                   .then((cooperationRefused) => {
                     setDangerIcon(tabId)
                     if (!cooperationRefused) {

@@ -55,7 +55,7 @@ class Registry {
       .catch(reject)
   })
 
-  checkDistributors = (host) => new Promise((resolve, reject) => {
+  distributorsContains = (host) => new Promise((resolve, reject) => {
     db.get(dbDistributorsItemName)
       .then(({ [dbDistributorsItemName]: { domains } }) => {
         let cooperationRefused = false

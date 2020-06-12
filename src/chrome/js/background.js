@@ -98,15 +98,14 @@ const onBeforeRedirect = (details) => {
 
 const areMaxRedirectsReached = (count) => count >= MAX_REDIRECTIONS_COUNT
 
-const onErrorOccurred = (details) => {
+const onErrorOccurred = ({ url, error, tabId }) => {
   // Removes "net::" from string
-  const error = details.error.substr(5)
-  const urlObject = new URL(details.url)
+  const errorText = error.substr(5)
+  const urlObject = new URL(url)
   const hostname = urlObject.hostname
-  const encodedUrl = window.btoa(details.url)
-  const tabId = details.tabId
+  const encodedUrl = window.btoa(url)
 
-  if (isThereConnectionError(error)) {
+  if (isThereConnectionError(errorText)) {
     console.warn('Possible DPI lock detected: updating PAC file...')
     registry.reportBlockedByDPI(hostname)
     chrome.tabs.update(tabId, {
@@ -114,55 +113,40 @@ const onErrorOccurred = (details) => {
     })
   }
 
-  if (isThereCertificateError(error) || isThereAvailabilityError(error)) {
+  if (isThereCertificateError(errorText) || isThereAvailabilityError(errorText)) {
     console.warn('Certificate validation issue. Adding hostname to ignore...')
-    chrome.storage.local.get(
-      {
-        ignoredSites: [],
-      },
-      (data) => {
-        const ignoredSites = data.ignoredSites
+    const { ignoredSites } = Database.get('ignoredSites')
 
-        if (!ignoredSites.includes(hostname)) {
-          ignoredSites.push(hostname)
-          chrome.storage.local.set({
-            ignoredSites,
-          })
-        }
+    if (!ignoredSites.includes(hostname)) {
+      ignoredSites.push(hostname)
+      chrome.storage.local.set('ignoredSites', ignoredSites)
+    }
 
-        if (chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequest)) {
-          chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequest)
-        }
+    if (chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequest)) {
+      chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequest)
+    }
 
-        chrome.tabs.update({
-          url: details.url.replace('https:', 'http:'),
-        })
-      },
-    )
+    chrome.tabs.update({
+      url: url.replace('https:', 'http:'),
+    })
   }
 }
 
-const isThereConnectionError = (error) => {
-  return [
-    ERR_CONNECTION_RESET,
-    ERR_CONNECTION_CLOSED,
-    ERR_CONNECTION_TIMED_OUT,
-  ].includes(error)
-}
+const isThereConnectionError = (error) => [
+  ERR_CONNECTION_RESET,
+  ERR_CONNECTION_CLOSED,
+  ERR_CONNECTION_TIMED_OUT,
+].includes(error)
 
-const isThereCertificateError = (error) => {
-  return [
-    ERR_CERT_AUTHORITY_INVALID,
-    ERR_CERT_COMMON_NAME_INVALID,
-  ].includes(error)
-}
+const isThereCertificateError = (error) => [
+  ERR_CERT_AUTHORITY_INVALID,
+  ERR_CERT_COMMON_NAME_INVALID,
+].includes(error)
 
-const isThereAvailabilityError = (error) => {
-  return [
-    ERR_HTTP2_PROTOCOL_ERROR,
-    ERR_TUNNEL_CONNECTION_FAILED,
-  ].includes(error)
-}
+const isThereAvailabilityError = (error) => [
+  ERR_HTTP2_PROTOCOL_ERROR,
+  ERR_TUNNEL_CONNECTION_FAILED,
+].includes(error)
 
 const onCompleted = (details) => {
   sessions.deleteRequest(details.requestId)

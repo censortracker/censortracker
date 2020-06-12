@@ -258,7 +258,7 @@ const updateState = async () => {
                 }
               })
 
-            registry.checkDomains(currentHostname)
+            registry.domainsContains(currentHostname)
               .then((_data) => {
                 setDangerIcon(tabId)
               })

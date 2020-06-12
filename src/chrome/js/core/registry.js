@@ -40,7 +40,7 @@ class Registry {
       .catch(reject)
   })
 
-  checkDomains = (host) => new Promise((resolve, reject) => {
+  domainsContains = (host) => new Promise((resolve, reject) => {
     db.get(dbDomainItemName)
       .then(({ [dbDomainItemName]: { domains } }) => {
         const found = domains.find((domain) => {

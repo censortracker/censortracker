@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ru" style="visibility: hidden;">
+  <head>
+    <meta charset="utf-8" />
+    <title>Censor Tracker</title>
+    <link
+      rel="stylesheet"
+      href="//use.fontawesome.com/releases/v5.0.7/css/all.css"
+    />
+    <link href="css/bootstrap.min.css" rel="stylesheet" />
+    <link href="css/mdb.min.css" rel="stylesheet" />
+    <link href="css/main.css" rel="stylesheet" />
+  <meta name="Content-Security-Policy" content="script-src 'self' 'unsafe-eval'; object-src 'self';"></head>
+
+  <body>
+    <div
+      class="row d-flex justify-content-center"
+      style="background-color: #f6f7f9;"
+    >
+      <div class="col-md-6 text-center pt-2 pb-2">
+        <span id="extensionName"></span>
+      </div>
+    </div>
+
+    <div class="wrapper mb-2">
+      <div class="card-body white">
+        <img
+          id="statusImage"
+          class="pt-2"
+          width="70"
+          src="images/icon.png"
+        />
+        <div class="text-center mt-2 mb-2 pb-3">
+          <span id="currentDomain"></span>
+        </div>
+
+        <div class="font-small mt-2">
+          <span>Включен в реестр:</span>
+          <span id="matchFound" style="font-weight: 500;"> Нет </span><br />
+          <span>Включен в ОРИ:</span>
+          <span id="oriMatchFound" style="font-weight: 500;"> Нет </span>
+        </div>
+
+        <div hidden id="cooperationRejected" class="alert alert-success mt-2">
+          <span style="font-size: 14px;">
+            Ресурс заблокирован за непредоставление доступа к данным
+            пользователей третьим лицам. Скорее всего этот ресурс действительно
+            не предоставляет такой доступ.
+          </span>
+        </div>
+
+        <div hidden id="cooperationAccepted" class="alert alert-danger mt-2">
+          <span style="font-size: 14px;">
+            Ресурс добавлен в реестр
+            <a
+              href="https://reestr.rublacklist.net/distributors/"
+              target="_blank"
+              style="text-decoration: underline; cursor: pointer;"
+            >ОРИ</a>, это значит, что данный ресурс может передавать ваши личные
+            данные, в т.ч. сообщения и весь трафик, третьим лицам в
+            автоматическом режиме.
+          </span>
+        </div>
+      </div>
+
+      <div class="card-body" style="background-color: #f6f7f9;">
+        <div class="toggles mb-3">
+          <div class="font-small">
+            <div class="custom-control custom-switch">
+              <input
+                type="checkbox"
+                class="custom-control-input"
+                id="extensionStatus"
+              />
+              <label
+                id="extensionStatusLabel"
+                for="extensionStatus"
+                class="custom-control-label"
+                style="cursor: pointer;"
+              >Расширение выключено</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-center" id="popupFooter">
+          <div class="font-small mt-2 mb-3" style="font-size: 13px;">
+            <div class="d-inline">
+              <i id="resyncDatabase"
+                class="fas fa-sync-alt blue-text"
+              ></i>
+              <span id="lastSyncDate"></span>
+            </div>
+
+            <div hidden style="display: inline;" id="vpnAdvertising">
+              <b> | </b>
+              <a
+                target="_blank"
+                href="https://vpnlove.me/"
+                class="card-link"
+              ><i class="fas fa-shield-alt blue-text"></i> Купить VPN ›</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  <script src="/popup.js"></script></body>
+</html>

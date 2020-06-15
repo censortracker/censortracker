@@ -13,7 +13,7 @@ document.addEventListener(
           const { proxies } = bgWindow.censortracker
 
           await proxies.setProxy(targetUrl)
-          chrome.tabs.create({ url: targetUrl }, () => {
+          chrome.tabs.create({ url: targetUrl, index: tab.index }, () => {
             chrome.tabs.remove(tab.id)
           })
         })

@@ -1,6 +1,6 @@
 {
   "name": "censortracker",
-  "version": "0.2.0-alpha02",
+  "version": "2.0.5",
   "description": "|",
   "author": "Roskomsvoboda devs",
   "license": "MIT",
@@ -52,6 +52,7 @@
   "homepage": "https://github.com/roskomsvoboda/censortracker#readme",
   "husky": {
     "hooks": {
+      "pre-commit": "bash update-version.sh",
       "pre-push": "npm run lint"
     }
   }

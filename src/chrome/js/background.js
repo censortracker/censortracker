@@ -19,7 +19,6 @@ const ERR_HTTP2_PROTOCOL_ERROR = 'ERR_HTTP2_PROTOCOL_ERROR'
 const ERR_TUNNEL_CONNECTION_FAILED = 'ERR_TUNNEL_CONNECTION_FAILED'
 const ERR_CERT_AUTHORITY_INVALID = 'ERR_CERT_AUTHORITY_INVALID'
 const ERR_CONNECTION_TIMED_OUT = 'ERR_CONNECTION_TIMED_OUT'
-const RED_ICON = chrome.extension.getURL('images/red_icon.png')
 
 window.censortracker = {
   proxies,
@@ -250,25 +249,25 @@ const updateState = async () => {
 
             registry.distributorsContains(currentHostname)
               .then((cooperationRefused) => {
-                setDangerIcon(tabId)
+                setPageIcon(tabId, settings.getLockFoundIcon())
                 if (!cooperationRefused) {
                   // Shows special icon here
-                  setDangerIcon(tabId)
+                  setPageIcon(tabId, settings.getDistributorFoundIcon())
                   showCooperationAcceptedWarning(currentHostname)
                 }
               })
 
             registry.domainsContains(currentHostname)
               .then((_data) => {
-                setDangerIcon(tabId)
+                setPageIcon(tabId, settings.getLockFoundIcon())
               })
               .catch(() => {
                 registry.distributorsContains(currentHostname)
                   .then((cooperationRefused) => {
-                    setDangerIcon(tabId)
+                    setPageIcon(tabId, settings.getLockFoundIcon())
                     if (!cooperationRefused) {
                       // Shows special icon here
-                      setDangerIcon(tabId)
+                      setPageIcon(tabId, settings.getDistributorFoundIcon())
                     }
                   })
               })
@@ -295,10 +294,10 @@ const updateState = async () => {
   )
 }
 
-const setDangerIcon = (tabId) => {
+const setPageIcon = (tabId, icon) => {
   chrome.pageAction.setIcon({
     tabId,
-    path: RED_ICON,
+    path: icon,
   })
   chrome.pageAction.setTitle({
     title: settings.getTitle(),
@@ -328,14 +327,14 @@ const showCooperationAcceptedWarning = (hostname) => {
       if (!notifiedHosts.find((item) => item === hostname)) {
         chrome.notifications.create({
           type: 'basic',
-          title: `Censor Tracker: ${hostname}`,
+          title: `${settings.getName()}: ${hostname}`,
           priority: 2,
           message: 'Этот ресурс может передавать информацию третьим лицам.',
           buttons: [
             { title: '\u2715 Не показывать для этого сайта' },
             { title: '\u2192 Подробнее' },
           ],
-          iconUrl: RED_ICON,
+          iconUrl: settings.getDistributorFoundIcon(),
         })
       }
 

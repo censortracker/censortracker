@@ -9,13 +9,8 @@ document.addEventListener(
       const targetUrl = window.atob(encodedHostname)
 
       if (event.target.matches('#extendProxyAutoConfig')) {
-        chrome.runtime.getBackgroundPage(async (bgWindow) => {
-          const { proxies } = bgWindow.censortracker
-
-          await proxies.setProxy(targetUrl)
-          chrome.tabs.create({ url: targetUrl, index: tab.index }, () => {
-            chrome.tabs.remove(tab.id)
-          })
+        chrome.tabs.create({ url: targetUrl, index: tab.index }, () => {
+          chrome.tabs.remove(tab.id)
         })
       }
 

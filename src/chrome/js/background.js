@@ -103,9 +103,12 @@ const onErrorOccurred = ({ url, error, tabId }) => {
   const hostname = urlObject.hostname
   const encodedUrl = window.btoa(url)
 
+  console.log(`Error: ${errorText}`)
+
   if (isThereConnectionError(errorText)) {
     console.warn('Possible DPI lock detected: reporting domain...')
     registry.reportBlockedByDPI(hostname)
+    proxies.setProxy(hostname)
     chrome.tabs.update(tabId, {
       url: chrome.runtime.getURL(`unavailable.html?${encodedUrl}`),
     })

@@ -88,12 +88,12 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
         registry.distributorsContains(hostname).then((cooperationRefused) => {
           oriMatchFoundEl.innerHTML = shortcuts.createSearchLink(hostname)
           vpnAdvertisingEl.hidden = true
-          statusImageEl.setAttribute('src', settings.getDistributorFoundIcon())
 
           if (cooperationRefused) {
             cooperationRejectedEl.hidden = false
           } else {
             cooperationAcceptedEl.hidden = false
+            statusImageEl.setAttribute('src', settings.getDistributorFoundIcon())
           }
         })
       } else {

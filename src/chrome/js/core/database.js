@@ -1,34 +1,39 @@
-'use strict';
-
-(() => {
-  window.localforage.config({
-    driver: window.localforage.INDEXEDDB
-  })
-
-  const create = (name) => {
-    const defaultName = 'censortracker-db'
-
-    if (!name) {
-      console.warn(`Creating database with default name: ${defaultName}`)
-    }
-
-    return window.localforage.createInstance({
-      name: name || defaultName
+class Database {
+  static get (key, defaultValue) {
+    return new Promise((resolve, reject) => {
+      try {
+        chrome.storage.local.get(key, (result) => {
+          resolve(result)
+        })
+      } catch (error) {
+        reject(error)
+      }
     })
   }
 
-  const drop = (name) => {
-    if (!name) {
-      console.error('You must define name of database to drop.')
-      return
-    }
-    return window.localforage.dropInstance({
-      name: name
+  static set (key, value) {
+    return new Promise((resolve, reject) => {
+      try {
+        chrome.storage.local.set({ [key]: value }, () => {
+          resolve({ [key]: value })
+        })
+      } catch (error) {
+        reject(error)
+      }
     })
   }
 
-  window.censortracker.database = {
-    create: create,
-    drop: drop
+  static remove (key) {
+    return new Promise((resolve, reject) => {
+      try {
+        chrome.storage.local.remove(key, (result) => {
+          resolve(result)
+        })
+      } catch (error) {
+        reject(error)
+      }
+    })
   }
-})()
+}
+
+export default Database

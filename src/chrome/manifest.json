@@ -1,45 +1,38 @@
 {
   "name": "Censor Tracker",
-  "version": "0.1.2",
+  "version": "2.0.5",
   "description": "Censor Tracker",
   "permissions": [
-    "activeTab",
-    "storage",
     "tabs",
-    "webRequest",
-    "webRequestBlocking",
     "proxy",
+    "storage",
+    "activeTab",
+    "webRequest",
     "contextMenus",
     "notifications",
-    "https://reestr.rublacklist.net/api/v3/domains/json",
-    "https://reestr.rublacklist.net/api/v3/ori/refused/json",
-    "<all_urls>",
+    "unlimitedStorage",
+    "declarativeContent",
+    "webRequestBlocking",
     "http://*/*",
     "https://*/*",
     "*://*/*"
   ],
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self';",
   "background": {
     "scripts": [
-      "js/storage/localforage.min.js",
-      "js/core/settings.js",
-      "js/core/database.js",
-      "js/core/sessions.js",
-      "js/core/shortcuts.js",
-      "js/core/registry.js",
-      "js/core/proxies.js",
-      "js/core/background.js"
+      "background.js"
     ],
     "persistent": true
   },
-  "browser_action": {
-    "default_title": "Censor Tracker",
-    "default_popup": "pages/popup.html",
+  "page_action": {
+    "default_name": "Censor Tracker",
+    "default_popup": "popup.html",
     "default_icon": {
-      "16": "images/icon.png",
-      "32": "images/icon.png",
-      "48": "images/icon.png",
-      "128": "images/icon.png"
+      "16": "images/icons/16x16/default.png",
+      "48": "images/icons/48x48/default.png",
+      "128": "images/icons/128x128/default.png"
     }
   },
+  "options_page": "options.html",
   "manifest_version": 2
 }

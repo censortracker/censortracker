@@ -6,17 +6,9 @@ root = true
 charset = utf-8
 trim_trailing_whitespace = true
 end_of_line = lf
+indent_size = 2
 indent_style = space
 insert_final_newline = true
-
-[*.js]
-indent_size = 2
-
-[*.{yml, cfg}]
-indent_size = 2
-
-[*.json]
-indent_size = 2
 
 [*.{md,rst,in}]
 indent_style = ignore

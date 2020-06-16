@@ -1,36 +1,60 @@
 {
   "name": "censortracker",
-  "version": "1.0.0",
+  "version": "2.0.5",
   "description": "|",
-  "main": "Gulpfile.js",
+  "author": "Roskomsvoboda devs",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "webpack --progress --config webpack.config.js",
+    "watch": "webpack --watch --progress --config webpack.config.js",
+    "lint": "eslint --ext=.js ./src/chrome/",
+    "lint:fix": "eslint --fix --ext=.js ./src/chrome/",
+    "pack": "npm pack",
+    "pack:dev":  "npm run dev && npm pack"
+  },
   "dependencies": {},
   "devDependencies": {
-    "del": "^5.1.0",
-    "eslint": "^7.1.0",
+    "@atomix/eslint-config": "^7.0.0-next.1",
+    "@babel/core": "^7.10.2",
+    "@babel/plugin-proposal-class-properties": "^7.10.1",
+    "@babel/plugin-proposal-export-namespace-from": "^7.10.1",
+    "@babel/plugin-proposal-object-rest-spread": "^7.10.1",
+    "@babel/plugin-transform-regenerator": "^7.10.1",
+    "@babel/plugin-transform-runtime": "^7.10.1",
+    "@babel/preset-env": "^7.10.2",
+    "babel-eslint": "^10.1.0",
+    "babel-loader": "^8.1.0",
+    "copy-webpack-plugin": "^6.0.2",
+    "dotenv": "^8.2.0",
+    "eslint": "^6",
     "eslint-config-airbnb-base": "^14.1.0",
     "eslint-config-standard": "^14.1.1",
+    "eslint-loader": "^4.0.2",
     "eslint-plugin-import": "^2.20.2",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
-    "gulp": "^4.0.2",
-    "gulp-clean-css": "^4.3.0",
-    "gulp-uglify-es": "^2.0.0",
-    "prettier": "^2.0.5"
-  },
-  "scripts": {
-    "build": "gulp build",
-    "dist": "gulp dist",
-    "lint": "eslint src/chrome/"
+    "file-loader": "^6.0.0",
+    "html-loader": "^1.1.0",
+    "html-webpack-plugin": "^4.3.0",
+    "husky": "^4.2.5",
+    "prettier": "^2.0.5",
+    "terser-webpack-plugin": "^3.0.3",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.11"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/roskomsvoboda/censortracker.git"
   },
-  "author": "",
-  "license": "MIT",
   "bugs": {
     "url": "https://github.com/roskomsvoboda/censortracker/issues"
   },
-  "homepage": "https://github.com/roskomsvoboda/censortracker#readme"
+  "homepage": "https://github.com/roskomsvoboda/censortracker#readme",
+  "husky": {
+    "hooks": {
+      "pre-push": "npm run lint"
+    }
+  }
 }

@@ -1,152 +1,104 @@
-(function () {
-  const dbDomainItemName = 'domains'
-  const dbDistributorsItemName = 'distributors'
-  const db = window.censortracker.database.create('censortracker-registry-db')
+import db from './database'
+import settings from './settings'
+import shortcuts from './shortcuts'
 
-  const syncDatabase = () => {
+const dbDomainItemName = 'domains'
+const dbDistributorsItemName = 'distributors'
+
+class Registry {
+  syncDatabase = async () => {
+    console.warn('Synchronizing local database with registry...')
     const apis = [
       {
         key: dbDomainItemName,
-        url: window.censortracker.settings.getDomainsApiUrl()
+        url: settings.getDomainsApiUrl(),
       },
       {
         key: dbDistributorsItemName,
-        url: window.censortracker.settings.getRefusedApiUrl()
-      }
+        url: settings.getDistributorsApiUrl(),
+      },
     ]
-    for (const api of apis) {
-      fetch(api.url)
-        .then((resp) => resp.json())
-        .then((domains) => {
-          db.setItem(api.key, {
-            domains: domains,
-            timestamp: new Date().toLocaleString()
-          })
-            .then((_value) => {
-              console.warn(`Local ${api.key} database updated`)
-            })
-            .catch((error) => {
-              console.error(`Error on updating local ${api.key} database: ${error}`)
-            })
+
+    for (const { key, url } of apis) {
+      const response = await fetch(url)
+      const domains = await response.json()
+
+      await db.set(key, { domains, timestamp: new Date().getTime() })
+        .catch((error) => {
+          console.error(`Error on updating local ${key} database: ${error}`)
         })
     }
   }
 
-  const getLastSyncTimestamp = (callback) => {
-    db.getItem(dbDomainItemName)
+  getLastSyncTimestamp = () => new Promise((resolve, reject) => {
+    db.get(dbDomainItemName)
       .then((data) => {
-        if (data && Object.prototype.hasOwnProperty.call(data, 'timestamp')) {
-          callback(data.timestamp)
+        if (data && data.timestamp) {
+          resolve(data.timestamp)
         }
       })
-      .catch((error) => {
-        console.error(error)
-      })
-  }
+      .catch(reject)
+  })
 
-  const checkDomains = (currentHostname, callbacks) => {
-    const onMatchFoundCallback = callbacks.onMatchFound
-    const onMatchNotFoundCallback = callbacks.onMatchNotFound
-
-    db.getItem(dbDomainItemName)
-      .then((data) => {
-        if (!data) return
-        const domains = data.domains
-
-        const matchFound = domains.find(function (domain) {
-          return currentHostname === window.censortracker.shortcuts.cleanHostname(domain)
+  domainsContains = (host) => new Promise((resolve, reject) => {
+    db.get(dbDomainItemName)
+      .then(({ [dbDomainItemName]: { domains } }) => {
+        const found = domains.find((domain) => {
+          return host === shortcuts.cleanHostname(domain)
         })
 
-        if (matchFound) {
-          console.warn('Registry match found: ' + currentHostname)
-          onMatchFoundCallback(data)
-        } else {
-          if (onMatchNotFoundCallback !== undefined) {
-            onMatchNotFoundCallback()
-          }
+        if (found) {
+          console.warn(`Registry match found: ${host}`)
+          resolve(domains)
         }
       })
-      .catch((error) => {
-        console.error(error)
-      })
-  }
+      .catch(reject)
+  })
 
-  const checkDistributors = (hostname, callbacks) => {
-    const onMatchFoundCallback = callbacks.onMatchFound
-    const onMatchNotFoundCallback = callbacks.onMatchNotFound
-
-    db.getItem(dbDistributorsItemName)
-      .then((distributors) => {
-        if (!distributors) return
-        const domains = distributors.domains
+  distributorsContains = (host) => new Promise((resolve, reject) => {
+    db.get(dbDistributorsItemName)
+      .then(({ [dbDistributorsItemName]: { domains } }) => {
         let cooperationRefused = false
 
-        const matchFound = domains.find(function (item) {
-          return hostname === window.censortracker.shortcuts.cleanHostname(item.url)
-        })
+        const found = domains.find((item) => (
+          host === shortcuts.cleanHostname(item.url)
+        ))
 
-        if (matchFound) {
-          console.warn('Distributor match found: ' + hostname)
-          if ('cooperation_refused' in matchFound) {
-            cooperationRefused = matchFound.cooperation_refused
+        if (found) {
+          console.warn(`Distributor match found: ${host}`)
+          if ('cooperation_refused' in found) {
+            cooperationRefused = found.cooperation_refused
           }
-          onMatchFoundCallback(cooperationRefused)
-        } else {
-          if (onMatchNotFoundCallback !== undefined) {
-            onMatchNotFoundCallback()
-          }
+          resolve(cooperationRefused)
         }
       })
-      .catch((error) => {
-        console.error(error)
+      .catch(reject)
+  })
+
+  reportBlockedByDPI = async (domain) => {
+    const { alreadyReported } = await db.get('alreadyReported')
+
+    if (alreadyReported && !alreadyReported.includes(domain)) {
+      const response = await fetch(settings.getLoggingApiUrl(), {
+        method: 'POST',
+        headers: {
+          'Censortracker-D': new Date().getTime(),
+          'Censortracker-V': settings.getVersion(),
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ domain }),
       })
-  }
+      const json = await response.json()
 
-  const reportBlockedByDPI = (domain) => {
-    chrome.storage.local.get(
-      {
-        alreadyReported: []
-      },
-      (data) => {
-        const alreadyReported = data.alreadyReported
-        if (!alreadyReported.includes(domain)) {
-          fetch(window.censortracker.settings.getLoggingApiUrl(), {
-            method: 'POST',
-            headers: {
-              'Censortracker-D': new Date().getTime(),
-              'Censortracker-V': window.censortracker.settings.getVersion(),
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              domain: domain
-            })
-          })
-            .then((response) => response.json())
-            .then((data) => {
-              if (data && data.status === 200) {
-                alreadyReported.push(domain)
-                chrome.storage.local.set(
-                  {
-                    alreadyReported: alreadyReported
-                  },
-                  () => {
-                    console.warn(`Reported: ${domain}`)
-                  }
-                )
-              }
-            })
-        } else {
-          console.warn(`The domain ${domain} reported`)
-        }
-      }
-    )
-  }
+      alreadyReported.push(domain)
+      await db.set('alreadyReported', alreadyReported)
 
-  window.censortracker.registry = {
-    syncDatabase: syncDatabase,
-    checkDomains: checkDomains,
-    checkDistributors: checkDistributors,
-    getLastSyncTimestamp: getLastSyncTimestamp,
-    reportBlockedByDPI: reportBlockedByDPI
+      return json
+    }
+
+    console.warn(`The domain was already ${domain} reported`)
+    return null
   }
-})()
+}
+
+export default new Registry()

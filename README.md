@@ -24,7 +24,7 @@ Installation
 To:
 
     ~ npm install 
-    ~ npm run build
+    ~ npm run dev
     ~ cd dist/
 
 Make sure that "Developer Mode" is enabled and then just "Load unpacked"

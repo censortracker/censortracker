@@ -1,0 +1,85 @@
+root: true
+parser: babel-eslint
+extends:
+  - '@atomix'
+  - standard
+env:
+  es6: true
+  node: true
+  browser: true
+parserOptions:
+  sourceType: module
+  ecmaVersion: 2018
+  ecmaFeatures:
+    globalReturn: false
+    modules: true
+    experimentalObjectRestSpread: true
+globals:
+  chrome: true
+rules:
+  max-len: off
+  import/no-cycle: off
+  no-param-reassign: off
+  prettier/prettier: off
+  prefer-rest-params: off
+  prefer-destructuring: off
+  no-underscore-dangle: off
+  unicorn/filename-case: off
+  unicorn/prefer-spread: off
+  class-methods-use-this: off
+  function-paren-newline: off
+  import/no-default-export: off
+  unicorn/prefer-query-selector: off
+  no-console: off
+  brace-style:
+    - 2
+    - 1tbs
+  padding-line-between-statements:
+    - error
+    -
+      blankLine: always
+      prev:
+        - const
+        - let
+        - var
+      next: '*'
+    -
+      blankLine: 'any'
+      prev:
+        - const
+        - let
+        - var
+      next:
+        - const
+        - let
+        - var
+  curly: [error, all]
+  comma-dangle:
+    - error
+    - always-multiline
+  id-length:
+    - error
+    -
+      min: 2
+      exceptions:
+        - i
+        - x
+        - y
+        - e
+  id-match:
+    - error
+    - "^(([A-Za-z0-9]+){2,})|([A-Z][A-Z_0-9]+)$"
+    -
+      properties: false
+      onlyDeclarations: true
+  indent:
+    - error
+    - 2
+    -
+      SwitchCase: 1
+  quotes:
+    - error
+    - single
+  semi:
+    - error
+    - never

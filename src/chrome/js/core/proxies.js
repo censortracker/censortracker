@@ -78,12 +78,12 @@ class Proxies {
     return domains
   }
 
-  excludeSpecialDomains = ({ domains = [] }) => {
+  excludeSpecialDomains = (domains = []) => {
     const specialDomains = ['youtube.com']
 
-    return domains.filter((domain) => (item) => [
-      'telegram.org',
-    ].includes(item) && !specialDomains.includes(domain))
+    return domains.filter((domain) => {
+      return !specialDomains.includes(domain)
+    })
   }
 
   setProxyAutoConfig = (domains) => {

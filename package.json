@@ -9,7 +9,8 @@
     "dev": "webpack --progress --config webpack.config.js",
     "watch": "webpack --watch --progress --config webpack.config.js",
     "lint": "eslint --ext=.js ./src/chrome/",
-    "lint:fix": "eslint --fix --ext=.js ./src/chrome/"
+    "lint:fix": "eslint --fix --ext=.js ./src/chrome/",
+    "pack": "npm run dev && npm pack"
   },
   "dependencies": {},
   "devDependencies": {

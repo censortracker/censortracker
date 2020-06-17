@@ -62,7 +62,7 @@ class Proxies {
       )
     }
 
-    this.setProxyAutoConfig(domains)
+    await this.setProxyAutoConfig(domains)
   }
 
   setProxyAutoConfig = async (domains) => {

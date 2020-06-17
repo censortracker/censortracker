@@ -16,7 +16,13 @@ class Settings {
 
   getLoggingApiUrl = () => 'https://ct-dev.rublacklist.net/api/domain/';
 
-  getIconByName = (iconName) => chrome.extension.getURL(`images/${iconName}.png`);
+  _getIconByName = (iconName) => chrome.extension.getURL(`images/icons/128x128/${iconName}.png`);
+
+  getLockFoundIcon = () => this._getIconByName('blocked')
+
+  getDistributorFoundIcon = () => this._getIconByName('spying')
+
+  getDisabledIcon = () => this._getIconByName('disabled')
 
   enableExtension = () => {
     chrome.storage.local.set(

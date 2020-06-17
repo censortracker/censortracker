@@ -12,7 +12,6 @@ const cooperationAcceptedEl = elById('cooperationAccepted')
 const cooperationRejectedEl = elById('cooperationRejected')
 const currentDomainEl = elById('currentDomain')
 const extensionNameEl = elById('extensionName')
-const redIcon = chrome.extension.getURL('images/red_icon.png')
 
 chrome.runtime.getBackgroundPage(async (bgWindow) => {
   const {
@@ -76,25 +75,23 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
       updateExtensionStatusLabel()
 
       if (config.enableExtension) {
-        registry.getLastSyncTimestamp().then((timestamp) => {
-          lastSyncDateEl.innerText = timestamp.replace(/\//g, '.')
-        })
+        lastSyncDateEl.innerText = await registry.getLastSyncDate()
 
         registry.domainsContains(hostname).then((_data) => {
           registryMatchFoundEl.innerHTML = shortcuts.createSearchLink(hostname)
           vpnAdvertisingEl.hidden = false
-          statusImageEl.setAttribute('src', redIcon)
+          statusImageEl.setAttribute('src', settings.getLockFoundIcon())
         })
 
         registry.distributorsContains(hostname).then((cooperationRefused) => {
           oriMatchFoundEl.innerHTML = shortcuts.createSearchLink(hostname)
           vpnAdvertisingEl.hidden = true
-          statusImageEl.setAttribute('src', redIcon)
 
           if (cooperationRefused) {
             cooperationRejectedEl.hidden = false
           } else {
             cooperationAcceptedEl.hidden = false
+            statusImageEl.setAttribute('src', settings.getDistributorFoundIcon())
           }
         })
       } else {

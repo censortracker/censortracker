@@ -1,5 +1,7 @@
 [![Logo](https://raw.githubusercontent.com/roskomsvoboda/censortracker/master/.github/readme-logo.png)](https://github.com/roskomsvoboda/censortracker)
 
+![Build](https://github.com/roskomsvoboda/censortracker/workflows/Build/badge.svg?branch=master)
+
 **Censor Tracker** is an extension for [Google Chrome](https://www.google.com/chrome/) which helps to
 bypass censorship in Russian Federation and helps to detect resources
 blocked using DPI.
@@ -13,17 +15,21 @@ important:
 -   Detects [DPI] locks
 -   Bypass [DPI] locks
 -   Bypass [registry](https://eais.rkn.gov.ru/) locks
--   Warns if a user visits a site that can merge or modify https traffic
+-   Warns if a user visits a website that can merge or modify https traffic
     (site in [ORI](https://97-fz.rkn.gov.ru/))
 
 Installation
 ============
 
-To:
+To build extension run:
 
-    ~ npm install 
-    ~ npm run dev
+    ~ npm install && npm run dev
     ~ cd dist/
+
+To create tarball run following command:
+
+    ~ npm run pack:dev
+
 
 Make sure that "Developer Mode" is enabled and then just "Load unpacked"
 from <span class="title-ref">dist/</span> to your browser.

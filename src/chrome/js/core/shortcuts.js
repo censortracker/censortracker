@@ -24,6 +24,10 @@ class Shortcuts {
 
     return `<a href="${searchUrl}?q=${hostname}" target="_blank">Да</a>`
   }
+
+  enforceHttps = (hostname) => {
+    return hostname.replace(/^http:/, 'https:')
+  }
 }
 
 export default new Shortcuts()

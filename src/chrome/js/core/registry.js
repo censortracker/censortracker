@@ -28,13 +28,20 @@ class Registry {
           console.error(`Error on updating local ${key} database: ${error}`)
         })
     }
+    await this.updateLastSyncDate()
   }
 
-  getLastSyncTimestamp = () => new Promise((resolve, reject) => {
-    db.get(dbDomainItemName)
-      .then((data) => {
-        if (data && data.timestamp) {
-          resolve(data.timestamp)
+  updateLastSyncDate = async () => {
+    await db.set('lastSyncDate', new Date().toLocaleString()).catch((error) => {
+      console.error(`Error on updating updateDate: ${error}`)
+    })
+  }
+
+  getLastSyncDate = () => new Promise((resolve, reject) => {
+    db.get('lastSyncDate')
+      .then(({ lastSyncDate }) => {
+        if (lastSyncDate) {
+          resolve(lastSyncDate.replace(/\//g, '.'))
         }
       })
       .catch(reject)

@@ -19,7 +19,6 @@ const ERR_HTTP2_PROTOCOL_ERROR = 'ERR_HTTP2_PROTOCOL_ERROR'
 const ERR_TUNNEL_CONNECTION_FAILED = 'ERR_TUNNEL_CONNECTION_FAILED'
 const ERR_CERT_AUTHORITY_INVALID = 'ERR_CERT_AUTHORITY_INVALID'
 const ERR_CONNECTION_TIMED_OUT = 'ERR_CONNECTION_TIMED_OUT'
-const RED_ICON = chrome.extension.getURL('images/red_icon.png')
 
 window.censortracker = {
   proxies,
@@ -57,10 +56,12 @@ const onStartup = async () => {
 }
 
 const onBeforeRequest = (details) => {
-  if (shortcuts.validURL(details.url)) {
+  const url = details.url
+
+  if (shortcuts.validURL(url)) {
     console.log('Redirecting request to HTTPS...')
     return {
-      redirectUrl: details.url.replace(/^http:/, 'https:'),
+      redirectUrl: shortcuts.enforceHttps(url),
     }
   }
   return null
@@ -70,13 +71,14 @@ const onBeforeRedirect = (details) => {
   const requestId = details.requestId
   const urlObject = new URL(details.url)
   const hostname = urlObject.hostname
+  const redirectCountKey = 'redirectCount'
 
-  const count = sessions.getRequest(requestId, 'redirect_count', 0)
+  const count = sessions.getRequest(requestId, redirectCountKey, 0)
 
   if (count) {
-    sessions.putRequest(requestId, 'redirect_count', count + 1)
+    sessions.putRequest(requestId, redirectCountKey, count + 1)
   } else {
-    sessions.putRequest(requestId, 'redirect_count', 1)
+    sessions.putRequest(requestId, redirectCountKey, 1)
   }
 
   if (areMaxRedirectsReached(count)) {
@@ -104,9 +106,12 @@ const onErrorOccurred = ({ url, error, tabId }) => {
   const hostname = urlObject.hostname
   const encodedUrl = window.btoa(url)
 
+  console.log(`Error: ${errorText}`)
+
   if (isThereConnectionError(errorText)) {
     console.warn('Possible DPI lock detected: reporting domain...')
     registry.reportBlockedByDPI(hostname)
+    proxies.setProxy(hostname)
     chrome.tabs.update(tabId, {
       url: chrome.runtime.getURL(`unavailable.html?${encodedUrl}`),
     })
@@ -250,25 +255,25 @@ const updateState = async () => {
 
             registry.distributorsContains(currentHostname)
               .then((cooperationRefused) => {
-                setDangerIcon(tabId)
+                setPageIcon(tabId, settings.getLockFoundIcon())
                 if (!cooperationRefused) {
                   // Shows special icon here
-                  setDangerIcon(tabId)
+                  setPageIcon(tabId, settings.getDistributorFoundIcon())
                   showCooperationAcceptedWarning(currentHostname)
                 }
               })
 
             registry.domainsContains(currentHostname)
               .then((_data) => {
-                setDangerIcon(tabId)
+                setPageIcon(tabId, settings.getLockFoundIcon())
               })
               .catch(() => {
                 registry.distributorsContains(currentHostname)
                   .then((cooperationRefused) => {
-                    setDangerIcon(tabId)
+                    setPageIcon(tabId, settings.getLockFoundIcon())
                     if (!cooperationRefused) {
                       // Shows special icon here
-                      setDangerIcon(tabId)
+                      setPageIcon(tabId, settings.getDistributorFoundIcon())
                     }
                   })
               })
@@ -295,10 +300,10 @@ const updateState = async () => {
   )
 }
 
-const setDangerIcon = (tabId) => {
+const setPageIcon = (tabId, icon) => {
   chrome.pageAction.setIcon({
     tabId,
-    path: RED_ICON,
+    path: icon,
   })
   chrome.pageAction.setTitle({
     title: settings.getTitle(),
@@ -328,14 +333,14 @@ const showCooperationAcceptedWarning = (hostname) => {
       if (!notifiedHosts.find((item) => item === hostname)) {
         chrome.notifications.create({
           type: 'basic',
-          title: `Censor Tracker: ${hostname}`,
+          title: `${settings.getName()}: ${hostname}`,
           priority: 2,
           message: 'Этот ресурс может передавать информацию третьим лицам.',
           buttons: [
             { title: '\u2715 Не показывать для этого сайта' },
             { title: '\u2192 Подробнее' },
           ],
-          iconUrl: RED_ICON,
+          iconUrl: settings.getDistributorFoundIcon(),
         })
       }
 

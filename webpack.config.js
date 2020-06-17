@@ -2,9 +2,12 @@ require('dotenv').config()
 
 const path = require('path')
 const webpack = require('webpack')
+const ZipPlugin = require('zip-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const HTMLWebpackPlugin = require('html-webpack-plugin')
+
+const { version } = require('./package.json')
 
 function resolve (dir) {
   return path.join(__dirname, dir)
@@ -118,6 +121,15 @@ const webpackConfig = {
         'Content-Security-Policy': 'script-src \'self\' \'unsafe-eval\'; object-src \'self\';',
       },
     }),
+    process.env.NODE_ENV === 'production'
+      ? new ZipPlugin({
+        filename: `censortracker-chrome-ext.v${version}.zip`,
+        pathPrefix: `censortracker-chrome-ext.v${version}`,
+      })
+      : new ZipPlugin({
+        filename: `censortracker-chrome-ext.v${version}-dev.zip`,
+        pathPrefix: `censortracker-chrome-ext.v${version}-dev`,
+      }),
   ],
 
   // node: {

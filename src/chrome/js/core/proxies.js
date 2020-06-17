@@ -1,3 +1,4 @@
+import { chromeProxySettingsSet, chromeProxySettingsClear } from '../promises'
 import db from './database'
 import settings from './settings'
 
@@ -86,7 +87,7 @@ class Proxies {
     })
   }
 
-  setProxyAutoConfig = (domains) => {
+  setProxyAutoConfig = async (domains) => {
     const config = {
       value: {
         mode: 'pac_script',
@@ -98,9 +99,8 @@ class Proxies {
       scope: 'regular',
     }
 
-    chrome.proxy.settings.set(config, () => {
-      console.warn('PAC has been set successfully!')
-    })
+    await chromeProxySettingsSet(config).catch(console.error)
+    console.warn('PAC has been set successfully!')
   }
 
   /**
@@ -163,10 +163,9 @@ function FindProxyForURL(url, host) {
 }`
   }
 
-  removeProxy = () => {
-    chrome.proxy.settings.clear({ scope: 'regular' }, () => {
-      console.warn('Proxy auto-config disabled!')
-    })
+  removeProxy = async () => {
+    await chromeProxySettingsClear({ scope: 'regular' }).catch(console.error)
+    console.warn('Proxy auto-config disabled!')
   }
 
   openPorts = () => {

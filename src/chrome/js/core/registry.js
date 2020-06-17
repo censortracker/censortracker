@@ -20,12 +20,12 @@ class Registry {
     ]
 
     for (const { key, url } of apis) {
-      const response = await fetch(url)
+      const response = await fetch(url).catch(console.error)
       const domains = await response.json()
 
       await db.set(key, { domains, timestamp: new Date().getTime() })
         .catch((error) => {
-          console.error(`Error on updating local ${key} database: ${error}`)
+          console.error(`Error on updating local ${key} database: ${JSON.stringify(error)}`)
         })
     }
     await this.updateLastSyncDate()

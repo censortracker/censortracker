@@ -75,9 +75,7 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
       updateExtensionStatusLabel()
 
       if (config.enableExtension) {
-        registry.getLastSyncTimestamp().then((timestamp) => {
-          lastSyncDateEl.innerText = timestamp.replace(/\//g, '.')
-        })
+        lastSyncDateEl.innerText = await registry.getLastSyncDate()
 
         registry.domainsContains(hostname).then((_data) => {
           registryMatchFoundEl.innerHTML = shortcuts.createSearchLink(hostname)

@@ -350,7 +350,6 @@ chrome.runtime.onInstalled.addListener(({ reason }) => {
     console.log(`Installing ${settings.getName()}...`)
     proxies.openPorts()
     settings.enableExtension()
-    registry.syncDatabase()
     proxies.setProxy()
   }
 })

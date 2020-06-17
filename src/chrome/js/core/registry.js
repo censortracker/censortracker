@@ -47,6 +47,19 @@ class Registry {
       .catch(reject)
   })
 
+  getDomains = async (exclude = []) => {
+    await this.syncDatabase()
+
+    const { domains } = await db.get('domains')
+
+    if (domains && Object.hasOwnProperty.call(domains, dbDomainItemName)) {
+      return domains.domains
+    }
+    //  TODO: Add fetch from API
+
+    return []
+  }
+
   domainsContains = (host) => new Promise((resolve, reject) => {
     db.get(dbDomainItemName)
       .then(({ [dbDomainItemName]: { domains } }) => {

@@ -1,28 +1,42 @@
 import { chromeProxySettingsSet, chromeProxySettingsClear } from '../promises'
 import db from './database'
+import registry from './registry'
 import settings from './settings'
-
-const domainsApiUrl = settings.getDomainsApiUrl()
 
 class Proxies {
   constructor () {
+    this.ignoredDomains = new Set([
+      'youtube.com',
+      'lostfilm.tv',
+    ])
     chrome.proxy.onProxyError.addListener((details) => {
       console.error(`Proxy error: ${JSON.stringify(details)}`)
     })
-
-    setInterval(() => {
-      this.syncDatabaseWithRegistry()
-    }, 60 * 60 * 1000 * 2)
 
     setInterval(() => {
       this.removeOutdatedBlockedDomains()
     }, 60 * 1000 * 60 * 60 * 2)
   }
 
-  setProxy = async (hostname) => {
-    let domains = await this.getBlockedDomains()
+  addDomainToIgnore = (domain) => {
+    this.ignoredDomains.add(domain)
+  }
 
-    domains = this.excludeSpecialDomains(domains)
+  ignoredDomainsContains = (domain) => {
+    return Array.from(this.ignoredDomains).includes(domain)
+  }
+
+  excludeIgnoredDomains = (domains) => {
+    return domains.filter((domain) => {
+      return !this.ignoredDomainsContains(domain)
+    })
+  }
+
+  setProxy = async (hostname) => {
+    let domains = await registry.getDomains()
+
+    domains = this.excludeIgnoredDomains(domains)
+
     const { blockedDomains } = await db.get({ blockedDomains: [] })
 
     if (hostname) {
@@ -49,42 +63,7 @@ class Proxies {
       )
     }
 
-    this.setProxyAutoConfig(domains)
-  }
-
-  getBlockedDomains = async () => {
-    let { domains } = await db.get('domains')
-      .catch((error) => {
-        console.error(error)
-      })
-
-    if (!domains) {
-      console.warn('Fetching domains for PAC from registry API...')
-      domains = await this.syncDatabaseWithRegistry()
-    }
-
-    console.warn('Fetching domains from local database...')
-    return domains
-  }
-
-  syncDatabaseWithRegistry = async () => {
-    const response = await fetch(domainsApiUrl)
-      .catch((error) => {
-        console.error(`Error on fetching data from API: ${error}`)
-      })
-    const domains = await response.json()
-
-    await db.set('domains', { domains, timestamp: new Date().getTime() })
-    console.warn('Local database synchronized with registry!')
-    return domains
-  }
-
-  excludeSpecialDomains = (domains = []) => {
-    const specialDomains = ['youtube.com']
-
-    return domains.filter((domain) => {
-      return !specialDomains.includes(domain)
-    })
+    await this.setProxyAutoConfig(domains)
   }
 
   setProxyAutoConfig = async (domains) => {
@@ -112,8 +91,8 @@ class Proxies {
     // The binary search works only with pre-sorted array.
     domains.sort()
 
-    const http = 'proxy-nossl.roskomsvoboda.org:33333'
-    const https = 'proxy-ssl.roskomsvoboda.org:33333'
+    const http = settings.getProxyServerUrl({ ssl: false })
+    const https = settings.getProxyServerUrl({ ssl: true })
 
     return `
 function FindProxyForURL(url, host) {
@@ -197,7 +176,7 @@ function FindProxyForURL(url, host) {
 
     await db.set('blockedDomains', blockedDomains)
     console.warn('Outdated domains has been removed.')
-    this.setProxyAutoConfig(blockedDomains)
+    await this.setProxy()
   }
 }
 

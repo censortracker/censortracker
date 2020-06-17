@@ -88,8 +88,8 @@ const onErrorOccurred = ({ url, error, tabId }) => {
 
   if (isThereConnectionError(errorText)) {
     console.warn('Possible DPI lock detected: reporting domain...')
-    registry.reportBlockedByDPI(hostname)
     proxies.setProxy(hostname)
+    registry.reportBlockedByDPI(hostname)
     chrome.tabs.update(tabId, {
       url: chrome.runtime.getURL(`unavailable.html?${encodedUrl}`),
     })

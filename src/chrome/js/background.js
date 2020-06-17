@@ -71,14 +71,14 @@ const onBeforeRedirect = (details) => {
   const requestId = details.requestId
   const urlObject = new URL(details.url)
   const hostname = urlObject.hostname
-  const redirectCountField = 'redirectCount'
+  const redirectCountKey = 'redirectCount'
 
-  const count = sessions.getRequest(requestId, redirectCountField, 0)
+  const count = sessions.getRequest(requestId, redirectCountKey, 0)
 
   if (count) {
-    sessions.putRequest(requestId, redirectCountField, count + 1)
+    sessions.putRequest(requestId, redirectCountKey, count + 1)
   } else {
-    sessions.putRequest(requestId, redirectCountField, 1)
+    sessions.putRequest(requestId, redirectCountKey, 1)
   }
 
   if (areMaxRedirectsReached(count)) {

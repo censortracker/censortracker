@@ -116,7 +116,7 @@ class Registry {
       return json
     }
 
-    console.warn(`The domain was already ${domain} reported`)
+    console.warn(`The domain ${domain} was already reported`)
     return null
   }
 }

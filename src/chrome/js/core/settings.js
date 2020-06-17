@@ -24,6 +24,12 @@ class Settings {
 
   getDisabledIcon = () => this._getIconByName('disabled')
 
+  getProxyServerUrl = ({ ssl }) => {
+    const prefix = ssl ? 'proxy-ssl' : 'proxy-nossl'
+
+    return `${prefix}.roskomsvoboda.org:33333`
+  }
+
   enableExtension = () => {
     chrome.storage.local.set(
       {

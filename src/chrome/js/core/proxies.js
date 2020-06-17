@@ -1,6 +1,7 @@
 import { chromeProxySettingsSet, chromeProxySettingsClear } from '../promises'
 import db from './database'
 import registry from './registry'
+import settings from './settings'
 
 class Proxies {
   constructor () {
@@ -90,8 +91,8 @@ class Proxies {
     // The binary search works only with pre-sorted array.
     domains.sort()
 
-    const http = 'proxy-nossl.roskomsvoboda.org:33333'
-    const https = 'proxy-ssl.roskomsvoboda.org:33333'
+    const http = settings.getProxyServerUrl({ ssl: false })
+    const https = settings.getProxyServerUrl({ ssl: true })
 
     return `
 function FindProxyForURL(url, host) {
@@ -175,7 +176,7 @@ function FindProxyForURL(url, host) {
 
     await db.set('blockedDomains', blockedDomains)
     console.warn('Outdated domains has been removed.')
-    this.setProxyAutoConfig(blockedDomains)
+    await this.setProxy()
   }
 }
 

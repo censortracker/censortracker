@@ -1,14 +1,42 @@
 require('dotenv').config()
 
+const fs = require('fs')
 const path = require('path')
 const webpack = require('webpack')
+const ZipPlugin = require('zip-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const HTMLWebpackPlugin = require('html-webpack-plugin')
 
+let { version } = require('./package.json')
+
 function resolve (dir) {
   return path.join(__dirname, dir)
 }
+
+function buildUp (ver, sep = '+') {
+  let [core, build] = ver.split('+')
+
+  build = +build || 0
+  return `${core}${sep}${build + 1}`
+}
+
+function updateJson (json, prop, value) {
+  const file = fs.readFileSync(json)
+  const object = JSON.parse(file)
+
+  object[prop] = value
+  fs.writeFileSync(json, JSON.stringify(object, null, '  '))
+  console.info(`${json} updated`)
+}
+
+const oldVersion = version
+
+version = buildUp(version)
+console.info(`Version updated ${oldVersion} -> ${version}`)
+
+updateJson(resolve('package.json'), 'version', version)
+updateJson(resolve('src/chrome/manifest.json'), 'version', buildUp(oldVersion, '.'))
 
 const webpackConfig = {
   mode: process.env.NODE_ENV || 'development',
@@ -23,7 +51,7 @@ const webpackConfig = {
   output: {
     path: resolve('dist'),
     libraryTarget: 'var',
-    filename: process.env.NODE_ENV === 'production' ? '[name].min.js' : '[name].js',
+    filename: `[name]${process.env.NODE_ENV === 'production' ? '.min' : ''}.js`,
     publicPath: process.env.NODE_ENV === 'production' ? '' : '/',
   },
 
@@ -118,6 +146,15 @@ const webpackConfig = {
         'Content-Security-Policy': 'script-src \'self\' \'unsafe-eval\'; object-src \'self\';',
       },
     }),
+    process.env.NODE_ENV === 'production'
+      ? new ZipPlugin({
+        filename: `censortracker-chrome-ext.v${version}.zip`,
+        pathPrefix: `censortracker-chrome-ext.v${version}`,
+      })
+      : new ZipPlugin({
+        filename: `censortracker-chrome-ext.v${version}-dev.zip`,
+        pathPrefix: `censortracker-chrome-ext.v${version}-dev`,
+      }),
   ],
 
   // node: {

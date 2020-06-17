@@ -47,7 +47,7 @@ class Registry {
       .catch(reject)
   })
 
-  getDomains = async (exclude = []) => {
+  getDomains = async () => {
     await this.syncDatabase()
 
     const { domains } = await db.get('domains')

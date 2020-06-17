@@ -4,6 +4,10 @@ import registry from './registry'
 
 class Proxies {
   constructor () {
+    this.ignoredDomains = new Set([
+      'youtube.com',
+      'lostfilm.tv',
+    ])
     chrome.proxy.onProxyError.addListener((details) => {
       console.error(`Proxy error: ${JSON.stringify(details)}`)
     })
@@ -13,10 +17,25 @@ class Proxies {
     }, 60 * 1000 * 60 * 60 * 2)
   }
 
+  addDomainToIgnore = (domain) => {
+    this.ignoredDomains.add(domain)
+  }
+
+  ignoredDomainsContains = (domain) => {
+    return Array.from(this.ignoredDomains).includes(domain)
+  }
+
+  excludeIgnoredDomains = (domains) => {
+    return domains.filter((domain) => {
+      return !this.ignoredDomainsContains(domain)
+    })
+  }
+
   setProxy = async (hostname) => {
     let domains = await registry.getDomains()
 
-    domains = this.excludeSpecialDomains(domains)
+    domains = this.excludeIgnoredDomains(domains)
+
     const { blockedDomains } = await db.get({ blockedDomains: [] })
 
     if (hostname) {
@@ -44,14 +63,6 @@ class Proxies {
     }
 
     this.setProxyAutoConfig(domains)
-  }
-
-  excludeSpecialDomains = (domains = []) => {
-    const specialDomains = ['youtube.com', 'lostfilm.tv']
-
-    return domains.filter((domain) => {
-      return !specialDomains.includes(domain)
-    })
   }
 
   setProxyAutoConfig = async (domains) => {

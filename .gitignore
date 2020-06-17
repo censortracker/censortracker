@@ -118,4 +118,4 @@ out
 # dist/
 
 src/firefox/
-.zip
+*.zip

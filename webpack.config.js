@@ -14,11 +14,11 @@ function resolve (dir) {
   return path.join(__dirname, dir)
 }
 
-function buildUp (ver) {
+function buildUp (ver, sep = '+') {
   let [core, build] = ver.split('+')
 
   build = +build || 0
-  return `${core}+${build + 1}`
+  return `${core}${sep}${build + 1}`
 }
 
 function updateJson (json, prop, value) {
@@ -36,7 +36,7 @@ version = buildUp(version)
 console.info(`Version updated ${oldVersion} -> ${version}`)
 
 updateJson(resolve('package.json'), 'version', version)
-updateJson(resolve('src/chrome/manifest.json'), 'version', version)
+updateJson(resolve('src/chrome/manifest.json'), 'version', buildUp(oldVersion, '.'))
 
 const webpackConfig = {
   mode: process.env.NODE_ENV || 'development',

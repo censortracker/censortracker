@@ -56,10 +56,12 @@ const onStartup = async () => {
 }
 
 const onBeforeRequest = (details) => {
-  if (shortcuts.validURL(details.url)) {
+  const url = details.url
+
+  if (shortcuts.validURL(url)) {
     console.log('Redirecting request to HTTPS...')
     return {
-      redirectUrl: details.url.replace(/^http:/, 'https:'),
+      redirectUrl: shortcuts.enforceHttps(url),
     }
   }
   return null

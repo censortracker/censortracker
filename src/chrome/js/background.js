@@ -84,8 +84,6 @@ const onErrorOccurred = ({ url, error, tabId }) => {
   const hostname = urlObject.hostname
   const encodedUrl = window.btoa(url)
 
-  console.log(`Error: ${errorText}`)
-
   if (isThereConnectionError(errorText)) {
     console.warn('Possible DPI lock detected: reporting domain...')
     proxies.setProxy(hostname)

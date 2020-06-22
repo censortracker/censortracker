@@ -148,6 +148,7 @@ function FindProxyForURL(url, host) {
   }
 
   openPorts = () => {
+    console.log('Sending ping to port...')
     const proxyServerUrl = 'https://163.172.211.183:39263'
     const xhr = new XMLHttpRequest()
 

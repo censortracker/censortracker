@@ -63,33 +63,16 @@ const onBeforeRedirect = (details) => {
     if (chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequest)) {
       chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequest)
     }
-    console.warn('Reached max count of redirects. Adding site to ignore...')
+    console.warn(`Reached max count of redirects. Adding "${hostname}" to ignore...`)
 
-    chrome.storage.local.get(
-      {
-        ignoredSites: [],
-      },
-      (data) => {
-        const ignoredSites = data.ignoredSites
-
+    Database.get({ ignoredSites: [] })
+      .then(({ ignoredSites }) => {
         if (!ignoredSites.includes(hostname)) {
           ignoredSites.push(hostname)
-          console.warn(`Too many redirections. Site ${hostname} add to ignore`)
-          chrome.storage.local.set({
-            ignoredSites,
-          })
+          console.warn(`Site ${hostname} add to ignore`)
+          Database.set('ignoredSites', ignoredSites)
         }
-      },
-    )
-    //
-    // Database.get('ignoredSites')
-    //   .then(({ ignoredSites }) => {
-    //     if (ignoredSites && !ignoredSites.includes(hostname)) {
-    //       ignoredSites.push(hostname)
-    //       console.warn(`Site ${hostname} add to ignore`)
-    //       Database.set('ignoredSites', ignoredSites)
-    //     }
-    //   })
+      })
   }
 }
 
@@ -115,44 +98,20 @@ const onErrorOccurred = ({ url, error, tabId }) => {
   if (isThereCertificateError(errorText) || isThereAvailabilityError(errorText)) {
     console.warn('Certificate validation issue. Adding hostname to ignore...')
 
-    chrome.storage.local.get(
-      {
-        ignoredSites: [],
-      },
-      (data) => {
-        const ignoredSites = data.ignoredSites
-
+    Database.get({ ignoredSites: [] })
+      .then(({ ignoredSites }) => {
         if (!ignoredSites.includes(hostname)) {
           ignoredSites.push(hostname)
-          chrome.storage.local.set({
-            ignoredSites,
-          })
+          Database.set('ignoredSites', ignoredSites)
         }
 
         if (chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequest)) {
           chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequest)
         }
-
         chrome.tabs.update({
           url: url.replace('https:', 'http:'),
         })
-      },
-    )
-
-    // const { ignoredSites } = Database.get('ignoredSites')
-    //
-    // if (!ignoredSites.includes(hostname)) {
-    //   ignoredSites.push(hostname)
-    //   chrome.storage.local.set('ignoredSites', ignoredSites)
-    // }
-    //
-    // if (chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequest)) {
-    //   chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequest)
-    // }
-    //
-    // chrome.tabs.update({
-    //   url: url.replace('https:', 'http:'),
-    // })
+      })
   }
 }
 

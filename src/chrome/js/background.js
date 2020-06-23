@@ -314,10 +314,9 @@ const showCooperationAcceptedWarning = async (hostname) => {
       ],
       iconUrl: settings.getDistributorFoundIcon(),
     })
-  }
 
-  if (!notifiedHosts.includes(hostname)) {
     notifiedHosts.push(hostname)
+
     chrome.storage.local.set({ notifiedHosts }, () => {
       console.warn('The list of the notified ORI resource updated!')
     })

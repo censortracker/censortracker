@@ -55,7 +55,6 @@ class Registry {
     if (domains && Object.hasOwnProperty.call(domains, dbDomainItemName)) {
       return domains.domains
     }
-    //  TODO: Add fetch from API
 
     return []
   }

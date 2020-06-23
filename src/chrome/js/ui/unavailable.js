@@ -29,4 +29,4 @@ document.addEventListener(
 setTimeout(() => {
   document.getElementById(extendProxyAutoConfigId)
     .removeAttribute('disabled')
-}, 1100)
+}, 1000)

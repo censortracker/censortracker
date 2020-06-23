@@ -310,9 +310,9 @@ const showCooperationAcceptedWarning = (hostname) => {
       if (!notifiedHosts.find((item) => item === hostname)) {
         chrome.notifications.create({
           type: 'basic',
-          title: `${settings.getName()}: ${hostname}`,
+          title: settings.getName(),
           priority: 2,
-          message: 'Этот ресурс может передавать информацию третьим лицам.',
+          message: `${hostname} может передавать информацию третьим лицам.`,
           buttons: [
             { title: '\u2715 Не показывать для этого сайта' },
             { title: '\u2192 Подробнее' },

@@ -288,47 +288,40 @@ const setPageIcon = (tabId, icon) => {
   })
 }
 
-const showCooperationAcceptedWarning = (hostname) => {
-  chrome.storage.local.get(
-    {
-      notifiedHosts: [],
-      mutedForever: [],
-    },
-    (result) => {
-      if (!result || !hostname) {
-        return
-      }
+const showCooperationAcceptedWarning = async (hostname) => {
+  if (!hostname) {
+    return
+  }
 
-      const mutedForever = result.mutedForever
+  const { notifiedHosts, mutedForever } = await Database.get({
+    notifiedHosts: [],
+    mutedForever: [],
+  })
 
-      if (mutedForever.find((item) => item === hostname)) {
-        return
-      }
+  if (mutedForever.includes(hostname)) {
+    return
+  }
 
-      const notifiedHosts = result.notifiedHosts
+  if (!notifiedHosts.includes(hostname)) {
+    chrome.notifications.create({
+      type: 'basic',
+      title: settings.getName(),
+      priority: 2,
+      message: `${hostname} может передавать информацию третьим лицам.`,
+      buttons: [
+        { title: '\u2715 Не показывать для этого сайта' },
+        { title: '\u2192 Подробнее' },
+      ],
+      iconUrl: settings.getDistributorFoundIcon(),
+    })
+  }
 
-      if (!notifiedHosts.find((item) => item === hostname)) {
-        chrome.notifications.create({
-          type: 'basic',
-          title: settings.getName(),
-          priority: 2,
-          message: `${hostname} может передавать информацию третьим лицам.`,
-          buttons: [
-            { title: '\u2715 Не показывать для этого сайта' },
-            { title: '\u2192 Подробнее' },
-          ],
-          iconUrl: settings.getDistributorFoundIcon(),
-        })
-      }
-
-      if (!notifiedHosts.includes(hostname)) {
-        notifiedHosts.push(hostname)
-        chrome.storage.local.set({ notifiedHosts }, () => {
-          console.warn('The list of the notified ORI resource updated!')
-        })
-      }
-    },
-  )
+  if (!notifiedHosts.includes(hostname)) {
+    notifiedHosts.push(hostname)
+    chrome.storage.local.set({ notifiedHosts }, () => {
+      console.warn('The list of the notified ORI resource updated!')
+    })
+  }
 }
 
 chrome.runtime.onInstalled.addListener(({ reason }) => {

@@ -1,3 +1,5 @@
+const extendProxyAutoConfigId = 'extendProxyAutoConfig'
+
 document.addEventListener(
   'click',
   (event) => {
@@ -8,7 +10,7 @@ document.addEventListener(
       const [, encodedHostname] = tab.url.split('?')
       const targetUrl = window.atob(encodedHostname)
 
-      if (event.target.matches('#extendProxyAutoConfig')) {
+      if (event.target.matches(`#${extendProxyAutoConfigId}`)) {
         chrome.tabs.create({ url: targetUrl, index: tab.index }, () => {
           chrome.tabs.remove(tab.id)
         })
@@ -23,3 +25,8 @@ document.addEventListener(
   },
   false,
 )
+
+setTimeout(() => {
+  document.getElementById(extendProxyAutoConfigId)
+    .removeAttribute('disabled')
+}, 1000)

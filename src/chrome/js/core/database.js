@@ -3,7 +3,7 @@ class Database {
     return new Promise((resolve, reject) => {
       try {
         chrome.storage.local.get(key, (result) => {
-          resolve(result)
+          resolve(result || defaultValue)
         })
       } catch (error) {
         reject(error)

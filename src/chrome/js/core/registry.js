@@ -20,12 +20,12 @@ class Registry {
     ]
 
     for (const { key, url } of apis) {
-      const response = await fetch(url)
+      const response = await fetch(url).catch(console.error)
       const domains = await response.json()
 
       await db.set(key, { domains, timestamp: new Date().getTime() })
         .catch((error) => {
-          console.error(`Error on updating local ${key} database: ${error}`)
+          console.error(`Error on updating local ${key} database: ${JSON.stringify(error)}`)
         })
     }
     await this.updateLastSyncDate()
@@ -46,6 +46,18 @@ class Registry {
       })
       .catch(reject)
   })
+
+  getDomains = async () => {
+    await this.syncDatabase()
+
+    const { domains } = await db.get('domains')
+
+    if (domains && Object.hasOwnProperty.call(domains, dbDomainItemName)) {
+      return domains.domains
+    }
+
+    return []
+  }
 
   domainsContains = (host) => new Promise((resolve, reject) => {
     db.get(dbDomainItemName)
@@ -103,7 +115,7 @@ class Registry {
       return json
     }
 
-    console.warn(`The domain was already ${domain} reported`)
+    console.warn(`The domain ${domain} was already reported`)
     return null
   }
 }

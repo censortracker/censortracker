@@ -15,15 +15,19 @@
         </div>
         <div class="main-page">
             <div class="main-page__image">
-                <img src="imgages/icons/512x512/disabled.png"
+                <img src="images/icons/512x512/disabled.png"
                      width="128px" height="128px" alt="<%= htmlWebpackPlugin.options.title %>" />
             </div>
             <div class="main-page__info">
                 <div class="main-page__title">Не удалось открыть сайт через прокси Censor Tracker</div>
                 <div class="main-page__text">Мы работаем над исправлением проблемы, попробуйте открыть сайт позже.</div>
                 <div class="main-page__btn">
-                    <button class="btn btn-dark " aria-label="Закрыть вкладку"><span class="btn__text">Закрыть вкладку</span></button>
-                    <button class="btn btn-light " aria-label="Купить VPN"><span class="btn__text">Купить VPN</span></button>
+                    <button id="closeTab" class="btn btn-dark" aria-label="Закрыть вкладку">
+                      <span class="btn__text">Закрыть вкладку</span>
+                    </button>
+                    <button id="buyVPN" class="btn btn-light" aria-label="Купить VPN">
+                      <span class="btn__text">Купить VPN</span>
+                    </button>
                 </div>
             </div>
         </div>

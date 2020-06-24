@@ -85,6 +85,10 @@ body {
   opacity:0.9;
 }
 
+.btn__text {
+  pointer-events: none;
+}
+
 .btn-light{
   border: 1px solid #3B332B;
 }

@@ -53,7 +53,7 @@ const onBeforeRedirect = (details) => {
     sessions.putRequest(requestId, redirectCountKey, 1)
   }
 
-  if (errors.areMaxRedirectsReached(count)) {
+  if (sessions.areMaxRedirectsReached(count)) {
     if (chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequest)) {
       chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequest)
     }

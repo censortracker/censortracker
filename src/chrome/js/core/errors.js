@@ -1,4 +1,3 @@
-const MAX_REDIRECTIONS_COUNT = 6
 const ERR_CONNECTION_RESET = 'ERR_CONNECTION_RESET'
 const ERR_CONNECTION_CLOSED = 'ERR_CONNECTION_CLOSED'
 const ERR_CERT_COMMON_NAME_INVALID = 'ERR_CERT_COMMON_NAME_INVALID'
@@ -28,9 +27,6 @@ class Errors {
   isThereAvailabilityError = (error) => [
     ERR_HTTP2_PROTOCOL_ERROR,
   ].includes(error)
-
-  areMaxRedirectsReached = (count) =>
-    count >= MAX_REDIRECTIONS_COUNT
 }
 
 export default new Errors()

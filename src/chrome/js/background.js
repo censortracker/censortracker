@@ -20,9 +20,10 @@ const ERR_CONNECTION_RESET = 'ERR_CONNECTION_RESET'
 const ERR_CONNECTION_CLOSED = 'ERR_CONNECTION_CLOSED'
 const ERR_CERT_COMMON_NAME_INVALID = 'ERR_CERT_COMMON_NAME_INVALID'
 const ERR_HTTP2_PROTOCOL_ERROR = 'ERR_HTTP2_PROTOCOL_ERROR'
-const ERR_TUNNEL_CONNECTION_FAILED = 'ERR_TUNNEL_CONNECTION_FAILED'
 const ERR_CERT_AUTHORITY_INVALID = 'ERR_CERT_AUTHORITY_INVALID'
 const ERR_CONNECTION_TIMED_OUT = 'ERR_CONNECTION_TIMED_OUT'
+const ERR_TUNNEL_CONNECTION_FAILED = 'ERR_TUNNEL_CONNECTION_FAILED'
+const ERR_PROXY_CONNECTION_FAILED = 'ERR_PROXY_CONNECTION_FAILED'
 
 window.censortracker = {
   proxies,
@@ -84,6 +85,12 @@ const onErrorOccurred = ({ url, error, tabId }) => {
   const hostname = urlObject.hostname
   const encodedUrl = window.btoa(url)
 
+  if (isThereProxyConnectionError(errorText)) {
+    chrome.tabs.update(tabId, {
+      url: chrome.runtime.getURL('proxy_unavailable.html'),
+    })
+  }
+
   if (isThereConnectionError(errorText)) {
     console.warn('Possible DPI lock detected: reporting domain...')
     proxies.setProxy(hostname)
@@ -113,6 +120,11 @@ const onErrorOccurred = ({ url, error, tabId }) => {
   }
 }
 
+const isThereProxyConnectionError = (error) => [
+  ERR_TUNNEL_CONNECTION_FAILED,
+  ERR_PROXY_CONNECTION_FAILED,
+].includes(error)
+
 const isThereConnectionError = (error) => [
   ERR_CONNECTION_RESET,
   ERR_CONNECTION_CLOSED,
@@ -126,7 +138,6 @@ const isThereCertificateError = (error) => [
 
 const isThereAvailabilityError = (error) => [
   ERR_HTTP2_PROTOCOL_ERROR,
-  ERR_TUNNEL_CONNECTION_FAILED,
 ].includes(error)
 
 const onCompleted = (details) => {

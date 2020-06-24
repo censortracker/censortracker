@@ -27,6 +27,5 @@ document.addEventListener(
 )
 
 setTimeout(() => {
-  document.getElementById(extendProxyAutoConfigId)
-    .removeAttribute('disabled')
+  document.getElementById(extendProxyAutoConfigId).classList.remove('btn-disabled')
 }, 1000)

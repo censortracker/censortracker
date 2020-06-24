@@ -80,7 +80,7 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
         registry.domainsContains(hostname).then((_data) => {
           registryMatchFoundEl.innerHTML = shortcuts.createSearchLink(hostname)
           vpnAdvertisingEl.hidden = false
-          statusImageEl.setAttribute('src', settings.getLockFoundIcon())
+          statusImageEl.setAttribute('src', settings.getDangerIcon())
         })
 
         registry.distributorsContains(hostname).then((cooperationRefused) => {
@@ -91,7 +91,7 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
             cooperationRejectedEl.hidden = false
           } else {
             cooperationAcceptedEl.hidden = false
-            statusImageEl.setAttribute('src', settings.getDistributorFoundIcon())
+            statusImageEl.setAttribute('src', settings.getDangerIcon())
           }
         })
       } else {

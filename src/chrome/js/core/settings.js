@@ -16,13 +16,11 @@ class Settings {
 
   getLoggingApiUrl = () => 'https://ct-dev.rublacklist.net/api/domain/';
 
-  _getIconByName = (iconName) => chrome.extension.getURL(`images/icons/128x128/${iconName}.png`);
+  getDangerIcon = () => chrome.extension.getURL('images/icons/128x128/danger.png');
 
-  getLockFoundIcon = () => this._getIconByName('blocked')
+  getDefaultIcon = () => chrome.extension.getURL('images/icons/128x128/default.png');
 
-  getDistributorFoundIcon = () => this._getIconByName('spying')
-
-  getDisabledIcon = () => this._getIconByName('disabled')
+  getDisabledIcon = () => chrome.extension.getURL('images/icons/128x128/disabled.png');
 
   getProxyServerUrl = ({ ssl }) => {
     const prefix = ssl ? 'proxy-ssl' : 'proxy-nossl'

@@ -214,29 +214,27 @@ const updateState = async () => {
 
             registry.distributorsContains(currentHostname)
               .then((cooperationRefused) => {
-                setPageIcon(tabId, settings.getLockFoundIcon())
+                setPageIcon(tabId, settings.getDangerIcon())
                 if (!cooperationRefused) {
-                  // Shows special icon here
-                  setPageIcon(tabId, settings.getDistributorFoundIcon())
                   showCooperationAcceptedWarning(currentHostname)
                 }
               })
 
             registry.domainsContains(currentHostname)
               .then((_data) => {
-                setPageIcon(tabId, settings.getLockFoundIcon())
+                setPageIcon(tabId, settings.getDangerIcon())
               })
               .catch(() => {
                 registry.distributorsContains(currentHostname)
                   .then((cooperationRefused) => {
-                    setPageIcon(tabId, settings.getLockFoundIcon())
+                    setPageIcon(tabId, settings.getDangerIcon())
                     if (!cooperationRefused) {
                       // Shows special icon here
-                      setPageIcon(tabId, settings.getDistributorFoundIcon())
                     }
                   })
               })
           } else {
+            setPageIcon(tabId, settings.getDisabledIcon())
             if (
               chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequest)
             ) {
@@ -294,7 +292,7 @@ const showCooperationAcceptedWarning = async (hostname) => {
         { title: '\u2715 Не показывать для этого сайта' },
         { title: '\u2192 Подробнее' },
       ],
-      iconUrl: settings.getDistributorFoundIcon(),
+      iconUrl: settings.getDangerIcon(),
     })
 
     notifiedHosts.push(hostname)

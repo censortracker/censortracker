@@ -77,10 +77,12 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
       if (config.enableExtension) {
         lastSyncDateEl.innerText = await registry.getLastSyncDate()
 
+        const dangerImage = settings.getPopupImage({ size: 512, name: 'danger' })
+
         registry.domainsContains(hostname).then((_data) => {
           registryMatchFoundEl.innerHTML = shortcuts.createSearchLink(hostname)
           vpnAdvertisingEl.hidden = false
-          statusImageEl.setAttribute('src', settings.getDangerIcon())
+          statusImageEl.setAttribute('src', dangerImage)
         })
 
         registry.distributorsContains(hostname).then((cooperationRefused) => {
@@ -91,10 +93,11 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
             cooperationRejectedEl.hidden = false
           } else {
             cooperationAcceptedEl.hidden = false
-            statusImageEl.setAttribute('src', settings.getDangerIcon())
+            statusImageEl.setAttribute('src', dangerImage)
           }
         })
       } else {
+        statusImageEl.setAttribute('src', settings.getPopupImage({ size: 512, name: 'disabled' }))
         popupFooterEl.hidden = true
       }
     },

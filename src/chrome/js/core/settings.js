@@ -22,6 +22,10 @@ class Settings {
 
   getDisabledIcon = () => chrome.extension.getURL('images/icons/128x128/disabled.png');
 
+  getPopupImage = ({ size = '512', name = 'default' }) => {
+    return chrome.extension.getURL(`images/icons/${size}x${size}/${name}.png`)
+  }
+
   getProxyServerUrl = ({ ssl }) => {
     const prefix = ssl ? 'proxy-ssl' : 'proxy-nossl'
 

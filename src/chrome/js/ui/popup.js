@@ -1,17 +1,14 @@
-const elById = (id) => document.getElementById(id)
-
-const statusImageEl = elById('statusImage')
-const popupFooterEl = elById('popupFooter')
-const lastSyncDateEl = elById('lastSyncDate')
-const oriMatchFoundEl = elById('oriMatchFound')
-const registryMatchFoundEl = elById('matchFound')
-const vpnAdvertisingEl = elById('vpnAdvertising')
-const extensionStatusEl = elById('extensionStatus')
-const extensionStatusLabelEl = elById('extensionStatusLabel')
-const cooperationAcceptedEl = elById('cooperationAccepted')
-const cooperationRejectedEl = elById('cooperationRejected')
-const currentDomainEl = elById('currentDomain')
-const extensionNameEl = elById('extensionName')
+// const statusPage = 'normal' // normal, blocked, disabled, ori, ori_blocked
+const statusImage = document.getElementById('statusImage')
+const statusDomain = document.getElementById('statusDomain')
+// const footerTrackerOn = document.getElementById('footerTrackerOn')
+const footerTrackerOff = document.getElementById('footerTrackerOff')
+const trackerOff = document.getElementById('trackerOff')
+const isOri = document.getElementById('isOri')
+const isNotOri = document.getElementById('isNotOri')
+const isForbidden = document.getElementById('isForbidden')
+const isNotForbidden = document.getElementById('isNotForbidden')
+const footerTrackerOn = document.getElementById('footerTrackerOn')
 
 chrome.runtime.getBackgroundPage(async (bgWindow) => {
   const {
@@ -22,34 +19,39 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
     Database,
   } = bgWindow.censortracker
 
-  extensionNameEl.innerText = settings.getTitle()
+  const { enableExtension } = await Database.get(['enableExtension'])
 
-  const updateExtensionStatusLabel = () => {
-    const labelText = extensionStatusEl.checked ? 'включено' : 'выключено'
-
-    extensionStatusLabelEl.innerText = `Расширение ${labelText}`
+  if (enableExtension) {
+    statusImage.setAttribute('src', 'images/icons/512x512/normal.png')
+    statusDomain.classList.add('title-normal')
+    isOri.remove()
+    isForbidden.remove()
+    trackerOff.remove()
+    footerTrackerOff.remove()
+  } else {
+    statusImage.setAttribute('src', 'images/icons/512x512/disabled.png')
+    statusDomain.remove()
+    isOri.remove()
+    isNotOri.remove()
+    isForbidden.remove()
+    isNotForbidden.remove()
+    footerTrackerOn.remove()
+    statusDomain.remove()
   }
 
   document.addEventListener('click', (event) => {
-    if (event.target.matches(`#${extensionStatusEl.id}`)) {
-      updateExtensionStatusLabel()
-      if (extensionStatusEl.checked) {
-        popupFooterEl.hidden = false
-        settings.enableExtension()
-        proxies.setProxy()
-      } else {
-        popupFooterEl.hidden = true
-        proxies.removeProxy()
-        settings.disableExtension()
-      }
+    if (event.target.matches('#enableExtension')) {
+      settings.enableExtension()
+      proxies.setProxy()
+      window.location.reload()
+    }
+
+    if (event.target.matches('#disableExtension')) {
+      proxies.removeProxy()
+      settings.disableExtension()
+      window.location.reload()
     }
   })
-
-  const config = await Database.get(['enableExtension'])
-
-  if (config.enableExtension) {
-    extensionStatusEl.checked = config.enableExtension
-  }
 
   chrome.tabs.query(
     {
@@ -61,7 +63,6 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
       const activeTabUrl = activeTab.url
 
       if (activeTabUrl.startsWith('chrome-extension://')) {
-        popupFooterEl.hidden = true
         return
       }
 
@@ -69,36 +70,38 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
       const hostname = shortcuts.cleanHostname(urlObject.hostname)
 
       if (shortcuts.validURL(hostname)) {
-        currentDomainEl.innerText = hostname.replace('www.', '')
+        statusDomain.innerText = hostname.replace('www.', '')
       }
 
-      updateExtensionStatusLabel()
-
-      if (config.enableExtension) {
-        lastSyncDateEl.innerText = await registry.getLastSyncDate()
-
-        const dangerImage = settings.getPopupImage({ size: 512, name: 'danger' })
-
+      if (enableExtension) {
         registry.domainsContains(hostname).then((_data) => {
-          registryMatchFoundEl.innerHTML = shortcuts.createSearchLink(hostname)
-          vpnAdvertisingEl.hidden = false
-          statusImageEl.setAttribute('src', dangerImage)
+          statusImage.setAttribute('src', settings.getPopupImage({
+            size: 512,
+            name: 'blocked',
+          }))
         })
 
         registry.distributorsContains(hostname).then((cooperationRefused) => {
-          oriMatchFoundEl.innerHTML = shortcuts.createSearchLink(hostname)
-          vpnAdvertisingEl.hidden = true
+          statusDomain.classList.add('title-ori')
+          isNotOri.remove()
+          isForbidden.remove()
+          trackerOff.remove()
+          footerTrackerOff.remove()
 
           if (cooperationRefused) {
-            cooperationRejectedEl.hidden = false
+            //  ...
           } else {
-            cooperationAcceptedEl.hidden = false
-            statusImageEl.setAttribute('src', dangerImage)
+            statusImage.setAttribute('src', settings.getPopupImage({
+              size: 512,
+              name: 'ori',
+            }))
           }
         })
       } else {
-        statusImageEl.setAttribute('src', settings.getPopupImage({ size: 512, name: 'disabled' }))
-        popupFooterEl.hidden = true
+        statusImage.setAttribute('src', settings.getPopupImage({
+          size: 512,
+          name: 'disabled',
+        }))
       }
     },
   )
@@ -109,3 +112,35 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
 
   setTimeout(show, 165)
 })
+
+// const btnAboutOri = document.getElementById('btnAboutOri')
+// const textAboutOri = document.getElementById('textAboutOri')
+// const closeTextAboutOri = document.getElementById('closeTextAboutOri')
+//
+// const btnAboutForbidden = document.getElementById('btnAboutForbidden')
+// const textAboutForbidden = document.getElementById('textAboutForbidden')
+// const closeTextAboutForbidden = document.getElementById('closeTextAboutForbidden')
+//
+// btnAboutOri.addEventListener('click', () => {
+//   textAboutOri.style.display = 'block'
+//   btnAboutOri.style.display = 'none'
+//   textAboutForbidden.style.display = 'none'
+//   btnAboutForbidden.style.display = 'flex'
+// })
+//
+// closeTextAboutOri.addEventListener('click', () => {
+//   textAboutOri.style.display = 'none'
+//   btnAboutOri.style.display = 'flex'
+// })
+//
+// btnAboutForbidden.addEventListener('click', () => {
+//   textAboutForbidden.style.display = 'block'
+//   btnAboutForbidden.style.display = 'none'
+//   textAboutOri.style.display = 'none'
+//   btnAboutOri.style.display = 'flex'
+// })
+//
+// closeTextAboutForbidden.addEventListener('click', () => {
+//   textAboutForbidden.style.display = 'none'
+//   btnAboutForbidden.style.display = 'flex'
+// })

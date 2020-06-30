@@ -23,7 +23,10 @@ class Registry {
       const response = await fetch(url).catch(console.error)
       const domains = await response.json()
 
-      await db.set(key, { domains, timestamp: new Date().getTime() })
+      await db.set(key, {
+        domains,
+        timestamp: new Date().getTime(),
+      })
         .catch((error) => {
           console.error(`Error on updating local ${key} database: ${JSON.stringify(error)}`)
         })
@@ -77,18 +80,15 @@ class Registry {
   distributorsContains = (host) => new Promise((resolve, reject) => {
     db.get(dbDistributorsItemName)
       .then(({ [dbDistributorsItemName]: { domains } }) => {
-        let cooperationRefused = false
-
-        const found = domains.find((item) => (
+        const dataObject = domains.find((item) => (
           host === shortcuts.cleanHostname(item.url)
         ))
 
-        if (found) {
+        if (dataObject) {
           console.warn(`Distributor match found: ${host}`)
-          if ('cooperation_refused' in found) {
-            cooperationRefused = found.cooperation_refused
-          }
-          resolve(cooperationRefused)
+          resolve(dataObject)
+        } else {
+          resolve({})
         }
       })
       .catch(reject)

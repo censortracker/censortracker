@@ -1,7 +1,5 @@
-// const statusPage = 'normal' // normal, blocked, disabled, ori, ori_blocked
 const statusImage = document.getElementById('statusImage')
 const statusDomain = document.getElementById('statusDomain')
-// const footerTrackerOn = document.getElementById('footerTrackerOn')
 const footerTrackerOff = document.getElementById('footerTrackerOff')
 const trackerOff = document.getElementById('trackerOff')
 const isOri = document.getElementById('isOri')
@@ -9,6 +7,12 @@ const isNotOri = document.getElementById('isNotOri')
 const isForbidden = document.getElementById('isForbidden')
 const isNotForbidden = document.getElementById('isNotForbidden')
 const footerTrackerOn = document.getElementById('footerTrackerOn')
+const btnAboutOri = document.getElementById('btnAboutOri')
+const textAboutOri = document.getElementById('textAboutOri')
+const closeTextAboutOri = document.getElementById('closeTextAboutOri')
+const btnAboutForbidden = document.getElementById('btnAboutForbidden')
+const textAboutForbidden = document.getElementById('textAboutForbidden')
+const closeTextAboutForbidden = document.getElementById('closeTextAboutForbidden')
 
 chrome.runtime.getBackgroundPage(async (bgWindow) => {
   const {
@@ -24,7 +28,6 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
   if (enableExtension) {
     statusImage.setAttribute('src', 'images/icons/512x512/normal.png')
     statusDomain.classList.add('title-normal')
-    isOri.remove()
     isForbidden.remove()
     trackerOff.remove()
     footerTrackerOff.remove()
@@ -81,7 +84,9 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
           }))
         })
 
-        registry.distributorsContains(hostname).then((cooperationRefused) => {
+        const { url, cooperationRefused } = await registry.distributorsContains(hostname)
+
+        if (url) {
           statusDomain.classList.add('title-ori')
           isNotOri.remove()
           isForbidden.remove()
@@ -89,19 +94,21 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
           footerTrackerOff.remove()
 
           if (cooperationRefused) {
-            //  ...
+            console.log('Cooperation refused')
           } else {
-            statusImage.setAttribute('src', settings.getPopupImage({
-              size: 512,
-              name: 'ori',
-            }))
+            console.warn('Cooperation accepted!')
           }
-        })
+        } else {
+          isOri.remove()
+          console.log('Match not found at all')
+        }
       } else {
-        statusImage.setAttribute('src', settings.getPopupImage({
-          size: 512,
-          name: 'disabled',
-        }))
+        statusImage.setAttribute('src',
+          settings.getPopupImage({
+            size: 512,
+            name: 'disabled',
+          }),
+        )
       }
     },
   )
@@ -110,37 +117,37 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
     document.documentElement.style.visibility = 'initial'
   }
 
-  setTimeout(show, 165)
+  setTimeout(show, 100)
 })
 
-// const btnAboutOri = document.getElementById('btnAboutOri')
-// const textAboutOri = document.getElementById('textAboutOri')
-// const closeTextAboutOri = document.getElementById('closeTextAboutOri')
-//
-// const btnAboutForbidden = document.getElementById('btnAboutForbidden')
-// const textAboutForbidden = document.getElementById('textAboutForbidden')
-// const closeTextAboutForbidden = document.getElementById('closeTextAboutForbidden')
-//
-// btnAboutOri.addEventListener('click', () => {
-//   textAboutOri.style.display = 'block'
-//   btnAboutOri.style.display = 'none'
-//   textAboutForbidden.style.display = 'none'
-//   btnAboutForbidden.style.display = 'flex'
-// })
-//
-// closeTextAboutOri.addEventListener('click', () => {
-//   textAboutOri.style.display = 'none'
-//   btnAboutOri.style.display = 'flex'
-// })
-//
-// btnAboutForbidden.addEventListener('click', () => {
-//   textAboutForbidden.style.display = 'block'
-//   btnAboutForbidden.style.display = 'none'
-//   textAboutOri.style.display = 'none'
-//   btnAboutOri.style.display = 'flex'
-// })
-//
-// closeTextAboutForbidden.addEventListener('click', () => {
-//   textAboutForbidden.style.display = 'none'
-//   btnAboutForbidden.style.display = 'flex'
-// })
+btnAboutOri.addEventListener('click',
+  () => {
+    textAboutOri.style.display = 'block'
+    btnAboutOri.style.display = 'none'
+    textAboutForbidden.style.display = 'none'
+    btnAboutForbidden.style.display = 'flex'
+  },
+)
+
+closeTextAboutOri.addEventListener('click',
+  () => {
+    textAboutOri.style.display = 'none'
+    btnAboutOri.style.display = 'flex'
+  },
+)
+
+btnAboutForbidden.addEventListener('click',
+  () => {
+    textAboutForbidden.style.display = 'block'
+    btnAboutForbidden.style.display = 'none'
+    textAboutOri.style.display = 'none'
+    btnAboutOri.style.display = 'flex'
+  },
+)
+
+closeTextAboutForbidden.addEventListener('click',
+  () => {
+    textAboutForbidden.style.display = 'none'
+    btnAboutForbidden.style.display = 'flex'
+  },
+)

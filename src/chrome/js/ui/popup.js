@@ -2,8 +2,8 @@ const statusImage = document.getElementById('statusImage')
 const statusDomain = document.getElementById('statusDomain')
 const footerTrackerOff = document.getElementById('footerTrackerOff')
 const trackerOff = document.getElementById('trackerOff')
-const isOri = document.getElementById('isOri')
-const isNotOri = document.getElementById('isNotOri')
+const isOriBlock = document.getElementById('isOriBlock')
+const isNotOriBlock = document.getElementById('isNotOriBlock')
 const isForbidden = document.getElementById('isForbidden')
 const isNotForbidden = document.getElementById('isNotForbidden')
 const footerTrackerOn = document.getElementById('footerTrackerOn')
@@ -23,6 +23,13 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
     Database,
   } = bgWindow.censortracker
 
+  const changeStatusImage = (imageName) => {
+    statusImage.setAttribute('src', settings.getPopupImage({
+      size: 512,
+      name: imageName,
+    }))
+  }
+
   const { enableExtension } = await Database.get(['enableExtension'])
 
   if (enableExtension) {
@@ -34,8 +41,8 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
   } else {
     statusImage.setAttribute('src', 'images/icons/512x512/disabled.png')
     statusDomain.remove()
-    isOri.remove()
-    isNotOri.remove()
+    isOriBlock.remove()
+    isNotOriBlock.remove()
     isForbidden.remove()
     isNotForbidden.remove()
     footerTrackerOn.remove()
@@ -78,17 +85,15 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
 
       if (enableExtension) {
         registry.domainsContains(hostname).then((_data) => {
-          statusImage.setAttribute('src', settings.getPopupImage({
-            size: 512,
-            name: 'blocked',
-          }))
+          changeStatusImage('blocked')
         })
 
         const { url, cooperationRefused } = await registry.distributorsContains(hostname)
 
         if (url) {
+          changeStatusImage('ori')
           statusDomain.classList.add('title-ori')
-          isNotOri.remove()
+          isNotOriBlock.remove()
           isForbidden.remove()
           trackerOff.remove()
           footerTrackerOff.remove()
@@ -99,7 +104,7 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
             console.warn('Cooperation accepted!')
           }
         } else {
-          isOri.remove()
+          isOriBlock.remove()
           console.log('Match not found at all')
         }
       } else {

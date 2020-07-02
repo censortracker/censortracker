@@ -4,16 +4,19 @@
   <meta charset="utf-8"/>
   <title>Censor Tracker</title>
   <link href="css/popup.css" rel="stylesheet"/>
+</head>
+
 <body>
 <div class="container">
   <div class="main-page">
     <div class="main-page__image">
-      <img id="statusImage" class="image__status" src="images/icons/512x512/normal.png" width="70px" height="70px"
-           alt=""/>
+      <img id="statusImage" class="image__status"
+           src="images/icons/512x512/normal.png" width="70px" height="70px" alt=""/>
     </div>
     <div class="main-page__info">
-      <div class="main-page__title" id="statusDomain">Сайт недоступен</div>
-      <div class="main-page__block" id="isNotOri">
+      <div class="main-page__title" id="statusDomain" hidden>Сайт недоступен</div>
+
+      <div class="main-page__block" id="isNotOriBlock" hidden>
         <div class="block__title">
           <span>Не являеся организатором распространения информации</span>
           <svg class="icon__status" width="18" height="13" viewBox="0 0 18 13" fill="none"
@@ -41,7 +44,8 @@
           </div>
         </div>
       </div>
-      <div class="main-page__block" id="isOri">
+
+      <div class="main-page__block" id="isOriBlock" hidden>
         <div class="block__title">
           <span>Являеся организатором распространения информации</span>
           <img class="icon__status" src="images/icons/icon_stop.svg" width="24px" height="24px" alt=""/>
@@ -63,7 +67,8 @@
           </div>
         </div>
       </div>
-      <div class="main-page__block" id="isNotForbidden">
+
+      <div class="main-page__block" id="isNotForbidden" hidden>
         <div class="block__title">
           <span>Не запрещён в России</span>
           <svg class="icon__status" width="18" height="13" viewBox="0 0 18 13" fill="none"
@@ -88,7 +93,8 @@
           </div>
         </div>
       </div>
-      <div class="main-page__block" id="isForbidden">
+
+      <div class="main-page__block" id="isForbidden" hidden>
         <div class="block__title">
           <span>Запрещён в России</span>
           <img class="icon__status" src="images/icons/icon_info.svg" width="24px" height="24px" alt=""/>
@@ -110,7 +116,8 @@
           </div>
         </div>
       </div>
-      <div class="main-page__info" id="trackerOff">
+
+      <div class="main-page__info" id="trackerOff" hidden>
         <div class="main-page__title title-disabled">Censor Tracker выключен</div>
         <div class="main-page__block" id="">
           <div class="block__title text-about">
@@ -123,9 +130,11 @@
           </div>
         </div>
       </div>
+
     </div>
   </div>
-  <div class="footer" id="footerTrackerOn">
+
+  <div class="footer" id="footerTrackerOn" hidden>
     <div class="block__btn btn-text buy-vpn"><a target="_blank" href="https://vpnlove.me/">Купить VPN <span
       class="footer__arrow">&rarr;</span></a></div>
     <div class="censor-tracker censor-tracker-">
@@ -141,10 +150,12 @@
       </div>
     </div>
   </div>
-  <div class="footer footer-on" id="footerTrackerOff">
+
+  <div class="footer footer-on" id="footerTrackerOff" hidden>
     <div class="block__btn btn-text buy-vpn"><a target="_blank" href="https://vpnlove.me/">Купить VPN<span
       class="footer__arrow">&rarr;</span></a></div>
   </div>
+
 </div>
 </body>
 </html>

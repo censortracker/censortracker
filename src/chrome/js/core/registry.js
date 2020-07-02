@@ -69,9 +69,13 @@ class Registry {
           return host === shortcuts.cleanHostname(domain)
         })
 
+        // TODO: Pass matched domains instead of array of domains
         if (found) {
           console.warn(`Registry match found: ${host}`)
           resolve(domains)
+        } else {
+          console.log(`Registry match not found: ${host}`)
+          resolve([])
         }
       })
       .catch(reject)

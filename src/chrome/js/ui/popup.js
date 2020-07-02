@@ -30,24 +30,26 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
     }))
   }
 
+  const mutatePopup = ({ enabled }) => {
+    if (enabled) {
+      changeStatusImage('normal')
+      statusDomain.classList.add('title-normal')
+      statusDomain.removeAttribute('hidden')
+      footerTrackerOn.removeAttribute('hidden')
+    } else {
+      changeStatusImage('disabled')
+      trackerOff.removeAttribute('hidden')
+      footerTrackerOff.removeAttribute('hidden')
+      isOriBlock.setAttribute('hidden', 'true')
+      isForbidden.setAttribute('hidden', 'true')
+      isNotOriBlock.setAttribute('hidden', 'true')
+      isNotForbidden.setAttribute('hidden', 'true')
+    }
+  }
+
   const { enableExtension } = await Database.get(['enableExtension'])
 
-  if (enableExtension) {
-    statusImage.setAttribute('src', 'images/icons/512x512/normal.png')
-    statusDomain.classList.add('title-normal')
-    isForbidden.remove()
-    trackerOff.remove()
-    footerTrackerOff.remove()
-  } else {
-    statusImage.setAttribute('src', 'images/icons/512x512/disabled.png')
-    statusDomain.remove()
-    isOriBlock.remove()
-    isNotOriBlock.remove()
-    isForbidden.remove()
-    isNotForbidden.remove()
-    footerTrackerOn.remove()
-    statusDomain.remove()
-  }
+  mutatePopup({ enabled: enableExtension })
 
   document.addEventListener('click', (event) => {
     if (event.target.matches('#enableExtension')) {
@@ -84,19 +86,26 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
       }
 
       if (enableExtension) {
-        registry.domainsContains(hostname).then((_data) => {
+        // TODO: Add state for cases when site is in ORI and blocked
+
+        const domains = await registry.domainsContains(hostname)
+
+        if (domains.length > 0) {
+          console.log(`Domains ${JSON.stringify(domains)}`)
           changeStatusImage('blocked')
-        })
+          isNotForbidden.setAttribute('hidden', '')
+          isForbidden.removeAttribute('hidden')
+        } else {
+          isNotForbidden.removeAttribute('hidden')
+          changeStatusImage('normal')
+        }
 
         const { url, cooperationRefused } = await registry.distributorsContains(hostname)
 
         if (url) {
           changeStatusImage('ori')
           statusDomain.classList.add('title-ori')
-          isNotOriBlock.remove()
-          isForbidden.remove()
-          trackerOff.remove()
-          footerTrackerOff.remove()
+          isOriBlock.removeAttribute('hidden')
 
           if (cooperationRefused) {
             console.log('Cooperation refused')
@@ -104,7 +113,7 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
             console.warn('Cooperation accepted!')
           }
         } else {
-          isOriBlock.remove()
+          isNotOriBlock.removeAttribute('hidden')
           console.log('Match not found at all')
         }
       } else {

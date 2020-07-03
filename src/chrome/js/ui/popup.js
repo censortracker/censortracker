@@ -20,8 +20,16 @@ const btnAboutNotOri = document.getElementById('btnAboutNotOri')
 const textAboutNotOri = document.getElementById('textAboutNotOri')
 const closeTextAboutNotOri = document.getElementById('closeTextAboutNotOri')
 const currentDomain = document.getElementById('currentDomain')
+const oriSiteInfo = document.getElementById('oriSiteInfo')
 
 const POPUP_SHOW_TIMEOUT = 100
+
+const showCooperationRefusedMessage = () => {
+  oriSiteInfo.innerText = 'Сайт внесен в ОРИ, однако отказался от сотрудничество с властями.'
+  textAboutOri.classList.remove('text-warning')
+  textAboutOri.classList.add('text-normal')
+  console.log('Cooperation refused')
+}
 
 chrome.runtime.getBackgroundPage(async (bgWindow) => {
   const {
@@ -115,13 +123,13 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
         const { url, cooperationRefused } = await registry.distributorsContains(hostname)
 
         if (url) {
-          changeStatusImage('ori')
           statusDomain.classList.add('title-ori')
           isOriBlock.removeAttribute('hidden')
 
           if (cooperationRefused) {
-            console.log('Cooperation refused')
+            showCooperationRefusedMessage()
           } else {
+            changeStatusImage('ori')
             console.warn('Cooperation accepted!')
           }
         } else {

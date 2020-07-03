@@ -13,14 +13,13 @@ const closeTextAboutOri = document.getElementById('closeTextAboutOri')
 const btnAboutForbidden = document.getElementById('btnAboutForbidden')
 const textAboutForbidden = document.getElementById('textAboutForbidden')
 const closeTextAboutForbidden = document.getElementById('closeTextAboutForbidden')
-
 const btnAboutNotForbidden = document.getElementById('btnAboutNotForbidden')
 const textAboutNotForbidden = document.getElementById('textAboutNotForbidden')
 const closeTextAboutNotForbidden = document.getElementById('closeTextAboutNotForbidden')
-
 const btnAboutNotOri = document.getElementById('btnAboutNotOri')
 const textAboutNotOri = document.getElementById('textAboutNotOri')
 const closeTextAboutNotOri = document.getElementById('closeTextAboutNotOri')
+const currentDomain = document.getElementById('currentDomain')
 
 const POPUP_SHOW_TIMEOUT = 100
 
@@ -81,19 +80,21 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
       lastFocusedWindow: true,
     },
     async (tabs) => {
-      const activeTab = tabs[0]
-      const activeTabUrl = activeTab.url
+      const tab = tabs[0]
+      const tabUrl = tab.url
 
-      if (activeTabUrl.startsWith('chrome-extension://')) {
+      if (shortcuts.isChromeExtensionUrl(tabUrl)) {
         return
       }
 
-      const urlObject = new URL(activeTabUrl)
+      const urlObject = new URL(tabUrl)
       const hostname = shortcuts.cleanHostname(urlObject.hostname)
 
       if (shortcuts.validURL(hostname)) {
-        statusDomain.innerText = hostname.replace('www.', '')
-        document.getElementById('currentDomain').innerText = hostname.replace('www.', '')
+        const rawDomain = hostname.replace('www.', '')
+
+        statusDomain.innerText = rawDomain
+        currentDomain.innerText = rawDomain
       }
 
       if (enableExtension) {

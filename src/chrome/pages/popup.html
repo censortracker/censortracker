@@ -24,7 +24,7 @@
             <path d="M17 1L6 12L1 7" stroke="#6C9E2C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </div>
-        <div class="block__btn btn-about" id="btnAboutOri">
+        <div class="block__btn btn-about" id="btnAboutNotOri">
           <span>что это значит</span>
           <svg class="block__btn icon" width="8" height="6" viewBox="0 0 8 6" fill="none"
                xmlns="http://www.w3.org/2000/svg">
@@ -32,13 +32,13 @@
                   stroke-linejoin="round"/>
           </svg>
         </div>
-        <div class="block__text text-normal" id="textAboutOri">
+        <div class="block__text text-normal" id="textAboutNotOri">
           <span>
             Сайты-ОРИ передают ваши личные данные, в том числе сообщения и весь трафик, третьим лицам в
             автоматическом режиме. Этот сайт не находится в списке сайтов-ОРИ.
           </span>
           <div class="block__footer">
-            <span class="block__btn btn-ok" id="closeTextAboutOri">Ясно</span>
+            <span class="block__btn btn-ok" id="closeTextAboutNotOri">Ясно</span>
             <span class="block__btn btn-text"><a href="https://reestr.rublacklist.net/distributors/" target="_blank">Подробнее <span
               class="footer__arrow">&rarr;</span></a></span>
           </div>
@@ -76,7 +76,7 @@
             <path d="M17 1L6 12L1 7" stroke="#6C9E2C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </div>
-        <div class="block__btn btn-about" id="btnAboutForbidden">
+        <div class="block__btn btn-about" id="btnAboutNotForbidden">
           <span>что это значит</span>
           <svg class="block__btn icon" width="8" height="6" viewBox="0 0 8 6" fill="none"
                xmlns="http://www.w3.org/2000/svg">
@@ -84,10 +84,10 @@
                   stroke-linejoin="round"/>
           </svg>
         </div>
-        <div class="block__text text-normal" id="textAboutForbidden">
+        <div class="block__text text-normal" id="textAboutNotForbidden">
           <span>Если доступ к сайту запретят, то Censor Tracker предложит открыть сайт через надёжный прокси.</span>
           <div class="block__footer">
-            <span class="block__btn btn-ok" id="closeTextAboutForbidden">Ясно</span>
+            <span class="block__btn btn-ok" id="closeTextAboutNotForbidden">Ясно</span>
             <span class="block__btn btn-text"><a href="https://reestr.rublacklist.net/distributors/" target="_blank">Подробнее <span
               class="footer__arrow">&rarr;</span></a></span>
           </div>
@@ -119,9 +119,9 @@
 
       <div class="main-page__info" id="trackerOff" hidden>
         <div class="main-page__title title-disabled">Censor Tracker выключен</div>
-        <div class="main-page__block" id="">
+        <div class="main-page__block">
           <div class="block__title text-about">
-            Включите, чтобы проверить сайт <span>cards.roskomsvoboda.org</span>
+            Включите, чтобы проверить сайт <span id="currentDomain"></span>
           </div>
           <div class="censor-tracker__btn btn-on" id="enableExtension">
             <img class="image__turn-tracker image__turn-tracker-on"

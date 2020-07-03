@@ -14,6 +14,16 @@ const btnAboutForbidden = document.getElementById('btnAboutForbidden')
 const textAboutForbidden = document.getElementById('textAboutForbidden')
 const closeTextAboutForbidden = document.getElementById('closeTextAboutForbidden')
 
+const btnAboutNotForbidden = document.getElementById('btnAboutNotForbidden')
+const textAboutNotForbidden = document.getElementById('textAboutNotForbidden')
+const closeTextAboutNotForbidden = document.getElementById('closeTextAboutNotForbidden')
+
+const btnAboutNotOri = document.getElementById('btnAboutNotOri')
+const textAboutNotOri = document.getElementById('textAboutNotOri')
+const closeTextAboutNotOri = document.getElementById('closeTextAboutNotOri')
+
+const POPUP_SHOW_TIMEOUT = 100
+
 chrome.runtime.getBackgroundPage(async (bgWindow) => {
   const {
     settings,
@@ -83,6 +93,7 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
 
       if (shortcuts.validURL(hostname)) {
         statusDomain.innerText = hostname.replace('www.', '')
+        document.getElementById('currentDomain').innerText = hostname.replace('www.', '')
       }
 
       if (enableExtension) {
@@ -131,7 +142,7 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
     document.documentElement.style.visibility = 'initial'
   }
 
-  setTimeout(show, 100)
+  setTimeout(show, POPUP_SHOW_TIMEOUT)
 })
 
 btnAboutOri.addEventListener('click',
@@ -140,6 +151,22 @@ btnAboutOri.addEventListener('click',
     btnAboutOri.style.display = 'none'
     textAboutForbidden.style.display = 'none'
     btnAboutForbidden.style.display = 'flex'
+  },
+)
+
+btnAboutNotOri.addEventListener('click',
+  () => {
+    textAboutNotOri.style.display = 'block'
+    btnAboutNotOri.style.display = 'none'
+    textAboutForbidden.style.display = 'none'
+    btnAboutForbidden.style.display = 'flex'
+  },
+)
+
+closeTextAboutNotOri.addEventListener('click',
+  () => {
+    textAboutNotOri.style.display = 'none'
+    btnAboutNotOri.style.display = 'flex'
   },
 )
 
@@ -159,9 +186,22 @@ btnAboutForbidden.addEventListener('click',
   },
 )
 
+btnAboutNotForbidden.addEventListener('click',
+  () => {
+    textAboutNotForbidden.style.display = 'block'
+    btnAboutNotForbidden.style.display = 'none'
+    textAboutOri.style.display = 'none'
+    btnAboutOri.style.display = 'flex'
+  })
+
 closeTextAboutForbidden.addEventListener('click',
   () => {
     textAboutForbidden.style.display = 'none'
     btnAboutForbidden.style.display = 'flex'
   },
 )
+
+closeTextAboutNotForbidden.addEventListener('click', () => {
+  textAboutNotForbidden.style.display = 'none'
+  btnAboutNotForbidden.style.display = 'flex'
+})

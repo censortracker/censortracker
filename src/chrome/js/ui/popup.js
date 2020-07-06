@@ -1,34 +1,37 @@
-const statusImage = document.getElementById('statusImage')
-const statusDomain = document.getElementById('statusDomain')
-const footerTrackerOff = document.getElementById('footerTrackerOff')
-const trackerOff = document.getElementById('trackerOff')
-const isOriBlock = document.getElementById('isOriBlock')
-const isNotOriBlock = document.getElementById('isNotOriBlock')
-const isForbidden = document.getElementById('isForbidden')
-const isNotForbidden = document.getElementById('isNotForbidden')
-const footerTrackerOn = document.getElementById('footerTrackerOn')
-const btnAboutOri = document.getElementById('btnAboutOri')
-const textAboutOri = document.getElementById('textAboutOri')
-const closeTextAboutOri = document.getElementById('closeTextAboutOri')
-const btnAboutForbidden = document.getElementById('btnAboutForbidden')
-const textAboutForbidden = document.getElementById('textAboutForbidden')
-const closeTextAboutForbidden = document.getElementById('closeTextAboutForbidden')
-const btnAboutNotForbidden = document.getElementById('btnAboutNotForbidden')
-const textAboutNotForbidden = document.getElementById('textAboutNotForbidden')
-const closeTextAboutNotForbidden = document.getElementById('closeTextAboutNotForbidden')
-const btnAboutNotOri = document.getElementById('btnAboutNotOri')
-const textAboutNotOri = document.getElementById('textAboutNotOri')
-const closeTextAboutNotOri = document.getElementById('closeTextAboutNotOri')
-const currentDomain = document.getElementById('currentDomain')
-const oriSiteInfo = document.getElementById('oriSiteInfo')
+const getElementById = (id) => document.getElementById(id)
 
-const POPUP_SHOW_TIMEOUT = 100
+const statusImage = getElementById('statusImage')
+const statusDomain = getElementById('statusDomain')
+const footerTrackerOff = getElementById('footerTrackerOff')
+const trackerOff = getElementById('trackerOff')
+const isOriBlock = getElementById('isOriBlock')
+const isNotOriBlock = getElementById('isNotOriBlock')
+const isForbidden = getElementById('isForbidden')
+const isNotForbidden = getElementById('isNotForbidden')
+const footerTrackerOn = getElementById('footerTrackerOn')
+const btnAboutOri = getElementById('btnAboutOri')
+const textAboutOri = getElementById('textAboutOri')
+const closeTextAboutOri = getElementById('closeTextAboutOri')
+const btnAboutForbidden = getElementById('btnAboutForbidden')
+const textAboutForbidden = getElementById('textAboutForbidden')
+const closeTextAboutForbidden = getElementById('closeTextAboutForbidden')
+const btnAboutNotForbidden = getElementById('btnAboutNotForbidden')
+const textAboutNotForbidden = getElementById('textAboutNotForbidden')
+const closeTextAboutNotForbidden = getElementById('closeTextAboutNotForbidden')
+const btnAboutNotOri = getElementById('btnAboutNotOri')
+const textAboutNotOri = getElementById('textAboutNotOri')
+const closeTextAboutNotOri = getElementById('closeTextAboutNotOri')
+const currentDomain = getElementById('currentDomain')
+const oriSiteInfo = getElementById('oriSiteInfo')
+const popupShowTimeout = 100
 
 const showCooperationRefusedMessage = () => {
-  oriSiteInfo.innerText = 'Сайт внесен в ОРИ, однако отказался от сотрудничество с властями.'
+  oriSiteInfo.innerText = 'Сервис заявил, что они не передают трафик российским ' +
+    'государственным органам в автоматическом режиме.'
   textAboutOri.classList.remove('text-warning')
   textAboutOri.classList.add('text-normal')
-  console.log('Cooperation refused')
+  statusDomain.classList.remove('title-ori')
+  statusDomain.classList.add('title-normal')
 }
 
 chrome.runtime.getBackgroundPage(async (bgWindow) => {
@@ -151,7 +154,7 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
     document.documentElement.style.visibility = 'initial'
   }
 
-  setTimeout(show, POPUP_SHOW_TIMEOUT)
+  setTimeout(show, popupShowTimeout)
 })
 
 btnAboutOri.addEventListener('click',

@@ -215,9 +215,7 @@ const updateState = async () => {
 
             registry.distributorsContains(currentHostname)
               .then(({ url, cooperationRefused }) => {
-                console.log(`URL: ${url} Cooperated: ${cooperationRefused}`)
                 if (url) {
-                  console.log(cooperationRefused)
                   setPageIcon(tabId, settings.getDangerIcon())
                   if (!cooperationRefused) {
                     showCooperationAcceptedWarning(currentHostname)

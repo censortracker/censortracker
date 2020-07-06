@@ -5,20 +5,17 @@ import {
   sessions,
   settings,
   shortcuts,
+  errors,
 } from './core'
+
+import {
+  chromeStorageLocalRemove,
+} from './promises'
 
 const REQUEST_FILTERS = {
   urls: ['*://*/*'],
   types: ['main_frame'],
 }
-const MAX_REDIRECTIONS_COUNT = 6
-const ERR_CONNECTION_RESET = 'ERR_CONNECTION_RESET'
-const ERR_CONNECTION_CLOSED = 'ERR_CONNECTION_CLOSED'
-const ERR_CERT_COMMON_NAME_INVALID = 'ERR_CERT_COMMON_NAME_INVALID'
-const ERR_HTTP2_PROTOCOL_ERROR = 'ERR_HTTP2_PROTOCOL_ERROR'
-const ERR_TUNNEL_CONNECTION_FAILED = 'ERR_TUNNEL_CONNECTION_FAILED'
-const ERR_CERT_AUTHORITY_INVALID = 'ERR_CERT_AUTHORITY_INVALID'
-const ERR_CONNECTION_TIMED_OUT = 'ERR_CONNECTION_TIMED_OUT'
 
 window.censortracker = {
   proxies,
@@ -27,32 +24,7 @@ window.censortracker = {
   sessions,
   settings,
   shortcuts,
-}
-
-const onInstalled = (details) => {
-  if (details.reason === 'install') {
-    console.log(`Installing ${settings.getName()}...`)
-    proxies.openPorts()
-    settings.enableExtension()
-    registry.syncDatabase()
-    proxies.setProxy()
-  }
-}
-
-const onWindowsRemoved = (_windowId) => {
-  chrome.storage.local.remove(['notifiedHosts'], () => {
-    if (!chrome.runtime.lastError) {
-      console.warn('An array of notified hosts has been cleaned up.')
-      return true
-    }
-    console.error('Error on removing notified hosts.')
-    return false
-  })
-}
-
-const onStartup = async () => {
-  await registry.syncDatabase()
-  await updateState()
+  errors,
 }
 
 const onBeforeRequest = (details) => {
@@ -81,15 +53,15 @@ const onBeforeRedirect = (details) => {
     sessions.putRequest(requestId, redirectCountKey, 1)
   }
 
-  if (areMaxRedirectsReached(count)) {
+  if (sessions.areMaxRedirectsReached(count)) {
     if (chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequest)) {
       chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequest)
     }
-    console.warn('Reached max count of redirects. Adding site to ignore...')
+    console.warn(`Reached max count of redirects. Adding "${hostname}" to ignore...`)
 
-    Database.get('ignoredSites')
+    Database.get({ ignoredSites: [] })
       .then(({ ignoredSites }) => {
-        if (ignoredSites && !ignoredSites.includes(hostname)) {
+        if (!ignoredSites.includes(hostname)) {
           ignoredSites.push(hostname)
           console.warn(`Site ${hostname} add to ignore`)
           Database.set('ignoredSites', ignoredSites)
@@ -98,59 +70,46 @@ const onBeforeRedirect = (details) => {
   }
 }
 
-const areMaxRedirectsReached = (count) => count >= MAX_REDIRECTIONS_COUNT
-
 const onErrorOccurred = ({ url, error, tabId }) => {
   const errorText = error.replace('net::', '')
   const urlObject = new URL(url)
   const hostname = urlObject.hostname
   const encodedUrl = window.btoa(url)
 
-  console.log(`Error: ${errorText}`)
+  if (errors.isThereProxyConnectionError(errorText)) {
+    chrome.tabs.update(tabId, {
+      url: chrome.runtime.getURL('proxy_unavailable.html'),
+    })
+  }
 
-  if (isThereConnectionError(errorText)) {
+  if (errors.isThereConnectionError(errorText)) {
     console.warn('Possible DPI lock detected: reporting domain...')
-    registry.reportBlockedByDPI(hostname)
     proxies.setProxy(hostname)
+    registry.reportBlockedByDPI(hostname)
     chrome.tabs.update(tabId, {
       url: chrome.runtime.getURL(`unavailable.html?${encodedUrl}`),
     })
   }
 
-  if (isThereCertificateError(errorText) || isThereAvailabilityError(errorText)) {
+  if (errors.isThereCertificateError(errorText) || errors.isThereAvailabilityError(errorText)) {
     console.warn('Certificate validation issue. Adding hostname to ignore...')
-    const { ignoredSites } = Database.get('ignoredSites')
 
-    if (!ignoredSites.includes(hostname)) {
-      ignoredSites.push(hostname)
-      chrome.storage.local.set('ignoredSites', ignoredSites)
-    }
+    Database.get({ ignoredSites: [] })
+      .then(({ ignoredSites }) => {
+        if (!ignoredSites.includes(hostname)) {
+          ignoredSites.push(hostname)
+          Database.set('ignoredSites', ignoredSites)
+        }
 
-    if (chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequest)) {
-      chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequest)
-    }
-
-    chrome.tabs.update({
-      url: url.replace('https:', 'http:'),
-    })
+        if (chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequest)) {
+          chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequest)
+        }
+        chrome.tabs.update({
+          url: url.replace('https:', 'http:'),
+        })
+      })
   }
 }
-
-const isThereConnectionError = (error) => [
-  ERR_CONNECTION_RESET,
-  ERR_CONNECTION_CLOSED,
-  ERR_CONNECTION_TIMED_OUT,
-].includes(error)
-
-const isThereCertificateError = (error) => [
-  ERR_CERT_AUTHORITY_INVALID,
-  ERR_CERT_COMMON_NAME_INVALID,
-].includes(error)
-
-const isThereAvailabilityError = (error) => [
-  ERR_HTTP2_PROTOCOL_ERROR,
-  ERR_TUNNEL_CONNECTION_FAILED,
-].includes(error)
 
 const onCompleted = (details) => {
   sessions.deleteRequest(details.requestId)
@@ -221,9 +180,10 @@ const updateState = async () => {
           const tabId = tab.id
           const urlObject = new URL(tab.url)
 
-          if (urlObject.protocol === 'chrome:') {
+          if (shortcuts.isChromeExtensionUrl(tab.url)) {
             return
           }
+
           const currentHostname = shortcuts.cleanHostname(urlObject.hostname)
           const ignoredSites = config.ignoredSites
 
@@ -254,30 +214,28 @@ const updateState = async () => {
             }
 
             registry.distributorsContains(currentHostname)
-              .then((cooperationRefused) => {
-                setPageIcon(tabId, settings.getLockFoundIcon())
-                if (!cooperationRefused) {
-                  // Shows special icon here
-                  setPageIcon(tabId, settings.getDistributorFoundIcon())
-                  showCooperationAcceptedWarning(currentHostname)
+              .then(({ url, cooperationRefused }) => {
+                if (url) {
+                  setPageIcon(tabId, settings.getDangerIcon())
+                  if (!cooperationRefused) {
+                    showCooperationAcceptedWarning(currentHostname)
+                  }
+                } else {
+                  setPageIcon(tabId, settings.getDefaultIcon())
                 }
               })
 
             registry.domainsContains(currentHostname)
               .then((_data) => {
-                setPageIcon(tabId, settings.getLockFoundIcon())
+                if (_data.length > 0) {
+                  setPageIcon(tabId, settings.getDangerIcon())
+                }
               })
-              .catch(() => {
-                registry.distributorsContains(currentHostname)
-                  .then((cooperationRefused) => {
-                    setPageIcon(tabId, settings.getLockFoundIcon())
-                    if (!cooperationRefused) {
-                      // Shows special icon here
-                      setPageIcon(tabId, settings.getDistributorFoundIcon())
-                    }
-                  })
+              .catch((error) => {
+                console.log(error)
               })
           } else {
+            setPageIcon(tabId, settings.getDisabledIcon())
             if (
               chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequest)
             ) {
@@ -311,51 +269,42 @@ const setPageIcon = (tabId, icon) => {
   })
 }
 
-const showCooperationAcceptedWarning = (hostname) => {
-  chrome.storage.local.get(
-    {
-      notifiedHosts: [],
-      mutedForever: [],
-    },
-    (result) => {
-      if (!result || !hostname) {
-        return
-      }
+const showCooperationAcceptedWarning = async (hostname) => {
+  if (!hostname) {
+    return
+  }
 
-      const mutedForever = result.mutedForever
+  const { notifiedHosts, mutedForever } = await Database.get({
+    notifiedHosts: [],
+    mutedForever: [],
+  })
 
-      if (mutedForever.find((item) => item === hostname)) {
-        return
-      }
+  if (mutedForever.includes(hostname)) {
+    return
+  }
 
-      const notifiedHosts = result.notifiedHosts
+  if (!notifiedHosts.includes(hostname)) {
+    chrome.notifications.create({
+      type: 'basic',
+      title: settings.getName(),
+      priority: 2,
+      message: `${hostname} может передавать информацию третьим лицам.`,
+      buttons: [
+        { title: '\u2715 Не показывать для этого сайта' },
+        { title: '\u2192 Подробнее' },
+      ],
+      iconUrl: settings.getDangerIcon(),
+    })
 
-      if (!notifiedHosts.find((item) => item === hostname)) {
-        chrome.notifications.create({
-          type: 'basic',
-          title: `${settings.getName()}: ${hostname}`,
-          priority: 2,
-          message: 'Этот ресурс может передавать информацию третьим лицам.',
-          buttons: [
-            { title: '\u2715 Не показывать для этого сайта' },
-            { title: '\u2192 Подробнее' },
-          ],
-          iconUrl: settings.getDistributorFoundIcon(),
-        })
-      }
+    notifiedHosts.push(hostname)
 
-      if (!notifiedHosts.includes(hostname)) {
-        notifiedHosts.push(hostname)
-        chrome.storage.local.set({ notifiedHosts }, () => {
-          console.warn('The list of the notified ORI resource updated!')
-        })
-      }
-    },
-  )
+    chrome.storage.local.set({ notifiedHosts }, () => {
+      console.warn('The list of the notified ORI resource updated!')
+    })
+  }
 }
 
-chrome.runtime.onInstalled.addListener(onInstalled)
-chrome.runtime.onInstalled.addListener(() => {
+chrome.runtime.onInstalled.addListener(({ reason }) => {
   chrome.declarativeContent.onPageChanged.removeRules(undefined, () => {
     chrome.declarativeContent.onPageChanged.addRules([{
       conditions: [
@@ -368,25 +317,46 @@ chrome.runtime.onInstalled.addListener(() => {
       actions: [new chrome.declarativeContent.ShowPageAction()],
     }])
   })
+
+  if (reason === 'install') {
+    console.log(`Installing ${settings.getName()}...`)
+    proxies.openPorts()
+    settings.enableExtension()
+    proxies.setProxy()
+  }
 })
-chrome.windows.onRemoved.addListener(onWindowsRemoved)
-chrome.runtime.onStartup.addListener(onStartup)
+
+chrome.runtime.onStartup.addListener(async () => {
+  await registry.syncDatabase()
+  await updateState()
+})
+
+chrome.windows.onRemoved.addListener(async (_windowId) => {
+  await chromeStorageLocalRemove('notifiedHosts').catch(console.error)
+  console.warn('A list of notified hosts has been cleaned up!')
+})
+
 chrome.webRequest.onErrorOccurred.addListener(
   onErrorOccurred,
   REQUEST_FILTERS,
 )
+
 chrome.webRequest.onBeforeRequest.addListener(
   onBeforeRequest,
   REQUEST_FILTERS,
   ['blocking'],
 )
+
 chrome.webRequest.onBeforeRedirect.addListener(onBeforeRedirect, {
   urls: ['*://*/*'],
 })
+
 chrome.webRequest.onCompleted.addListener(onCompleted, {
   urls: ['*://*/*'],
 })
+
 chrome.notifications.onButtonClicked.addListener(notificationOnButtonClicked)
+
 chrome.tabs.onActivated.addListener(updateState)
 chrome.tabs.onUpdated.addListener(updateState)
 

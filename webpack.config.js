@@ -137,6 +137,16 @@ const webpackConfig = {
       },
     }),
     new HTMLWebpackPlugin({
+      title: 'Proxy Unavailable | Censor Tracker',
+      filename: 'proxy_unavailable.html',
+      template: 'src/chrome/pages/proxy_unavailable.html',
+      inject: true,
+      chunks: ['unavailable'],
+      meta: {
+        'Content-Security-Policy': 'script-src \'self\' \'unsafe-eval\'; object-src \'self\';',
+      },
+    }),
+    new HTMLWebpackPlugin({
       title: 'Options | Censor Tracker',
       filename: 'options.html',
       template: 'src/chrome/pages/options.html',

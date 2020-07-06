@@ -1,6 +1,7 @@
 class BrowserSession {
   constructor () {
     this.requests = new Map()
+    this.max_redirections_count = 6
   }
 
   putRequest (id, key, value) {
@@ -25,6 +26,10 @@ class BrowserSession {
     if (this.requests.has(id)) {
       this.requests.delete(id)
     }
+  }
+
+  areMaxRedirectsReached (count) {
+    return count >= this.max_redirections_count
   }
 }
 

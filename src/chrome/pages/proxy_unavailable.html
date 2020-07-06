@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8" />
+     <title><%= htmlWebpackPlugin.options.title %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="stylesheet" href="css/unavailable.css" />
+</head>
+
+<body>
+    <div class="main-container">
+        <div class="page-header">
+            Censor Tracker
+        </div>
+        <div class="main-page">
+            <div class="main-page__image">
+                <img src="images/icons/512x512/disabled.png"
+                     width="128px" height="128px" alt="<%= htmlWebpackPlugin.options.title %>" />
+            </div>
+            <div class="main-page__info">
+                <div class="main-page__title">Не удалось открыть сайт через прокси Censor Tracker</div>
+                <div class="main-page__text">Мы работаем над исправлением проблемы, попробуйте открыть сайт позже.</div>
+                <div class="main-page__btn">
+                    <button id="closeTab" class="btn btn-dark" aria-label="Закрыть вкладку">
+                      <span class="btn__text">Закрыть вкладку</span>
+                    </button>
+                    <button id="buyVPN" class="btn btn-light" aria-label="Купить VPN">
+                      <span class="btn__text">Купить VPN</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

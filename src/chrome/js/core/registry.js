@@ -92,6 +92,7 @@ class Registry {
           console.warn(`Distributor match found: ${host}`)
           resolve(dataObject)
         } else {
+          console.warn(`Distributor match not found: ${host}`)
           resolve({})
         }
       })

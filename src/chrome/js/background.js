@@ -213,25 +213,27 @@ const updateState = async () => {
             }
 
             registry.distributorsContains(currentHostname)
-              .then((cooperationRefused) => {
-                setPageIcon(tabId, settings.getDangerIcon())
-                if (!cooperationRefused) {
-                  showCooperationAcceptedWarning(currentHostname)
+              .then(({ url, cooperationRefused }) => {
+                console.log(`URL: ${url} Cooperated: ${cooperationRefused}`)
+                if (url) {
+                  console.log(cooperationRefused)
+                  setPageIcon(tabId, settings.getDangerIcon())
+                  if (!cooperationRefused) {
+                    showCooperationAcceptedWarning(currentHostname)
+                  }
+                } else {
+                  setPageIcon(tabId, settings.getDefaultIcon())
                 }
               })
 
             registry.domainsContains(currentHostname)
               .then((_data) => {
-                setPageIcon(tabId, settings.getDangerIcon())
+                if (_data.length > 0) {
+                  setPageIcon(tabId, settings.getDangerIcon())
+                }
               })
-              .catch(() => {
-                registry.distributorsContains(currentHostname)
-                  .then((cooperationRefused) => {
-                    setPageIcon(tabId, settings.getDangerIcon())
-                    if (!cooperationRefused) {
-                      // Shows special icon here
-                    }
-                  })
+              .catch((error) => {
+                console.log(error)
               })
           } else {
             setPageIcon(tabId, settings.getDisabledIcon())

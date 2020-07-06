@@ -19,6 +19,10 @@ class Shortcuts {
     return hostname.replace(regexp, '').trim()
   }
 
+  isChromeExtensionUrl = (url) => {
+    return url.startsWith('chrome-extension://')
+  }
+
   createSearchLink = (hostname) => {
     const searchUrl = 'https://reestr.rublacklist.net/search/'
 

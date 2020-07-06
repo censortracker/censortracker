@@ -180,9 +180,10 @@ const updateState = async () => {
           const tabId = tab.id
           const urlObject = new URL(tab.url)
 
-          if (urlObject.protocol === 'chrome:') {
+          if (shortcuts.isChromeExtensionUrl(tab.url)) {
             return
           }
+
           const currentHostname = shortcuts.cleanHostname(urlObject.hostname)
           const ignoredSites = config.ignoredSites
 

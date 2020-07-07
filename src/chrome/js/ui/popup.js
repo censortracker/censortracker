@@ -157,60 +157,61 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
   setTimeout(show, popupShowTimeout)
 })
 
-btnAboutOri.addEventListener('click',
-  () => {
-    textAboutOri.style.display = 'block'
-    btnAboutOri.style.display = 'none'
-    textAboutForbidden.style.display = 'none'
-    btnAboutForbidden.style.display = 'flex'
-  },
+btnAboutOri.addEventListener('click', () => {
+  textAboutOri.style.display = 'block'
+  btnAboutOri.style.display = 'none'
+  textAboutForbidden.style.display = 'none'
+  btnAboutForbidden.style.display = 'flex'
+  textAboutNotForbidden.style.display = 'none'
+  btnAboutNotForbidden.style.display = 'flex'
+},
 )
 
-btnAboutNotOri.addEventListener('click',
-  () => {
-    textAboutNotOri.style.display = 'block'
-    btnAboutNotOri.style.display = 'none'
-    textAboutForbidden.style.display = 'none'
-    btnAboutForbidden.style.display = 'flex'
-  },
+btnAboutNotOri.addEventListener('click', () => {
+  textAboutNotOri.style.display = 'block'
+  btnAboutNotOri.style.display = 'none'
+  textAboutForbidden.style.display = 'none'
+  btnAboutForbidden.style.display = 'flex'
+  textAboutNotForbidden.style.display = 'none'
+  btnAboutNotForbidden.style.display = 'flex'
+},
 )
 
-closeTextAboutNotOri.addEventListener('click',
-  () => {
-    textAboutNotOri.style.display = 'none'
-    btnAboutNotOri.style.display = 'flex'
-  },
+closeTextAboutNotOri.addEventListener('click', () => {
+  textAboutNotOri.style.display = 'none'
+  btnAboutNotOri.style.display = 'flex'
+},
 )
 
-closeTextAboutOri.addEventListener('click',
-  () => {
-    textAboutOri.style.display = 'none'
-    btnAboutOri.style.display = 'flex'
-  },
+closeTextAboutOri.addEventListener('click', () => {
+  textAboutOri.style.display = 'none'
+  btnAboutOri.style.display = 'flex'
+},
 )
 
-btnAboutForbidden.addEventListener('click',
-  () => {
-    textAboutForbidden.style.display = 'block'
-    btnAboutForbidden.style.display = 'none'
-    textAboutOri.style.display = 'none'
-    btnAboutOri.style.display = 'flex'
-  },
+btnAboutForbidden.addEventListener('click', () => {
+  textAboutForbidden.style.display = 'block'
+  btnAboutForbidden.style.display = 'none'
+  textAboutOri.style.display = 'none'
+  btnAboutOri.style.display = 'flex'
+  textAboutNotOri.style.display = 'none'
+  btnAboutNotOri.style.display = 'flex'
+},
 )
 
-btnAboutNotForbidden.addEventListener('click',
-  () => {
-    textAboutNotForbidden.style.display = 'block'
-    btnAboutNotForbidden.style.display = 'none'
-    textAboutOri.style.display = 'none'
-    btnAboutOri.style.display = 'flex'
-  })
+btnAboutNotForbidden.addEventListener('click', () => {
+  textAboutNotForbidden.style.display = 'block'
+  btnAboutNotForbidden.style.display = 'none'
+  textAboutOri.style.display = 'none'
+  btnAboutOri.style.display = 'flex'
+  textAboutNotOri.style.display = 'none'
+  btnAboutNotOri.style.display = 'flex'
+})
 
-closeTextAboutForbidden.addEventListener('click',
-  () => {
-    textAboutForbidden.style.display = 'none'
-    btnAboutForbidden.style.display = 'flex'
-  },
+closeTextAboutForbidden.addEventListener('click', () => {
+  textAboutForbidden.style.display = 'none'
+  btnAboutForbidden.style.display = 'flex'
+},
 )
 
 closeTextAboutNotForbidden.addEventListener('click', () => {

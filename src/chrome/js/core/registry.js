@@ -56,7 +56,12 @@ class Registry {
     const { domains } = await db.get('domains')
 
     if (domains && Object.hasOwnProperty.call(domains, dbDomainItemName)) {
-      return domains.domains
+      try {
+        return domains.domains
+      } catch (error) {
+        console.log(error)
+        return []
+      }
     }
 
     return []

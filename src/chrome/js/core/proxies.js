@@ -8,9 +8,6 @@ class Proxies {
     this.ignoredDomains = new Set([
       'youtube.com',
     ])
-    chrome.proxy.onProxyError.addListener((details) => {
-      console.error(`Proxy error: ${JSON.stringify(details)}`)
-    })
 
     setInterval(() => {
       this.removeOutdatedBlockedDomains()

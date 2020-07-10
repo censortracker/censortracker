@@ -340,6 +340,10 @@ chrome.windows.onRemoved.addListener(async (_windowId) => {
   console.warn('A list of notified hosts has been cleaned up!')
 })
 
+chrome.proxy.onProxyError.addListener((details) => {
+  console.error(`Proxy error: ${JSON.stringify(details)}`)
+})
+
 chrome.webRequest.onErrorOccurred.addListener(
   onErrorOccurred,
   REQUEST_FILTERS,

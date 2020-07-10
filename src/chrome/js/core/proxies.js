@@ -17,13 +17,9 @@ class Proxies {
     }, 60 * 1000 * 60 * 60 * 2)
   }
 
-  ignoredDomainsContains = (domain) => {
-    return Array.from(this.ignoredDomains).includes(domain)
-  }
-
   excludeIgnoredDomains = (domains) => {
     return domains.filter((domain) => {
-      return !this.ignoredDomainsContains(domain)
+      return !Array.from(this.ignoredDomains).includes(domain)
     })
   }
 
@@ -32,10 +28,6 @@ class Proxies {
 
     domains = this.excludeIgnoredDomains(domains)
 
-    await this.setProxyAutoConfig(domains)
-  }
-
-  setProxyAutoConfig = async (domains) => {
     const config = {
       value: {
         mode: 'pac_script',

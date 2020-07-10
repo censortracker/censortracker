@@ -31,31 +31,29 @@ class Registry {
           console.error(`Error on updating local ${key} database: ${JSON.stringify(error)}`)
         })
     }
+    await this.updateLastSyncDate()
+  }
 
-    const { domains } = await db.get(dbDomainItemName)
-
-    if (!domains) {
-      console.log('Database is empty. Trying to sync...')
-      await this.syncDatabase()
-    }
-    return true
+  updateLastSyncDate = async () => {
+    await db.set('lastSyncDate', new Date().toLocaleString()).catch((error) => {
+      console.error(`Error on updating updateDate: ${error}`)
+    })
   }
 
   getDomains = async () => {
+    await this.syncDatabase()
+
     const { domains } = await db.get('domains')
-    const { blockedDomains } = await db.get({ blockedDomains: [] })
-    const blockedDomainsArray = blockedDomains.map(({ domain }) => domain)
 
     if (domains && Object.hasOwnProperty.call(domains, dbDomainItemName)) {
       try {
-        return domains.domains.concat(blockedDomainsArray)
+        return domains.domains
       } catch (error) {
         console.log(error)
         return []
       }
     }
 
-    console.warn('getDomains: domains not found')
     return []
   }
 
@@ -94,27 +92,6 @@ class Registry {
       })
       .catch(reject)
   })
-
-  addBlockedByDPI = async (hostname) => {
-    if (!hostname) {
-      return
-    }
-    const { blockedDomains } = await db.get({ blockedDomains: [] })
-
-    const isBlocked = blockedDomains.find(({ domain }) => domain === hostname)
-
-    if (!isBlocked) {
-      blockedDomains.push({
-        domain: hostname,
-        timestamp: new Date().getTime(),
-      })
-    } else {
-      console.warn(`(${this.addBlockedByDPI.name}) The domain already in local registry: ${hostname}`)
-    }
-
-    await db.set('blockedDomains', blockedDomains)
-    await this.reportBlockedByDPI(hostname)
-  }
 
   reportBlockedByDPI = async (domain) => {
     const { alreadyReported } = await db.get('alreadyReported')

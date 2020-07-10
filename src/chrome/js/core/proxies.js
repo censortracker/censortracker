@@ -7,6 +7,7 @@ class Proxies {
   constructor () {
     this.ignoredDomains = new Set([
       'youtube.com',
+      'tunnelbear.com',
     ])
     chrome.proxy.onProxyError.addListener((details) => {
       console.error(`Proxy error: ${JSON.stringify(details)}`)
@@ -17,17 +18,55 @@ class Proxies {
     }, 60 * 1000 * 60 * 60 * 2)
   }
 
+  addDomainToIgnore = (domain) => {
+    this.ignoredDomains.add(domain)
+  }
+
+  ignoredDomainsContains = (domain) => {
+    return Array.from(this.ignoredDomains).includes(domain)
+  }
+
   excludeIgnoredDomains = (domains) => {
     return domains.filter((domain) => {
-      return !Array.from(this.ignoredDomains).includes(domain)
+      return !this.ignoredDomainsContains(domain)
     })
   }
 
-  setProxy = async () => {
+  setProxy = async (hostname) => {
     let domains = await registry.getDomains()
 
     domains = this.excludeIgnoredDomains(domains)
 
+    const { blockedDomains } = await db.get({ blockedDomains: [] })
+
+    if (hostname) {
+      const domainInBlocked = blockedDomains
+        .find(({ domain }) => domain === hostname)
+
+      if (!domainInBlocked) {
+        blockedDomains.push({
+          domain: hostname,
+          timestamp: new Date().getTime(),
+        })
+      }
+    }
+
+    if (blockedDomains) {
+      domains = domains.concat(blockedDomains.map(({ domain }) => domain))
+    }
+
+    await db.set('blockedDomains', blockedDomains)
+
+    if (hostname) {
+      console.log(
+        `Site ${hostname} has been added to set of blocked by DPI.`,
+      )
+    }
+
+    await this.setProxyAutoConfig(domains)
+  }
+
+  setProxyAutoConfig = async (domains) => {
     const config = {
       value: {
         mode: 'pac_script',

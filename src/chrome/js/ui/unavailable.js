@@ -29,5 +29,6 @@ setTimeout(() => {
 
   if (extendProxyButton && extendProxyButton.classList.contains('btn-disabled')) {
     extendProxyButton.classList.remove('btn-disabled')
+    extendProxyButton.disabled = false
   }
-}, 1350)
+}, 1600)

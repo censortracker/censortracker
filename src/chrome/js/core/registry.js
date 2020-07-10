@@ -40,23 +40,18 @@ class Registry {
     })
   }
 
-  getLastSyncDate = () => new Promise((resolve, reject) => {
-    db.get('lastSyncDate')
-      .then(({ lastSyncDate }) => {
-        if (lastSyncDate) {
-          resolve(lastSyncDate.replace(/\//g, '.'))
-        }
-      })
-      .catch(reject)
-  })
-
   getDomains = async () => {
     await this.syncDatabase()
 
     const { domains } = await db.get('domains')
 
     if (domains && Object.hasOwnProperty.call(domains, dbDomainItemName)) {
-      return domains.domains
+      try {
+        return domains.domains
+      } catch (error) {
+        console.log(error)
+        return []
+      }
     }
 
     return []
@@ -69,13 +64,12 @@ class Registry {
           return host === shortcuts.cleanHostname(domain)
         })
 
-        // TODO: Pass matched domains instead of array of domains
         if (found) {
-          console.warn(`Registry match found: ${host}`)
-          resolve(domains)
+          resolve({ domainFound: true })
+          console.log(`Registry match found: ${host}`)
         } else {
+          resolve({ domainFound: false })
           console.log(`Registry match not found: ${host}`)
-          resolve([])
         }
       })
       .catch(reject)

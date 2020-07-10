@@ -180,7 +180,7 @@ const updateState = async () => {
           const tabId = tab.id
           const urlObject = new URL(tab.url)
 
-          if (shortcuts.isChromeExtensionUrl(tab.url)) {
+          if (shortcuts.isChromeExtensionUrl(tab.url) || !shortcuts.validURL(tab.url)) {
             return
           }
 
@@ -226,8 +226,8 @@ const updateState = async () => {
               })
 
             registry.domainsContains(currentHostname)
-              .then((_data) => {
-                if (_data.length > 0) {
+              .then(({ domainFound }) => {
+                if (domainFound) {
                   setPageIcon(tabId, settings.getDangerIcon())
                 }
               })

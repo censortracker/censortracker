@@ -180,7 +180,7 @@ const updateState = async () => {
           const tabId = tab.id
           const urlObject = new URL(tab.url)
 
-          if (shortcuts.isChromeExtensionUrl(tab.url)) {
+          if (shortcuts.isChromeExtensionUrl(tab.url) || !shortcuts.validURL(tab.url)) {
             return
           }
 

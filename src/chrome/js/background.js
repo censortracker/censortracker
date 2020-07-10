@@ -84,8 +84,8 @@ const onErrorOccurred = ({ url, error, tabId }) => {
 
   if (errors.isThereConnectionError(errorText)) {
     console.warn('Possible DPI lock detected: reporting domain...')
-    proxies.setProxy(hostname)
-    registry.reportBlockedByDPI(hostname)
+    registry.addBlockedByDPI(hostname)
+    proxies.setProxy()
     chrome.tabs.update(tabId, {
       url: chrome.runtime.getURL(`unavailable.html?${encodedUrl}`),
     })
@@ -304,7 +304,7 @@ const showCooperationAcceptedWarning = async (hostname) => {
   }
 }
 
-chrome.runtime.onInstalled.addListener(({ reason }) => {
+chrome.runtime.onInstalled.addListener(async ({ reason }) => {
   chrome.declarativeContent.onPageChanged.removeRules(undefined, () => {
     chrome.declarativeContent.onPageChanged.addRules([{
       conditions: [
@@ -320,9 +320,13 @@ chrome.runtime.onInstalled.addListener(({ reason }) => {
 
   if (reason === 'install') {
     console.log(`Installing ${settings.getName()}...`)
-    proxies.openPorts()
-    settings.enableExtension()
-    proxies.setProxy()
+    const synced = await registry.syncDatabase()
+
+    if (synced) {
+      proxies.openPorts()
+      settings.enableExtension()
+      proxies.setProxy()
+    }
   }
 })
 

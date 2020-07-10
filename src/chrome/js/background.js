@@ -226,8 +226,8 @@ const updateState = async () => {
               })
 
             registry.domainsContains(currentHostname)
-              .then((_data) => {
-                if (_data.length > 0) {
+              .then(({ domainFound }) => {
+                if (domainFound) {
                   setPageIcon(tabId, settings.getDangerIcon())
                 }
               })

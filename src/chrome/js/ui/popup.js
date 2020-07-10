@@ -111,10 +111,9 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
       if (enableExtension) {
         // TODO: Add state for cases when site is in ORI and blocked
 
-        const domains = await registry.domainsContains(hostname)
+        const { domainFound } = await registry.domainsContains(hostname)
 
-        if (domains.length > 0) {
-          console.log(`Domains ${JSON.stringify(domains)}`)
+        if (domainFound) {
           changeStatusImage('blocked')
           isNotForbidden.setAttribute('hidden', '')
           isForbidden.removeAttribute('hidden')

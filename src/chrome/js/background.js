@@ -161,7 +161,7 @@ const notificationOnButtonClicked = (notificationId, buttonIndex) => {
   }
 }
 
-const updateState = async () => {
+const onUpdateTab = async () => {
   chrome.storage.local.get(
     {
       enableExtension: true,
@@ -332,7 +332,7 @@ chrome.runtime.onInstalled.addListener(async ({ reason }) => {
 
 chrome.runtime.onStartup.addListener(async () => {
   await registry.syncDatabase()
-  await updateState()
+  await onUpdateTab()
 })
 
 chrome.windows.onRemoved.addListener(async (_windowId) => {
@@ -365,7 +365,7 @@ chrome.webRequest.onCompleted.addListener(onCompleted, {
 
 chrome.notifications.onButtonClicked.addListener(notificationOnButtonClicked)
 
-chrome.tabs.onUpdated.addListener(updateState)
+chrome.tabs.onUpdated.addListener(onUpdateTab)
 
 setInterval(() => {
   proxies.openPorts()

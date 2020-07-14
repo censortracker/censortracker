@@ -161,6 +161,22 @@ const notificationOnButtonClicked = (notificationId, buttonIndex) => {
   }
 }
 
+const onTabChange = () => {
+  chrome.storage.local.get({ enableExtension: true }, (config) => {
+    chrome.tabs.query(
+      {
+        active: true,
+        lastFocusedWindow: true,
+      },
+      ([tab]) => {
+        if (!config.enableExtension) {
+          setPageIcon(tab.id, settings.getDisabledIcon())
+        }
+      },
+    )
+  })
+}
+
 const webNavigationOnCompleted = async () => {
   chrome.storage.local.get(
     {
@@ -364,6 +380,9 @@ chrome.webRequest.onCompleted.addListener(onCompleted, {
 })
 
 chrome.notifications.onButtonClicked.addListener(notificationOnButtonClicked)
+
+chrome.tabs.onUpdated.addListener(onTabChange)
+chrome.tabs.onActivated.addListener(onTabChange)
 
 chrome.webNavigation.onCompleted.addListener(webNavigationOnCompleted)
 

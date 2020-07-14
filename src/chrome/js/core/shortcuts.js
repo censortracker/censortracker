@@ -14,9 +14,19 @@ class Shortcuts {
   }
 
   cleanHostname = (hostname) => {
-    const regexp = /^(?:https?:\/\/)?(?:www\.)?/i
+    hostname = hostname.replace(
+      /^(?:https?:\/\/)?(?:www\.)?/i, '').trim()
 
-    return hostname.replace(regexp, '').trim()
+    let lastDot = hostname.lastIndexOf('.')
+
+    if (lastDot !== -1) {
+      lastDot = hostname.lastIndexOf('.', lastDot - 1)
+      if (lastDot !== -1) {
+        hostname = hostname.substr(lastDot + 1)
+      }
+    }
+
+    return hostname
   }
 
   isChromeExtensionUrl = (url) => {

@@ -365,7 +365,6 @@ chrome.webRequest.onCompleted.addListener(onCompleted, {
 
 chrome.notifications.onButtonClicked.addListener(notificationOnButtonClicked)
 
-chrome.tabs.onActivated.addListener(updateState)
 chrome.tabs.onUpdated.addListener(updateState)
 
 setInterval(() => {

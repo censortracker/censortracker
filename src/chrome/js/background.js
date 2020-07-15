@@ -10,8 +10,6 @@ import {
 
 import {
   chromeStorageLocalRemove,
-  chromeTabsQuery,
-  chromeStorageLocalGet,
 } from './promises'
 
 const REQUEST_FILTERS = {
@@ -29,7 +27,7 @@ window.censortracker = {
   errors,
 }
 
-const onBeforeRequestListener = (details) => {
+const onBeforeRequest = (details) => {
   const url = details.url
 
   if (shortcuts.validURL(url)) {
@@ -41,7 +39,7 @@ const onBeforeRequestListener = (details) => {
   return null
 }
 
-const onBeforeRedirectListener = (details) => {
+const onBeforeRedirect = (details) => {
   const requestId = details.requestId
   const urlObject = new URL(details.url)
   const hostname = urlObject.hostname
@@ -56,8 +54,8 @@ const onBeforeRedirectListener = (details) => {
   }
 
   if (sessions.areMaxRedirectsReached(count)) {
-    if (chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequestListener)) {
-      chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequestListener)
+    if (chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequest)) {
+      chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequest)
     }
     console.warn(`Reached max count of redirects. Adding "${hostname}" to ignore...`)
 
@@ -72,63 +70,59 @@ const onBeforeRedirectListener = (details) => {
   }
 }
 
-const onErrorOccurredListener = async ({ url, error, tabId }) => {
+const onErrorOccurred = ({ url, error, tabId }) => {
   const errorText = error.replace('net::', '')
   const urlObject = new URL(url)
   const hostname = urlObject.hostname
   const encodedUrl = window.btoa(url)
 
-  const { enableExtension } = await chromeStorageLocalGet({ enableExtension: true })
+  if (errors.isThereProxyConnectionError(errorText)) {
+    chrome.tabs.update(tabId, {
+      url: chrome.runtime.getURL('proxy_unavailable.html'),
+    })
+  }
 
-  if (enableExtension) {
-    if (errors.isThereProxyConnectionError(errorText)) {
-      chrome.tabs.update(tabId, {
-        url: chrome.runtime.getURL('proxy_unavailable.html'),
-      })
-    }
+  if (errors.isThereConnectionError(errorText)) {
+    console.warn('Possible DPI lock detected: reporting domain...')
+    registry.addBlockedByDPI(hostname)
+    proxies.setProxy()
+    chrome.tabs.update(tabId, {
+      url: chrome.runtime.getURL(`unavailable.html?${encodedUrl}`),
+    })
+  }
 
-    if (errors.isThereConnectionError(errorText)) {
-      console.warn('Possible DPI lock detected: reporting domain...')
-      registry.addBlockedByDPI(hostname)
-      proxies.setProxy()
-      chrome.tabs.update(tabId, {
-        url: chrome.runtime.getURL(`unavailable.html?${encodedUrl}`),
-      })
-    }
+  if (errors.isThereCertificateError(errorText) || errors.isThereAvailabilityError(errorText)) {
+    console.warn('Certificate validation issue. Adding hostname to ignore...')
 
-    if (errors.isThereCertificateError(errorText) || errors.isThereAvailabilityError(errorText)) {
-      console.warn('Certificate validation issue. Adding hostname to ignore...')
+    Database.get({ ignoredSites: [] })
+      .then(({ ignoredSites }) => {
+        if (!ignoredSites.includes(hostname)) {
+          ignoredSites.push(hostname)
+          Database.set('ignoredSites', ignoredSites)
+        }
 
-      Database.get({ ignoredSites: [] })
-        .then(({ ignoredSites }) => {
-          if (!ignoredSites.includes(hostname)) {
-            ignoredSites.push(hostname)
-            Database.set('ignoredSites', ignoredSites)
-          }
-
-          if (chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequestListener)) {
-            chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequestListener)
-          }
-          chrome.tabs.update({
-            url: url.replace('https:', 'http:'),
-          })
+        if (chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequest)) {
+          chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequest)
+        }
+        chrome.tabs.update({
+          url: url.replace('https:', 'http:'),
         })
-    }
+      })
   }
 }
 
-const onCompletedListener = (details) => {
+const onCompleted = (details) => {
   sessions.deleteRequest(details.requestId)
-  if (!chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequestListener)) {
+  if (!chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequest)) {
     chrome.webRequest.onBeforeRequest.addListener(
-      onBeforeRequestListener,
+      onBeforeRequest,
       REQUEST_FILTERS,
       ['blocking'],
     )
   }
 }
 
-const notificationOnButtonClickedListener = (notificationId, buttonIndex) => {
+const notificationOnButtonClicked = (notificationId, buttonIndex) => {
   if (buttonIndex === 0) {
     chrome.tabs.query(
       {
@@ -167,38 +161,7 @@ const notificationOnButtonClickedListener = (notificationId, buttonIndex) => {
   }
 }
 
-const onTabChangeListener = async () => {
-  const { enableExtension } = await chromeStorageLocalGet({ enableExtension: true })
-  const [tab] = await chromeTabsQuery({
-    active: true,
-    lastFocusedWindow: true,
-  })
-
-  const onBeforeRequestHandler = chrome.webRequest.onBeforeRequest
-  const onErrorOccurredHandler = chrome.webRequest.onErrorOccurred
-
-  if (!enableExtension) {
-    setPageIcon(tab.id, settings.getDisabledIcon())
-
-    if (!onBeforeRequestHandler.hasListener(onBeforeRequestListener)) {
-      onBeforeRequestHandler.addListener(onBeforeRequestListener, REQUEST_FILTERS, ['blocking'])
-    }
-
-    if (!onErrorOccurredHandler.hasListener(onErrorOccurredListener)) {
-      onErrorOccurredHandler.addListener(onErrorOccurredListener, REQUEST_FILTERS)
-    }
-  } else {
-    if (onBeforeRequestHandler.hasListener(onBeforeRequestListener)) {
-      onBeforeRequestHandler.removeListener(onBeforeRequestListener)
-    }
-
-    if (onErrorOccurredHandler.hasListener(onErrorOccurredListener)) {
-      onErrorOccurredHandler.removeListener(onErrorOccurredListener)
-    }
-  }
-}
-
-const webNavigationOnCompletedListener = async () => {
+const updateState = async () => {
   chrome.storage.local.get(
     {
       enableExtension: true,
@@ -226,11 +189,30 @@ const webNavigationOnCompletedListener = async () => {
 
           if (ignoredSites.includes(currentHostname)) {
             console.warn(`Site ${currentHostname} found in ignore`)
-            chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequestListener)
+            chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequest)
             return
           }
 
           if (config.enableExtension) {
+            if (
+              !chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequest)
+            ) {
+              chrome.webRequest.onBeforeRequest.addListener(
+                onBeforeRequest,
+                REQUEST_FILTERS,
+                ['blocking'],
+              )
+            }
+
+            if (
+              !chrome.webRequest.onErrorOccurred.hasListener(onErrorOccurred)
+            ) {
+              chrome.webRequest.onErrorOccurred.addListener(
+                onErrorOccurred,
+                REQUEST_FILTERS,
+              )
+            }
+
             registry.distributorsContains(currentHostname)
               .then(({ url, cooperationRefused }) => {
                 if (url) {
@@ -252,6 +234,23 @@ const webNavigationOnCompletedListener = async () => {
               .catch((error) => {
                 console.log(error)
               })
+          } else {
+            setPageIcon(tabId, settings.getDisabledIcon())
+            if (
+              chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequest)
+            ) {
+              chrome.webRequest.onBeforeRequest.removeListener(
+                onBeforeRequest,
+              )
+            }
+
+            if (
+              chrome.webRequest.onErrorOccurred.hasListener(onErrorOccurred)
+            ) {
+              chrome.webRequest.onErrorOccurred.removeListener(
+                onErrorOccurred,
+              )
+            }
           }
         },
       )
@@ -333,7 +332,7 @@ chrome.runtime.onInstalled.addListener(async ({ reason }) => {
 
 chrome.runtime.onStartup.addListener(async () => {
   await registry.syncDatabase()
-  await webNavigationOnCompletedListener()
+  await updateState()
 })
 
 chrome.windows.onRemoved.addListener(async (_windowId) => {
@@ -346,32 +345,28 @@ chrome.proxy.onProxyError.addListener((details) => {
 })
 
 chrome.webRequest.onErrorOccurred.addListener(
-  onErrorOccurredListener,
+  onErrorOccurred,
   REQUEST_FILTERS,
 )
 
 chrome.webRequest.onBeforeRequest.addListener(
-  onBeforeRequestListener,
+  onBeforeRequest,
   REQUEST_FILTERS,
   ['blocking'],
 )
 
-chrome.webRequest.onBeforeRedirect.addListener(
-  onBeforeRedirectListener, {
-    urls: ['*://*/*'],
-  })
+chrome.webRequest.onBeforeRedirect.addListener(onBeforeRedirect, {
+  urls: ['*://*/*'],
+})
 
-chrome.webRequest.onCompleted.addListener(
-  onCompletedListener, {
-    urls: ['*://*/*'],
-  })
+chrome.webRequest.onCompleted.addListener(onCompleted, {
+  urls: ['*://*/*'],
+})
 
-chrome.notifications.onButtonClicked.addListener(notificationOnButtonClickedListener)
+chrome.notifications.onButtonClicked.addListener(notificationOnButtonClicked)
 
-chrome.tabs.onUpdated.addListener(onTabChangeListener)
-chrome.tabs.onActivated.addListener(onTabChangeListener)
-
-chrome.webNavigation.onCompleted.addListener(webNavigationOnCompletedListener)
+chrome.tabs.onActivated.addListener(updateState)
+chrome.tabs.onUpdated.addListener(updateState)
 
 setInterval(() => {
   proxies.openPorts()

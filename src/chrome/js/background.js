@@ -195,32 +195,13 @@ const updateState = async () => {
           const tabId = tab.id
           const urlObject = new URL(tab.url)
 
-          if (shortcuts.isChromeExtensionUrl(tab.url) || !shortcuts.validURL(tab.url)) {
+          if (!shortcuts.validURL(tab.url)) {
             return
           }
 
           const currentHostname = shortcuts.cleanHostname(urlObject.hostname)
 
           if (config.enableExtension) {
-            if (
-              !chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequest)
-            ) {
-              chrome.webRequest.onBeforeRequest.addListener(
-                onBeforeRequest,
-                REQUEST_FILTERS,
-                ['blocking'],
-              )
-            }
-
-            if (
-              !chrome.webRequest.onErrorOccurred.hasListener(onErrorOccurred)
-            ) {
-              chrome.webRequest.onErrorOccurred.addListener(
-                onErrorOccurred,
-                REQUEST_FILTERS,
-              )
-            }
-
             registry.distributorsContains(currentHostname)
               .then(({ url, cooperationRefused }) => {
                 if (url) {

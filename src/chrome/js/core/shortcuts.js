@@ -10,6 +10,10 @@ class Shortcuts {
       'i',
     )
 
+    if (this.isChromeExtensionUrl(urlStr)) {
+      return false
+    }
+
     return !!pattern.test(urlStr)
   }
 

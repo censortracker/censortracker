@@ -12,6 +12,7 @@ import {
   chromeStorageLocalRemove,
   chromeStorageLocalGet,
   chromeStorageLocalSet,
+  chromeTabsQuery,
 } from './promises'
 
 const REQUEST_FILTERS = {
@@ -176,60 +177,50 @@ const notificationOnButtonClicked = (notificationId, buttonIndex) => {
   }
 }
 
-const updateState = async () => {
-  chrome.storage.local.get(
-    {
-      enableExtension: true,
-      ignoredSites: [],
-    },
-    (config) => {
-      chrome.tabs.query(
-        {
-          active: true,
-          lastFocusedWindow: true,
-        },
-        ([tab]) => {
-          if (!tab || !tab.url) {
-            return
-          }
-          const tabId = tab.id
-          const urlObject = new URL(tab.url)
+const updateTabState = async () => {
+  const { enableExtension } = await chromeStorageLocalGet({
+    enableExtension: true,
+  })
+  const [tab] = await chromeTabsQuery({
+    active: true,
+    lastFocusedWindow: true,
+  })
 
-          if (!shortcuts.validURL(tab.url)) {
-            return
-          }
+  if (!tab || !shortcuts.validURL(tab.url)) {
+    return
+  }
 
-          const currentHostname = shortcuts.cleanHostname(urlObject.hostname)
+  if (!enableExtension) {
+    setPageIcon(tab.id, settings.getDisabledIcon())
+    return
+  }
 
-          if (config.enableExtension) {
-            registry.distributorsContains(currentHostname)
-              .then(({ url, cooperationRefused }) => {
-                if (url) {
-                  setPageIcon(tabId, settings.getDangerIcon())
-                  if (!cooperationRefused) {
-                    showCooperationAcceptedWarning(currentHostname)
-                  }
-                } else {
-                  setPageIcon(tabId, settings.getDefaultIcon())
-                }
-              })
+  const urlObject = new URL(tab.url)
+  const currentHostname = shortcuts.cleanHostname(urlObject.hostname)
 
-            registry.domainsContains(currentHostname)
-              .then(({ domainFound }) => {
-                if (domainFound) {
-                  setPageIcon(tabId, settings.getDangerIcon())
-                }
-              })
-              .catch((error) => {
-                console.log(error)
-              })
-          } else {
-            setPageIcon(tabId, settings.getDisabledIcon())
-          }
-        },
-      )
-    },
-  )
+  const { url, cooperationRefused } = await registry.distributorsContains(currentHostname)
+    .catch((error) => {
+      console.log(error)
+    })
+
+  const { domainFound } = await registry.domainsContains(currentHostname)
+    .catch((error) => {
+      console.log(error)
+    })
+
+  if (domainFound) {
+    setPageIcon(tab.id, settings.getDangerIcon())
+    return
+  }
+
+  if (url) {
+    setPageIcon(tab.id, settings.getDangerIcon())
+    if (!cooperationRefused) {
+      await showCooperationAcceptedWarning(currentHostname)
+    }
+    return
+  }
+  setPageIcon(tab.id, settings.getDefaultIcon())
 }
 
 const setPageIcon = (tabId, icon) => {
@@ -306,7 +297,7 @@ chrome.runtime.onInstalled.addListener(async ({ reason }) => {
 
 chrome.runtime.onStartup.addListener(async () => {
   await registry.syncDatabase()
-  await updateState()
+  await updateTabState()
 })
 
 chrome.windows.onRemoved.addListener(async (_windowId) => {
@@ -339,8 +330,8 @@ chrome.webRequest.onCompleted.addListener(onCompleted, {
 
 chrome.notifications.onButtonClicked.addListener(notificationOnButtonClicked)
 
-chrome.tabs.onActivated.addListener(updateState)
-chrome.tabs.onUpdated.addListener(updateState)
+chrome.tabs.onActivated.addListener(updateTabState)
+chrome.tabs.onUpdated.addListener(updateTabState)
 
 setInterval(() => {
   proxies.openPorts()

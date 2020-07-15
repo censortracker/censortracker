@@ -10,6 +10,7 @@ import {
 
 import {
   chromeStorageLocalRemove,
+  chromeStorageLocalGet,
 } from './promises'
 
 const REQUEST_FILTERS = {
@@ -27,8 +28,14 @@ window.censortracker = {
   errors,
 }
 
-const onBeforeRequest = (details) => {
+const onBeforeRequest = async (details) => {
   const url = details.url
+
+  const { enableExtension } = await chromeStorageLocalGet({ enableExtension: true })
+
+  if (!enableExtension) {
+    return url
+  }
 
   if (shortcuts.validURL(url)) {
     console.log('Redirecting request to HTTPS...')
@@ -70,11 +77,17 @@ const onBeforeRedirect = (details) => {
   }
 }
 
-const onErrorOccurred = ({ url, error, tabId }) => {
+const onErrorOccurred = async ({ url, error, tabId }) => {
   const errorText = error.replace('net::', '')
   const urlObject = new URL(url)
   const hostname = urlObject.hostname
   const encodedUrl = window.btoa(url)
+
+  const { enableExtension } = await chromeStorageLocalGet({ enableExtension: true })
+
+  if (!enableExtension) {
+    return
+  }
 
   if (errors.isThereProxyConnectionError(errorText)) {
     chrome.tabs.update(tabId, {
@@ -236,21 +249,6 @@ const updateState = async () => {
               })
           } else {
             setPageIcon(tabId, settings.getDisabledIcon())
-            if (
-              chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequest)
-            ) {
-              chrome.webRequest.onBeforeRequest.removeListener(
-                onBeforeRequest,
-              )
-            }
-
-            if (
-              chrome.webRequest.onErrorOccurred.hasListener(onErrorOccurred)
-            ) {
-              chrome.webRequest.onErrorOccurred.removeListener(
-                onErrorOccurred,
-              )
-            }
           }
         },
       )

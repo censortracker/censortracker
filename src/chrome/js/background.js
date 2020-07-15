@@ -11,6 +11,7 @@ import {
 import {
   chromeStorageLocalRemove,
   chromeStorageLocalGet,
+  chromeStorageLocalSet,
 } from './promises'
 
 const REQUEST_FILTERS = {
@@ -30,10 +31,20 @@ window.censortracker = {
 
 const onBeforeRequest = async (details) => {
   const url = details.url
+  const urlObject = new URL(url)
+  const currentHostname = shortcuts.cleanHostname(urlObject.hostname)
 
-  const { enableExtension } = await chromeStorageLocalGet({ enableExtension: true })
+  const { enableExtension, ignoredSites } = await chromeStorageLocalGet({
+    enableExtension: true,
+    ignoredSites: [],
+  })
 
   if (!enableExtension) {
+    return url
+  }
+
+  if (ignoredSites.includes(currentHostname)) {
+    console.warn(`Site ${currentHostname} found in ignore`)
     return url
   }
 
@@ -46,11 +57,13 @@ const onBeforeRequest = async (details) => {
   return null
 }
 
-const onBeforeRedirect = (details) => {
+const onBeforeRedirect = async (details) => {
   const requestId = details.requestId
   const urlObject = new URL(details.url)
   const hostname = urlObject.hostname
   const redirectCountKey = 'redirectCount'
+
+  const { ignoredSites } = await chromeStorageLocalGet({ ignoredSites: [] })
 
   const count = sessions.getRequest(requestId, redirectCountKey, 0)
 
@@ -61,19 +74,13 @@ const onBeforeRedirect = (details) => {
   }
 
   if (sessions.areMaxRedirectsReached(count)) {
-    if (chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequest)) {
-      chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequest)
-    }
     console.warn(`Reached max count of redirects. Adding "${hostname}" to ignore...`)
 
-    Database.get({ ignoredSites: [] })
-      .then(({ ignoredSites }) => {
-        if (!ignoredSites.includes(hostname)) {
-          ignoredSites.push(hostname)
-          console.warn(`Site ${hostname} add to ignore`)
-          Database.set('ignoredSites', ignoredSites)
-        }
-      })
+    if (!ignoredSites.includes(hostname)) {
+      ignoredSites.push(hostname)
+      console.warn(`Site ${hostname} add to ignore`)
+      await chromeStorageLocalSet('ignoredSites', ignoredSites)
+    }
   }
 }
 
@@ -83,7 +90,10 @@ const onErrorOccurred = async ({ url, error, tabId }) => {
   const hostname = urlObject.hostname
   const encodedUrl = window.btoa(url)
 
-  const { enableExtension } = await chromeStorageLocalGet({ enableExtension: true })
+  const { enableExtension, ignoredSites } = await chromeStorageLocalGet({
+    enableExtension: true,
+    ignoredSites: [],
+  })
 
   if (!enableExtension) {
     return
@@ -106,21 +116,13 @@ const onErrorOccurred = async ({ url, error, tabId }) => {
 
   if (errors.isThereCertificateError(errorText) || errors.isThereAvailabilityError(errorText)) {
     console.warn('Certificate validation issue. Adding hostname to ignore...')
-
-    Database.get({ ignoredSites: [] })
-      .then(({ ignoredSites }) => {
-        if (!ignoredSites.includes(hostname)) {
-          ignoredSites.push(hostname)
-          Database.set('ignoredSites', ignoredSites)
-        }
-
-        if (chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequest)) {
-          chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequest)
-        }
-        chrome.tabs.update({
-          url: url.replace('https:', 'http:'),
-        })
+    if (!ignoredSites.includes(hostname)) {
+      ignoredSites.push(hostname)
+      await chromeStorageLocalSet('ignoredSites', ignoredSites)
+      chrome.tabs.update({
+        url: url.replace('https:', 'http:'),
       })
+    }
   }
 }
 
@@ -198,13 +200,6 @@ const updateState = async () => {
           }
 
           const currentHostname = shortcuts.cleanHostname(urlObject.hostname)
-          const ignoredSites = config.ignoredSites
-
-          if (ignoredSites.includes(currentHostname)) {
-            console.warn(`Site ${currentHostname} found in ignore`)
-            chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequest)
-            return
-          }
 
           if (config.enableExtension) {
             if (

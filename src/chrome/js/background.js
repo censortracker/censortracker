@@ -178,13 +178,8 @@ const notificationOnButtonClicked = (notificationId, buttonIndex) => {
 }
 
 const updateTabState = async () => {
-  const { enableExtension } = await chromeStorageLocalGet({
-    enableExtension: true,
-  })
-  const [tab] = await chromeTabsQuery({
-    active: true,
-    lastFocusedWindow: true,
-  })
+  const [tab] = await chromeTabsQuery({ active: true, lastFocusedWindow: true })
+  const { enableExtension } = await chromeStorageLocalGet({ enableExtension: true })
 
   if (!tab || !shortcuts.validURL(tab.url)) {
     return
@@ -197,16 +192,8 @@ const updateTabState = async () => {
 
   const urlObject = new URL(tab.url)
   const currentHostname = shortcuts.cleanHostname(urlObject.hostname)
-
-  const { url, cooperationRefused } = await registry.distributorsContains(currentHostname)
-    .catch((error) => {
-      console.log(error)
-    })
-
   const { domainFound } = await registry.domainsContains(currentHostname)
-    .catch((error) => {
-      console.log(error)
-    })
+  const { url, cooperationRefused } = await registry.distributorsContains(currentHostname)
 
   if (domainFound) {
     setPageIcon(tab.id, settings.getDangerIcon())

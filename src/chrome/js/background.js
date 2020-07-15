@@ -10,6 +10,8 @@ import {
 
 import {
   chromeStorageLocalRemove,
+  chromeTabsQuery,
+  chromeStorageLocalGet,
 } from './promises'
 
 const REQUEST_FILTERS = {
@@ -161,20 +163,35 @@ const notificationOnButtonClicked = (notificationId, buttonIndex) => {
   }
 }
 
-const onTabChange = () => {
-  chrome.storage.local.get({ enableExtension: true }, (config) => {
-    chrome.tabs.query(
-      {
-        active: true,
-        lastFocusedWindow: true,
-      },
-      ([tab]) => {
-        if (!config.enableExtension) {
-          setPageIcon(tab.id, settings.getDisabledIcon())
-        }
-      },
-    )
+const onTabChangeListener = async () => {
+  const { enableExtension } = await chromeStorageLocalGet({ enableExtension: true })
+  const [tab] = await chromeTabsQuery({
+    active: true,
+    lastFocusedWindow: true,
   })
+
+  const onBeforeRequestHandler = chrome.webRequest.onBeforeRequest
+  const onErrorOccurredHandler = chrome.webRequest.onErrorOccurred
+
+  if (!enableExtension) {
+    setPageIcon(tab.id, settings.getDisabledIcon())
+
+    if (!onBeforeRequestHandler.hasListener(onBeforeRequest)) {
+      onBeforeRequestHandler.addListener(onBeforeRequest, REQUEST_FILTERS, ['blocking'])
+    }
+
+    if (!onErrorOccurredHandler.hasListener(onErrorOccurred)) {
+      onErrorOccurredHandler.addListener(onErrorOccurred, REQUEST_FILTERS)
+    }
+  } else {
+    if (onBeforeRequestHandler.hasListener(onBeforeRequest)) {
+      onBeforeRequestHandler.removeListener(onBeforeRequest)
+    }
+
+    if (onErrorOccurredHandler.hasListener(onErrorOccurred)) {
+      onErrorOccurredHandler.removeListener(onErrorOccurred)
+    }
+  }
 }
 
 const webNavigationOnCompleted = async () => {
@@ -210,25 +227,6 @@ const webNavigationOnCompleted = async () => {
           }
 
           if (config.enableExtension) {
-            if (
-              !chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequest)
-            ) {
-              chrome.webRequest.onBeforeRequest.addListener(
-                onBeforeRequest,
-                REQUEST_FILTERS,
-                ['blocking'],
-              )
-            }
-
-            if (
-              !chrome.webRequest.onErrorOccurred.hasListener(onErrorOccurred)
-            ) {
-              chrome.webRequest.onErrorOccurred.addListener(
-                onErrorOccurred,
-                REQUEST_FILTERS,
-              )
-            }
-
             registry.distributorsContains(currentHostname)
               .then(({ url, cooperationRefused }) => {
                 if (url) {
@@ -250,23 +248,6 @@ const webNavigationOnCompleted = async () => {
               .catch((error) => {
                 console.log(error)
               })
-          } else {
-            setPageIcon(tabId, settings.getDisabledIcon())
-            if (
-              chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequest)
-            ) {
-              chrome.webRequest.onBeforeRequest.removeListener(
-                onBeforeRequest,
-              )
-            }
-
-            if (
-              chrome.webRequest.onErrorOccurred.hasListener(onErrorOccurred)
-            ) {
-              chrome.webRequest.onErrorOccurred.removeListener(
-                onErrorOccurred,
-              )
-            }
           }
         },
       )
@@ -381,8 +362,8 @@ chrome.webRequest.onCompleted.addListener(onCompleted, {
 
 chrome.notifications.onButtonClicked.addListener(notificationOnButtonClicked)
 
-chrome.tabs.onUpdated.addListener(onTabChange)
-chrome.tabs.onActivated.addListener(onTabChange)
+chrome.tabs.onUpdated.addListener(onTabChangeListener)
+chrome.tabs.onActivated.addListener(onTabChangeListener)
 
 chrome.webNavigation.onCompleted.addListener(webNavigationOnCompleted)
 

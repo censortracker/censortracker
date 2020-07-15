@@ -250,9 +250,7 @@ const showCooperationAcceptedWarning = async (hostname) => {
 
     notifiedHosts.push(hostname)
 
-    chrome.storage.local.set({ notifiedHosts }, () => {
-      console.warn('The list of the notified ORI resource updated!')
-    })
+    await chromeStorageLocalSet({ notifiedHosts })
   }
 }
 

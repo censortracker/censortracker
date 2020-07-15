@@ -72,44 +72,48 @@ const onBeforeRedirectListener = (details) => {
   }
 }
 
-const onErrorOccurredListener = ({ url, error, tabId }) => {
+const onErrorOccurredListener = async ({ url, error, tabId }) => {
   const errorText = error.replace('net::', '')
   const urlObject = new URL(url)
   const hostname = urlObject.hostname
   const encodedUrl = window.btoa(url)
 
-  if (errors.isThereProxyConnectionError(errorText)) {
-    chrome.tabs.update(tabId, {
-      url: chrome.runtime.getURL('proxy_unavailable.html'),
-    })
-  }
+  const { enableExtension } = await chromeStorageLocalGet({ enableExtension: true })
 
-  if (errors.isThereConnectionError(errorText)) {
-    console.warn('Possible DPI lock detected: reporting domain...')
-    registry.addBlockedByDPI(hostname)
-    proxies.setProxy()
-    chrome.tabs.update(tabId, {
-      url: chrome.runtime.getURL(`unavailable.html?${encodedUrl}`),
-    })
-  }
-
-  if (errors.isThereCertificateError(errorText) || errors.isThereAvailabilityError(errorText)) {
-    console.warn('Certificate validation issue. Adding hostname to ignore...')
-
-    Database.get({ ignoredSites: [] })
-      .then(({ ignoredSites }) => {
-        if (!ignoredSites.includes(hostname)) {
-          ignoredSites.push(hostname)
-          Database.set('ignoredSites', ignoredSites)
-        }
-
-        if (chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequestListener)) {
-          chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequestListener)
-        }
-        chrome.tabs.update({
-          url: url.replace('https:', 'http:'),
-        })
+  if (enableExtension) {
+    if (errors.isThereProxyConnectionError(errorText)) {
+      chrome.tabs.update(tabId, {
+        url: chrome.runtime.getURL('proxy_unavailable.html'),
       })
+    }
+
+    if (errors.isThereConnectionError(errorText)) {
+      console.warn('Possible DPI lock detected: reporting domain...')
+      registry.addBlockedByDPI(hostname)
+      proxies.setProxy()
+      chrome.tabs.update(tabId, {
+        url: chrome.runtime.getURL(`unavailable.html?${encodedUrl}`),
+      })
+    }
+
+    if (errors.isThereCertificateError(errorText) || errors.isThereAvailabilityError(errorText)) {
+      console.warn('Certificate validation issue. Adding hostname to ignore...')
+
+      Database.get({ ignoredSites: [] })
+        .then(({ ignoredSites }) => {
+          if (!ignoredSites.includes(hostname)) {
+            ignoredSites.push(hostname)
+            Database.set('ignoredSites', ignoredSites)
+          }
+
+          if (chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequestListener)) {
+            chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequestListener)
+          }
+          chrome.tabs.update({
+            url: url.replace('https:', 'http:'),
+          })
+        })
+    }
   }
 }
 

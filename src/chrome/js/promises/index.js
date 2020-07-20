@@ -1,5 +1,9 @@
-export const chromeDeclarativeContentOnPageChangedAddRules = (...args) => new Promise((resolve, reject) => {
-  chrome.declarativeContent.onPageChanged.addRules(...args, (...result) => {
+const promisify = ({ ns, method }, ...args) => new Promise((resolve, reject) => {
+  if (!Object.hasOwnProperty.call(ns, method)) {
+    throw new Error(`The namespace has not a method: ${method}`)
+  }
+
+  ns[method](...args, (...result) => {
     if (chrome.runtime.lastError) {
       return reject(chrome.runtime.lastError)
     }
@@ -7,182 +11,65 @@ export const chromeDeclarativeContentOnPageChangedAddRules = (...args) => new Pr
   })
 })
 
-export const chromeDeclarativeContentOnPageChangedRemoveRules = (...args) => new Promise((resolve, reject) => {
-  chrome.declarativeContent.onPageChanged.removeRules(...args, (...result) => {
-    if (chrome.runtime.lastError) {
-      return reject(chrome.runtime.lastError)
-    }
-    return resolve(...result)
-  })
-})
+export const chromeDeclarativeContentOnPageChangedAddRules = (...args) =>
+  promisify({ ns: chrome.declarativeContent.onPageChanged, method: 'addRules' }, ...args)
 
-export const chromeDeclarativeContentPageStateMatcher = (...args) => new Promise((resolve, reject) => {
-  chrome.declarativeContent.PageStateMatcher(...args, (...result) => {
-    if (chrome.runtime.lastError) {
-      return reject(chrome.runtime.lastError)
-    }
-    return resolve(...result)
-  })
-})
+export const chromeDeclarativeContentOnPageChangedRemoveRules = (...args) =>
+  promisify({ ns: chrome.declarativeContent.onPageChanged, method: 'removeRules' }, ...args)
 
-export const chromeDeclarativeContentShowPageAction = (...args) => new Promise((resolve, reject) => {
-  chrome.declarativeContent.ShowPageAction(...args, (...result) => {
-    if (chrome.runtime.lastError) {
-      return reject(chrome.runtime.lastError)
-    }
-    return resolve(...result)
-  })
-})
+export const chromeDeclarativeContentPageStateMatcher = (...args) =>
+  promisify({ ns: chrome.declarativeContent, method: 'PageStateMatcher' }, ...args)
 
-export const chromeExtensionGetURL = (...args) => new Promise((resolve, reject) => {
-  chrome.extension.getURL(...args, (...result) => {
-    if (chrome.runtime.lastError) {
-      return reject(chrome.runtime.lastError)
-    }
-    return resolve(...result)
-  })
-})
+export const chromeDeclarativeContentShowPageAction = (...args) =>
+  promisify({ ns: chrome.declarativeContent, method: 'ShowPageAction' }, ...args)
 
-export const chromeNotificationsCreate = (...args) => new Promise((resolve, reject) => {
-  chrome.notifications.create(...args, (...result) => {
-    if (chrome.runtime.lastError) {
-      return reject(chrome.runtime.lastError)
-    }
-    return resolve(...result)
-  })
-})
+export const chromeExtensionGetURL = (...args) =>
+  promisify({ ns: chrome.extension, method: 'getURL' }, ...args)
 
-export const chromePageActionSetIcon = (...args) => new Promise((resolve, reject) => {
-  chrome.pageAction.setIcon(...args, (...result) => {
-    if (chrome.runtime.lastError) {
-      return reject(chrome.runtime.lastError)
-    }
-    return resolve(...result)
-  })
-})
+export const chromeNotificationsCreate = (...args) =>
+  promisify({ ns: chrome.notifications, method: 'create' }, ...args)
 
-export const chromePageActionSetTitle = (...args) => new Promise((resolve, reject) => {
-  chrome.pageAction.setTitle(...args, (...result) => {
-    if (chrome.runtime.lastError) {
-      return reject(chrome.runtime.lastError)
-    }
-    return resolve(...result)
-  })
-})
+export const chromePageActionSetIcon = (...args) =>
+  promisify({ ns: chrome.pageAction, method: 'setIcon' }, ...args)
 
-export const chromeProxySettingsClear = (...args) => new Promise((resolve, reject) => {
-  chrome.proxy.settings.clear(...args, (...result) => {
-    if (chrome.runtime.lastError) {
-      return reject(chrome.runtime.lastError)
-    }
-    return resolve(...result)
-  })
-})
+export const chromePageActionSetTitle = (...args) =>
+  promisify({ ns: chrome.pageAction, method: 'setTitle' }, ...args)
 
-export const chromeProxySettingsSet = (...args) => new Promise((resolve, reject) => {
-  chrome.proxy.settings.set(...args, (...result) => {
-    if (chrome.runtime.lastError) {
-      return reject(chrome.runtime.lastError)
-    }
-    return resolve(...result)
-  })
-})
+export const chromeProxySettingsClear = (...args) =>
+  promisify({ ns: chrome.proxy.settings, method: 'clear' }, ...args)
 
-export const chromeRuntimeGetBackgroundPage = (...args) => new Promise((resolve, reject) => {
-  chrome.runtime.getBackgroundPage(...args, (...result) => {
-    if (chrome.runtime.lastError) {
-      return reject(chrome.runtime.lastError)
-    }
-    return resolve(...result)
-  })
-})
+export const chromeProxySettingsSet = (...args) =>
+  promisify({ ns: chrome.proxy.settings, method: 'set' }, ...args)
 
-export const chromeRuntimeGetManifest = (...args) => new Promise((resolve, reject) => {
-  chrome.runtime.getManifest(...args, (...result) => {
-    if (chrome.runtime.lastError) {
-      return reject(chrome.runtime.lastError)
-    }
-    return resolve(...result)
-  })
-})
+export const chromeRuntimeGetBackgroundPage = (...args) =>
+  promisify({ ns: chrome.runtime, method: 'getBackgroundPage' }, ...args)
 
-export const chromeRuntimeGetURL = (...args) => new Promise((resolve, reject) => {
-  chrome.runtime.getURL(...args, (...result) => {
-    if (chrome.runtime.lastError) {
-      return reject(chrome.runtime.lastError)
-    }
-    return resolve(...result)
-  })
-})
+export const chromeRuntimeGetManifest = (...args) =>
+  promisify({ ns: chrome.runtime, method: 'getManifest' }, ...args)
 
-export const chromeRuntimeLastError = (...args) => new Promise((resolve, reject) => {
-  chrome.runtime.lastError(...args, (...result) => {
-    if (chrome.runtime.lastError) {
-      return reject(chrome.runtime.lastError)
-    }
-    return resolve(...result)
-  })
-})
+export const chromeRuntimeGetURL = (...args) =>
+  promisify({ ns: chrome.runtime, method: 'getURL' })
 
-export const chromeStorageLocalGet = (...args) => new Promise((resolve, reject) => {
-  chrome.storage.local.get(...args, (...result) => {
-    if (chrome.runtime.lastError) {
-      return reject(chrome.runtime.lastError)
-    }
-    return resolve(...result)
-  })
-})
+export const chromeRuntimeLastError = (...args) =>
+  promisify({ ns: chrome.runtime, method: 'lastError' }, ...args)
 
-export const chromeStorageLocalRemove = (...args) => new Promise((resolve, reject) => {
-  chrome.storage.local.remove(...args, (...result) => {
-    if (chrome.runtime.lastError) {
-      return reject(chrome.runtime.lastError)
-    }
-    return resolve(...result)
-  })
-})
+export const chromeStorageLocalGet = (...args) =>
+  promisify({ ns: chrome.storage.local, method: 'get' }, ...args)
 
-export const chromeStorageLocalSet = (...args) => new Promise((resolve, reject) => {
-  chrome.storage.local.set(...args, (...result) => {
-    if (chrome.runtime.lastError) {
-      return reject(chrome.runtime.lastError)
-    }
-    return resolve(...result)
-  })
-})
+export const chromeStorageLocalRemove = (...args) =>
+  promisify({ ns: chrome.storage.local, method: 'remove' }, ...args)
 
-export const chromeTabsCreate = (...args) => new Promise((resolve, reject) => {
-  chrome.tabs.create(...args, (...result) => {
-    if (chrome.runtime.lastError) {
-      return reject(chrome.runtime.lastError)
-    }
-    return resolve(...result)
-  })
-})
+export const chromeStorageLocalSet = (...args) =>
+  promisify({ ns: chrome.storage.local, method: 'set' }, ...args)
 
-export const chromeTabsQuery = (...args) => new Promise((resolve, reject) => {
-  chrome.tabs.query(...args, (...result) => {
-    if (chrome.runtime.lastError) {
-      return reject(chrome.runtime.lastError)
-    }
-    return resolve(...result)
-  })
-})
+export const chromeTabsCreate = (...args) =>
+  promisify({ ns: chrome.tabs, method: 'create' }, ...args)
 
-export const chromeTabsRemove = (...args) => new Promise((resolve, reject) => {
-  chrome.tabs.remove(...args, (...result) => {
-    if (chrome.runtime.lastError) {
-      return reject(chrome.runtime.lastError)
-    }
-    return resolve(...result)
-  })
-})
+export const chromeTabsQuery = (...args) =>
+  promisify({ ns: chrome.tabs, method: 'query' }, ...args)
 
-export const chromeTabsUpdate = (...args) => new Promise((resolve, reject) => {
-  chrome.tabs.update(...args, (...result) => {
-    if (chrome.runtime.lastError) {
-      return reject(chrome.runtime.lastError)
-    }
-    return resolve(...result)
-  })
-})
+export const chromeTabsRemove = (...args) =>
+  promisify({ ns: chrome.tabs, method: 'remove' }, ...args)
+
+export const chromeTabsUpdate = (...args) =>
+  promisify({ ns: chrome.tabs, method: 'update' }, ...args)

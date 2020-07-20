@@ -36,13 +36,15 @@ const onBeforeRequest = async (details) => {
   })
 
   if (!enableExtension) {
-    return url
+    return null
   }
 
   if (ignoredSites.includes(currentHostname)) {
     console.warn(`Site ${currentHostname} found in ignore`)
-    return url
+    return null
   }
+
+  console.log('onBeforeRequest: Works fine!')
 
   if (shortcuts.validURL(url)) {
     console.log('Redirecting request to HTTPS...')
@@ -96,8 +98,8 @@ const onErrorOccurred = async ({ url, error, tabId }) => {
   }
 
   if (errors.isThereProxyConnectionError(errorText)) {
-    chrome.tabs.update(tabId, {
-      url: chrome.runtime.getURL('proxy_unavailable.html'),
+    await asynchrome.tabs.update(tabId, {
+      url: await asynchrome.runtime.getURL('proxy_unavailable.html'),
     })
   }
 

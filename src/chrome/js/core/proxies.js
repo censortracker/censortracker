@@ -6,7 +6,7 @@ import settings from './settings'
 class Proxies {
   constructor () {
     this.ignoredDomains = new Set([
-      'youtube.com', 'lostfilm.tv',
+      'youtube.com', 'lostfilm.tv', 'tunnelbear.com',
     ])
 
     setInterval(() => {

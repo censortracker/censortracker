@@ -68,10 +68,9 @@ const onBeforeRedirect = async ({ requestId, url }) => {
   }
 }
 
-const onErrorOccurred = ({ url, error, tabId }) => {
+const onErrorOccurred = async ({ url, error, tabId }) => {
   const errorText = error.replace('net::', '')
-  const urlObject = new URL(url)
-  const hostname = urlObject.hostname
+  const { hostname } = new URL(url)
   const encodedUrl = window.btoa(url)
 
   if (errors.isThereProxyConnectionError(errorText)) {
@@ -90,22 +89,20 @@ const onErrorOccurred = ({ url, error, tabId }) => {
   }
 
   if (errors.isThereCertificateError(errorText) || errors.isThereAvailabilityError(errorText)) {
-    console.warn('Certificate validation issue. Adding hostname to ignore...')
+    const { ignoredSites } = await asynchrome.storage.local.get({ ignoredSites: [] })
 
-    Database.get({ ignoredSites: [] })
-      .then(({ ignoredSites }) => {
-        if (!ignoredSites.includes(hostname)) {
-          ignoredSites.push(hostname)
-          Database.set('ignoredSites', ignoredSites)
-        }
+    if (!ignoredSites.includes(hostname)) {
+      ignoredSites.push(hostname)
+      await asynchrome.storage.local.set({ ignoredSites })
+      console.warn(`Certificate validation issue: ignoring ${hostname}...`)
+    }
 
-        if (chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequest)) {
-          chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequest)
-        }
-        chrome.tabs.update({
-          url: url.replace('https:', 'http:'),
-        })
-      })
+    if (chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequest)) {
+      chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequest)
+    }
+    chrome.tabs.update({
+      url: url.replace('https:', 'http:'),
+    })
   }
 }
 

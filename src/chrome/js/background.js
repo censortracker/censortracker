@@ -37,10 +37,8 @@ const onBeforeRequest = (details) => {
   return null
 }
 
-const onBeforeRedirect = (details) => {
-  const requestId = details.requestId
-  const urlObject = new URL(details.url)
-  const hostname = urlObject.hostname
+const onBeforeRedirect = async ({ requestId, url }) => {
+  const { hostname } = new URL(url)
   const redirectCountKey = 'redirectCount'
 
   const count = sessions.getRequest(requestId, redirectCountKey, 0)
@@ -57,14 +55,13 @@ const onBeforeRedirect = (details) => {
     }
     console.warn(`Reached max count of redirects. Adding "${hostname}" to ignore...`)
 
-    Database.get({ ignoredSites: [] })
-      .then(({ ignoredSites }) => {
-        if (!ignoredSites.includes(hostname)) {
-          ignoredSites.push(hostname)
-          console.warn(`Site ${hostname} add to ignore`)
-          Database.set('ignoredSites', ignoredSites)
-        }
-      })
+    const { ignoredSites } = await asynchrome.storage.local.get({ ignoredSites: [] })
+
+    if (!ignoredSites.includes(hostname)) {
+      ignoredSites.push(hostname)
+      console.warn(`Site ${hostname} add to ignore`)
+      await asynchrome.storage.local.set({ ignoredSites })
+    }
   }
 }
 

@@ -37,13 +37,11 @@ const onBeforeRequest = (details) => {
   return null
 }
 
-const onBeforeRedirect = async (details) => {
+const onBeforeRedirect = (details) => {
   const requestId = details.requestId
   const urlObject = new URL(details.url)
   const hostname = urlObject.hostname
   const redirectCountKey = 'redirectCount'
-
-  const { ignoredSites } = await asynchrome.storage.local.get({ ignoredSites: [] })
 
   const count = sessions.getRequest(requestId, redirectCountKey, 0)
 
@@ -54,38 +52,31 @@ const onBeforeRedirect = async (details) => {
   }
 
   if (sessions.areMaxRedirectsReached(count)) {
+    if (chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequest)) {
+      chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequest)
+    }
     console.warn(`Reached max count of redirects. Adding "${hostname}" to ignore...`)
 
-    if (!ignoredSites.includes(hostname)) {
-      try {
-        ignoredSites.push(hostname)
-        await asynchrome.storage.local.set('ignoredSites', ignoredSites)
-        console.warn(`Site ${hostname} add to ignore`)
-      } catch (error) {
-        console.error(error)
-      }
-    }
+    Database.get({ ignoredSites: [] })
+      .then(({ ignoredSites }) => {
+        if (!ignoredSites.includes(hostname)) {
+          ignoredSites.push(hostname)
+          console.warn(`Site ${hostname} add to ignore`)
+          Database.set('ignoredSites', ignoredSites)
+        }
+      })
   }
 }
 
-const onErrorOccurred = async ({ url, error, tabId }) => {
+const onErrorOccurred = ({ url, error, tabId }) => {
   const errorText = error.replace('net::', '')
   const urlObject = new URL(url)
   const hostname = urlObject.hostname
   const encodedUrl = window.btoa(url)
 
-  const { enableExtension, ignoredSites } = await asynchrome.storage.local.get({
-    enableExtension: true,
-    ignoredSites: [],
-  })
-
-  if (!enableExtension) {
-    return
-  }
-
   if (errors.isThereProxyConnectionError(errorText)) {
-    await asynchrome.tabs.update(tabId, {
-      url: await asynchrome.runtime.getURL('proxy_unavailable.html'),
+    chrome.tabs.update(tabId, {
+      url: chrome.runtime.getURL('proxy_unavailable.html'),
     })
   }
 
@@ -100,13 +91,21 @@ const onErrorOccurred = async ({ url, error, tabId }) => {
 
   if (errors.isThereCertificateError(errorText) || errors.isThereAvailabilityError(errorText)) {
     console.warn('Certificate validation issue. Adding hostname to ignore...')
-    if (!ignoredSites.includes(hostname)) {
-      ignoredSites.push(hostname)
-      await asynchrome.storage.local.set('ignoredSites', ignoredSites)
-      chrome.tabs.update({
-        url: url.replace('https:', 'http:'),
+
+    Database.get({ ignoredSites: [] })
+      .then(({ ignoredSites }) => {
+        if (!ignoredSites.includes(hostname)) {
+          ignoredSites.push(hostname)
+          Database.set('ignoredSites', ignoredSites)
+        }
+
+        if (chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequest)) {
+          chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequest)
+        }
+        chrome.tabs.update({
+          url: url.replace('https:', 'http:'),
+        })
       })
-    }
   }
 }
 

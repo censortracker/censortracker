@@ -25,26 +25,8 @@ window.censortracker = {
   asynchrome,
 }
 
-const onBeforeRequest = async (details) => {
+const onBeforeRequest = (details) => {
   const url = details.url
-  const urlObject = new URL(url)
-  const currentHostname = shortcuts.cleanHostname(urlObject.hostname)
-
-  const { enableExtension, ignoredSites } = await asynchrome.storage.local.get({
-    enableExtension: true,
-    ignoredSites: [],
-  })
-
-  if (!enableExtension) {
-    return null
-  }
-
-  if (ignoredSites.includes(currentHostname)) {
-    console.warn(`Site ${currentHostname} found in ignore`)
-    return null
-  }
-
-  console.log('onBeforeRequest: Works fine!')
 
   if (shortcuts.validURL(url)) {
     console.log('Redirecting request to HTTPS...')
@@ -165,19 +147,33 @@ const updateTabState = async () => {
     active: true,
     lastFocusedWindow: true,
   })
-  const { enableExtension } = await asynchrome.storage.local.get({ enableExtension: true })
 
   if (!tab || !shortcuts.validURL(tab.url)) {
     return
   }
 
+  const { enableExtension, ignoredSites } = await asynchrome.storage.local.get({ enableExtension: true })
+
   if (!enableExtension) {
     setPageIcon(tab.id, settings.getDisabledIcon())
+    if (chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequest)) {
+      chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequest)
+    }
     return
   }
 
   const urlObject = new URL(tab.url)
   const currentHostname = shortcuts.cleanHostname(urlObject.hostname)
+
+  if (ignoredSites.includes(currentHostname)) {
+    console.warn(`Site ${currentHostname} found in ignore`)
+    return
+  }
+
+  if (!chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequest)) {
+    chrome.webRequest.onBeforeRequest.addListener(onBeforeRequest, REQUEST_FILTERS, ['blocking'])
+  }
+
   const { domainFound } = await registry.domainsContains(currentHostname)
   const { url, cooperationRefused } = await registry.distributorsContains(currentHostname)
 

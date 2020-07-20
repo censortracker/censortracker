@@ -57,9 +57,13 @@ const onBeforeRedirect = async (details) => {
     console.warn(`Reached max count of redirects. Adding "${hostname}" to ignore...`)
 
     if (!ignoredSites.includes(hostname)) {
-      ignoredSites.push(hostname)
-      console.warn(`Site ${hostname} add to ignore`)
-      await asynchrome.storage.local.set('ignoredSites', ignoredSites)
+      try {
+        ignoredSites.push(hostname)
+        await asynchrome.storage.local.set('ignoredSites', ignoredSites)
+        console.warn(`Site ${hostname} add to ignore`)
+      } catch (error) {
+        console.error(error)
+      }
     }
   }
 }

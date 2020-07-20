@@ -138,47 +138,36 @@ const onCompleted = (details) => {
   }
 }
 
-const notificationOnButtonClicked = (notificationId, buttonIndex) => {
+const notificationOnButtonClicked = async (notificationId, buttonIndex) => {
   if (buttonIndex === 0) {
-    chrome.tabs.query(
-      {
-        active: true,
-        lastFocusedWindow: true,
-      },
-      (tabs) => {
-        const activeTab = tabs[0]
-        const urlObject = new URL(activeTab.url)
-        const hostname = urlObject.hostname
+    const [tab] = await chromeTabsQuery({
+      active: true,
+      lastFocusedWindow: true,
+    })
 
-        chrome.storage.local.get(
-          {
-            mutedForever: [],
-          },
-          (result) => {
-            const mutedForever = result.mutedForever
+    const urlObject = new URL(tab.url)
+    const hostname = urlObject.hostname
 
-            if (!mutedForever.find((item) => item === hostname)) {
-              mutedForever.push(hostname)
-              chrome.storage.local.set(
-                {
-                  mutedForever,
-                },
-                () => {
-                  console.warn(
-                    `Resource ${hostname} added to ignore. We won't notify you about it anymore`,
-                  )
-                },
-              )
-            }
-          },
-        )
-      },
-    )
+    const { mutedForever } = await chromeStorageLocalGet({ mutedForever: [] })
+
+    if (!mutedForever.find((item) => item === hostname)) {
+      mutedForever.push(hostname)
+
+      try {
+        await chromeStorageLocalSet({ mutedForever })
+        console.warn(`We won't notify you about ${hostname} anymore`)
+      } catch (error) {
+        console.error(error)
+      }
+    }
   }
 }
 
 const updateTabState = async () => {
-  const [tab] = await chromeTabsQuery({ active: true, lastFocusedWindow: true })
+  const [tab] = await chromeTabsQuery({
+    active: true,
+    lastFocusedWindow: true,
+  })
   const { enableExtension } = await chromeStorageLocalGet({ enableExtension: true })
 
   if (!tab || !shortcuts.validURL(tab.url)) {

@@ -6,14 +6,8 @@ import {
   settings,
   shortcuts,
   errors,
+  asynchrome,
 } from './core'
-
-import {
-  chromeStorageLocalRemove,
-  chromeStorageLocalGet,
-  chromeStorageLocalSet,
-  chromeTabsQuery,
-} from './promises'
 
 const REQUEST_FILTERS = {
   urls: ['*://*/*'],
@@ -28,6 +22,7 @@ window.censortracker = {
   settings,
   shortcuts,
   errors,
+  asynchrome,
 }
 
 const onBeforeRequest = async (details) => {
@@ -35,7 +30,7 @@ const onBeforeRequest = async (details) => {
   const urlObject = new URL(url)
   const currentHostname = shortcuts.cleanHostname(urlObject.hostname)
 
-  const { enableExtension, ignoredSites } = await chromeStorageLocalGet({
+  const { enableExtension, ignoredSites } = await asynchrome.storage.local.get({
     enableExtension: true,
     ignoredSites: [],
   })
@@ -64,7 +59,7 @@ const onBeforeRedirect = async (details) => {
   const hostname = urlObject.hostname
   const redirectCountKey = 'redirectCount'
 
-  const { ignoredSites } = await chromeStorageLocalGet({ ignoredSites: [] })
+  const { ignoredSites } = await asynchrome.storage.local.get({ ignoredSites: [] })
 
   const count = sessions.getRequest(requestId, redirectCountKey, 0)
 
@@ -80,7 +75,7 @@ const onBeforeRedirect = async (details) => {
     if (!ignoredSites.includes(hostname)) {
       ignoredSites.push(hostname)
       console.warn(`Site ${hostname} add to ignore`)
-      await chromeStorageLocalSet('ignoredSites', ignoredSites)
+      await asynchrome.storage.local.set('ignoredSites', ignoredSites)
     }
   }
 }
@@ -91,7 +86,7 @@ const onErrorOccurred = async ({ url, error, tabId }) => {
   const hostname = urlObject.hostname
   const encodedUrl = window.btoa(url)
 
-  const { enableExtension, ignoredSites } = await chromeStorageLocalGet({
+  const { enableExtension, ignoredSites } = await asynchrome.storage.local.get({
     enableExtension: true,
     ignoredSites: [],
   })
@@ -119,7 +114,7 @@ const onErrorOccurred = async ({ url, error, tabId }) => {
     console.warn('Certificate validation issue. Adding hostname to ignore...')
     if (!ignoredSites.includes(hostname)) {
       ignoredSites.push(hostname)
-      await chromeStorageLocalSet('ignoredSites', ignoredSites)
+      await asynchrome.storage.local.set('ignoredSites', ignoredSites)
       chrome.tabs.update({
         url: url.replace('https:', 'http:'),
       })
@@ -140,7 +135,7 @@ const onCompleted = (details) => {
 
 const notificationOnButtonClicked = async (notificationId, buttonIndex) => {
   if (buttonIndex === 0) {
-    const [tab] = await chromeTabsQuery({
+    const [tab] = await asynchrome.tabs.query({
       active: true,
       lastFocusedWindow: true,
     })
@@ -148,13 +143,13 @@ const notificationOnButtonClicked = async (notificationId, buttonIndex) => {
     const urlObject = new URL(tab.url)
     const hostname = urlObject.hostname
 
-    const { mutedForever } = await chromeStorageLocalGet({ mutedForever: [] })
+    const { mutedForever } = await asynchrome.storage.local.get({ mutedForever: [] })
 
     if (!mutedForever.find((item) => item === hostname)) {
       mutedForever.push(hostname)
 
       try {
-        await chromeStorageLocalSet({ mutedForever })
+        await asynchrome.storage.local.set({ mutedForever })
         console.warn(`We won't notify you about ${hostname} anymore`)
       } catch (error) {
         console.error(error)
@@ -164,11 +159,11 @@ const notificationOnButtonClicked = async (notificationId, buttonIndex) => {
 }
 
 const updateTabState = async () => {
-  const [tab] = await chromeTabsQuery({
+  const [tab] = await asynchrome.tabs.query({
     active: true,
     lastFocusedWindow: true,
   })
-  const { enableExtension } = await chromeStorageLocalGet({ enableExtension: true })
+  const { enableExtension } = await asynchrome.storage.local.get({ enableExtension: true })
 
   if (!tab || !shortcuts.validURL(tab.url)) {
     return
@@ -239,7 +234,7 @@ const showCooperationAcceptedWarning = async (hostname) => {
 
     notifiedHosts.push(hostname)
 
-    await chromeStorageLocalSet({ notifiedHosts })
+    await asynchrome.storage.local.set({ notifiedHosts })
   }
 }
 
@@ -275,7 +270,7 @@ chrome.runtime.onStartup.addListener(async () => {
 })
 
 chrome.windows.onRemoved.addListener(async (_windowId) => {
-  await chromeStorageLocalRemove('notifiedHosts').catch(console.error)
+  await asynchrome.storage.local.remove('notifiedHosts').catch(console.error)
   console.warn('A list of notified hosts has been cleaned up!')
 })
 

@@ -1,4 +1,4 @@
-import { chromeProxySettingsSet, chromeProxySettingsClear } from '../promises'
+import asynchrome from './asynchrome'
 import db from './database'
 import registry from './registry'
 import settings from './settings'
@@ -36,7 +36,7 @@ class Proxies {
       scope: 'regular',
     }
 
-    await chromeProxySettingsSet(config).catch(console.error)
+    await asynchrome.proxy.settings.set(config).catch(console.error)
     console.warn('PAC has been set successfully!')
   }
 
@@ -101,7 +101,7 @@ function FindProxyForURL(url, host) {
   }
 
   removeProxy = async () => {
-    await chromeProxySettingsClear({ scope: 'regular' }).catch(console.error)
+    await asynchrome.proxy.settings.clear({ scope: 'regular' }).catch(console.error)
     console.warn('Proxy auto-config disabled!')
   }
 

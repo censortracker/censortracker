@@ -152,7 +152,10 @@ const updateTabState = async () => {
     return
   }
 
-  const { enableExtension, ignoredSites } = await asynchrome.storage.local.get({ enableExtension: true })
+  const { enableExtension, ignoredSites } = await asynchrome.storage.local.get({
+    enableExtension: true,
+    ignoredSites: [],
+  })
 
   if (!enableExtension) {
     setPageIcon(tab.id, settings.getDisabledIcon())

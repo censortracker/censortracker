@@ -53,14 +53,17 @@ const onBeforeRedirect = async ({ requestId, url }) => {
     if (chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequest)) {
       chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequest)
     }
-    console.warn(`Reached max count of redirects. Adding "${hostname}" to ignore...`)
 
     const { ignoredSites } = await asynchrome.storage.local.get({ ignoredSites: [] })
 
     if (!ignoredSites.includes(hostname)) {
-      ignoredSites.push(hostname)
-      console.warn(`Site ${hostname} add to ignore`)
-      await asynchrome.storage.local.set({ ignoredSites })
+      try {
+        ignoredSites.push(hostname)
+        await asynchrome.storage.local.set({ ignoredSites })
+        console.warn(`Reached max count of redirects: ignoring "${hostname}"...`)
+      } catch (error) {
+        console.error(error)
+      }
     }
   }
 }

@@ -32,7 +32,7 @@ class Registry {
         .catch((console.error))
     }
 
-    const { domains } = await db.get(dbDomainItemName)
+    const { domains } = await asynchrome.storage.local.get({ [dbDomainItemName]: {} })
 
     if (!domains) {
       console.log('Database is empty. Trying to sync...')
@@ -101,27 +101,22 @@ class Registry {
     if (!hostname) {
       return
     }
-    const { blockedDomains } = await db.get({ blockedDomains: [] })
+    const { blockedDomains } = await asynchrome.storage.local.get({ blockedDomains: [] })
 
-    const isBlocked = blockedDomains.find(({ domain }) => domain === hostname)
-
-    if (!isBlocked) {
+    if (!blockedDomains.find(({ domain }) => domain === hostname)) {
       blockedDomains.push({
         domain: hostname,
         timestamp: new Date().getTime(),
       })
-    } else {
-      console.warn(`(${this.addBlockedByDPI.name}) The domain already in local registry: ${hostname}`)
+      await this.reportBlockedByDPI(hostname)
     }
-
-    await db.set('blockedDomains', blockedDomains)
-    await this.reportBlockedByDPI(hostname)
+    await asynchrome.storage.local.set({ blockedDomains })
   }
 
   reportBlockedByDPI = async (domain) => {
-    const { alreadyReported } = await db.get('alreadyReported')
+    const { alreadyReported } = await asynchrome.storage.local.get({ alreadyReported: [] })
 
-    if (alreadyReported && !alreadyReported.includes(domain)) {
+    if (!alreadyReported.includes(domain)) {
       const response = await fetch(settings.getLoggingApiUrl(), {
         method: 'POST',
         headers: {
@@ -134,7 +129,7 @@ class Registry {
       const json = await response.json()
 
       alreadyReported.push(domain)
-      await db.set('alreadyReported', alreadyReported)
+      await asynchrome.storage.local.set({ alreadyReported })
 
       return json
     }

@@ -1,6 +1,7 @@
 import db from './database'
 import settings from './settings'
 import shortcuts from './shortcuts'
+import asynchrome from './asynchrome'
 
 const dbDomainItemName = 'domains'
 const dbDistributorsItemName = 'distributors'
@@ -23,13 +24,12 @@ class Registry {
       const response = await fetch(url).catch(console.error)
       const domains = await response.json()
 
-      await db.set(key, {
-        domains,
-        timestamp: new Date().getTime(),
+      await asynchrome.storage.local.set({
+        [key]: {
+          domains, timestamp: new Date().getTime(),
+        },
       })
-        .catch((error) => {
-          console.error(`Error on updating local ${key} database: ${JSON.stringify(error)}`)
-        })
+        .catch((console.error))
     }
 
     const { domains } = await db.get(dbDomainItemName)

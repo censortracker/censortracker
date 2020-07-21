@@ -1,6 +1,5 @@
 import {
   proxies,
-  Database,
   registry,
   sessions,
   settings,
@@ -16,7 +15,6 @@ const REQUEST_FILTERS = {
 
 window.censortracker = {
   proxies,
-  Database,
   registry,
   sessions,
   settings,
@@ -25,9 +23,7 @@ window.censortracker = {
   asynchrome,
 }
 
-const onBeforeRequest = (details) => {
-  const url = details.url
-
+const onBeforeRequest = ({ url }) => {
   if (shortcuts.validURL(url)) {
     console.log('Redirecting request to HTTPS...')
     return {
@@ -211,7 +207,7 @@ const showCooperationAcceptedWarning = async (hostname) => {
     return
   }
 
-  const { notifiedHosts, mutedForever } = await Database.get({
+  const { notifiedHosts, mutedForever } = await asynchrome.storage.local.get({
     notifiedHosts: [],
     mutedForever: [],
   })

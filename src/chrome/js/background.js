@@ -221,7 +221,7 @@ const showCooperationAcceptedWarning = async (hostname) => {
   }
 
   if (!notifiedHosts.includes(hostname)) {
-    chrome.notifications.create({
+    await asynchrome.notifications.create({
       type: 'basic',
       title: settings.getName(),
       priority: 2,
@@ -233,9 +233,12 @@ const showCooperationAcceptedWarning = async (hostname) => {
       iconUrl: settings.getDangerIcon(),
     })
 
-    notifiedHosts.push(hostname)
-
-    await asynchrome.storage.local.set({ notifiedHosts })
+    try {
+      notifiedHosts.push(hostname)
+      await asynchrome.storage.local.set({ notifiedHosts })
+    } catch (error) {
+      console.error(error)
+    }
   }
 }
 

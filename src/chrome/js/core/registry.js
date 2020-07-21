@@ -42,8 +42,11 @@ class Registry {
   }
 
   getDomains = async () => {
-    const { domains } = await db.get('domains')
-    const { blockedDomains } = await db.get({ blockedDomains: [] })
+    const { domains } =
+      await asynchrome.storage.local.get({ domains: {} })
+    const { blockedDomains } =
+      await asynchrome.storage.local.get({ blockedDomains: [] })
+
     const blockedDomainsArray = blockedDomains.map(({ domain }) => domain)
 
     if (domains && Object.hasOwnProperty.call(domains, dbDomainItemName)) {
@@ -51,7 +54,6 @@ class Registry {
         return domains.domains.concat(blockedDomainsArray)
       } catch (error) {
         console.log(error)
-        return []
       }
     }
 

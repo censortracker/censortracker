@@ -1,6 +1,4 @@
-import db from './database'
 import settings from './settings'
-import shortcuts from './shortcuts'
 import asynchrome from './asynchrome'
 
 const dbDomainItemName = 'domains'
@@ -61,41 +59,31 @@ class Registry {
     return []
   }
 
-  domainsContains = (host) => new Promise((resolve, reject) => {
-    db.get(dbDomainItemName)
-      .then(({ [dbDomainItemName]: { domains } }) => {
-        const found = domains.find((domain) => {
-          return host === shortcuts.cleanHostname(domain)
-        })
+  domainsContains = async (host) => {
+    const { [dbDomainItemName]: { domains } } =
+      await asynchrome.storage.local.get(dbDomainItemName)
 
-        if (found) {
-          resolve({ domainFound: true })
-          console.log(`Registry match found: ${host}`)
-        } else {
-          resolve({ domainFound: false })
-          console.log(`Registry match not found: ${host}`)
-        }
-      })
-      .catch(reject)
-  })
+    if (domains.find((domain) => host === domain)) {
+      console.log(`Registry match found: ${host}`)
+      return { domainFound: true }
+    }
+    console.log(`Registry match not found: ${host}`)
+    return { domainFound: false }
+  }
 
-  distributorsContains = (host) => new Promise((resolve, reject) => {
-    db.get(dbDistributorsItemName)
-      .then(({ [dbDistributorsItemName]: { domains } }) => {
-        const dataObject = domains.find((item) => (
-          host === shortcuts.cleanHostname(item.url)
-        ))
+  distributorsContains = async (host) => {
+    const { [dbDistributorsItemName]: { domains } } =
+      await asynchrome.storage.local.get(dbDistributorsItemName)
 
-        if (dataObject) {
-          console.warn(`Distributor match found: ${host}`)
-          resolve(dataObject)
-        } else {
-          console.warn(`Distributor match not found: ${host}`)
-          resolve({})
-        }
-      })
-      .catch(reject)
-  })
+    const dataObject = domains.find(({ url }) => (host === url))
+
+    if (dataObject) {
+      console.warn(`Distributor match found: ${host}`)
+      return dataObject
+    }
+    console.warn(`Distributor match not found: ${host}`)
+    return {}
+  }
 
   addBlockedByDPI = async (hostname) => {
     if (!hostname) {

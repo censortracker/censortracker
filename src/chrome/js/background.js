@@ -102,8 +102,8 @@ const onErrorOccurred = async ({ url, error, tabId }) => {
   }
 }
 
-const onCompleted = (details) => {
-  sessions.deleteRequest(details.requestId)
+const onCompleted = ({ requestId }) => {
+  sessions.deleteRequest(requestId)
   if (!chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequest)) {
     chrome.webRequest.onBeforeRequest.addListener(
       onBeforeRequest,

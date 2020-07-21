@@ -1,12 +1,13 @@
 import asynchrome from './asynchrome'
-import db from './database'
 import registry from './registry'
 import settings from './settings'
 
 class Proxies {
   constructor () {
     this.ignoredDomains = new Set([
-      'youtube.com', 'lostfilm.tv', 'tunnelbear.com',
+      'youtube.com',
+      'lostfilm.tv',
+      'tunnelbear.com',
     ])
 
     setInterval(() => {
@@ -123,7 +124,7 @@ function FindProxyForURL(url, host) {
 
   removeOutdatedBlockedDomains = async () => {
     const monthInSeconds = 2628000
-    let { blockedDomains } = await db.get('blockedDomains')
+    let { blockedDomains } = await asynchrome.storage.local.get({ blockedDomains: [] })
 
     if (blockedDomains) {
       blockedDomains = blockedDomains.filter((item) => {
@@ -133,7 +134,7 @@ function FindProxyForURL(url, host) {
       })
     }
 
-    await db.set('blockedDomains', blockedDomains)
+    await asynchrome.storage.local.set({ blockedDomains })
     console.warn('Outdated domains has been removed.')
     await this.setProxy()
   }

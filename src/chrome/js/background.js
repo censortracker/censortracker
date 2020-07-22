@@ -1,19 +1,12 @@
 import {
   proxies,
-  Database,
   registry,
   sessions,
   settings,
   shortcuts,
   errors,
+  asynchrome,
 } from './core'
-
-import {
-  chromeStorageLocalRemove,
-  chromeStorageLocalGet,
-  chromeStorageLocalSet,
-  chromeTabsQuery,
-} from './promises'
 
 const REQUEST_FILTERS = {
   urls: ['*://*/*'],
@@ -22,33 +15,15 @@ const REQUEST_FILTERS = {
 
 window.censortracker = {
   proxies,
-  Database,
   registry,
   sessions,
   settings,
   shortcuts,
   errors,
+  asynchrome,
 }
 
-const onBeforeRequest = async (details) => {
-  const url = details.url
-  const urlObject = new URL(url)
-  const currentHostname = shortcuts.cleanHostname(urlObject.hostname)
-
-  const { enableExtension, ignoredSites } = await chromeStorageLocalGet({
-    enableExtension: true,
-    ignoredSites: [],
-  })
-
-  if (!enableExtension) {
-    return url
-  }
-
-  if (ignoredSites.includes(currentHostname)) {
-    console.warn(`Site ${currentHostname} found in ignore`)
-    return url
-  }
-
+const onBeforeRequest = ({ url }) => {
   if (shortcuts.validURL(url)) {
     console.log('Redirecting request to HTTPS...')
     return {
@@ -58,13 +33,9 @@ const onBeforeRequest = async (details) => {
   return null
 }
 
-const onBeforeRedirect = async (details) => {
-  const requestId = details.requestId
-  const urlObject = new URL(details.url)
-  const hostname = urlObject.hostname
+const onBeforeRedirect = async ({ requestId, url }) => {
+  const { hostname } = new URL(url)
   const redirectCountKey = 'redirectCount'
-
-  const { ignoredSites } = await chromeStorageLocalGet({ ignoredSites: [] })
 
   const count = sessions.getRequest(requestId, redirectCountKey, 0)
 
@@ -75,30 +46,28 @@ const onBeforeRedirect = async (details) => {
   }
 
   if (sessions.areMaxRedirectsReached(count)) {
-    console.warn(`Reached max count of redirects. Adding "${hostname}" to ignore...`)
+    if (chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequest)) {
+      chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequest)
+    }
+
+    const { ignoredSites } = await asynchrome.storage.local.get({ ignoredSites: [] })
 
     if (!ignoredSites.includes(hostname)) {
-      ignoredSites.push(hostname)
-      console.warn(`Site ${hostname} add to ignore`)
-      await chromeStorageLocalSet('ignoredSites', ignoredSites)
+      try {
+        ignoredSites.push(hostname)
+        await asynchrome.storage.local.set({ ignoredSites })
+        console.warn(`Reached max count of redirects: ignoring "${hostname}"...`)
+      } catch (error) {
+        console.error(error)
+      }
     }
   }
 }
 
 const onErrorOccurred = async ({ url, error, tabId }) => {
   const errorText = error.replace('net::', '')
-  const urlObject = new URL(url)
-  const hostname = urlObject.hostname
+  const { hostname } = new URL(url)
   const encodedUrl = window.btoa(url)
-
-  const { enableExtension, ignoredSites } = await chromeStorageLocalGet({
-    enableExtension: true,
-    ignoredSites: [],
-  })
-
-  if (!enableExtension) {
-    return
-  }
 
   if (errors.isThereProxyConnectionError(errorText)) {
     chrome.tabs.update(tabId, {
@@ -116,19 +85,25 @@ const onErrorOccurred = async ({ url, error, tabId }) => {
   }
 
   if (errors.isThereCertificateError(errorText) || errors.isThereAvailabilityError(errorText)) {
-    console.warn('Certificate validation issue. Adding hostname to ignore...')
+    const { ignoredSites } = await asynchrome.storage.local.get({ ignoredSites: [] })
+
     if (!ignoredSites.includes(hostname)) {
       ignoredSites.push(hostname)
-      await chromeStorageLocalSet('ignoredSites', ignoredSites)
-      chrome.tabs.update({
-        url: url.replace('https:', 'http:'),
-      })
+      await asynchrome.storage.local.set({ ignoredSites })
+      console.warn(`Certificate validation issue: ignoring ${hostname}...`)
     }
+
+    if (chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequest)) {
+      chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequest)
+    }
+    chrome.tabs.update({
+      url: url.replace('https:', 'http:'),
+    })
   }
 }
 
-const onCompleted = (details) => {
-  sessions.deleteRequest(details.requestId)
+const onCompleted = ({ requestId }) => {
+  sessions.deleteRequest(requestId)
   if (!chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequest)) {
     chrome.webRequest.onBeforeRequest.addListener(
       onBeforeRequest,
@@ -140,7 +115,7 @@ const onCompleted = (details) => {
 
 const notificationOnButtonClicked = async (notificationId, buttonIndex) => {
   if (buttonIndex === 0) {
-    const [tab] = await chromeTabsQuery({
+    const [tab] = await asynchrome.tabs.query({
       active: true,
       lastFocusedWindow: true,
     })
@@ -148,13 +123,13 @@ const notificationOnButtonClicked = async (notificationId, buttonIndex) => {
     const urlObject = new URL(tab.url)
     const hostname = urlObject.hostname
 
-    const { mutedForever } = await chromeStorageLocalGet({ mutedForever: [] })
+    const { mutedForever } = await asynchrome.storage.local.get({ mutedForever: [] })
 
     if (!mutedForever.find((item) => item === hostname)) {
       mutedForever.push(hostname)
 
       try {
-        await chromeStorageLocalSet({ mutedForever })
+        await asynchrome.storage.local.set({ mutedForever })
         console.warn(`We won't notify you about ${hostname} anymore`)
       } catch (error) {
         console.error(error)
@@ -164,23 +139,40 @@ const notificationOnButtonClicked = async (notificationId, buttonIndex) => {
 }
 
 const updateTabState = async () => {
-  const [tab] = await chromeTabsQuery({
+  const [tab] = await asynchrome.tabs.query({
     active: true,
     lastFocusedWindow: true,
   })
-  const { enableExtension } = await chromeStorageLocalGet({ enableExtension: true })
 
   if (!tab || !shortcuts.validURL(tab.url)) {
     return
   }
 
+  const { enableExtension, ignoredSites } = await asynchrome.storage.local.get({
+    enableExtension: true,
+    ignoredSites: [],
+  })
+
   if (!enableExtension) {
     setPageIcon(tab.id, settings.getDisabledIcon())
+    if (chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequest)) {
+      chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequest)
+    }
     return
   }
 
   const urlObject = new URL(tab.url)
   const currentHostname = shortcuts.cleanHostname(urlObject.hostname)
+
+  if (ignoredSites.includes(currentHostname)) {
+    console.warn(`Site ${currentHostname} found in ignore`)
+    return
+  }
+
+  if (!chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequest)) {
+    chrome.webRequest.onBeforeRequest.addListener(onBeforeRequest, REQUEST_FILTERS, ['blocking'])
+  }
+
   const { domainFound } = await registry.domainsContains(currentHostname)
   const { url, cooperationRefused } = await registry.distributorsContains(currentHostname)
 
@@ -215,7 +207,7 @@ const showCooperationAcceptedWarning = async (hostname) => {
     return
   }
 
-  const { notifiedHosts, mutedForever } = await Database.get({
+  const { notifiedHosts, mutedForever } = await asynchrome.storage.local.get({
     notifiedHosts: [],
     mutedForever: [],
   })
@@ -225,7 +217,7 @@ const showCooperationAcceptedWarning = async (hostname) => {
   }
 
   if (!notifiedHosts.includes(hostname)) {
-    chrome.notifications.create({
+    await asynchrome.notifications.create({
       type: 'basic',
       title: settings.getName(),
       priority: 2,
@@ -237,9 +229,12 @@ const showCooperationAcceptedWarning = async (hostname) => {
       iconUrl: settings.getDangerIcon(),
     })
 
-    notifiedHosts.push(hostname)
-
-    await chromeStorageLocalSet({ notifiedHosts })
+    try {
+      notifiedHosts.push(hostname)
+      await asynchrome.storage.local.set({ notifiedHosts })
+    } catch (error) {
+      console.error(error)
+    }
   }
 }
 
@@ -275,7 +270,7 @@ chrome.runtime.onStartup.addListener(async () => {
 })
 
 chrome.windows.onRemoved.addListener(async (_windowId) => {
-  await chromeStorageLocalRemove('notifiedHosts').catch(console.error)
+  await asynchrome.storage.local.remove('notifiedHosts').catch(console.error)
   console.warn('A list of notified hosts has been cleaned up!')
 })
 

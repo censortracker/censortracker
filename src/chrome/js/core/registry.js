@@ -1,6 +1,5 @@
-import db from './database'
 import settings from './settings'
-import shortcuts from './shortcuts'
+import asynchrome from './asynchrome'
 
 const dbDomainItemName = 'domains'
 const dbDistributorsItemName = 'distributors'
@@ -23,16 +22,15 @@ class Registry {
       const response = await fetch(url).catch(console.error)
       const domains = await response.json()
 
-      await db.set(key, {
-        domains,
-        timestamp: new Date().getTime(),
+      await asynchrome.storage.local.set({
+        [key]: {
+          domains, timestamp: new Date().getTime(),
+        },
       })
-        .catch((error) => {
-          console.error(`Error on updating local ${key} database: ${JSON.stringify(error)}`)
-        })
+        .catch((console.error))
     }
 
-    const { domains } = await db.get(dbDomainItemName)
+    const { domains } = await asynchrome.storage.local.get({ [dbDomainItemName]: {} })
 
     if (!domains) {
       console.log('Database is empty. Trying to sync...')
@@ -42,8 +40,11 @@ class Registry {
   }
 
   getDomains = async () => {
-    const { domains } = await db.get('domains')
-    const { blockedDomains } = await db.get({ blockedDomains: [] })
+    const { domains } =
+      await asynchrome.storage.local.get({ domains: {} })
+    const { blockedDomains } =
+      await asynchrome.storage.local.get({ blockedDomains: [] })
+
     const blockedDomainsArray = blockedDomains.map(({ domain }) => domain)
 
     if (domains && Object.hasOwnProperty.call(domains, dbDomainItemName)) {
@@ -51,7 +52,6 @@ class Registry {
         return domains.domains.concat(blockedDomainsArray)
       } catch (error) {
         console.log(error)
-        return []
       }
     }
 
@@ -59,67 +59,52 @@ class Registry {
     return []
   }
 
-  domainsContains = (host) => new Promise((resolve, reject) => {
-    db.get(dbDomainItemName)
-      .then(({ [dbDomainItemName]: { domains } }) => {
-        const found = domains.find((domain) => {
-          return host === shortcuts.cleanHostname(domain)
-        })
+  domainsContains = async (host) => {
+    const { [dbDomainItemName]: { domains } } =
+      await asynchrome.storage.local.get(dbDomainItemName)
 
-        if (found) {
-          resolve({ domainFound: true })
-          console.log(`Registry match found: ${host}`)
-        } else {
-          resolve({ domainFound: false })
-          console.log(`Registry match not found: ${host}`)
-        }
-      })
-      .catch(reject)
-  })
+    if (domains.find((domain) => host === domain)) {
+      console.log(`Registry match found: ${host}`)
+      return { domainFound: true }
+    }
+    console.log(`Registry match not found: ${host}`)
+    return { domainFound: false }
+  }
 
-  distributorsContains = (host) => new Promise((resolve, reject) => {
-    db.get(dbDistributorsItemName)
-      .then(({ [dbDistributorsItemName]: { domains } }) => {
-        const dataObject = domains.find((item) => (
-          host === shortcuts.cleanHostname(item.url)
-        ))
+  distributorsContains = async (host) => {
+    const { [dbDistributorsItemName]: { domains } } =
+      await asynchrome.storage.local.get(dbDistributorsItemName)
 
-        if (dataObject) {
-          console.warn(`Distributor match found: ${host}`)
-          resolve(dataObject)
-        } else {
-          console.warn(`Distributor match not found: ${host}`)
-          resolve({})
-        }
-      })
-      .catch(reject)
-  })
+    const dataObject = domains.find(({ url }) => (host === url))
+
+    if (dataObject) {
+      console.warn(`Distributor match found: ${host}`)
+      return dataObject
+    }
+    console.warn(`Distributor match not found: ${host}`)
+    return {}
+  }
 
   addBlockedByDPI = async (hostname) => {
     if (!hostname) {
       return
     }
-    const { blockedDomains } = await db.get({ blockedDomains: [] })
+    const { blockedDomains } = await asynchrome.storage.local.get({ blockedDomains: [] })
 
-    const isBlocked = blockedDomains.find(({ domain }) => domain === hostname)
-
-    if (!isBlocked) {
+    if (!blockedDomains.find(({ domain }) => domain === hostname)) {
       blockedDomains.push({
         domain: hostname,
         timestamp: new Date().getTime(),
       })
-    } else {
-      console.warn(`(${this.addBlockedByDPI.name}) The domain already in local registry: ${hostname}`)
+      await this.reportBlockedByDPI(hostname)
     }
-
-    await db.set('blockedDomains', blockedDomains)
-    await this.reportBlockedByDPI(hostname)
+    await asynchrome.storage.local.set({ blockedDomains })
   }
 
   reportBlockedByDPI = async (domain) => {
-    const { alreadyReported } = await db.get('alreadyReported')
+    const { alreadyReported } = await asynchrome.storage.local.get({ alreadyReported: [] })
 
-    if (alreadyReported && !alreadyReported.includes(domain)) {
+    if (!alreadyReported.includes(domain)) {
       const response = await fetch(settings.getLoggingApiUrl(), {
         method: 'POST',
         headers: {
@@ -132,7 +117,7 @@ class Registry {
       const json = await response.json()
 
       alreadyReported.push(domain)
-      await db.set('alreadyReported', alreadyReported)
+      await asynchrome.storage.local.set({ alreadyReported })
 
       return json
     }

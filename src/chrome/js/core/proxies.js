@@ -1,5 +1,4 @@
-import { chromeProxySettingsSet, chromeProxySettingsClear } from '../promises'
-import db from './database'
+import asynchrome from './asynchrome'
 import registry from './registry'
 import settings from './settings'
 
@@ -36,7 +35,7 @@ class Proxies {
       scope: 'regular',
     }
 
-    await chromeProxySettingsSet(config).catch(console.error)
+    await asynchrome.proxy.settings.set(config).catch(console.error)
     console.warn('PAC has been set successfully!')
   }
 
@@ -101,7 +100,7 @@ function FindProxyForURL(url, host) {
   }
 
   removeProxy = async () => {
-    await chromeProxySettingsClear({ scope: 'regular' }).catch(console.error)
+    await asynchrome.proxy.settings.clear({ scope: 'regular' }).catch(console.error)
     console.warn('Proxy auto-config disabled!')
   }
 
@@ -123,7 +122,7 @@ function FindProxyForURL(url, host) {
 
   removeOutdatedBlockedDomains = async () => {
     const monthInSeconds = 2628000
-    let { blockedDomains } = await db.get('blockedDomains')
+    let { blockedDomains } = await asynchrome.storage.local.get({ blockedDomains: [] })
 
     if (blockedDomains) {
       blockedDomains = blockedDomains.filter((item) => {
@@ -133,7 +132,7 @@ function FindProxyForURL(url, host) {
       })
     }
 
-    await db.set('blockedDomains', blockedDomains)
+    await asynchrome.storage.local.set({ blockedDomains })
     console.warn('Outdated domains has been removed.')
     await this.setProxy()
   }

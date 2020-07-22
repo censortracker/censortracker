@@ -1,3 +1,5 @@
+const ipRangeCheck = require('ip-range-check')
+
 class Shortcuts {
   validURL = (urlStr) => {
     const pattern = new RegExp(
@@ -18,18 +20,7 @@ class Shortcuts {
   }
 
   cleanHostname = (hostname) => {
-    hostname = hostname.replace(
-      /^(?:https?:\/\/)?(?:www\.)?/i, '').trim()
-
-    let lastDot = hostname.lastIndexOf('.')
-
-    if (lastDot !== -1) {
-      lastDot = hostname.lastIndexOf('.', lastDot - 1)
-      if (lastDot !== -1) {
-        hostname = hostname.substr(lastDot + 1)
-      }
-    }
-
+    hostname = hostname.replace(/^(?:https?:\/\/)?(?:www\.)?/i, '').trim()
     return hostname
   }
 
@@ -37,14 +28,41 @@ class Shortcuts {
     return url.startsWith('chrome-extension://')
   }
 
-  createSearchLink = (hostname) => {
-    const searchUrl = 'https://reestr.rublacklist.net/search/'
-
-    return `<a href="${searchUrl}?q=${hostname}" target="_blank">Да</a>`
-  }
-
   enforceHttps = (hostname) => {
     return hostname.replace(/^http:/, 'https:')
+  }
+
+  isSpecialPurposeIP = (host) => {
+    const specialIPs = [
+      '0.0.0.0/8',
+      '10.0.0.0/8',
+      '100.64.0.0/10',
+      '127.0.0.0/8',
+      '169.254.0.0/16',
+      '192.168.0.0/16',
+      '198.51.100.0/24',
+      '203.0.113.0/24',
+      '224.0.0.0/4',
+      '240.0.0.0/4',
+      '::/128',
+      '::1/128',
+      '::/96',
+      '::ffff:/96',
+      '64::ff9b::/96',
+      '2001:db8::/32',
+      'fe80::/10',
+      'fec0::/10',
+      'fc00::/7',
+      'ff00::/8',
+    ]
+
+    host = this.cleanHostname(host).split('/')[0]
+
+    if (host.indexOf('localhost') !== -1) {
+      return true
+    }
+
+    return ipRangeCheck(host, specialIPs)
   }
 }
 

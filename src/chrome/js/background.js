@@ -9,7 +9,7 @@ import {
 } from './core'
 
 const REQUEST_FILTERS = {
-  urls: ['*://*/*'],
+  urls: ['http://*/*', 'https://*/*'],
   types: ['main_frame'],
 }
 
@@ -24,13 +24,15 @@ window.censortracker = {
 }
 
 const onBeforeRequest = ({ url }) => {
-  if (shortcuts.validURL(url)) {
-    console.log('Redirecting request to HTTPS...')
-    return {
-      redirectUrl: shortcuts.enforceHttps(url),
-    }
+  if (shortcuts.isSpecialPurposeIP(url)) {
+    console.warn('Ignoring special propose IP/Host...')
+    return null
   }
-  return null
+
+  console.log('Redirecting request to HTTPS...')
+  return {
+    redirectUrl: shortcuts.enforceHttps(url),
+  }
 }
 
 const onBeforeRedirect = async ({ requestId, url }) => {
@@ -68,6 +70,10 @@ const onErrorOccurred = async ({ url, error, tabId }) => {
   const errorText = error.replace('net::', '')
   const { hostname } = new URL(url)
   const encodedUrl = window.btoa(url)
+
+  if (shortcuts.isSpecialPurposeIP(url)) {
+    return
+  }
 
   if (errors.isThereProxyConnectionError(errorText)) {
     chrome.tabs.update(tabId, {
@@ -144,7 +150,7 @@ const updateTabState = async () => {
     lastFocusedWindow: true,
   })
 
-  if (!tab || !shortcuts.validURL(tab.url)) {
+  if (!tab || !shortcuts.validURL(tab.url) || shortcuts.isSpecialPurposeIP(tab.url)) {
     return
   }
 

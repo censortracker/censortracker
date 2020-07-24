@@ -73,7 +73,7 @@ class Registry {
 
   distributorsContains = async (host) => {
     const { [dbDistributorsItemName]: { domains } } =
-      await asynchrome.storage.local.get(dbDistributorsItemName)
+      await asynchrome.storage.local.get({ [dbDistributorsItemName]: [] })
 
     const dataObject = domains.find(({ url }) => (host === url))
 

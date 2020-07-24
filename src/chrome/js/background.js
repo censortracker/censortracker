@@ -71,6 +71,16 @@ const onErrorOccurred = async ({ url, error, tabId }) => {
   const { hostname } = new URL(url)
   const encodedUrl = window.btoa(url)
 
+  const { ignoredSites, enableExtension } =
+    await asynchrome.storage.local.get({
+      ignoredSites: [],
+      enableExtension: true,
+    })
+
+  if (!enableExtension) {
+    return
+  }
+
   if (shortcuts.isSpecialPurposeIP(url)) {
     return
   }
@@ -91,8 +101,6 @@ const onErrorOccurred = async ({ url, error, tabId }) => {
   }
 
   if (errors.isThereCertificateError(errorText) || errors.isThereAvailabilityError(errorText)) {
-    const { ignoredSites } = await asynchrome.storage.local.get({ ignoredSites: [] })
-
     if (!ignoredSites.includes(hostname)) {
       ignoredSites.push(hostname)
       await asynchrome.storage.local.set({ ignoredSites })

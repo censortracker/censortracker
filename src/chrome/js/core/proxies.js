@@ -48,9 +48,6 @@ class Proxies {
     // The binary search works only with pre-sorted array.
     domains.sort()
 
-    const http = settings.getProxyServerUrl({ ssl: false })
-    const https = settings.getProxyServerUrl({ ssl: true })
-
     return `
 function FindProxyForURL(url, host) {
   function isHostBlocked(array, target) {
@@ -92,7 +89,7 @@ function FindProxyForURL(url, host) {
 
   // Return result
   if (isHostBlocked(domains, host)) {
-    return 'HTTPS ${https}; PROXY ${http};';
+    return 'HTTPS ${settings.getProxyServerUrl()};';
   } else {
     return 'DIRECT';
   }

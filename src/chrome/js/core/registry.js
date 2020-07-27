@@ -1,19 +1,19 @@
-import settings from './settings'
 import asynchrome from './asynchrome'
+import settings from './settings'
 
-const dbDomainItemName = 'domains'
-const dbDistributorsItemName = 'distributors'
+const DOMAINS_DB_KEY = 'domains'
+const DISTRIBUTORS_DB_KEY = 'distributors'
 
 class Registry {
   syncDatabase = async () => {
     console.warn('Synchronizing local database with registry...')
     const apis = [
       {
-        key: dbDomainItemName,
+        key: DOMAINS_DB_KEY,
         url: settings.getDomainsApiUrl(),
       },
       {
-        key: dbDistributorsItemName,
+        key: DISTRIBUTORS_DB_KEY,
         url: settings.getDistributorsApiUrl(),
       },
     ]
@@ -23,14 +23,13 @@ class Registry {
       const domains = await response.json()
 
       await asynchrome.storage.local.set({
-        [key]: {
-          domains, timestamp: new Date().getTime(),
-        },
+        [key]: domains,
+        timestamp: new Date().getTime(),
       })
         .catch((console.error))
     }
 
-    const { domains } = await asynchrome.storage.local.get({ [dbDomainItemName]: {} })
+    const { domains } = await asynchrome.storage.local.get({ [DOMAINS_DB_KEY]: [] })
 
     if (!domains) {
       console.log('Database is empty. Trying to sync...')
@@ -40,16 +39,14 @@ class Registry {
   }
 
   getDomains = async () => {
-    const { domains } =
-      await asynchrome.storage.local.get({ domains: {} })
-    const { blockedDomains } =
-      await asynchrome.storage.local.get({ blockedDomains: [] })
+    const { domains, blockedDomains } =
+      await asynchrome.storage.local.get({ [DOMAINS_DB_KEY]: [], blockedDomains: [] })
 
     const blockedDomainsArray = blockedDomains.map(({ domain }) => domain)
 
-    if (domains && Object.hasOwnProperty.call(domains, dbDomainItemName)) {
+    if (domains && domains.length > 0) {
       try {
-        return domains.domains.concat(blockedDomainsArray)
+        return domains.concat(blockedDomainsArray)
       } catch (error) {
         console.log(error)
       }
@@ -60,8 +57,7 @@ class Registry {
   }
 
   domainsContains = async (host) => {
-    const { [dbDomainItemName]: { domains } } =
-      await asynchrome.storage.local.get(dbDomainItemName)
+    const { domains } = await asynchrome.storage.local.get({ [DOMAINS_DB_KEY]: [] })
 
     if (domains.find((domain) => host === domain)) {
       console.log(`Registry match found: ${host}`)
@@ -72,10 +68,10 @@ class Registry {
   }
 
   distributorsContains = async (host) => {
-    const { [dbDistributorsItemName]: { domains } } =
-      await asynchrome.storage.local.get({ [dbDistributorsItemName]: [] })
+    const { distributors } =
+      await asynchrome.storage.local.get({ [DISTRIBUTORS_DB_KEY]: [] })
 
-    const dataObject = domains.find(({ url }) => (host === url))
+    const dataObject = distributors.find(({ url }) => (host === url))
 
     if (dataObject) {
       console.warn(`Distributor match found: ${host}`)

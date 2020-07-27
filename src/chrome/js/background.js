@@ -1,11 +1,11 @@
 import {
+  asynchrome,
+  errors,
   proxies,
   registry,
   sessions,
   settings,
   shortcuts,
-  errors,
-  asynchrome,
 } from './core'
 
 const REQUEST_FILTERS = {

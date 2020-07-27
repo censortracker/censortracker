@@ -1,28 +1,20 @@
-import unittest
-import time
-
+import pytest
 from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
+
+chrome_ext_url = 'chrome-extension://kcjbdcgbeblfmjphklkmbonkkmfoffhk/'
 
 
-class TestDistributors(unittest.TestCase):
-
-    def setUp(self):
-        options = webdriver.ChromeOptions()
-        options.add_extension('./tests/bin/censortracker.crx')
-        self.driver = webdriver.Chrome(chrome_options=options)
-        self.chrome_ext_url = 'chrome-extension://kcjbdcgbeblfmjphklkmbonkkmfoffhk/'
-
-    def test_ori_found(self):
-        self.driver.get('https://2ch.hk')
-        self.assertIn("Два.ч", self.driver.title)
-
-        self.driver.get(f'{self.chrome_ext_url}/popup.html')
-        self.assertIn('Censor Tracker', self.driver.title)
-
-    def tearDown(self):
-        self.driver.close()
+@pytest.fixture
+def chrome():
+    options = webdriver.ChromeOptions()
+    options.add_extension('./tests/bin/censortracker.crx')
+    driver = webdriver.Chrome(chrome_options=options)
+    yield driver
+    driver.close()
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_ori_found(chrome):
+    chrome.get('https://2ch.hk')
+    assert "Два.ч" in chrome.title
+    chrome.get(f'{chrome_ext_url}/popup.html')
+    assert 'Censor Tracker' in chrome.title

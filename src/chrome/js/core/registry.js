@@ -57,9 +57,15 @@ class Registry {
   }
 
   domainsContains = async (host) => {
-    const { domains } = await asynchrome.storage.local.get({ [DOMAINS_DB_KEY]: [] })
+    const { domains, blockedDomains } =
+      await asynchrome.storage.local.get({
+        [DOMAINS_DB_KEY]: [],
+        blockedDomains: [],
+      })
 
-    if (domains.find((domain) => host === domain)) {
+    const domainsArray = domains.concat(blockedDomains)
+
+    if (domainsArray.includes(host)) {
       console.log(`Registry match found: ${host}`)
       return { domainFound: true }
     }

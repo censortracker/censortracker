@@ -16,8 +16,11 @@ parserOptions:
     experimentalObjectRestSpread: true
 globals:
   chrome: true
+plugins:
+  - simple-import-sort
 rules:
   max-len: off
+  simple-import-sort/sort: error
   import/no-cycle: off
   no-param-reassign: off
   prettier/prettier: off

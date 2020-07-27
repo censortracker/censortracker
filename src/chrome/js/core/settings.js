@@ -26,10 +26,8 @@ class Settings {
     return chrome.extension.getURL(`images/icons/${size}x${size}/${name}.png`)
   }
 
-  getProxyServerUrl = ({ ssl }) => {
-    const prefix = ssl ? 'proxy-ssl' : 'proxy-nossl'
-
-    return `${prefix}.roskomsvoboda.org:33333`
+  getProxyServerUrl = () => {
+    return 'proxy-ssl.roskomsvoboda.org:33333'
   }
 
   enableExtension = () => {

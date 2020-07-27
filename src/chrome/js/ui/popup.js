@@ -23,7 +23,7 @@ const textAboutNotOri = getElementById('textAboutNotOri')
 const closeTextAboutNotOri = getElementById('closeTextAboutNotOri')
 const currentDomain = getElementById('currentDomain')
 const oriSiteInfo = getElementById('oriSiteInfo')
-const popupShowTimeout = 100
+const popupShowTimeout = 150
 
 const showCooperationRefusedMessage = () => {
   oriSiteInfo.innerText = 'Сервис заявил, что они не передают трафик российским ' +
@@ -40,7 +40,7 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
     proxies,
     registry,
     shortcuts,
-    Database,
+    asynchrome,
   } = bgWindow.censortracker
 
   const changeStatusImage = (imageName) => {
@@ -67,7 +67,14 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
     }
   }
 
-  const { enableExtension } = await Database.get(['enableExtension'])
+  const [tab] = await asynchrome.tabs.query({
+    active: true,
+    lastFocusedWindow: true,
+  })
+
+  const { enableExtension } = await asynchrome.storage.local.get({
+    enableExtension: true,
+  })
 
   mutatePopup({ enabled: enableExtension })
 
@@ -85,69 +92,60 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
     }
   })
 
-  chrome.tabs.query(
-    {
-      active: true,
-      lastFocusedWindow: true,
-    },
-    async (tabs) => {
-      const tab = tabs[0]
-      const tabUrl = tab.url
+  if (shortcuts.isChromeExtensionUrl(tab.url)) {
+    return
+  }
 
-      if (shortcuts.isChromeExtensionUrl(tabUrl)) {
-        return
-      }
+  const { hostname } = new URL(tab.url)
+  const currentHostname = shortcuts.cleanHostname(hostname)
 
-      const urlObject = new URL(tabUrl)
-      const hostname = shortcuts.cleanHostname(urlObject.hostname)
+  if (shortcuts.validURL(currentHostname)) {
+    const rawDomain = currentHostname.replace('www.', '')
 
-      if (shortcuts.validURL(hostname)) {
-        const rawDomain = hostname.replace('www.', '')
+    statusDomain.innerText = rawDomain
+    currentDomain.innerText = rawDomain
+  }
 
-        statusDomain.innerText = rawDomain
-        currentDomain.innerText = rawDomain
-      }
+  if (enableExtension) {
+    // TODO: Add state for cases when site is in ORI and blocked
 
-      if (enableExtension) {
-        // TODO: Add state for cases when site is in ORI and blocked
+    const { domainFound } =
+      await registry.domainsContains(currentHostname)
 
-        const { domainFound } = await registry.domainsContains(hostname)
+    if (domainFound) {
+      changeStatusImage('blocked')
+      isNotForbidden.setAttribute('hidden', '')
+      isForbidden.removeAttribute('hidden')
+    } else {
+      isNotForbidden.removeAttribute('hidden')
+      changeStatusImage('normal')
+    }
 
-        if (domainFound) {
-          changeStatusImage('blocked')
-          isNotForbidden.setAttribute('hidden', '')
-          isForbidden.removeAttribute('hidden')
-        } else {
-          isNotForbidden.removeAttribute('hidden')
-          changeStatusImage('normal')
-        }
+    const { url, cooperationRefused } =
+      await registry.distributorsContains(currentHostname)
 
-        const { url, cooperationRefused } = await registry.distributorsContains(hostname)
+    if (url) {
+      statusDomain.classList.add('title-ori')
+      isOriBlock.removeAttribute('hidden')
 
-        if (url) {
-          statusDomain.classList.add('title-ori')
-          isOriBlock.removeAttribute('hidden')
-
-          if (cooperationRefused) {
-            showCooperationRefusedMessage()
-          } else {
-            changeStatusImage('ori')
-            console.warn('Cooperation accepted!')
-          }
-        } else {
-          isNotOriBlock.removeAttribute('hidden')
-          console.log('Match not found at all')
-        }
+      if (cooperationRefused) {
+        showCooperationRefusedMessage()
       } else {
-        statusImage.setAttribute('src',
-          settings.getPopupImage({
-            size: 512,
-            name: 'disabled',
-          }),
-        )
+        changeStatusImage('ori')
+        console.warn('Cooperation accepted!')
       }
-    },
-  )
+    } else {
+      isNotOriBlock.removeAttribute('hidden')
+      console.log('Match not found at all')
+    }
+  } else {
+    statusImage.setAttribute('src',
+      settings.getPopupImage({
+        size: 512,
+        name: 'disabled',
+      }),
+    )
+  }
 
   const show = () => {
     document.documentElement.style.visibility = 'initial'

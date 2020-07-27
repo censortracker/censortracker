@@ -8,6 +8,7 @@ license = "MIT"
 [tool.poetry.dependencies]
 python = "^3.8"
 selenium = "^3.141.0"
+pytest-selenium = "^1.17.0"
 
 [tool.poetry.dev-dependencies]
 

@@ -1,4 +1,4 @@
-[![Logo](https://raw.githubusercontent.com/roskomsvoboda/censortracker/master/.github/readme-logo.png)](https://github.com/roskomsvoboda/censortracker)
+[![Logo](https://raw.githubusercontent.com/roskomsvoboda/censortracker/add_tests/.github/censortracker-popups.svg)](https://github.com/roskomsvoboda/censortracker)
 
 ![Build](https://github.com/roskomsvoboda/censortracker/workflows/Build/badge.svg?branch=master)
 

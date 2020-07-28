@@ -1,15 +1,16 @@
 {
   "name": "censortracker",
-  "version": "2.0.5+714",
+  "version": "2.0.5+715",
   "description": "|",
-  "author": "Roskomsvoboda devs",
+  "author": "Roskomsvoboda",
   "license": "MIT",
   "main": "dist/index.js",
   "scripts": {
     "dev": "webpack --progress --config webpack.config.js",
     "watch": "webpack --watch --progress --config webpack.config.js",
     "lint": "eslint --ext=.js ./src/chrome/",
-    "lint:fix": "eslint --fix --ext=.js ./src/chrome/"
+    "lint:fix": "eslint --fix --ext=.js ./src/chrome/",
+    "test": "jest"
   },
   "dependencies": {
     "ip-range-check": "^0.2.0"
@@ -40,6 +41,7 @@
     "html-loader": "^1.1.0",
     "html-webpack-plugin": "^4.3.0",
     "husky": "^4.2.5",
+    "jest": "^26.1.0",
     "prettier": "^2.0.5",
     "terser-webpack-plugin": "^3.0.7",
     "webpack": "^4.43.0",
@@ -56,7 +58,7 @@
   "homepage": "https://github.com/roskomsvoboda/censortracker#readme",
   "husky": {
     "hooks": {
-      "pre-push": "npm run lint"
+      "pre-push": "npm run lint && npm run test"
     }
   }
 }

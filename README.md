@@ -35,13 +35,9 @@ To build extension run:
     ~ npm install && npm run dev
     ~ cd dist/
 
-To create tarball run following command:
-
-    ~ npm run pack:dev
-
-
 Make sure that "Developer Mode" is enabled and then just "Load unpacked"
 from <span class="title-ref">dist/</span> to your browser.
+
 
 License
 =======

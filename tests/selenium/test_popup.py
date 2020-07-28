@@ -17,6 +17,4 @@ def test_ori_found(chrome):
     chrome.get('https://2ch.hk')
     assert "Два.ч" in chrome.title
     chrome.get(f'{chrome_ext_url}/popup.html')
-
-    chrome.execute_script('')
     assert 'Censor Tracker' in chrome.title

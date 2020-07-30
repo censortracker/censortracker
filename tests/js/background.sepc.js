@@ -3,17 +3,14 @@ import { Builder } from 'selenium-webdriver'
 const chrome = require('selenium-webdriver/chrome')
 const fs = require('fs')
 
-// TODO: Use path
-const extensionCrxFile = '/Users/likid_geimfari/Developer/censortracker/tests/bin/dist.crx'
-
-function encode (file) {
-  const stream = fs.readFileSync(file)
+function getEncodedExtension () {
+  const stream = fs.readFileSync('tests/bin/dist.crx')
 
   return new Buffer.from(stream).toString('base64')
 }
 
 const options = new chrome.Options()
-options.addExtensions(encode(extensionCrxFile))
+options.addExtensions(getEncodedExtension())
 
 
 it('Some test', async () => {

@@ -1,4 +1,4 @@
-import buildDriver from "../selenium";
+import buildDriver from '../selenium'
 
 it('Some test', async () => {
   const browser = await buildDriver()

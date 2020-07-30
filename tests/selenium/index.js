@@ -1,14 +1,13 @@
+import fs from 'fs'
 import { Builder } from 'selenium-webdriver'
-
-const chrome = require('selenium-webdriver/chrome')
-const fs = require('fs')
+import { Options } from 'selenium-webdriver/chrome'
 
 const buildDriver = async () => {
   const crxData = fs.readFileSync('tests/bin/dist.crx')
   // eslint-disable-next-line new-cap
   const extension = new Buffer.from(crxData).toString('base64')
 
-  const options = new chrome.Options()
+  const options = new Options()
   options.addExtensions(extension)
 
   const driver = await new Builder()

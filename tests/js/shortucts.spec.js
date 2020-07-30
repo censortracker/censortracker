@@ -61,13 +61,13 @@ describe('Check if URL is chrome extension', () => {
 describe('Enforce HTTPS', () => {
   test('it should replace http: with https:', () => {
     const urls = [
-      {url: 'http://telegram.org/', expected: 'https://telegram.org/'},
-      {url: 'http://google.com/', expected: 'https://google.com/'},
-      {url: 'http://2ch.hk/', expected: 'https://2ch.hk/'},
-      {url: 'http://2ch.hk/https/', expected: 'https://2ch.hk/https/'},
+      { url: 'http://telegram.org/', expected: 'https://telegram.org/' },
+      { url: 'http://google.com/', expected: 'https://google.com/' },
+      { url: 'http://2ch.hk/', expected: 'https://2ch.hk/' },
+      { url: 'http://2ch.hk/https/', expected: 'https://2ch.hk/https/' },
     ]
 
-    for (const { url, expected} of urls) {
+    for (const { url, expected } of urls) {
       expect(shortcuts.enforceHttps(url)).toEqual(expected)
     }
   })

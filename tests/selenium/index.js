@@ -2,7 +2,7 @@ import fs from 'fs'
 import { Builder } from 'selenium-webdriver'
 import { Options } from 'selenium-webdriver/chrome'
 
-const buildDriver = async () => {
+const createDriver = async () => {
   const crxData = fs.readFileSync('tests/bin/dist.crx')
   // eslint-disable-next-line new-cap
   const extension = new Buffer.from(crxData).toString('base64')
@@ -18,4 +18,4 @@ const buildDriver = async () => {
   return driver
 }
 
-export default buildDriver
+export default createDriver

@@ -4,7 +4,6 @@ import { Options } from 'selenium-webdriver/chrome'
 
 const createDriver = async () => {
   const crxData = fs.readFileSync('tests/bin/dist.crx')
-  // eslint-disable-next-line new-cap
   const extension = new Buffer.from(crxData).toString('base64')
 
   const options = new Options()

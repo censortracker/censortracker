@@ -1,8 +1,6 @@
 import createDriver from '../selenium'
 
-
 describe('Testing the proxying mechanism', () => {
-
   describe('check if proxying do not work without a timeout for proxy setting up', () => {
     const blockedWebsites = [
       {
@@ -11,8 +9,7 @@ describe('Testing the proxying mechanism', () => {
       },
     ]
 
-    it.each(blockedWebsites)
-    ('blocked sites should not open', async ({ url, expectedTitle }) => {
+    it.each(blockedWebsites)('blocked sites should not open', async ({ url, expectedTitle }) => {
       const browser = await createDriver()
 
       await browser.get(url)
@@ -39,8 +36,7 @@ describe('Testing the proxying mechanism', () => {
       },
     ]
 
-    it.each(blockedWebsites)
-    ('blocked sites should proxied without problems', async ({ url, expectedTitle }) => {
+    it.each(blockedWebsites)('blocked sites should proxied without problems', async ({ url, expectedTitle }) => {
       const browser = await createDriver()
 
       await browser.sleep(2200)
@@ -50,10 +46,6 @@ describe('Testing the proxying mechanism', () => {
       expect(title).toBe(expectedTitle)
 
       await browser.quit()
-
     }, 30000)
   })
-
-});
-
-
+})

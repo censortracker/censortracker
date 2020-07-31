@@ -8,6 +8,7 @@ const createDriver = async () => {
   const extension = new Buffer.from(crxData).toString('base64')
 
   const options = new Options()
+
   options.addExtensions(extension)
 
   const driver = await new Builder()

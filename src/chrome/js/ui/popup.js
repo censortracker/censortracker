@@ -34,6 +34,20 @@ const showCooperationRefusedMessage = () => {
   statusDomain.classList.add('title-normal')
 }
 
+const getAppropriateURL = (currentURL) => {
+  const popupURL = chrome.runtime.getURL('popup.html')
+
+  if (currentURL.indexOf(popupURL) !== -1) {
+    const currentURLParams = currentURL.split('?')[1]
+    const urlParams = new URLSearchParams(currentURLParams)
+    const encodedLoadForURL = urlParams.get('loadFor')
+    const loadForURL = window.atob(encodedLoadForURL)
+
+    return new URL(loadForURL)
+  }
+  return new URL(currentURL)
+}
+
 chrome.runtime.getBackgroundPage(async (bgWindow) => {
   const {
     settings,
@@ -50,6 +64,7 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
     }))
   }
 
+  // TODO: Move to if/else scope
   const mutatePopup = ({ enabled }) => {
     if (enabled) {
       changeStatusImage('normal')
@@ -66,11 +81,6 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
       isNotForbidden.setAttribute('hidden', 'true')
     }
   }
-
-  const [tab] = await asynchrome.tabs.query({
-    active: true,
-    lastFocusedWindow: true,
-  })
 
   const { enableExtension } = await asynchrome.storage.local.get({
     enableExtension: true,
@@ -92,18 +102,15 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
     }
   })
 
-  if (shortcuts.isChromeExtensionUrl(tab.url)) {
-    return
-  }
+  const [{ url: currentURL }] =
+    await asynchrome.tabs.query({ active: true, lastFocusedWindow: true })
 
-  const { hostname } = new URL(tab.url)
+  const { hostname } = getAppropriateURL(currentURL)
   const currentHostname = shortcuts.cleanHostname(hostname)
 
   if (shortcuts.validURL(currentHostname)) {
-    const rawDomain = currentHostname.replace('www.', '')
-
-    statusDomain.innerText = rawDomain
-    currentDomain.innerText = rawDomain
+    statusDomain.innerText = currentHostname
+    currentDomain.innerText = currentHostname
   }
 
   if (enableExtension) {

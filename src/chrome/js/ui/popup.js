@@ -37,11 +37,11 @@ const showCooperationRefusedMessage = () => {
 const getAppropriateURL = (currentURL) => {
   const popupURL = chrome.runtime.getURL('popup.html')
 
-  if (currentURL.indexOf(popupURL) !== -1) {
+  if (currentURL.startsWith(popupURL)) {
     const currentURLParams = currentURL.split('?')[1]
-    const urlParams = new URLSearchParams(currentURLParams)
-    const encodedLoadForURL = urlParams.get('loadFor')
-    const loadForURL = window.atob(encodedLoadForURL)
+    const searchParams = new URLSearchParams(currentURLParams)
+    const encodedURL = searchParams.get('loadFor')
+    const loadForURL = window.atob(encodedURL)
 
     return new URL(loadForURL)
   }
@@ -64,29 +64,25 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
     }))
   }
 
-  // TODO: Move to if/else scope
-  const mutatePopup = ({ enabled }) => {
-    if (enabled) {
-      changeStatusImage('normal')
-      statusDomain.classList.add('title-normal')
-      statusDomain.removeAttribute('hidden')
-      footerTrackerOn.removeAttribute('hidden')
-    } else {
-      changeStatusImage('disabled')
-      trackerOff.removeAttribute('hidden')
-      footerTrackerOff.removeAttribute('hidden')
-      isOriBlock.setAttribute('hidden', 'true')
-      isForbidden.setAttribute('hidden', 'true')
-      isNotOriBlock.setAttribute('hidden', 'true')
-      isNotForbidden.setAttribute('hidden', 'true')
-    }
+  const { enableExtension } =
+    await asynchrome.storage.local.get({
+      enableExtension: true,
+    })
+
+  if (enableExtension) {
+    changeStatusImage('normal')
+    statusDomain.classList.add('title-normal')
+    statusDomain.removeAttribute('hidden')
+    footerTrackerOn.removeAttribute('hidden')
+  } else {
+    changeStatusImage('disabled')
+    trackerOff.removeAttribute('hidden')
+    footerTrackerOff.removeAttribute('hidden')
+    isOriBlock.setAttribute('hidden', 'true')
+    isForbidden.setAttribute('hidden', 'true')
+    isNotOriBlock.setAttribute('hidden', 'true')
+    isNotForbidden.setAttribute('hidden', 'true')
   }
-
-  const { enableExtension } = await asynchrome.storage.local.get({
-    enableExtension: true,
-  })
-
-  mutatePopup({ enabled: enableExtension })
 
   document.addEventListener('click', (event) => {
     if (event.target.matches('#enableExtension')) {

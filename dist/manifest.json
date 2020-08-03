@@ -1,6 +1,6 @@
 {
   "name": "Censor Tracker",
-  "version": "2.0.5.747",
+  "version": "2.0.5.748",
   "description": "Censor Tracker",
   "permissions": [
     "tabs",
@@ -34,6 +34,5 @@
       "128": "images/icons/128x128/default.png"
     }
   },
-  "options_page": "options.html",
   "manifest_version": 2
 }

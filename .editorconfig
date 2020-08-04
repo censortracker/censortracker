@@ -10,9 +10,5 @@ indent_size = 2
 indent_style = space
 insert_final_newline = true
 
-[*.{md,rst,in}]
-indent_style = ignore
-indent_size = ignore
-
 [Makefile]
 indent_style = tab

@@ -9,14 +9,20 @@ export const createDriver = async () => {
 
   options.addExtensions(extension)
   options.windowSize({
-    width: 440,
-    height: 280,
+    width: 200,
+    height: 200,
   })
 
   const driver = await new Builder()
     .forBrowser('chrome')
     .setChromeOptions(options)
     .build()
+
+  // TODO: Make it headless instead
+  driver
+    .manage()
+    .window()
+    .minimize()
 
   return driver
 }

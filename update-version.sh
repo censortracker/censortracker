@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/extension/bash
 
 version=$(jq '.version' package.json)
 a=( $(grep -oE '[0-9]+|[0-9]+-[a-z]+[0-9]+' <<<"$version") )

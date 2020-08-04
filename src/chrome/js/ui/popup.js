@@ -117,10 +117,11 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
 
     if (domainFound) {
       changeStatusImage('blocked')
-      isNotForbidden.setAttribute('hidden', '')
       isForbidden.removeAttribute('hidden')
+      isNotForbidden.remove()
     } else {
       isNotForbidden.removeAttribute('hidden')
+      isForbidden.remove()
       changeStatusImage('normal')
     }
 
@@ -130,6 +131,7 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
     if (url) {
       statusDomain.classList.add('title-ori')
       isOriBlock.removeAttribute('hidden')
+      isNotOriBlock.remove()
 
       if (cooperationRefused) {
         showCooperationRefusedMessage()
@@ -139,6 +141,7 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
       }
     } else {
       isNotOriBlock.removeAttribute('hidden')
+      isOriBlock.remove()
       console.log('Match not found at all')
     }
   } else {

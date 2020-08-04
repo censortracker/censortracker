@@ -1,0 +1,26 @@
+import fs from 'fs'
+import { Builder } from 'selenium-webdriver'
+import { Options } from 'selenium-webdriver/chrome'
+
+export const createDriver = async () => {
+  const crxData = fs.readFileSync('./tests/e2e/selenium/extension/dist.crx')
+  const extension = new Buffer.from(crxData).toString('base64')
+  const options = new Options()
+
+  options.addExtensions(extension)
+  options.windowSize({
+    width: 440,
+    height: 280,
+  })
+
+  const driver = await new Builder()
+    .forBrowser('chrome')
+    .setChromeOptions(options)
+    .build()
+
+  return driver
+}
+
+export const getPageByFilename = (page) => {
+  return `chrome-extension://kdlhnjelkjadlbccbiecdbiikllklbjo/${page}`
+}

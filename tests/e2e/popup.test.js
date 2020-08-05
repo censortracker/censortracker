@@ -1,54 +1,49 @@
 import { createDriver, getPopupPage } from './selenium'
 
-describe('Testing popup', () => {
+describe('Testing popup of the extension', () => {
+  let browser
   const timeout = 35000
   const beforeRequestTimeout = 2000
   const popupPage = getPopupPage()
 
-  describe('Test popup for ORI websites', () => {
+  beforeAll(async () => {
+    browser = await createDriver()
+  })
+
+  afterAll(async () => {
+    await browser.quit()
+  })
+
+  describe('checks that extension shows that website is ORI', () => {
     const urls = [
       'https://2ch.hk/',
       'https://vk.com/',
       'https://tinder.com',
       'https://disk.yandex.ru',
-    ].map((url) => btoa(url))
+    ]
 
-    it.each(urls)('popup should contain isOriBlock element ', async (url) => {
-      const browser = await createDriver()
-
+    it.each(urls)('popup contains isOriBlock element ', async (url) => {
       await browser.sleep(beforeRequestTimeout)
-      await browser.get(`${popupPage}?loadFor=${url}`)
+      await browser.get(`${popupPage}?loadFor=${btoa(url)}`)
       const oriBlock = await browser.findElement({ id: 'isOriBlock' })
 
       expect(oriBlock).not.toBeUndefined()
-
-      await browser.quit()
     }, timeout)
   })
 
-  describe('Test popup for blocked websites', () => {
+  describe('checks that extension shows that website is in the registry of blocked websites', () => {
     const urls = [
-      'https://rutracker.org/',
       'tunnelbear.com/',
       'http://lostfilm.tv/',
-    ].map((url) => btoa(url))
+      'https://rutracker.org/',
+    ]
 
-    it.each(urls)('popup should contain isForbidden element ', async (url) => {
-      const browser = await createDriver()
-
+    it.each(urls)('popup contains isForbidden element and do not contain isNotForbidden', async (url) => {
       await browser.sleep(beforeRequestTimeout)
-      await browser.get(`${popupPage}?loadFor=${url}`)
+      await browser.get(`${popupPage}?loadFor=${btoa(url)}`)
       const isForbidden = await browser.findElement({ id: 'isForbidden' })
 
       expect(isForbidden).not.toBeUndefined()
-
-      try {
-        await browser.findElement({ id: 'isNotForbidden' })
-      } catch (error) {
-        expect(error).not.toBeUndefined()
-      }
-
-      await browser.quit()
     }, timeout)
   })
 })

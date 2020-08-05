@@ -1,15 +1,15 @@
 import { By } from 'selenium-webdriver'
 
-import { createDriver, getPageByFilename } from './selenium'
+import { createDriver, getProxyUnavailablePage, getUnavailablePage } from './selenium'
 
 describe('Testing unavailable pages: unavailable.html and proxy_unavailable.html ', () => {
   const pages = [
     {
-      url: getPageByFilename('unavailable.html'),
+      url: getUnavailablePage(),
       expectedTitle: 'Unavailable | Censor Tracker',
     },
     {
-      url: getPageByFilename('proxy_unavailable.html'),
+      url: getProxyUnavailablePage(),
       expectedTitle: 'Proxy Unavailable | Censor Tracker',
     },
   ]

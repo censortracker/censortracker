@@ -18,7 +18,6 @@ export const createDriver = async () => {
     .setChromeOptions(options)
     .build()
 
-  // TODO: Make it headless instead
   driver
     .manage()
     .window()
@@ -27,6 +26,22 @@ export const createDriver = async () => {
   return driver
 }
 
-export const getPageByFilename = (page) => {
+const getPageByFilename = (page) => {
   return `chrome-extension://kdlhnjelkjadlbccbiecdbiikllklbjo/${page}`
+}
+
+export const getPopupPage = () => {
+  return getPageByFilename('popup.html')
+}
+
+export const getProxyUnavailablePage = () => {
+  return getPageByFilename('proxy_unavailable.html')
+}
+
+export const getUnavailablePage = () => {
+  return getPageByFilename('unavailable.html')
+}
+
+export const getGeneratedBackgroundPage = () => {
+  return getPageByFilename('_generated_background_page.html')
 }

@@ -1,6 +1,6 @@
 {
   "name": "censortracker",
-  "version": "2.0.5+752",
+  "version": "2.0.5+753",
   "description": "|",
   "author": "Roskomsvoboda",
   "license": "MIT",
@@ -10,7 +10,9 @@
     "watch": "webpack --watch --progress --config webpack.config.js",
     "lint": "eslint --ext=.js ./src/chrome/",
     "lint:fix": "eslint --fix --ext=.js ./src/chrome/ tests/",
-    "test": "jest"
+    "test": "jest",
+    "test:unit": "jest tests/unit",
+    "test:e2e": "jest tests/e2e"
   },
   "dependencies": {
     "ip-range-check": "^0.2.0"

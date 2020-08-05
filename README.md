@@ -10,7 +10,7 @@ blocked using DPI.
 Note
 ----
 
-This extension oriented only for Russian users and will work correctly only in Russia since 
+This extension oriented only for Russian users and will work correctly only in Russia since
 there are too many dependencies in data which is specific only for Russia.
 
 You can find the Russian version of README [here](/README_RU.md).
@@ -37,6 +37,21 @@ To build extension run:
 
 Make sure that "Developer Mode" is enabled and then just "Load unpacked"
 from <span class="title-ref">dist/</span> to your browser.
+
+Testing
+=======
+
+To run all the kind of tests just run following command:
+
+    ~ npm run test
+
+to run just unit tests:
+
+    ~ npm run test:unit
+
+and to run just end-to-end tests:
+
+    ~ npm run test:e2e
 
 
 License

@@ -1,6 +1,9 @@
-import { createDriver, getProxyUnavailablePage, getUnavailablePage } from './selenium'
+import {
+  createDriver,
+  getGeneratedBackgroundPage,
+} from './selenium'
 
-describe('Testing unavailable pages: unavailable.html and proxy_unavailable.html ', () => {
+describe('Testing unavailable websites without proxy', () => {
   let browser
 
   beforeAll(async () => {
@@ -11,23 +14,28 @@ describe('Testing unavailable pages: unavailable.html and proxy_unavailable.html
     await browser.quit()
   })
 
-  const pages = [
+  const urls = [
     {
-      url: getUnavailablePage(),
-      expectedTitle: 'Unavailable | Censor Tracker',
+      url: 'https://rutracker.org',
+      expectedTitle: 'RuTracker.org',
     },
     {
-      url: getProxyUnavailablePage(),
-      expectedTitle: 'Proxy Unavailable | Censor Tracker',
+      url: 'https://www.tunnelbear.com/',
+      expectedTitle: 'TunnelBear: Secure VPN Service',
+    },
+    {
+      url: 'https://protonmail.com/',
+      expectedTitle: 'Secure email: ProtonMail is free encrypted email.',
     },
   ]
 
-  it.each(pages)('it should interact with unavailable pages', async ({ url, expectedTitle }) => {
+  it.each(urls)('shows unavailable.html page', async ({ url, expectedTitle }) => {
+    await browser.get(getGeneratedBackgroundPage())
+    await browser.executeScript('chrome.proxy.settings.clear({ scope: "regular" })')
     await browser.get(url)
+    await browser.sleep(1500)
     const title = await browser.getTitle()
 
-    expect(title).toBe(expectedTitle)
-
-    await browser.findElement({ id: 'closeTab' }).click()
+    expect(title).not.toBe(expectedTitle)
   }, 10000)
 })

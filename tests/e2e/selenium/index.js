@@ -26,22 +26,16 @@ export const createDriver = async () => {
   return driver
 }
 
-const getPageByFilename = (page) => {
+const getExtensionURLByFilename = (page) => {
   return `chrome-extension://kdlhnjelkjadlbccbiecdbiikllklbjo/${page}`
 }
 
-export const getPopupPage = () => {
-  return getPageByFilename('popup.html')
+export const getPopupFor = async (browser, url) => {
+  const popupPage = getExtensionURLByFilename('popup.html')
+
+  await browser.get(`${popupPage}?loadFor=${btoa(url)}`)
 }
 
-export const getProxyUnavailablePage = () => {
-  return getPageByFilename('proxy_unavailable.html')
-}
-
-export const getUnavailablePage = () => {
-  return getPageByFilename('unavailable.html')
-}
-
-export const getGeneratedBackgroundPage = () => {
-  return getPageByFilename('_generated_background_page.html')
+export const getGeneratedBackgroundPage = async (browser) => {
+  await browser.get(getExtensionURLByFilename('_generated_background_page.html'))
 }

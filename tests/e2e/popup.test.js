@@ -1,12 +1,11 @@
 import { until } from 'selenium-webdriver'
 
-import { createDriver, getPopupPage } from './selenium'
+import { createDriver, getPopupFor } from './selenium'
 
 describe('Testing popup of the extension', () => {
   let browser
   const timeout = 35000
   const beforeRequestTimeout = 2000
-  const popupPage = getPopupPage()
 
   beforeAll(async () => {
     browser = await createDriver()
@@ -26,7 +25,7 @@ describe('Testing popup of the extension', () => {
 
     it.each(urls)('popup contains isOriBlock element ', async (url) => {
       await browser.sleep(beforeRequestTimeout)
-      await browser.get(`${popupPage}?loadFor=${btoa(url)}`)
+      await getPopupFor(browser, url)
       const oriBlock = await browser.findElement({ id: 'isOriBlock' })
 
       expect(oriBlock).not.toBeUndefined()
@@ -42,7 +41,7 @@ describe('Testing popup of the extension', () => {
 
     it.each(urls)('popup contains isForbidden element and do not contain isNotForbidden', async (url) => {
       await browser.sleep(beforeRequestTimeout)
-      await browser.get(`${popupPage}?loadFor=${btoa(url)}`)
+      await getPopupFor(browser, url)
       const isForbidden = await browser.findElement({ id: 'isForbidden' })
 
       expect(isForbidden).not.toBeUndefined()
@@ -67,7 +66,7 @@ describe('Testing popup of the extension', () => {
 
     it.each(urls)('disable/enable buttons work fine', async ({ url, expectedTitle }) => {
       await browser.sleep(beforeRequestTimeout)
-      await browser.get(`${popupPage}?loadFor=${btoa('https://jestjs.io/')}`)
+      await getPopupFor(browser, 'https://jestjs.io/')
 
       const disableExtensionButton =
         await browser.wait(until.elementLocated({ id: 'disableExtension' }, 3000))
@@ -82,7 +81,7 @@ describe('Testing popup of the extension', () => {
 
       expect(websiteTitle).not.toBe(expectedTitle)
 
-      await browser.get(`${popupPage}?loadFor=${btoa('https://jestjs.io/')}`)
+      await getPopupFor(browser, 'https://jestjs.io/')
 
       const enableExtensionButton =
         await browser.wait(until.elementLocated({ id: 'enableExtension' }, 3000))

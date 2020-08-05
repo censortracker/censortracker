@@ -30,7 +30,7 @@ describe('Testing unavailable websites without proxy', () => {
   ]
 
   it.each(urls)('shows unavailable.html page', async ({ url, expectedTitle }) => {
-    await browser.get(getGeneratedBackgroundPage())
+    await getGeneratedBackgroundPage(browser)
     await browser.executeScript('chrome.proxy.settings.clear({ scope: "regular" })')
     await browser.get(url)
     await browser.sleep(1500)

@@ -1,6 +1,16 @@
 import { createDriver, getGeneratedBackgroundPage } from './selenium'
 
 describe('Testing the proxying mechanism', () => {
+  let browser
+
+  beforeAll(async () => {
+    browser = await createDriver()
+  })
+
+  afterAll(async () => {
+    await browser.quit()
+  })
+
   const urls = [
     {
       url: 'https://rutracker.org',
@@ -16,29 +26,21 @@ describe('Testing the proxying mechanism', () => {
     },
   ]
 
-  it.each(urls)('proxying does not work when cleaning proxy', async ({ url }) => {
-    const browser = await createDriver()
-    const bgPage = getGeneratedBackgroundPage()
-
-    await browser.get(bgPage)
+  it.each(urls)('proxying doesn\'t work for locked websites when cleaning proxy', async ({ url }) => {
+    await browser.get(getGeneratedBackgroundPage())
     await browser.executeScript('chrome.proxy.settings.clear({ scope: "regular" })')
+    await browser.sleep(1500)
     await browser.get(url)
     const title = await browser.getTitle()
 
     expect(title).toBe('Unavailable | Censor Tracker')
-
-    await browser.quit()
   }, 30000)
 
   it.each(urls)('proxying works fine when PAC set', async ({ url, expectedTitle }) => {
-    const browser = await createDriver()
-
-    await browser.sleep(3500)
+    await browser.sleep(2500)
     await browser.get(url)
     const title = await browser.getTitle()
 
     expect(title).toBe(expectedTitle)
-
-    await browser.quit()
   }, 30000)
 })

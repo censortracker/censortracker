@@ -1,3 +1,5 @@
+import { until } from 'selenium-webdriver'
+
 import { createDriver, getPopupPage } from './selenium'
 
 describe('Testing popup of the extension', () => {
@@ -44,6 +46,55 @@ describe('Testing popup of the extension', () => {
       const isForbidden = await browser.findElement({ id: 'isForbidden' })
 
       expect(isForbidden).not.toBeUndefined()
+    }, timeout)
+  })
+
+  describe('Test extension after clicking on disable/enable buttons in popup', () => {
+    const urls = [
+      {
+        url: 'https://rutracker.org',
+        expectedTitle: 'RuTracker.org',
+      },
+      {
+        url: 'https://www.tunnelbear.com/',
+        expectedTitle: 'TunnelBear: Secure VPN Service',
+      },
+      {
+        url: 'https://protonmail.com/',
+        expectedTitle: 'Secure email: ProtonMail is free encrypted email.',
+      },
+    ]
+
+    it.each(urls)('disable/enable buttons work fine', async ({ url, expectedTitle }) => {
+      await browser.sleep(beforeRequestTimeout)
+      await browser.get(`${popupPage}?loadFor=${btoa('https://jestjs.io/')}`)
+
+      const disableExtensionButton =
+        await browser.wait(until.elementLocated({ id: 'disableExtension' }, 3000))
+      const disableExtensionButtonIsVisible =
+        await browser.wait(until.elementIsVisible(disableExtensionButton), 1500)
+
+      expect(disableExtensionButtonIsVisible).toBeTruthy()
+      await disableExtensionButton.click()
+
+      await browser.get(url)
+      let websiteTitle = await browser.getTitle()
+
+      expect(websiteTitle).not.toBe(expectedTitle)
+
+      await browser.get(`${popupPage}?loadFor=${btoa('https://jestjs.io/')}`)
+
+      const enableExtensionButton =
+        await browser.wait(until.elementLocated({ id: 'enableExtension' }, 3000))
+      const enableExtensionButtonIsVisible =
+        await browser.wait(until.elementIsVisible(enableExtensionButton), 1500)
+
+      await enableExtensionButtonIsVisible.click()
+      await browser.sleep(1500)
+
+      await browser.get(url)
+      websiteTitle = await browser.getTitle()
+      expect(websiteTitle).toBe(expectedTitle)
     }, timeout)
   })
 })

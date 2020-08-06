@@ -37,5 +37,6 @@ describe('Testing unavailable websites without proxy', () => {
     const title = await browser.getTitle()
 
     expect(title).not.toBe(expectedTitle)
+    expect(title).toBe('Unavailable | Censor Tracker')
   }, 10000)
 })

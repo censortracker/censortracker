@@ -1,6 +1,7 @@
 import { until } from 'selenium-webdriver'
 
 import { createDriver, getPopupFor } from './selenium'
+import { isElementExists } from './selenium/utils'
 
 describe('Testing popup of the extension', () => {
   let browser
@@ -34,17 +35,24 @@ describe('Testing popup of the extension', () => {
 
   describe('checks that extension shows that website is in the registry of blocked websites', () => {
     const urls = [
-      'tunnelbear.com/',
+      'https://tunnelbear.com/',
       'http://lostfilm.tv/',
       'https://rutracker.org/',
     ]
 
     it.each(urls)('popup contains isForbidden element and do not contain isNotForbidden', async (url) => {
-      await browser.sleep(beforeRequestTimeout)
       await getPopupFor(browser, url)
-      const isForbidden = await browser.findElement({ id: 'isForbidden' })
 
-      expect(isForbidden).not.toBeUndefined()
+      const isOri = await isElementExists(browser, { id: 'isOriBlock' })
+      const isNotOri = await isElementExists(browser, { id: 'isNotOriBlock' })
+      const isForbidden = await isElementExists(browser, { id: 'isForbidden' })
+      const isNotForbidden = await isElementExists(browser, { id: 'isNotForbidden' })
+
+      expect(isOri).toBeFalsy()
+      expect(isNotOri).toBeTruthy()
+
+      expect(isForbidden).toBeTruthy()
+      expect(isNotForbidden).toBeFalsy()
     }, timeout)
   })
 

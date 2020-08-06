@@ -1,5 +1,3 @@
-import { until } from 'selenium-webdriver'
-
 import { createDriver, getPopupFor } from './selenium'
 import { isElementExists, waitGetElement } from './selenium/utils'
 
@@ -27,9 +25,10 @@ describe('Testing popup of the extension', () => {
     it.each(urls)('popup contains isOriBlock element ', async (url) => {
       await browser.sleep(beforeRequestTimeout)
       await getPopupFor(browser, url)
-      const oriBlock = await browser.findElement({ id: 'isOriBlock' })
 
-      expect(oriBlock).not.toBeUndefined()
+      const oriBlock = await isElementExists(browser, { id: 'isOriBlock' })
+
+      expect(oriBlock).toBeTruthy()
     }, timeout)
   })
 

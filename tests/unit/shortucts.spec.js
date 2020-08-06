@@ -1,7 +1,7 @@
-import shortcuts from '../src/chrome/js/core/shortcuts'
+import shortcuts from '../../src/chrome/js/core/shortcuts'
 
 describe('Validate URL', () => {
-  test('it should return true when URL is valid otherwise false', () => {
+  test('returns true when URL is valid otherwise false', () => {
     const urls = [
       { url: 'https://google.com', valid: true },
       { url: 'http://telegram.org', valid: true },
@@ -25,7 +25,7 @@ describe('Validate URL', () => {
 })
 
 describe('Clean hostname', () => {
-  test('it should return cleaned url (remove https, www)', () => {
+  test('returns cleaned URL (removes http/https, www)', () => {
     const urls = [
       { url: 'https://telegram.org', expected: 'telegram.org' },
       { url: 'http://www.example.org', expected: 'example.org' },
@@ -59,22 +59,22 @@ describe('Check if URL is chrome extension', () => {
 })
 
 describe('Enforce HTTPS', () => {
-  test('it should replace http: with https:', () => {
+  test('replace http: with https:', () => {
     const urls = [
-      {url: 'http://telegram.org/', expected: 'https://telegram.org/'},
-      {url: 'http://google.com/', expected: 'https://google.com/'},
-      {url: 'http://2ch.hk/', expected: 'https://2ch.hk/'},
-      {url: 'http://2ch.hk/https/', expected: 'https://2ch.hk/https/'},
+      { url: 'http://telegram.org/', expected: 'https://telegram.org/' },
+      { url: 'http://google.com/', expected: 'https://google.com/' },
+      { url: 'http://2ch.hk/', expected: 'https://2ch.hk/' },
+      { url: 'http://2ch.hk/https/', expected: 'https://2ch.hk/https/' },
     ]
 
-    for (const { url, expected} of urls) {
+    for (const { url, expected } of urls) {
       expect(shortcuts.enforceHttps(url)).toEqual(expected)
     }
   })
 })
 
 describe('Check if IP is from the subnet of special-purpose (RFC6890)', () => {
-  test('it should return true if IP address is from special-propose subnets', () => {
+  test('return true if IP address is from special-propose subnets', () => {
     const ips = [
       '0.0.0.1',
       '169.254.0.0',

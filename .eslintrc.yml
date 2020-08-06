@@ -43,6 +43,8 @@ rules:
   unicorn/prefer-query-selector: off
   no-console: off
   no-continue: off
+  no-magic-numbers: off
+  new-cap: off
   brace-style:
     - 2
     - 1tbs

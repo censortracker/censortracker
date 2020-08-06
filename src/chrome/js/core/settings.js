@@ -16,14 +16,14 @@ class Settings {
 
   getLoggingApiUrl = () => 'https://ct-dev.rublacklist.net/api/domain/';
 
-  getDangerIcon = () => chrome.extension.getURL('images/icons/128x128/danger.png');
+  getDangerIcon = () => chrome.runtime.getURL('images/icons/128x128/danger.png');
 
-  getDefaultIcon = () => chrome.extension.getURL('images/icons/128x128/default.png');
+  getDefaultIcon = () => chrome.runtime.getURL('images/icons/128x128/default.png');
 
-  getDisabledIcon = () => chrome.extension.getURL('images/icons/128x128/disabled.png');
+  getDisabledIcon = () => chrome.runtime.getURL('images/icons/128x128/disabled.png');
 
   getPopupImage = ({ size = '512', name = 'default' }) => {
-    return chrome.extension.getURL(`images/icons/${size}x${size}/${name}.png`)
+    return chrome.runtime.getURL(`images/icons/${size}x${size}/${name}.png`)
   }
 
   getProxyServerUrl = () => {

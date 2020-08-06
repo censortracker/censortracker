@@ -18,7 +18,7 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - run: npm install
     - run: npm run lint
-    - run: npm run test
+    - run: npm run test:unit
       env:
         CI: true
         PROJECT_NAME: censortracker

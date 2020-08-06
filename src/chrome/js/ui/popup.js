@@ -34,6 +34,20 @@ const showCooperationRefusedMessage = () => {
   statusDomain.classList.add('title-normal')
 }
 
+const getAppropriateURL = (currentURL) => {
+  const popupURL = chrome.runtime.getURL('popup.html')
+
+  if (currentURL.startsWith(popupURL)) {
+    const currentURLParams = currentURL.split('?')[1]
+    const searchParams = new URLSearchParams(currentURLParams)
+    const encodedURL = searchParams.get('loadFor')
+    const loadForURL = window.atob(encodedURL)
+
+    return new URL(loadForURL)
+  }
+  return new URL(currentURL)
+}
+
 chrome.runtime.getBackgroundPage(async (bgWindow) => {
   const {
     settings,
@@ -50,33 +64,25 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
     }))
   }
 
-  const mutatePopup = ({ enabled }) => {
-    if (enabled) {
-      changeStatusImage('normal')
-      statusDomain.classList.add('title-normal')
-      statusDomain.removeAttribute('hidden')
-      footerTrackerOn.removeAttribute('hidden')
-    } else {
-      changeStatusImage('disabled')
-      trackerOff.removeAttribute('hidden')
-      footerTrackerOff.removeAttribute('hidden')
-      isOriBlock.setAttribute('hidden', 'true')
-      isForbidden.setAttribute('hidden', 'true')
-      isNotOriBlock.setAttribute('hidden', 'true')
-      isNotForbidden.setAttribute('hidden', 'true')
-    }
+  const { enableExtension } =
+    await asynchrome.storage.local.get({
+      enableExtension: true,
+    })
+
+  if (enableExtension) {
+    changeStatusImage('normal')
+    statusDomain.classList.add('title-normal')
+    statusDomain.removeAttribute('hidden')
+    footerTrackerOn.removeAttribute('hidden')
+  } else {
+    changeStatusImage('disabled')
+    trackerOff.removeAttribute('hidden')
+    footerTrackerOff.removeAttribute('hidden')
+    isOriBlock.setAttribute('hidden', 'true')
+    isForbidden.setAttribute('hidden', 'true')
+    isNotOriBlock.setAttribute('hidden', 'true')
+    isNotForbidden.setAttribute('hidden', 'true')
   }
-
-  const [tab] = await asynchrome.tabs.query({
-    active: true,
-    lastFocusedWindow: true,
-  })
-
-  const { enableExtension } = await asynchrome.storage.local.get({
-    enableExtension: true,
-  })
-
-  mutatePopup({ enabled: enableExtension })
 
   document.addEventListener('click', (event) => {
     if (event.target.matches('#enableExtension')) {
@@ -92,18 +98,15 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
     }
   })
 
-  if (shortcuts.isChromeExtensionUrl(tab.url)) {
-    return
-  }
+  const [{ url: currentURL }] =
+    await asynchrome.tabs.query({ active: true, lastFocusedWindow: true })
 
-  const { hostname } = new URL(tab.url)
+  const { hostname } = getAppropriateURL(currentURL)
   const currentHostname = shortcuts.cleanHostname(hostname)
 
   if (shortcuts.validURL(currentHostname)) {
-    const rawDomain = currentHostname.replace('www.', '')
-
-    statusDomain.innerText = rawDomain
-    currentDomain.innerText = rawDomain
+    statusDomain.innerText = currentHostname
+    currentDomain.innerText = currentHostname
   }
 
   if (enableExtension) {
@@ -114,10 +117,11 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
 
     if (domainFound) {
       changeStatusImage('blocked')
-      isNotForbidden.setAttribute('hidden', '')
       isForbidden.removeAttribute('hidden')
+      isNotForbidden.remove()
     } else {
       isNotForbidden.removeAttribute('hidden')
+      isForbidden.remove()
       changeStatusImage('normal')
     }
 
@@ -127,6 +131,7 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
     if (url) {
       statusDomain.classList.add('title-ori')
       isOriBlock.removeAttribute('hidden')
+      isNotOriBlock.remove()
 
       if (cooperationRefused) {
         showCooperationRefusedMessage()
@@ -136,6 +141,7 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
       }
     } else {
       isNotOriBlock.removeAttribute('hidden')
+      isOriBlock.remove()
       console.log('Match not found at all')
     }
   } else {

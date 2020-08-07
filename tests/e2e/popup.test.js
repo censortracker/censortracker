@@ -16,19 +16,31 @@ describe('Testing popup of the extension', () => {
 
   describe('checks that extension shows that website is ORI', () => {
     const urls = [
-      'https://2ch.hk/',
-      'https://vk.com/',
-      'https://tinder.com',
-      'https://disk.yandex.ru',
+      { url: 'https://meduza.io/', isORI: false },
+      { url: 'https://2ch.hk/', isORI: true },
+      { url: 'https://netflix.com/', isORI: false },
+      { url: 'https://vk.com/', isORI: true },
+      { url: 'https://tinder.com', isORI: true },
+      { url: 'https://hd.kinopoisk.ru/', isORI: false },
+      { url: 'https://disk.yandex.ru', isORI: true },
     ]
 
-    it.each(urls)('popup contains isOriBlock element ', async (url) => {
+    it.each(urls)('popup contains isOriBlock element ', async ({ url, isORI }) => {
       await browser.sleep(beforeRequestTimeout)
       await getPopupFor(browser, url)
 
-      const oriBlock = await isElementExists(browser, { id: 'isOriBlock' }, 2000)
+      const oriBlock =
+        await isElementExists(browser, { id: 'isOriBlock' }, 2000)
+      const notOriBlock =
+        await isElementExists(browser, { id: 'isNotOriBlock' }, 2000)
 
-      expect(oriBlock).toBeTruthy()
+      if (isORI) {
+        expect(oriBlock).toBeTruthy()
+        expect(notOriBlock).toBeFalsy()
+      } else {
+        expect(oriBlock).toBeFalsy()
+        expect(notOriBlock).toBeTruthy()
+      }
     }, timeout)
   })
 

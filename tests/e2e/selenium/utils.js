@@ -1,6 +1,6 @@
 import { until } from 'selenium-webdriver'
 
-export const waitGetElement = async (browser, locator, timeout = 1000) => {
+export const waitGetElement = async (browser, locator, timeout = 2000) => {
   try {
     await browser.findElement(locator)
     const element = await browser.wait(until.elementLocated(locator), timeout)
@@ -11,7 +11,7 @@ export const waitGetElement = async (browser, locator, timeout = 1000) => {
   }
 }
 
-export const isElementExists = async (browser, locator, timeout = 1000) => {
+export const isElementExists = async (browser, locator, timeout = 2000) => {
   const result = await waitGetElement(browser, locator, timeout)
 
   return result !== undefined

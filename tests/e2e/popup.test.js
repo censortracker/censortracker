@@ -1,6 +1,5 @@
-import { until } from 'selenium-webdriver'
-
 import { createDriver, getPopupFor } from './selenium'
+import { isElementExists, waitGetElement } from './selenium/utils'
 
 describe('Testing popup of the extension', () => {
   let browser
@@ -26,25 +25,33 @@ describe('Testing popup of the extension', () => {
     it.each(urls)('popup contains isOriBlock element ', async (url) => {
       await browser.sleep(beforeRequestTimeout)
       await getPopupFor(browser, url)
-      const oriBlock = await browser.findElement({ id: 'isOriBlock' })
 
-      expect(oriBlock).not.toBeUndefined()
+      const oriBlock = await isElementExists(browser, { id: 'isOriBlock' })
+
+      expect(oriBlock).toBeTruthy()
     }, timeout)
   })
 
   describe('checks that extension shows that website is in the registry of blocked websites', () => {
     const urls = [
-      'tunnelbear.com/',
+      'https://tunnelbear.com/',
       'http://lostfilm.tv/',
       'https://rutracker.org/',
     ]
 
     it.each(urls)('popup contains isForbidden element and do not contain isNotForbidden', async (url) => {
-      await browser.sleep(beforeRequestTimeout)
       await getPopupFor(browser, url)
-      const isForbidden = await browser.findElement({ id: 'isForbidden' })
 
-      expect(isForbidden).not.toBeUndefined()
+      const isOri = await waitGetElement(browser, { id: 'isOriBlock' })
+      const isNotOri = await waitGetElement(browser, { id: 'isNotOriBlock' })
+      const isForbidden = await waitGetElement(browser, { id: 'isForbidden' })
+      const isNotForbidden = await waitGetElement(browser, { id: 'isNotForbidden' })
+
+      expect(isOri).toBeFalsy()
+      expect(isNotOri).toBeTruthy()
+
+      expect(isForbidden).toBeTruthy()
+      expect(isNotForbidden).toBeFalsy()
     }, timeout)
   })
 
@@ -69,31 +76,28 @@ describe('Testing popup of the extension', () => {
       await getPopupFor(browser, 'https://jestjs.io/')
 
       const disableExtensionButton =
-        await browser.wait(until.elementLocated({ id: 'disableExtension' }, 3000))
-      const disableExtensionButtonIsVisible =
-        await browser.wait(until.elementIsVisible(disableExtensionButton), 1500)
+        await waitGetElement(browser, { id: 'disableExtension' }, 1500)
 
-      expect(disableExtensionButtonIsVisible).toBeTruthy()
       await disableExtensionButton.click()
 
       await browser.get(url)
-      let websiteTitle = await browser.getTitle()
 
-      expect(websiteTitle).not.toBe(expectedTitle)
+      let title = await browser.getTitle()
+
+      expect(title).not.toBe(expectedTitle)
 
       await getPopupFor(browser, 'https://jestjs.io/')
 
       const enableExtensionButton =
-        await browser.wait(until.elementLocated({ id: 'enableExtension' }, 3000))
-      const enableExtensionButtonIsVisible =
-        await browser.wait(until.elementIsVisible(enableExtensionButton), 1500)
+        await waitGetElement(browser, { id: 'enableExtension' }, 1500)
 
-      await enableExtensionButtonIsVisible.click()
+      await enableExtensionButton.click()
+
       await browser.sleep(1500)
 
       await browser.get(url)
-      websiteTitle = await browser.getTitle()
-      expect(websiteTitle).toBe(expectedTitle)
+      title = await browser.getTitle()
+      expect(title).toBe(expectedTitle)
     }, timeout)
   })
 })

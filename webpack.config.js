@@ -43,9 +43,9 @@ const webpackConfig = {
 
   entry: {
     background: './src/chrome/js/background.js',
-    options: './src/chrome/js/e2e/options.js',
-    unavailable: './src/chrome/js/e2e/unavailable.js',
-    popup: './src/chrome/js/e2e/popup.js',
+    options: './src/chrome/js/ui/options.js',
+    unavailable: './src/chrome/js/ui/unavailable.js',
+    popup: './src/chrome/js/ui/popup.js',
   },
 
   output: {

@@ -13,14 +13,14 @@ describe('Default max redirections count', () => {
 })
 
 describe('Put request to session', () => {
-  test('should put request id to the map sessions.requests', () => {
+  test('puts request id to the map sessions.requests', () => {
     sessions.putRequest(id, key, value)
     expect(sessions.requests.has(id)).toBeTruthy()
   })
 })
 
 describe('Get request from session', () => {
-  test('should return data for passed request id', () => {
+  test('returns data for passed request id', () => {
     sessions.putRequest(id, key, value)
     expect(sessions.getRequest(id, key)).toEqual(value)
     expect(sessions.getRequest(id, 'randomKey', 'default')).toEqual('default')
@@ -28,7 +28,7 @@ describe('Get request from session', () => {
 })
 
 describe('Get request id from map', () => {
-  test('should delete data of request by id', () => {
+  test('deletes data of request by its id', () => {
     sessions.putRequest(id, key, value)
     expect(sessions.requests.has(id)).toBeTruthy()
     expect(sessions.deleteRequest(id, key)).toBeUndefined()
@@ -37,7 +37,7 @@ describe('Get request id from map', () => {
 })
 
 describe('Check if max redirections count reached', () => {
-  test('should return true if passed number larger than allowed max redirections count', () => {
+  test('returns true if passed number larger than allowed max redirections count', () => {
     expect(sessions.areMaxRedirectsReached(5)).toBeFalsy()
     expect(sessions.areMaxRedirectsReached(6)).toBeTruthy()
   })

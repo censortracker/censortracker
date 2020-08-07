@@ -41,7 +41,7 @@ describe('Clean hostname', () => {
 })
 
 describe('Check if URL is chrome extension', () => {
-  test('it should return true if url is chrome', () => {
+  test('returns true if url is chrome', () => {
     const urls = [
       { url: 'https://google.com', expected: true },
       { url: 'http://telegram.org', expected: true },
@@ -59,7 +59,7 @@ describe('Check if URL is chrome extension', () => {
 })
 
 describe('Enforce HTTPS', () => {
-  test('replace http: with https:', () => {
+  test('replaces http: with https:', () => {
     const urls = [
       { url: 'http://telegram.org/', expected: 'https://telegram.org/' },
       { url: 'http://google.com/', expected: 'https://google.com/' },
@@ -74,7 +74,7 @@ describe('Enforce HTTPS', () => {
 })
 
 describe('Check if IP is from the subnet of special-purpose (RFC6890)', () => {
-  test('return true if IP address is from special-propose subnets', () => {
+  test('returns true if IP address is from special-propose subnets', () => {
     const ips = [
       '0.0.0.1',
       '169.254.0.0',

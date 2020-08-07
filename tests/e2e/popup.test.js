@@ -26,7 +26,7 @@ describe('Testing popup of the extension', () => {
       await browser.sleep(beforeRequestTimeout)
       await getPopupFor(browser, url)
 
-      const oriBlock = await isElementExists(browser, { id: 'isOriBlock' })
+      const oriBlock = await isElementExists(browser, { id: 'isOriBlock' }, 2000)
 
       expect(oriBlock).toBeTruthy()
     }, timeout)

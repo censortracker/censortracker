@@ -35,9 +35,27 @@ describe('Testing popup of the extension', () => {
         await isElementExists(browser, { id: 'isNotOriBlock' }, 2000)
 
       if (isORI) {
+        const aboutOriButton =
+          await waitGetElement(browser, { id: 'btnAboutOri' }, 2000)
+
+        await aboutOriButton.click()
+        const closeTextAboutOriButton =
+          await waitGetElement(browser, { id: 'closeTextAboutOri' }, 1500)
+
+        await closeTextAboutOriButton.click()
+
         expect(oriBlock).toBeTruthy()
         expect(notOriBlock).toBeFalsy()
       } else {
+        const aboutNotOriButton =
+          await waitGetElement(browser, { id: 'btnAboutNotOri' }, 2000)
+
+        await aboutNotOriButton.click()
+        const closeTextAboutNotOriButton =
+          await waitGetElement(browser, { id: 'closeTextAboutNotOri' }, 1500)
+
+        await closeTextAboutNotOriButton.click()
+
         expect(oriBlock).toBeFalsy()
         expect(notOriBlock).toBeTruthy()
       }
@@ -54,16 +72,24 @@ describe('Testing popup of the extension', () => {
     it.each(urls)('popup contains isForbidden element and do not contain isNotForbidden', async (url) => {
       await getPopupFor(browser, url)
 
-      const isOri = await waitGetElement(browser, { id: 'isOriBlock' })
-      const isNotOri = await waitGetElement(browser, { id: 'isNotOriBlock' })
-      const isForbidden = await waitGetElement(browser, { id: 'isForbidden' })
-      const isNotForbidden = await waitGetElement(browser, { id: 'isNotForbidden' })
+      const isNotForbidden =
+        await isElementExists(browser, { id: 'isNotForbidden' })
 
-      expect(isOri).toBeFalsy()
-      expect(isNotOri).toBeTruthy()
+      expect(isNotForbidden).toBeFalsy()
+
+      const isForbidden = await waitGetElement(browser, { id: 'isForbidden' })
+
+      const aboutForbiddenButton =
+        await waitGetElement(browser, { id: 'btnAboutForbidden' })
+
+      await aboutForbiddenButton.click()
+
+      const closeAboutForbiddenButton =
+        await waitGetElement(browser, { id: 'closeTextAboutForbidden' })
+
+      await closeAboutForbiddenButton.click()
 
       expect(isForbidden).toBeTruthy()
-      expect(isNotForbidden).toBeFalsy()
     }, timeout)
   })
 

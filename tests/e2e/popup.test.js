@@ -25,7 +25,7 @@ describe('Testing popup of the extension', () => {
       { url: 'https://disk.yandex.ru', isORI: true },
     ]
 
-    it.each(urls)('popup contains isOriBlock element ', async ({ url, isORI }) => {
+    it.each(urls)('popup do/do not contains isOriBlock element ', async ({ url, isORI }) => {
       await browser.sleep(beforeRequestTimeout)
       await getPopupFor(browser, url)
 

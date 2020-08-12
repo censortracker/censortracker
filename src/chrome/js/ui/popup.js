@@ -34,6 +34,11 @@ const showCooperationRefusedMessage = () => {
   statusDomain.classList.add('title-normal')
 }
 
+const showAdvertising = () => {
+  document.querySelectorAll('.buy-vpn')
+    .forEach((el) => el.style.removeProperty('display'))
+}
+
 const getAppropriateURL = (currentURL) => {
   const popupURL = chrome.runtime.getURL('popup.html')
 
@@ -117,6 +122,7 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
       changeStatusImage('blocked')
       isForbidden.removeAttribute('hidden')
       isNotForbidden.remove()
+      showAdvertising()
     } else {
       isNotForbidden.removeAttribute('hidden')
       isForbidden.remove()

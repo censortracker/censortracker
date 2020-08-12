@@ -110,8 +110,6 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
   }
 
   if (enableExtension) {
-    // TODO: Add state for cases when site is in ORI and blocked
-
     const { domainFound } =
       await registry.domainsContains(currentHostname)
 
@@ -143,6 +141,12 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
       isNotOriBlock.removeAttribute('hidden')
       isOriBlock.remove()
       console.log('Match not found at all')
+    }
+
+    if (domainFound && url) {
+      if (!cooperationRefused) {
+        changeStatusImage('ori_blocked')
+      }
     }
   } else {
     statusImage.setAttribute('src',

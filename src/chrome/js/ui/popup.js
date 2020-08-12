@@ -69,26 +69,6 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
     }))
   }
 
-  const { enableExtension } =
-    await asynchrome.storage.local.get({
-      enableExtension: true,
-    })
-
-  if (enableExtension) {
-    changeStatusImage('normal')
-    statusDomain.classList.add('title-normal')
-    statusDomain.removeAttribute('hidden')
-    footerTrackerOn.removeAttribute('hidden')
-  } else {
-    changeStatusImage('disabled')
-    trackerOff.removeAttribute('hidden')
-    footerTrackerOff.removeAttribute('hidden')
-    isOriBlock.setAttribute('hidden', 'true')
-    isForbidden.setAttribute('hidden', 'true')
-    isNotOriBlock.setAttribute('hidden', 'true')
-    isNotForbidden.setAttribute('hidden', 'true')
-  }
-
   document.addEventListener('click', (event) => {
     if (event.target.matches('#enableExtension')) {
       settings.enableExtension()
@@ -103,6 +83,9 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
     }
   })
 
+  const { enableExtension } =
+    await asynchrome.storage.local.get({ enableExtension: true })
+
   const [{ url: currentURL }] =
     await asynchrome.tabs.query({ active: true, lastFocusedWindow: true })
 
@@ -115,6 +98,11 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
   }
 
   if (enableExtension) {
+    changeStatusImage('normal')
+    statusDomain.classList.add('title-normal')
+    statusDomain.removeAttribute('hidden')
+    footerTrackerOn.removeAttribute('hidden')
+
     const { domainFound } =
       await registry.domainsContains(currentHostname)
 
@@ -155,12 +143,13 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
       }
     }
   } else {
-    statusImage.setAttribute('src',
-      settings.getPopupImage({
-        size: 512,
-        name: 'disabled',
-      }),
-    )
+    changeStatusImage('disabled')
+    trackerOff.removeAttribute('hidden')
+    footerTrackerOff.removeAttribute('hidden')
+    isOriBlock.setAttribute('hidden', 'true')
+    isForbidden.setAttribute('hidden', 'true')
+    isNotOriBlock.setAttribute('hidden', 'true')
+    isNotForbidden.setAttribute('hidden', 'true')
   }
 
   const show = () => {

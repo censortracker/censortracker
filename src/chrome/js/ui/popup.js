@@ -23,7 +23,7 @@ const textAboutNotOri = getElementById('textAboutNotOri')
 const closeTextAboutNotOri = getElementById('closeTextAboutNotOri')
 const currentDomain = getElementById('currentDomain')
 const oriSiteInfo = getElementById('oriSiteInfo')
-const popupShowTimeout = 150
+const popupShowTimeout = 60
 
 const showCooperationRefusedMessage = () => {
   oriSiteInfo.innerText = 'Сервис заявил, что они не передают трафик российским ' +

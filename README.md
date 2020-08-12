@@ -41,6 +41,7 @@ from <span class="title-ref">dist/</span> to your browser.
 Testing
 =======
 
+
 To run all the kind of tests just run following command:
 
     ~ npm run test
@@ -49,7 +50,7 @@ to run just unit tests:
 
     ~ npm run test:unit
 
-and to run just end-to-end tests:
+and to run end-to-end tests you need too add `chromedriver` to your `$PATH` and then run this command:
 
     ~ npm run test:e2e
 

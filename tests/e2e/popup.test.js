@@ -16,19 +16,49 @@ describe('Testing popup of the extension', () => {
 
   describe('checks that extension shows that website is ORI', () => {
     const urls = [
-      'https://2ch.hk/',
-      'https://vk.com/',
-      'https://tinder.com',
-      'https://disk.yandex.ru',
+      { url: 'https://meduza.io/', isORI: false },
+      { url: 'https://2ch.hk/', isORI: true },
+      { url: 'https://netflix.com/', isORI: false },
+      { url: 'https://vk.com/', isORI: true },
+      { url: 'https://tinder.com', isORI: true },
+      { url: 'https://hd.kinopoisk.ru/', isORI: false },
+      { url: 'https://disk.yandex.ru', isORI: true },
     ]
 
-    it.each(urls)('popup contains isOriBlock element ', async (url) => {
+    it.each(urls)('popup contains isOriBlock element ', async ({ url, isORI }) => {
       await browser.sleep(beforeRequestTimeout)
       await getPopupFor(browser, url)
 
-      const oriBlock = await isElementExists(browser, { id: 'isOriBlock' }, 2000)
+      const oriBlock =
+        await isElementExists(browser, { id: 'isOriBlock' }, 2000)
+      const notOriBlock =
+        await isElementExists(browser, { id: 'isNotOriBlock' }, 2000)
 
-      expect(oriBlock).toBeTruthy()
+      if (isORI) {
+        const aboutOriButton =
+          await waitGetElement(browser, { id: 'btnAboutOri' }, 2000)
+
+        await aboutOriButton.click()
+        const closeTextAboutOriButton =
+          await waitGetElement(browser, { id: 'closeTextAboutOri' }, 1500)
+
+        await closeTextAboutOriButton.click()
+
+        expect(oriBlock).toBeTruthy()
+        expect(notOriBlock).toBeFalsy()
+      } else {
+        const aboutNotOriButton =
+          await waitGetElement(browser, { id: 'btnAboutNotOri' }, 2000)
+
+        await aboutNotOriButton.click()
+        const closeTextAboutNotOriButton =
+          await waitGetElement(browser, { id: 'closeTextAboutNotOri' }, 1500)
+
+        await closeTextAboutNotOriButton.click()
+
+        expect(oriBlock).toBeFalsy()
+        expect(notOriBlock).toBeTruthy()
+      }
     }, timeout)
   })
 
@@ -42,16 +72,24 @@ describe('Testing popup of the extension', () => {
     it.each(urls)('popup contains isForbidden element and do not contain isNotForbidden', async (url) => {
       await getPopupFor(browser, url)
 
-      const isOri = await waitGetElement(browser, { id: 'isOriBlock' })
-      const isNotOri = await waitGetElement(browser, { id: 'isNotOriBlock' })
-      const isForbidden = await waitGetElement(browser, { id: 'isForbidden' })
-      const isNotForbidden = await waitGetElement(browser, { id: 'isNotForbidden' })
+      const isNotForbidden =
+        await isElementExists(browser, { id: 'isNotForbidden' })
 
-      expect(isOri).toBeFalsy()
-      expect(isNotOri).toBeTruthy()
+      expect(isNotForbidden).toBeFalsy()
+
+      const isForbidden = await waitGetElement(browser, { id: 'isForbidden' })
+
+      const aboutForbiddenButton =
+        await waitGetElement(browser, { id: 'btnAboutForbidden' })
+
+      await aboutForbiddenButton.click()
+
+      const closeAboutForbiddenButton =
+        await waitGetElement(browser, { id: 'closeTextAboutForbidden' })
+
+      await closeAboutForbiddenButton.click()
 
       expect(isForbidden).toBeTruthy()
-      expect(isNotForbidden).toBeFalsy()
     }, timeout)
   })
 

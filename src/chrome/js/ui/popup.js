@@ -162,22 +162,14 @@ chrome.runtime.getBackgroundPage(async (bgWindow) => {
 btnAboutOri.addEventListener('click', () => {
   textAboutOri.style.display = 'block'
   btnAboutOri.style.display = 'none'
-  textAboutForbidden.style.display = 'none'
-  btnAboutForbidden.style.display = 'flex'
-  textAboutNotForbidden.style.display = 'none'
-  btnAboutNotForbidden.style.display = 'flex'
-},
-)
+  hideForbiddenDetails()
+})
 
 btnAboutNotOri.addEventListener('click', () => {
   textAboutNotOri.style.display = 'block'
   btnAboutNotOri.style.display = 'none'
-  textAboutForbidden.style.display = 'none'
-  btnAboutForbidden.style.display = 'flex'
-  textAboutNotForbidden.style.display = 'none'
-  btnAboutNotForbidden.style.display = 'flex'
-},
-)
+  hideForbiddenDetails()
+})
 
 closeTextAboutNotOri.addEventListener('click', () => {
   textAboutNotOri.style.display = 'none'
@@ -194,20 +186,14 @@ closeTextAboutOri.addEventListener('click', () => {
 btnAboutForbidden.addEventListener('click', () => {
   textAboutForbidden.style.display = 'block'
   btnAboutForbidden.style.display = 'none'
-  textAboutOri.style.display = 'none'
-  btnAboutOri.style.display = 'flex'
-  textAboutNotOri.style.display = 'none'
-  btnAboutNotOri.style.display = 'flex'
+  hideOriDetails()
 },
 )
 
 btnAboutNotForbidden.addEventListener('click', () => {
   textAboutNotForbidden.style.display = 'block'
   btnAboutNotForbidden.style.display = 'none'
-  textAboutOri.style.display = 'none'
-  btnAboutOri.style.display = 'flex'
-  textAboutNotOri.style.display = 'none'
-  btnAboutNotOri.style.display = 'flex'
+  hideOriDetails()
 })
 
 closeTextAboutForbidden.addEventListener('click', () => {
@@ -220,3 +206,17 @@ closeTextAboutNotForbidden.addEventListener('click', () => {
   textAboutNotForbidden.style.display = 'none'
   btnAboutNotForbidden.style.display = 'flex'
 })
+
+const hideOriDetails = () => {
+  textAboutOri.style.display = 'none'
+  btnAboutOri.style.display = 'flex'
+  textAboutNotOri.style.display = 'none'
+  btnAboutNotOri.style.display = 'flex'
+}
+
+const hideForbiddenDetails = () => {
+  textAboutForbidden.style.display = 'none'
+  btnAboutForbidden.style.display = 'flex'
+  textAboutNotForbidden.style.display = 'none'
+  btnAboutNotForbidden.style.display = 'flex'
+}

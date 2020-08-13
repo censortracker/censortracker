@@ -1,7 +1,7 @@
 const getElementById = (id) => document.getElementById(id)
 
 const statusImage = getElementById('statusImage')
-const statusDomain = getElementById('statusDomain')
+const currentDomainHeader = getElementById('currentDomainHeader')
 const footerTrackerOff = getElementById('footerTrackerOff')
 const trackerOff = getElementById('trackerOff')
 const isOriBlock = getElementById('isOriBlock')
@@ -21,7 +21,6 @@ const closeTextAboutNotForbidden = getElementById('closeTextAboutNotForbidden')
 const btnAboutNotOri = getElementById('btnAboutNotOri')
 const textAboutNotOri = getElementById('textAboutNotOri')
 const closeTextAboutNotOri = getElementById('closeTextAboutNotOri')
-const currentDomain = getElementById('currentDomain')
 const oriSiteInfo = getElementById('oriSiteInfo')
 const popupShowTimeout = 60
 
@@ -30,8 +29,8 @@ const showCooperationRefusedMessage = () => {
     'государственным органам в автоматическом режиме.'
   textAboutOri.classList.remove('text-warning')
   textAboutOri.classList.add('text-normal')
-  statusDomain.classList.remove('title-ori')
-  statusDomain.classList.add('title-normal')
+  currentDomainHeader.classList.remove('title-ori')
+  currentDomainHeader.classList.add('title-normal')
 }
 
 const showAdvertising = () => {
@@ -51,6 +50,23 @@ const getAppropriateURL = (currentURL) => {
     return new URL(loadForURL)
   }
   return new URL(currentURL)
+}
+
+const showCurrentDomain = ({ length }) => {
+  if (length >= 28) {
+    currentDomainHeader.style.fontSize = '15px'
+  } else if (length >= 22) {
+    currentDomainHeader.style.fontSize = '17px'
+  }
+  currentDomainHeader.classList.add('title-normal')
+  currentDomainHeader.removeAttribute('hidden')
+}
+
+const renderCurrentDomain = (domain) => {
+  document.querySelectorAll('.current-domain')
+    .forEach((element) => {
+      element.innerText = domain
+    })
 }
 
 chrome.runtime.getBackgroundPage(async ({ censortracker }) => {
@@ -86,15 +102,11 @@ chrome.runtime.getBackgroundPage(async ({ censortracker }) => {
   const { hostname } = getAppropriateURL(currentURL)
   const currentHostname = shortcuts.cleanHostname(hostname)
 
-  if (shortcuts.validURL(currentHostname)) {
-    statusDomain.innerText = currentHostname
-    currentDomain.innerText = currentHostname
-  }
+  renderCurrentDomain(currentHostname)
 
   if (enableExtension) {
     changeStatusImage('normal')
-    statusDomain.classList.add('title-normal')
-    statusDomain.removeAttribute('hidden')
+    showCurrentDomain(currentHostname)
     footerTrackerOn.removeAttribute('hidden')
 
     const { domainFound } =
@@ -115,7 +127,7 @@ chrome.runtime.getBackgroundPage(async ({ censortracker }) => {
       await registry.distributorsContains(currentHostname)
 
     if (url) {
-      statusDomain.classList.add('title-ori')
+      currentDomainHeader.classList.add('title-ori')
       isOriBlock.removeAttribute('hidden')
       isNotOriBlock.remove()
 

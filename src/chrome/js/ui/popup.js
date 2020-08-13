@@ -22,91 +22,31 @@ const btnAboutNotOri = getElementById('btnAboutNotOri')
 const textAboutNotOri = getElementById('textAboutNotOri')
 const closeTextAboutNotOri = getElementById('closeTextAboutNotOri')
 const oriSiteInfo = getElementById('oriSiteInfo')
+const advertisingBlocks = document.querySelectorAll('.buy-vpn')
+const currentDomainBlocks = document.querySelectorAll('.current-domain')
 const popupShowTimeout = 60
 
-const showCooperationRefusedMessage = () => {
-  oriSiteInfo.innerText = 'Сервис заявил, что они не передают трафик российским ' +
-    'государственным органам в автоматическом режиме.'
-  textAboutOri.classList.remove('text-warning')
-  textAboutOri.classList.add('text-normal')
-  currentDomainHeader.classList.remove('title-ori')
-  currentDomainHeader.classList.add('title-normal')
-}
+chrome.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
+  const { asynchrome, registry, shortcuts } = bgModules
 
-const showAdvertising = () => {
-  document.querySelectorAll('.buy-vpn')
-    .forEach((el) => el.style.removeProperty('display'))
-}
+  await addExtensionControlListeners(bgModules)
 
-const getAppropriateURL = (currentURL) => {
-  const popupURL = chrome.runtime.getURL('popup.html')
-
-  if (currentURL.startsWith(popupURL)) {
-    const currentURLParams = currentURL.split('?')[1]
-    const searchParams = new URLSearchParams(currentURLParams)
-    const encodedURL = searchParams.get('loadFor')
-    const loadForURL = window.atob(encodedURL)
-
-    return new URL(loadForURL)
-  }
-  return new URL(currentURL)
-}
-
-const showCurrentDomain = ({ length }) => {
-  if (length >= 28) {
-    currentDomainHeader.style.fontSize = '15px'
-  } else if (length >= 22) {
-    currentDomainHeader.style.fontSize = '17px'
-  }
-  currentDomainHeader.classList.add('title-normal')
-  currentDomainHeader.removeAttribute('hidden')
-}
-
-const renderCurrentDomain = (domain) => {
-  document.querySelectorAll('.current-domain')
-    .forEach((element) => {
-      element.innerText = domain
-    })
-}
-
-chrome.runtime.getBackgroundPage(async ({ censortracker }) => {
-  const { asynchrome, settings, proxies, registry, shortcuts } = censortracker
-
-  const changeStatusImage = (imageName) => {
-    statusImage.setAttribute('src', settings.getPopupImage({
-      size: 512,
-      name: imageName,
-    }))
-  }
-
-  document.addEventListener('click', (event) => {
-    if (event.target.matches('#enableExtension')) {
-      settings.enableExtension()
-      proxies.setProxy()
-      window.location.reload()
-    }
-
-    if (event.target.matches('#disableExtension')) {
-      proxies.removeProxy()
-      settings.disableExtension()
-      window.location.reload()
-    }
+  const { enableExtension } = await asynchrome.storage.local.get({
+    enableExtension: true,
   })
 
-  const { enableExtension } =
-    await asynchrome.storage.local.get({ enableExtension: true })
-
-  const [{ url: currentURL }] =
-    await asynchrome.tabs.query({ active: true, lastFocusedWindow: true })
+  const [{ url: currentURL }] = await asynchrome.tabs.query({
+    active: true, lastFocusedWindow: true,
+  })
 
   const { hostname } = getAppropriateURL(currentURL)
   const currentHostname = shortcuts.cleanHostname(hostname)
 
-  renderCurrentDomain(currentHostname)
+  interpolateCurrentDomain(currentHostname)
 
   if (enableExtension) {
     changeStatusImage('normal')
-    showCurrentDomain(currentHostname)
+    renderCurrentDomain(currentHostname)
     footerTrackerOn.removeAttribute('hidden')
 
     const { domainFound } =
@@ -164,6 +104,73 @@ chrome.runtime.getBackgroundPage(async ({ censortracker }) => {
 
   setTimeout(show, popupShowTimeout)
 })
+
+const addExtensionControlListeners = async ({ settings, proxies }) => {
+  document.addEventListener('click', (event) => {
+    if (event.target.matches('#enableExtension')) {
+      settings.enableExtension()
+      proxies.setProxy()
+      window.location.reload()
+    }
+
+    if (event.target.matches('#disableExtension')) {
+      proxies.removeProxy()
+      settings.disableExtension()
+      window.location.reload()
+    }
+  })
+}
+
+const changeStatusImage = (imageName) => {
+  const imageSrc = chrome.runtime.getURL(`images/icons/512x512/${imageName}.png`)
+
+  statusImage.setAttribute('src', imageSrc)
+}
+
+const showAdvertising = () => {
+  advertisingBlocks.forEach((ad) => {
+    ad.style.removeProperty('display')
+  })
+}
+
+const getAppropriateURL = (currentURL) => {
+  const popupURL = chrome.runtime.getURL('popup.html')
+
+  if (currentURL.startsWith(popupURL)) {
+    const currentURLParams = currentURL.split('?')[1]
+    const searchParams = new URLSearchParams(currentURLParams)
+    const encodedURL = searchParams.get('loadFor')
+    const loadForURL = window.atob(encodedURL)
+
+    return new URL(loadForURL)
+  }
+  return new URL(currentURL)
+}
+
+const interpolateCurrentDomain = (domain) => {
+  currentDomainBlocks.forEach((element) => {
+    element.innerText = domain
+  })
+}
+
+const renderCurrentDomain = ({ length }) => {
+  if (length >= 22 && length < 25) {
+    currentDomainHeader.style.fontSize = '17px'
+  } else if (length >= 25) {
+    currentDomainHeader.style.fontSize = '15px'
+  }
+  currentDomainHeader.classList.add('title-normal')
+  currentDomainHeader.removeAttribute('hidden')
+}
+
+const showCooperationRefusedMessage = () => {
+  oriSiteInfo.innerText = 'Сервис заявил, что они не передают трафик российским ' +
+    'государственным органам в автоматическом режиме.'
+  textAboutOri.classList.remove('text-warning')
+  textAboutOri.classList.add('text-normal')
+  currentDomainHeader.classList.remove('title-ori')
+  currentDomainHeader.classList.add('title-normal')
+}
 
 btnAboutOri.addEventListener('click', () => {
   textAboutOri.style.display = 'block'

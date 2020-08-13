@@ -25,13 +25,11 @@ describe('Testing popup of the extension', () => {
       { url: 'http://avito.ru', isORI: true },
     ]
 
-    it.each(urls)('popup do/do not contains isOriBlock element ', async ({ url, isORI }) => {
+    it.each(urls)('popup contains the corresponding HTML elements', async ({ url, isORI }) => {
       await getPopupFor(browser, url)
 
-      const oriBlock =
-        await isElementExists(browser, { id: 'isOriBlock' }, 2000)
-      const notOriBlock =
-        await isElementExists(browser, { id: 'isNotOriBlock' }, 2000)
+      const oriBlock = await isElementExists(browser, { id: 'isOriBlock' }, 2000)
+      const notOriBlock = await isElementExists(browser, { id: 'isNotOriBlock' }, 2000)
 
       if (isORI) {
         const aboutOriButton =

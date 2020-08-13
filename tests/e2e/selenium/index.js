@@ -31,13 +31,13 @@ export const createDriver = async () => {
 }
 
 const getExtensionURLByFilename = (page) => {
-  return `chrome-extension://kdlhnjelkjadlbccbiecdbiikllklbjo/${page}`
+  return `chrome-extension://achgohfdcbkllbcjlchinkogckihdloi/${page}`
 }
 
-export const getPopupFor = async (browser, url, timeout = 1000) => {
+export const getPopupFor = async (browser, url) => {
   const popupPage = getExtensionURLByFilename('popup.html')
 
-  await browser.sleep(timeout)
+  await browser.sleep(1500)
   await browser.get(`${popupPage}?loadFor=${btoa(url)}`)
 }
 

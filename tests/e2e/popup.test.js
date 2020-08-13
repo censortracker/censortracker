@@ -10,7 +10,7 @@ describe('Testing popup of the extension', () => {
   })
 
   afterAll(async () => {
-    await browser.quit()
+    // await browser.quit()
   })
 
   describe('checks that extension shows that website is or is not ORI', () => {
@@ -33,7 +33,7 @@ describe('Testing popup of the extension', () => {
 
       if (isORI) {
         const aboutOriButton =
-          await waitGetElement(browser, { id: 'btnAboutOri' }, 2000)
+          await waitGetElement(browser, { id: 'aboutOriButton' }, 2000)
 
         await aboutOriButton.click()
         const closeTextAboutOriButton =
@@ -110,17 +110,9 @@ describe('Testing popup of the extension', () => {
       await getPopupFor(browser, 'https://jestjs.io/')
 
       const disableExtensionButton =
-        await waitGetElement(browser, { id: 'disableExtension' }, 1500)
+        await waitGetElement(browser, { id: 'disableExtension' }, 2000)
 
       await disableExtensionButton.click()
-
-      await browser.get(url)
-
-      let title = await browser.getTitle()
-
-      expect(title).not.toBe(expectedTitle)
-
-      await getPopupFor(browser, 'https://jestjs.io/')
 
       const enableExtensionButton =
         await waitGetElement(browser, { id: 'enableExtension' }, 1500)
@@ -130,7 +122,8 @@ describe('Testing popup of the extension', () => {
       await browser.sleep(1500)
 
       await browser.get(url)
-      title = await browser.getTitle()
+      const title = await browser.getTitle()
+
       expect(title).toBe(expectedTitle)
     }, timeout)
   })

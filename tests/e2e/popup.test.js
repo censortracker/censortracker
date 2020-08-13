@@ -10,7 +10,7 @@ describe('Testing popup of the extension', () => {
   })
 
   afterAll(async () => {
-    // await browser.quit()
+    await browser.quit()
   })
 
   describe('checks that extension shows that website is or is not ORI', () => {

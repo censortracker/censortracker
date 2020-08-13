@@ -49,8 +49,7 @@ chrome.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
     renderCurrentDomain(currentHostname)
     footerTrackerOn.removeAttribute('hidden')
 
-    const { domainFound } =
-      await registry.domainsContains(currentHostname)
+    const { domainFound } = await registry.domainsContains(currentHostname)
 
     if (domainFound) {
       changeStatusImage('blocked')
@@ -63,8 +62,7 @@ chrome.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
       changeStatusImage('normal')
     }
 
-    const { url, cooperationRefused } =
-      await registry.distributorsContains(currentHostname)
+    const { url, cooperationRefused } = await registry.distributorsContains(currentHostname)
 
     if (url) {
       currentDomainHeader.classList.add('title-ori')
@@ -84,18 +82,12 @@ chrome.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
     }
 
     if (domainFound && url) {
-      if (!cooperationRefused) {
+      if (cooperationRefused === false) {
         changeStatusImage('ori_blocked')
       }
     }
   } else {
-    changeStatusImage('disabled')
-    trackerOff.removeAttribute('hidden')
-    footerTrackerOff.removeAttribute('hidden')
-    isOriBlock.setAttribute('hidden', 'true')
-    isForbidden.setAttribute('hidden', 'true')
-    isNotOriBlock.setAttribute('hidden', 'true')
-    isNotForbidden.setAttribute('hidden', 'true')
+    hideControlElements()
   }
 
   const show = () => {
@@ -170,6 +162,16 @@ const showCooperationRefusedMessage = () => {
   textAboutOri.classList.add('text-normal')
   currentDomainHeader.classList.remove('title-ori')
   currentDomainHeader.classList.add('title-normal')
+}
+
+const hideControlElements = () => {
+  changeStatusImage('disabled')
+  trackerOff.hidden = false
+  footerTrackerOff.hidden = false
+  isOriBlock.hidden = true
+  isForbidden.hidden = true
+  isNotOriBlock.hidden = true
+  isNotForbidden.hidden = true
 }
 
 btnAboutOri.addEventListener('click', () => {

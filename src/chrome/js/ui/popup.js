@@ -53,14 +53,8 @@ const getAppropriateURL = (currentURL) => {
   return new URL(currentURL)
 }
 
-chrome.runtime.getBackgroundPage(async (bgWindow) => {
-  const {
-    settings,
-    proxies,
-    registry,
-    shortcuts,
-    asynchrome,
-  } = bgWindow.censortracker
+chrome.runtime.getBackgroundPage(async ({ censortracker }) => {
+  const { asynchrome, settings, proxies, registry, shortcuts } = censortracker
 
   const changeStatusImage = (imageName) => {
     statusImage.setAttribute('src', settings.getPopupImage({

@@ -9,7 +9,7 @@ const isNotOriBlock = getElementById('isNotOriBlock')
 const isForbidden = getElementById('isForbidden')
 const isNotForbidden = getElementById('isNotForbidden')
 const footerTrackerOn = getElementById('footerTrackerOn')
-const btnAboutOri = getElementById('btnAboutOri')
+const aboutOriButton = getElementById('aboutOriButton')
 const textAboutOri = getElementById('textAboutOri')
 const closeTextAboutOri = getElementById('closeTextAboutOri')
 const btnAboutForbidden = getElementById('btnAboutForbidden')
@@ -174,9 +174,9 @@ const hideControlElements = () => {
   isNotForbidden.hidden = true
 }
 
-btnAboutOri.addEventListener('click', () => {
+aboutOriButton.addEventListener('click', () => {
   textAboutOri.style.display = 'block'
-  btnAboutOri.style.display = 'none'
+  aboutOriButton.style.display = 'none'
   hideForbiddenDetails()
 })
 
@@ -194,7 +194,7 @@ closeTextAboutNotOri.addEventListener('click', () => {
 
 closeTextAboutOri.addEventListener('click', () => {
   textAboutOri.style.display = 'none'
-  btnAboutOri.style.display = 'flex'
+  aboutOriButton.style.display = 'flex'
 },
 )
 
@@ -224,7 +224,7 @@ closeTextAboutNotForbidden.addEventListener('click', () => {
 
 const hideOriDetails = () => {
   textAboutOri.style.display = 'none'
-  btnAboutOri.style.display = 'flex'
+  aboutOriButton.style.display = 'flex'
   textAboutNotOri.style.display = 'none'
   btnAboutNotOri.style.display = 'flex'
 }

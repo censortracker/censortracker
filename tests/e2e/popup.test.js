@@ -4,7 +4,6 @@ import { isElementExists, waitGetElement } from './selenium/utils'
 describe('Testing popup of the extension', () => {
   let browser
   const timeout = 35000
-  const beforeRequestTimeout = 2000
 
   beforeAll(async () => {
     browser = await createDriver()
@@ -14,7 +13,7 @@ describe('Testing popup of the extension', () => {
     await browser.quit()
   })
 
-  describe('checks that extension shows that website is ORI', () => {
+  describe('checks that extension shows that website is or is not ORI', () => {
     const urls = [
       { url: 'https://meduza.io/', isORI: false },
       { url: 'https://2ch.hk/', isORI: true },
@@ -23,10 +22,10 @@ describe('Testing popup of the extension', () => {
       { url: 'https://tinder.com', isORI: true },
       { url: 'https://hd.kinopoisk.ru/', isORI: false },
       { url: 'https://disk.yandex.ru', isORI: true },
+      { url: 'http://avito.ru', isORI: true },
     ]
 
     it.each(urls)('popup do/do not contains isOriBlock element ', async ({ url, isORI }) => {
-      await browser.sleep(beforeRequestTimeout)
       await getPopupFor(browser, url)
 
       const oriBlock =
@@ -110,7 +109,6 @@ describe('Testing popup of the extension', () => {
     ]
 
     it.each(urls)('disable/enable buttons work fine', async ({ url, expectedTitle }) => {
-      await browser.sleep(beforeRequestTimeout)
       await getPopupFor(browser, 'https://jestjs.io/')
 
       const disableExtensionButton =

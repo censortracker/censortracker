@@ -34,9 +34,10 @@ const getExtensionURLByFilename = (page) => {
   return `chrome-extension://kdlhnjelkjadlbccbiecdbiikllklbjo/${page}`
 }
 
-export const getPopupFor = async (browser, url) => {
+export const getPopupFor = async (browser, url, timeout = 1000) => {
   const popupPage = getExtensionURLByFilename('popup.html')
 
+  await browser.sleep(timeout)
   await browser.get(`${popupPage}?loadFor=${btoa(url)}`)
 }
 

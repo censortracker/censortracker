@@ -62,9 +62,10 @@ chrome.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
       changeStatusImage('normal')
     }
 
-    const { url, cooperationRefused } = await registry.distributorsContains(currentHostname)
+    const { url: distributorUrl, cooperationRefused } =
+      await registry.distributorsContains(currentHostname)
 
-    if (url) {
+    if (distributorUrl) {
       currentDomainHeader.classList.add('title-ori')
       isOriBlock.removeAttribute('hidden')
       isNotOriBlock.remove()
@@ -81,7 +82,7 @@ chrome.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
       console.log('Match not found at all')
     }
 
-    if (domainFound && url) {
+    if (domainFound && distributorUrl) {
       if (cooperationRefused === false) {
         changeStatusImage('ori_blocked')
       }

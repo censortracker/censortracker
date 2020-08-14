@@ -2,9 +2,9 @@
 <html lang="ru" style="visibility: hidden;">
 <head>
   <meta charset="utf-8"/>
-  <title><%= htmlWebpackPlugin.options.title %></title>
+  <title>Censor Tracker</title>
   <link href="css/popup.css" rel="stylesheet"/>
-</head>
+<meta name="Content-Security-Policy" content="script-src 'self' 'unsafe-eval'; object-src 'self';"></head>
 
 <body>
 <div class="container">
@@ -168,5 +168,5 @@
   </div>
 
 </div>
-</body>
+<script src="/popup.js"></script></body>
 </html>

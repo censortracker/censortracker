@@ -4,7 +4,6 @@ import { isElementExists, waitGetElement } from './selenium/utils'
 describe('Testing popup of the extension', () => {
   let browser
   const timeout = 35000
-  const beforeRequestTimeout = 2000
 
   beforeAll(async () => {
     browser = await createDriver()
@@ -14,7 +13,7 @@ describe('Testing popup of the extension', () => {
     await browser.quit()
   })
 
-  describe('checks that extension shows that website is ORI', () => {
+  describe('checks that extension shows that website is or is not ORI', () => {
     const urls = [
       { url: 'https://meduza.io/', isORI: false },
       { url: 'https://2ch.hk/', isORI: true },
@@ -23,20 +22,18 @@ describe('Testing popup of the extension', () => {
       { url: 'https://tinder.com', isORI: true },
       { url: 'https://hd.kinopoisk.ru/', isORI: false },
       { url: 'https://disk.yandex.ru', isORI: true },
+      { url: 'http://avito.ru', isORI: true },
     ]
 
-    it.each(urls)('popup contains isOriBlock element ', async ({ url, isORI }) => {
-      await browser.sleep(beforeRequestTimeout)
+    it.each(urls)('popup contains the corresponding HTML elements', async ({ url, isORI }) => {
       await getPopupFor(browser, url)
 
-      const oriBlock =
-        await isElementExists(browser, { id: 'isOriBlock' }, 2000)
-      const notOriBlock =
-        await isElementExists(browser, { id: 'isNotOriBlock' }, 2000)
+      const oriBlock = await isElementExists(browser, { id: 'isOriBlock' }, 2000)
+      const notOriBlock = await isElementExists(browser, { id: 'isNotOriBlock' }, 2000)
 
       if (isORI) {
         const aboutOriButton =
-          await waitGetElement(browser, { id: 'btnAboutOri' }, 2000)
+          await waitGetElement(browser, { id: 'aboutOriButton' }, 2000)
 
         await aboutOriButton.click()
         const closeTextAboutOriButton =
@@ -110,21 +107,12 @@ describe('Testing popup of the extension', () => {
     ]
 
     it.each(urls)('disable/enable buttons work fine', async ({ url, expectedTitle }) => {
-      await browser.sleep(beforeRequestTimeout)
       await getPopupFor(browser, 'https://jestjs.io/')
 
       const disableExtensionButton =
-        await waitGetElement(browser, { id: 'disableExtension' }, 1500)
+        await waitGetElement(browser, { id: 'disableExtension' }, 2000)
 
       await disableExtensionButton.click()
-
-      await browser.get(url)
-
-      let title = await browser.getTitle()
-
-      expect(title).not.toBe(expectedTitle)
-
-      await getPopupFor(browser, 'https://jestjs.io/')
 
       const enableExtensionButton =
         await waitGetElement(browser, { id: 'enableExtension' }, 1500)
@@ -134,7 +122,8 @@ describe('Testing popup of the extension', () => {
       await browser.sleep(1500)
 
       await browser.get(url)
-      title = await browser.getTitle()
+      const title = await browser.getTitle()
+
       expect(title).toBe(expectedTitle)
     }, timeout)
   })

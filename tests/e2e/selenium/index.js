@@ -2,12 +2,16 @@ import fs from 'fs'
 import { Builder } from 'selenium-webdriver'
 import { Options } from 'selenium-webdriver/chrome'
 
-export const createDriver = async () => {
+const getExtension = () => {
   const crxData = fs.readFileSync('./tests/e2e/selenium/extension/dist.crx')
-  const extension = new Buffer.from(crxData).toString('base64')
+
+  return new Buffer.from(crxData).toString('base64')
+}
+
+export const createDriver = async () => {
   const options = new Options()
 
-  options.addExtensions(extension)
+  options.addExtensions(getExtension())
   options.windowSize({
     width: 200,
     height: 200,
@@ -27,12 +31,13 @@ export const createDriver = async () => {
 }
 
 const getExtensionURLByFilename = (page) => {
-  return `chrome-extension://kdlhnjelkjadlbccbiecdbiikllklbjo/${page}`
+  return `chrome-extension://achgohfdcbkllbcjlchinkogckihdloi/${page}`
 }
 
 export const getPopupFor = async (browser, url) => {
   const popupPage = getExtensionURLByFilename('popup.html')
 
+  await browser.sleep(1500)
   await browser.get(`${popupPage}?loadFor=${btoa(url)}`)
 }
 

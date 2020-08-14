@@ -4,8 +4,6 @@ const rksUrl = 'https://reestr.rublacklist.net'
 class Settings {
   getName = () => manifest.name;
 
-  getDescription = () => manifest.description;
-
   getVersion = () => manifest.version;
 
   getTitle = () => `${manifest.name} v${manifest.version}`;
@@ -30,26 +28,32 @@ class Settings {
     return 'proxy-ssl.roskomsvoboda.org:33333'
   }
 
-  enableExtension = () => {
-    chrome.storage.local.set(
-      {
-        enableExtension: true,
-      },
-      () => {
+  setPageIcon = (tabId, path) => {
+    chrome.pageAction.setIcon({ tabId, path })
+    chrome.pageAction.setTitle({ title: this.getTitle(), tabId })
+  }
+
+  _toggleExtension = ({ enableExtension }) => {
+    if (typeof enableExtension === 'boolean') {
+      chrome.storage.local.set({ enableExtension }, () => {
         console.warn('Extension enabled')
-      },
-    )
+      })
+
+      chrome.tabs.query({}, (tabs) => {
+        tabs.forEach((tab) => {
+          this.setPageIcon(tab.id, enableExtension
+            ? this.getDefaultIcon() : this.getDisabledIcon())
+        })
+      })
+    }
+  }
+
+  enableExtension = () => {
+    this._toggleExtension({ enableExtension: true })
   }
 
   disableExtension = () => {
-    chrome.storage.local.set(
-      {
-        enableExtension: false,
-      },
-      () => {
-        console.warn('Extension disabled')
-      },
-    )
+    this._toggleExtension({ enableExtension: false })
   }
 }
 

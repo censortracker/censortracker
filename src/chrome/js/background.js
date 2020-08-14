@@ -168,7 +168,6 @@ const updateTabState = async () => {
   })
 
   if (!enableExtension) {
-    setPageIcon(tab.id, settings.getDisabledIcon())
     if (chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequest)) {
       chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequest)
     }
@@ -191,29 +190,16 @@ const updateTabState = async () => {
   const { url, cooperationRefused } = await registry.distributorsContains(currentHostname)
 
   if (domainFound) {
-    setPageIcon(tab.id, settings.getDangerIcon())
+    settings.setPageIcon(tab.id, settings.getDangerIcon())
     return
   }
 
   if (url) {
-    setPageIcon(tab.id, settings.getDangerIcon())
+    settings.setPageIcon(tab.id, settings.getDangerIcon())
     if (!cooperationRefused) {
       await showCooperationAcceptedWarning(currentHostname)
     }
-    return
   }
-  setPageIcon(tab.id, settings.getDefaultIcon())
-}
-
-const setPageIcon = (tabId, icon) => {
-  chrome.pageAction.setIcon({
-    tabId,
-    path: icon,
-  })
-  chrome.pageAction.setTitle({
-    title: settings.getTitle(),
-    tabId,
-  })
 }
 
 const showCooperationAcceptedWarning = async (hostname) => {
@@ -258,7 +244,7 @@ chrome.runtime.onInstalled.addListener(async ({ reason }) => {
       conditions: [
         new chrome.declarativeContent.PageStateMatcher({
           pageUrl: {
-            schemes: ['http', 'https', 'chrome-extension'], // TODO: Remove chrome-extension
+            schemes: ['http', 'https'],
           },
         }),
       ],

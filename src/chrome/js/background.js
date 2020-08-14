@@ -258,7 +258,7 @@ chrome.runtime.onInstalled.addListener(async ({ reason }) => {
       conditions: [
         new chrome.declarativeContent.PageStateMatcher({
           pageUrl: {
-            schemes: ['http', 'https', 'chrome-extension'], // TODO: Remove chrome-extension
+            schemes: ['http', 'https'],
           },
         }),
       ],

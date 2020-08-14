@@ -187,14 +187,15 @@ const updateTabState = async () => {
   }
 
   const { domainFound } = await registry.domainsContains(currentHostname)
-  const { url, cooperationRefused } = await registry.distributorsContains(currentHostname)
+  const { url: distributorUrl, cooperationRefused } =
+    await registry.distributorsContains(currentHostname)
 
   if (domainFound) {
     settings.setPageIcon(tab.id, settings.getDangerIcon())
     return
   }
 
-  if (url) {
+  if (distributorUrl) {
     settings.setPageIcon(tab.id, settings.getDangerIcon())
     if (!cooperationRefused) {
       await showCooperationAcceptedWarning(currentHostname)

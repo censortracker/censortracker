@@ -259,7 +259,7 @@ chrome.runtime.onInstalled.addListener(async ({ reason }) => {
     if (synced) {
       proxies.openPorts()
       settings.enableExtension()
-      proxies.setProxy()
+      await proxies.setProxy()
     }
   }
 })

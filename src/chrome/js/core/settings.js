@@ -37,11 +37,13 @@ class Settings {
     if (typeof enableExtension === 'boolean') {
       chrome.storage.local.set({ enableExtension }, () => {
         console.warn('Extension enabled')
-      },
-      )
+      })
 
-      chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
-        this.setPageIcon(tab.id, enableExtension ? this.getDefaultIcon() : this.getDisabledIcon())
+      chrome.tabs.query({}, (tabs) => {
+        tabs.forEach((tab) => {
+          this.setPageIcon(tab.id, enableExtension
+            ? this.getDefaultIcon() : this.getDisabledIcon())
+        })
       })
     }
   }

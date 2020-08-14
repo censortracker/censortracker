@@ -168,6 +168,7 @@ const updateTabState = async () => {
   })
 
   if (!enableExtension) {
+    settings.setDisableIcon(tab.id)
     if (chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequest)) {
       chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequest)
     }
@@ -191,12 +192,12 @@ const updateTabState = async () => {
     await registry.distributorsContains(currentHostname)
 
   if (domainFound) {
-    settings.setPageIcon(tab.id, settings.getDangerIcon())
+    settings.setDangerIcon(tab.id)
     return
   }
 
   if (distributorUrl) {
-    settings.setPageIcon(tab.id, settings.getDangerIcon())
+    settings.setDangerIcon(tab.id)
     if (!cooperationRefused) {
       await showCooperationAcceptedWarning(currentHostname)
     }
@@ -265,6 +266,17 @@ chrome.runtime.onInstalled.addListener(async ({ reason }) => {
   }
 })
 
+const onTabCreated = async (tab) => {
+  const { enableExtension } =
+    await asynchrome.storage.local.get({ enableExtension: true })
+
+  if (enableExtension === false) {
+    settings.setDisableIcon(tab.id)
+  } else {
+    settings.setDefaultIcon(tab.id)
+  }
+}
+
 chrome.runtime.onStartup.addListener(async () => {
   await registry.syncDatabase()
   await updateTabState()
@@ -302,6 +314,7 @@ chrome.notifications.onButtonClicked.addListener(notificationOnButtonClicked)
 
 chrome.tabs.onActivated.addListener(updateTabState)
 chrome.tabs.onUpdated.addListener(updateTabState)
+chrome.tabs.onCreated.addListener(onTabCreated)
 
 setInterval(() => {
   proxies.openPorts()

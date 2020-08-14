@@ -28,9 +28,21 @@ class Settings {
     return 'proxy-ssl.roskomsvoboda.org:33333'
   }
 
-  setPageIcon = (tabId, path) => {
+  _setPageIcon = (tabId, path) => {
     chrome.pageAction.setIcon({ tabId, path })
     chrome.pageAction.setTitle({ title: this.getTitle(), tabId })
+  }
+
+  setDisableIcon = (tabId) => {
+    this._setPageIcon(tabId, this.getDisabledIcon())
+  }
+
+  setDefaultIcon = (tabId) => {
+    this._setPageIcon(tabId, this.getDefaultIcon())
+  }
+
+  setDangerIcon = (tabId) => {
+    this._setPageIcon(tabId, this.getDangerIcon())
   }
 
   _toggleExtension = ({ enableExtension }) => {
@@ -41,8 +53,8 @@ class Settings {
 
       chrome.tabs.query({}, (tabs) => {
         tabs.forEach((tab) => {
-          this.setPageIcon(tab.id, enableExtension
-            ? this.getDefaultIcon() : this.getDisabledIcon())
+          enableExtension ? this.setDefaultIcon(tab.id)
+            : this.setDisableIcon(tab.id)
         })
       })
     }

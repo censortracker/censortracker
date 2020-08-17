@@ -113,3 +113,5 @@ out
 
 src/firefox/
 *.zip
+
+key.pem

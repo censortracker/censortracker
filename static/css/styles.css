@@ -1,0 +1,110 @@
+body {
+  font-family: 'Inter', sans-serif;
+}
+
+.container {
+    background: #fff;
+}
+
+h1 {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: calc(40px + 6 * ((100vw - 320px) / 680));
+  line-height: 4rem;
+}
+@media screen and (min-width: 1000px) {
+  h1 {
+    font-size: 60px;
+  }
+}
+
+h2 {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: calc(32px + 6 * ((100vw - 320px) / 680));
+  line-height: 4rem;
+}
+
+h3 {
+  font-weight: bold;
+  line-height: 140%;
+  font-size: calc(17px + ((100vw - 360px) / 146));
+}
+
+img.responsive {
+  width: 100%;
+  height: auto;
+}
+@media screen and (min-width: 1000px) {
+  img.responsive {
+    width: auto;
+  }
+}
+
+nav {
+  padding: 0;
+}
+
+a {
+  color: #5173D3;
+}
+
+.btn-primary {
+  background-color: #5173D3;
+  box-shadow: 0px 14px 40px rgba(0, 0, 0, 0.03), 0px 5.84887px 33.4221px rgba(0, 0, 0, 0.0503198), 0px 3.12708px 17.869px rgba(0, 0, 0, 0.0417275), 0px 1.75302px 10.0172px rgba(0, 0, 0, 0.035), 0px 0.931014px 5.32008px rgba(0, 0, 0, 0.0282725), 0px 0.387416px 2.21381px rgba(0, 0, 0, 0.0196802);
+}
+.btn-primary:hover {
+  background-color: #3f5fba;
+}
+
+.lead {
+  color: #555;
+  font-size: 18px;
+  line-height: 160%;
+}
+
+ul  {
+    margin-top: 2em;
+}
+
+li {
+    margin-top: 1em;
+}
+
+li a {
+  font-size: 15px;
+}
+
+.image-big {
+  width: 100%;
+  height: auto;
+}
+
+
+.spacer {
+  height: 20rem;
+}
+
+hr {
+  background-color: #d1d1d1;
+}
+
+.text-secondary {
+  font-size: calc(15px + 2 * ((100vw - 360px) / 1000));
+  line-height: 160%;
+  color: #555;
+}
+
+.shadow {
+  filter: drop-shadow(0px 14px 40px rgba(0, 0, 0, 0.03)), drop-shadow(0px 5.84887px 33.4221px rgba(0, 0, 0, 0.0503198)), drop-shadow(0px 3.12708px 17.869px rgba(0, 0, 0, 0.0417275)), drop-shadow(0px 1.75302px 10.0172px rgba(0, 0, 0, 0.035)), drop-shadow(0px 0.931014px 5.32008px rgba(0, 0, 0, 0.0282725)), drop-shadow(0px 0.387416px 2.21381px rgba(0, 0, 0, 0.0196802));
+  border-radius: 6px;
+}
+
+.animated {
+position: relative;
+}
+@media screen and (min-width: 1000px) {
+  .animated {
+    position: absolute;
+    top:0;
+    right:0;
+  }
+}

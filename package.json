@@ -10,7 +10,7 @@
     "watch": "webpack --watch --progress --config webpack.config.js",
     "lint": "eslint --ext=.js ./src/chrome/",
     "lint:fix": "eslint --fix --ext=.js ./src/chrome/ tests/",
-    "test": "jest -i",
+    "test": "jest -i tests/e2e && jest tests/unit",
     "test:unit": "jest tests/unit",
     "test:e2e": "jest -i tests/e2e/"
   },

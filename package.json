@@ -10,9 +10,9 @@
     "watch": "webpack --watch --progress --config webpack.config.js",
     "lint": "eslint --ext=.js ./src/chrome/",
     "lint:fix": "eslint --fix --ext=.js ./src/chrome/ tests/",
-    "test": "jest -i tests/e2e && jest tests/unit",
+    "test": "jest && rm -f key.pem tests/e2e/selenium/extension/dist.crx",
     "test:unit": "jest tests/unit",
-    "test:e2e": "jest -i tests/e2e/"
+    "test:e2e": "jest tests/e2e/ && rm -f key.pem tests/e2e/selenium/extension/dist.crx"
   },
   "dependencies": {
     "ip-range-check": "^0.2.0"

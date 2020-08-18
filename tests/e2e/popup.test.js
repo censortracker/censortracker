@@ -1,16 +1,17 @@
-import { createDriver, getPopupFor } from './selenium'
+import { createDriver, getGeneratedBackgroundPage, getPopupFor } from './selenium'
 import { isElementExists, waitGetElement } from './selenium/utils'
 
 describe('Testing popup of the extension', () => {
-  let browser
+  let driver
+  let extensionId
   const timeout = 35000
 
   beforeAll(async () => {
-    browser = await createDriver()
-  })
+    ({ driver, extensionId } = await createDriver())
+  }, 5000)
 
   afterAll(async () => {
-    await browser.quit()
+    await driver.quit()
   })
 
   describe('checks that extension shows that website is or is not ORI', () => {
@@ -26,18 +27,18 @@ describe('Testing popup of the extension', () => {
     ]
 
     it.each(urls)('popup contains the corresponding HTML elements', async ({ url, isORI }) => {
-      await getPopupFor(browser, url)
+      await getPopupFor({ driver, extensionId }, url)
 
-      const oriBlock = await isElementExists(browser, { id: 'isOriBlock' }, 2000)
-      const notOriBlock = await isElementExists(browser, { id: 'isNotOriBlock' }, 2000)
+      const oriBlock = await isElementExists(driver, { id: 'isOriBlock' }, 2000)
+      const notOriBlock = await isElementExists(driver, { id: 'isNotOriBlock' }, 2000)
 
       if (isORI) {
         const aboutOriButton =
-          await waitGetElement(browser, { id: 'aboutOriButton' }, 2000)
+          await waitGetElement(driver, { id: 'aboutOriButton' }, 2000)
 
         await aboutOriButton.click()
         const closeTextAboutOriButton =
-          await waitGetElement(browser, { id: 'closeTextAboutOri' }, 1500)
+          await waitGetElement(driver, { id: 'closeTextAboutOri' }, 1500)
 
         await closeTextAboutOriButton.click()
 
@@ -45,11 +46,11 @@ describe('Testing popup of the extension', () => {
         expect(notOriBlock).toBeFalsy()
       } else {
         const aboutNotOriButton =
-          await waitGetElement(browser, { id: 'btnAboutNotOri' }, 2000)
+          await waitGetElement(driver, { id: 'btnAboutNotOri' }, 2000)
 
         await aboutNotOriButton.click()
         const closeTextAboutNotOriButton =
-          await waitGetElement(browser, { id: 'closeTextAboutNotOri' }, 1500)
+          await waitGetElement(driver, { id: 'closeTextAboutNotOri' }, 1500)
 
         await closeTextAboutNotOriButton.click()
 
@@ -67,22 +68,22 @@ describe('Testing popup of the extension', () => {
     ]
 
     it.each(urls)('popup contains isForbidden element and do not contain isNotForbidden', async (url) => {
-      await getPopupFor(browser, url)
+      await getPopupFor({ driver, extensionId }, url)
 
       const isNotForbidden =
-        await isElementExists(browser, { id: 'isNotForbidden' })
+        await isElementExists(driver, { id: 'isNotForbidden' })
 
       expect(isNotForbidden).toBeFalsy()
 
-      const isForbidden = await waitGetElement(browser, { id: 'isForbidden' })
+      const isForbidden = await waitGetElement(driver, { id: 'isForbidden' })
 
       const aboutForbiddenButton =
-        await waitGetElement(browser, { id: 'btnAboutForbidden' })
+        await waitGetElement(driver, { id: 'btnAboutForbidden' })
 
       await aboutForbiddenButton.click()
 
       const closeAboutForbiddenButton =
-        await waitGetElement(browser, { id: 'closeTextAboutForbidden' })
+        await waitGetElement(driver, { id: 'closeTextAboutForbidden' })
 
       await closeAboutForbiddenButton.click()
 
@@ -107,24 +108,90 @@ describe('Testing popup of the extension', () => {
     ]
 
     it.each(urls)('disable/enable buttons work fine', async ({ url, expectedTitle }) => {
-      await getPopupFor(browser, 'https://jestjs.io/')
+      await getPopupFor({ driver, extensionId }, 'https://jestjs.io/')
 
       const disableExtensionButton =
-        await waitGetElement(browser, { id: 'disableExtension' }, 2000)
+        await waitGetElement(driver, { id: 'disableExtension' }, 2500)
 
       await disableExtensionButton.click()
 
       const enableExtensionButton =
-        await waitGetElement(browser, { id: 'enableExtension' }, 1500)
+        await waitGetElement(driver, { id: 'enableExtension' }, 2500)
 
       await enableExtensionButton.click()
 
-      await browser.sleep(1500)
+      await driver.sleep(2500)
 
-      await browser.get(url)
-      const title = await browser.getTitle()
+      await driver.get(url)
+      const title = await driver.getTitle()
 
       expect(title).toBe(expectedTitle)
     }, timeout)
+  })
+
+  describe('Test if websites with cyclic redirects and certificate issues are ignored', () => {
+    const urls = [
+      {
+        url: 'https://rutracker.org',
+        expectedTitle: 'RuTracker.org',
+      },
+      {
+        url: 'https://makuha.ru/',
+        expectedTitle: 'Как сделать мебель своими руками, мастер-классы. Мебельный справочник. ' +
+          'Чертежи и дизайн мебели. Модели и библиотеки PRO100.',
+      },
+      {
+        url: 'https://www.tunnelbear.com/',
+        expectedTitle: 'TunnelBear: Secure VPN Service',
+      },
+      {
+        url: 'http://extranjeros.inclusion.gob.es/',
+        expectedTitle: 'PORTAL DE INMIGRACIÓN. Página de Inicio',
+      },
+      {
+        url: 'http://gooodnews.ru/index.php/pozitivnoe/pictures/5667-kvokka-samoe-schastlivoe-zhivotnoe-na-svete',
+        expectedTitle: 'Квокка: самое счастливое животное на свете',
+      },
+      {
+        url: 'https://protonmail.com/',
+        expectedTitle: 'Secure email: ProtonMail is free encrypted email.',
+      },
+    ]
+
+    it.each(urls)('websites with cyclic redirects/certificate issues are ignored', async ({ url, expectedTitle }) => {
+      await driver.get(url)
+      await driver.sleep(3000)
+      const title = await driver.getTitle()
+
+      expect(title).toBe(expectedTitle)
+    }, timeout)
+  })
+
+  describe('testing if blocked websites unavailable without proxy', () => {
+    const urls = [
+      {
+        url: 'https://rutracker.org',
+        expectedTitle: 'RuTracker.org',
+      },
+      {
+        url: 'https://www.tunnelbear.com/',
+        expectedTitle: 'TunnelBear: Secure VPN Service',
+      },
+      {
+        url: 'https://protonmail.com/',
+        expectedTitle: 'Secure email: ProtonMail is free encrypted email.',
+      },
+    ]
+
+    it.each(urls)('shows unavailable.html page', async ({ url, expectedTitle }) => {
+      await getGeneratedBackgroundPage({ driver, extensionId })
+      await driver.executeScript('chrome.proxy.settings.clear({ scope: "regular" })')
+      await driver.get(url)
+      await driver.sleep(2500)
+      const title = await driver.getTitle()
+
+      expect(title).not.toBe(expectedTitle)
+      expect(title).toBe('Unavailable | Censor Tracker')
+    }, 30000)
   })
 })

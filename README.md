@@ -54,6 +54,8 @@ and to run end-to-end tests you need too add `chromedriver` to your `$PATH` and 
 
     ~ npm run test:e2e
 
+**Attention**: e2e tests works only on unix systems and requires OpenSSL for generating chrome extension id.
+
 
 License
 =======

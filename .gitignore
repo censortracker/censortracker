@@ -115,3 +115,4 @@ src/firefox/
 *.zip
 
 key.pem
+tests/e2e/selenium/extension/dist.crx

@@ -2,15 +2,16 @@ import { createDriver, getPopupFor } from './selenium'
 import { isElementExists, waitGetElement } from './selenium/utils'
 
 describe('Testing popup of the extension', () => {
-  let browserSession
+  let driver
+  let extensionId
   const timeout = 35000
 
   beforeAll(async () => {
-    browserSession = await createDriver()
+    ({ driver, extensionId } = await createDriver())
   })
 
   afterAll(async () => {
-    await browserSession.driver.quit()
+    await driver.quit()
   })
 
   describe('checks that extension shows that website is or is not ORI', () => {
@@ -26,9 +27,7 @@ describe('Testing popup of the extension', () => {
     ]
 
     it.each(urls)('popup contains the corresponding HTML elements', async ({ url, isORI }) => {
-      const driver = browserSession.driver
-
-      await getPopupFor(browserSession, url)
+      await getPopupFor({ driver, extensionId }, url)
 
       const oriBlock = await isElementExists(driver, { id: 'isOriBlock' }, 2000)
       const notOriBlock = await isElementExists(driver, { id: 'isNotOriBlock' }, 2000)
@@ -69,9 +68,7 @@ describe('Testing popup of the extension', () => {
     ]
 
     it.each(urls)('popup contains isForbidden element and do not contain isNotForbidden', async (url) => {
-      const driver = browserSession.driver
-
-      await getPopupFor(browserSession, url)
+      await getPopupFor({ driver, extensionId }, url)
 
       const isNotForbidden =
         await isElementExists(driver, { id: 'isNotForbidden' })
@@ -111,21 +108,19 @@ describe('Testing popup of the extension', () => {
     ]
 
     it.each(urls)('disable/enable buttons work fine', async ({ url, expectedTitle }) => {
-      const driver = browserSession.driver
-
-      await getPopupFor(browserSession, 'https://jestjs.io/')
+      await getPopupFor({ driver, extensionId }, 'https://jestjs.io/')
 
       const disableExtensionButton =
-        await waitGetElement(driver, { id: 'disableExtension' }, 2000)
+        await waitGetElement(driver, { id: 'disableExtension' }, 2500)
 
       await disableExtensionButton.click()
 
       const enableExtensionButton =
-        await waitGetElement(driver, { id: 'enableExtension' }, 1500)
+        await waitGetElement(driver, { id: 'enableExtension' }, 2500)
 
       await enableExtensionButton.click()
 
-      await driver.sleep(1500)
+      await driver.sleep(2500)
 
       await driver.get(url)
       const title = await driver.getTitle()

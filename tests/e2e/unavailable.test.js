@@ -4,14 +4,15 @@ import {
 } from './selenium'
 
 describe('Testing unavailable websites without proxy', () => {
-  let browserSession
+  let driver
+  let extensionId
 
   beforeAll(async () => {
-    browserSession = await createDriver()
+    ({ driver, extensionId } = await createDriver())
   })
 
   afterAll(async () => {
-    await browserSession.driver.quit()
+    await driver.quit()
   })
 
   const urls = [
@@ -30,11 +31,11 @@ describe('Testing unavailable websites without proxy', () => {
   ]
 
   it.each(urls)('shows unavailable.html page', async ({ url, expectedTitle }) => {
-    await getGeneratedBackgroundPage(browserSession)
-    await browserSession.driver.executeScript('chrome.proxy.settings.clear({ scope: "regular" })')
-    await browserSession.driver.get(url)
-    await browserSession.driver.sleep(1500)
-    const title = await browserSession.driver.getTitle()
+    await getGeneratedBackgroundPage({ driver, extensionId })
+    await driver.executeScript('chrome.proxy.settings.clear({ scope: "regular" })')
+    await driver.get(url)
+    await driver.sleep(1500)
+    const title = await driver.getTitle()
 
     expect(title).not.toBe(expectedTitle)
     expect(title).toBe('Unavailable | Censor Tracker')

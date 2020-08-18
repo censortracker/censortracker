@@ -5,13 +5,13 @@ import util from 'util'
 
 const asyncExec = util.promisify(require('child_process').exec)
 
-const GENERATE_KEY_FILE_CMD = '' +
-  '2>/dev/null openssl genrsa 2048 | openssl pkcs8 -topk8 -nocrypt -out key.pem &&' +
-  'crx pack dist/ --output tests/e2e/selenium/extension/dist.crx -p key.pem >> /dev/null && ' +
-  '2>/dev/null openssl rsa -in key.pem -pubout -outform DER | sha256sum | head -c32 | tr 0-9a-f a-p'
-
 const getExtension = async () => {
-  const { stdout: extensionId } = await asyncExec(GENERATE_KEY_FILE_CMD)
+  const commands = [
+    '2>/dev/null openssl genrsa 2048 | openssl pkcs8 -topk8 -nocrypt -out key.pem',
+    'crx pack dist/ --output tests/e2e/selenium/extension/dist.crx -p key.pem',
+    '2>/dev/null openssl rsa -in key.pem -pubout -outform DER | sha256sum | head -c32 | tr 0-9a-f a-p',
+  ]
+  const { stdout: extensionId } = await asyncExec(commands.join(' && '))
 
   const crxData = fs.readFileSync('./tests/e2e/selenium/extension/dist.crx')
 

@@ -14,6 +14,14 @@ class Settings {
 
   getLoggingApiUrl = () => 'https://ct-dev.rublacklist.net/api/case/';
 
+  getLoggingApiHeaders = () => {
+    return {
+      'Censortracker-D': new Date().getTime(),
+      'Censortracker-V': this.getVersion(),
+      'Content-Type': 'application/json',
+    }
+  }
+
   getDangerIcon = () => chrome.runtime.getURL('images/icons/128x128/danger.png');
 
   getDefaultIcon = () => chrome.runtime.getURL('images/icons/128x128/default.png');

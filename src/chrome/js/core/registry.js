@@ -109,11 +109,7 @@ class Registry {
     if (!alreadyReported.includes(domain)) {
       const response = await fetch(settings.getLoggingApiUrl(), {
         method: 'POST',
-        headers: {
-          'Censortracker-D': new Date().getTime(),
-          'Censortracker-V': settings.getVersion(),
-          'Content-Type': 'application/json',
-        },
+        headers: settings.getLoggingApiHeaders(),
         body: JSON.stringify({ domain }),
       })
       const json = await response.json()

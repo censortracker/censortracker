@@ -12,7 +12,15 @@ class Settings {
 
   getDistributorsApiUrl = () => `${rksUrl}/api/v3/ori/refused/json`;
 
-  getLoggingApiUrl = () => 'https://ct-dev.rublacklist.net/api/domain/';
+  getLoggingApiUrl = () => 'https://ct-dev.rublacklist.net/api/case/';
+
+  getLoggingApiHeaders = () => {
+    return {
+      'Censortracker-D': new Date().getTime(),
+      'Censortracker-V': this.getVersion(),
+      'Content-Type': 'application/json',
+    }
+  }
 
   getDangerIcon = () => chrome.runtime.getURL('images/icons/128x128/danger.png');
 

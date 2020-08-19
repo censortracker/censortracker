@@ -8,8 +8,8 @@ class Proxies {
       'youtube.com',
     ])
 
-    setInterval(() => {
-      this.removeOutdatedBlockedDomains()
+    setInterval(async () => {
+      await this.removeOutdatedBlockedDomains()
     }, 60 * 1000 * 60 * 60 * 2)
   }
 

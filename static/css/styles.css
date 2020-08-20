@@ -2,10 +2,6 @@ body {
   font-family: 'Inter', sans-serif;
 }
 
-.container {
-    background: #fff;
-}
-
 h1 {
   font-family: 'IBM Plex Sans', sans-serif;
   font-size: calc(40px + 6 * ((100vw - 320px) / 680));
@@ -21,6 +17,12 @@ h2 {
   font-family: 'IBM Plex Sans', sans-serif;
   font-size: calc(32px + 6 * ((100vw - 320px) / 680));
   line-height: 4rem;
+}
+
+.h2 {
+  font-family: 'Inter', sans-serif;
+  font-size: calc(28px + 8 * ((100vw - 320px) / 680));
+  font-weight: bold;
 }
 
 h3 {
@@ -121,5 +123,21 @@ transition: all 0.25s ease-out 0s;
   .floating-link {
     display: block;
     position: static;
+  }
+}
+
+.bg-light {
+  background: #fafafa;
+}
+
+.bg-vector {
+  background: url(/static/img/blobs.svg) 50% 0%;
+  background-repeat: no-repeat;
+}
+
+@media screen and (min-width: 1000px) {
+  .bg-vector {
+    background: url(/static/img/blobs_md.svg) 50% 20%;
+    background-size: cover;
   }
 }

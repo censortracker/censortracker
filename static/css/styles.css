@@ -109,3 +109,17 @@ transition: all 0.25s ease-out 0s;
     right:0;
   }
 }
+
+.floating-link {
+  position:absolute;
+  top: 1rem;
+  right: 1rem;
+  text-decoration: underline;
+}
+
+@media screen and (min-width: 1000px) {
+  .floating-link {
+    display: block;
+    position: static;
+  }
+}

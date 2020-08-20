@@ -45,6 +45,12 @@ nav {
   padding: 0;
 }
 
+nav .vertical {
+  border-right: 1px solid #D3E1F5;
+  padding: 2px 1em 2px 0;
+  margin-right: 1em;
+}
+
 a {
   color: #5173D3;
 }

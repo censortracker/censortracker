@@ -159,8 +159,9 @@ describe('Testing popup of the extension', () => {
     ]
 
     it.each(urls)('websites with cyclic redirects/certificate issues are ignored', async ({ url, expectedTitle }) => {
+      await driver.sleep(2000)
       await driver.get(url)
-      await driver.sleep(3000)
+      await driver.sleep(2000)
       const title = await driver.getTitle()
 
       expect(title).toBe(expectedTitle)

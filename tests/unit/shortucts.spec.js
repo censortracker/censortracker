@@ -32,6 +32,10 @@ describe('Clean hostname', () => {
       { url: 'https://www.example.org', expected: 'example.org' },
       { url: 'https://roskomsvoboda.org', expected: 'roskomsvoboda.org' },
       { url: 'http://extranjeros.mitramiss.gob.es', expected: 'extranjeros.mitramiss.gob.es' },
+      { url: 'http://192.168.2.1', expected: '192.168.2.1' },
+      { url: 'https://192.168.2.1', expected: '192.168.2.1' },
+      { url: 'https://www.192.168.2.1', expected: '192.168.2.1' },
+      { url: 'http://www.192.168.2.1', expected: '192.168.2.1' },
     ]
 
     for (const { url, expected } of urls) {

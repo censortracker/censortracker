@@ -24,14 +24,12 @@ window.censortracker = {
 }
 
 const onBeforeRequest = ({ url }) => {
-  proxies.openPorts()
-
-  if (shortcuts.isSpecialPurposeIP(url)) {
-    console.warn('Ignoring special propose IP/Host...')
+  if (shortcuts.isSpecialPurposeHost(url)) {
+    console.warn(`Ignoring host: ${url}`)
     return null
   }
-
-  console.log('Redirecting request to HTTPS...')
+  proxies.openPorts()
+  console.log('Enforcing HTTPS...')
   return {
     redirectUrl: shortcuts.enforceHttps(url),
   }
@@ -83,7 +81,7 @@ const onErrorOccurred = async ({ url, error, tabId }) => {
     return
   }
 
-  if (shortcuts.isSpecialPurposeIP(url)) {
+  if (shortcuts.isSpecialPurposeHost(url)) {
     return
   }
 
@@ -160,7 +158,7 @@ const updateTabState = async () => {
     lastFocusedWindow: true,
   })
 
-  if (!tab || !shortcuts.validURL(tab.url) || shortcuts.isSpecialPurposeIP(tab.url)) {
+  if (!tab || !shortcuts.validURL(tab.url) || shortcuts.isSpecialPurposeHost(tab.url)) {
     return
   }
 

@@ -91,7 +91,7 @@ describe('Check if IP is from the subnet of special-purpose (RFC6890)', () => {
     ]
 
     for (const ip of ips) {
-      expect(shortcuts.isSpecialPurposeIP(ip)).toBeTruthy()
+      expect(shortcuts.isSpecialPurposeHost(ip)).toBeTruthy()
     }
   })
 })

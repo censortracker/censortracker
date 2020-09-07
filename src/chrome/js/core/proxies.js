@@ -98,23 +98,15 @@ function FindProxyForURL(url, host) {
 
   removeProxy = async () => {
     await asynchrome.proxy.settings.clear({ scope: 'regular' }).catch(console.error)
-    console.warn('Proxy auto-config disabled!')
+    console.warn('Proxy auto-config data cleaned!')
   }
 
   openPorts = () => {
-    console.log('Sending ping to port...')
+    const request = new XMLHttpRequest()
     const proxyServerUrl = 'https://163.172.211.183:39263'
-    const xhr = new XMLHttpRequest()
 
-    xhr.open('GET', proxyServerUrl, true)
-    xhr.addEventListener('error', (e) => {
-      console.error(`Error on opening ports: ${e}`)
-    })
-    xhr.send(null)
-
-    setTimeout(() => {
-      xhr.abort()
-    }, 3000)
+    request.open('GET', proxyServerUrl, true)
+    request.send(null)
   }
 
   removeOutdatedBlockedDomains = async () => {

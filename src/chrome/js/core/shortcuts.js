@@ -32,7 +32,7 @@ class Shortcuts {
     return hostname.replace(/^http:/, 'https:')
   }
 
-  isSpecialPurposeIP = (host) => {
+  isSpecialPurposeHost = (host) => {
     const specialIPs = [
       '0.0.0.0/8',
       '10.0.0.0/8',
@@ -65,8 +65,6 @@ class Shortcuts {
     if (host.indexOf('/') !== -1) {
       host = host.split('/')[0].trim()
     }
-    console.log(`Current Host/IP: ${host}`)
-
     return ipRangeCheck(host, specialIPs)
   }
 }

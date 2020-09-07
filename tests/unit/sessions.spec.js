@@ -7,8 +7,8 @@ beforeEach(() => {
 const { id, key, value } = { id: 13241, key: 'Key', value: 'Value' }
 
 describe('Default max redirections count', () => {
-  test('should be equal to 6', () => {
-    expect(sessions.max_redirections_count).toEqual(6)
+  test('should be equal to 5', () => {
+    expect(sessions.max_redirections_count).toEqual(5)
   })
 })
 
@@ -38,7 +38,7 @@ describe('Get request id from map', () => {
 
 describe('Check if max redirections count reached', () => {
   test('returns true if passed number larger than allowed max redirections count', () => {
-    expect(sessions.areMaxRedirectsReached(5)).toBeFalsy()
-    expect(sessions.areMaxRedirectsReached(6)).toBeTruthy()
+    expect(sessions.areMaxRedirectsReached(4)).toBeFalsy()
+    expect(sessions.areMaxRedirectsReached(5)).toBeTruthy()
   })
 })

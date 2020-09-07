@@ -1,7 +1,7 @@
 class BrowserSession {
   constructor () {
     this.requests = new Map()
-    this.max_redirections_count = 6
+    this.max_redirections_count = 5
   }
 
   putRequest (id, key, value) {

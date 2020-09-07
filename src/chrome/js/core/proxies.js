@@ -106,6 +106,9 @@ function FindProxyForURL(url, host) {
     const proxyServerUrl = 'https://163.172.211.183:39263'
 
     request.open('GET', proxyServerUrl, true)
+    request.addEventListener('error', (e) => {
+      console.error(`Error on opening port: ${e}`)
+    })
     request.send(null)
   }
 

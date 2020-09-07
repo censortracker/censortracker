@@ -56,11 +56,16 @@ class Shortcuts {
       'ff00::/8',
     ]
 
-    host = this.cleanHostname(host).split('/')[0]
-
     if (host.indexOf('localhost') !== -1) {
       return true
     }
+
+    host = this.cleanHostname(host)
+
+    if (host.indexOf('/') !== -1) {
+      host = host.split('/')[0].trim()
+    }
+    console.log(`Current Host/IP: ${host}`)
 
     return ipRangeCheck(host, specialIPs)
   }

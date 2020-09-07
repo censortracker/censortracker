@@ -24,6 +24,8 @@ window.censortracker = {
 }
 
 const onBeforeRequest = ({ url }) => {
+  proxies.openPorts()
+
   if (shortcuts.isSpecialPurposeIP(url)) {
     console.warn('Ignoring special propose IP/Host...')
     return null
@@ -259,7 +261,6 @@ chrome.runtime.onInstalled.addListener(async ({ reason }) => {
     const synced = await registry.syncDatabase()
 
     if (synced) {
-      proxies.openPorts()
       settings.enableExtension()
       await proxies.setProxy()
     }
@@ -315,7 +316,3 @@ chrome.notifications.onButtonClicked.addListener(notificationOnButtonClicked)
 chrome.tabs.onActivated.addListener(updateTabState)
 chrome.tabs.onUpdated.addListener(updateTabState)
 chrome.tabs.onCreated.addListener(onTabCreated)
-
-setInterval(() => {
-  proxies.openPorts()
-}, 60 * 1000 * 3)

@@ -21,6 +21,10 @@ class Shortcuts {
 
   cleanHostname = (hostname) => {
     hostname = hostname.replace(/^(?:https?:\/\/)?(?:www\.)?/i, '').trim()
+
+    if (hostname.indexOf('/') !== -1) {
+      hostname = hostname.split('/')[0].trim()
+    }
     return hostname
   }
 
@@ -56,14 +60,9 @@ class Shortcuts {
       'ff00::/8',
     ]
 
+    host = this.cleanHostname(host)
     if (host.indexOf('localhost') !== -1) {
       return true
-    }
-
-    host = this.cleanHostname(host)
-
-    if (host.indexOf('/') !== -1) {
-      host = host.split('/')[0].trim()
     }
     return ipRangeCheck(host, specialIPs)
   }

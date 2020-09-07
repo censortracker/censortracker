@@ -24,14 +24,12 @@ window.censortracker = {
 }
 
 const onBeforeRequest = ({ url }) => {
-  proxies.openPorts()
-
   if (shortcuts.isSpecialPurposeHost(url)) {
-    console.warn('Ignoring special propose host...')
+    console.warn(`Ignoring host: ${url}`)
     return null
   }
-
-  console.log('Redirecting request to HTTPS...')
+  proxies.openPorts()
+  console.log('Enforcing HTTPS...')
   return {
     redirectUrl: shortcuts.enforceHttps(url),
   }

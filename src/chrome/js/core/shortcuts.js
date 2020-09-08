@@ -66,6 +66,7 @@ class Shortcuts {
     if (host.indexOf('localhost') !== -1) {
       return true
     }
+
     return ipRangeCheck(host, specialIPs)
   }
 }

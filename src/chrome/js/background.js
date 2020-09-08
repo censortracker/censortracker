@@ -3,7 +3,6 @@ import {
   errors,
   proxies,
   registry,
-  sessions,
   settings,
   shortcuts,
 } from './core'
@@ -11,16 +10,15 @@ import {
 window.censortracker = {
   proxies,
   registry,
-  sessions,
   settings,
   shortcuts,
   errors,
   asynchrome,
 }
 
-let ignoredSitesTmp = new Set()
+let ignoredWebsites = new Set()
 const isIgnoredWebsite = (hostname) =>
-  ignoredSitesTmp.has(hostname)
+  ignoredWebsites.has(hostname)
 
 const onBeforeRequest = ({ url }) => {
   const { hostname } = new URL(url)
@@ -29,7 +27,7 @@ const onBeforeRequest = ({ url }) => {
     return undefined
   }
 
-  if (isIgnoredWebsite(hostname) || shortcuts.isSpecialPurposeHost(url)) {
+  if (isIgnoredWebsite(hostname) || shortcuts.isSpecialPurposeHost(hostname)) {
     console.warn(`Ignoring host: ${url}`)
     return undefined
   }
@@ -39,6 +37,13 @@ const onBeforeRequest = ({ url }) => {
     redirectUrl: shortcuts.enforceHttps(url),
   }
 }
+
+chrome.webRequest.onBeforeRequest.addListener(
+  onBeforeRequest, {
+    urls: ['http://*/*'],
+    types: ['main_frame'],
+  }, ['blocking'],
+)
 
 const onErrorOccurred = async ({ url, error, tabId }) => {
   const errorCode = error.replace('net::', '')
@@ -80,7 +85,7 @@ const onErrorOccurred = async ({ url, error, tabId }) => {
     console.warn(`Unable to redirect to HTTPS: ${hostname}`)
   }
 
-  ignoredSitesTmp = new Set(ignoredSites)
+  ignoredWebsites = new Set(ignoredSites)
 
   chrome.tabs.update(tabId, {
     url: url.replace('https:', 'http:'),
@@ -249,14 +254,6 @@ chrome.webRequest.onErrorOccurred.addListener(
     urls: ['http://*/*', 'https://*/*'],
     types: ['main_frame'],
   },
-)
-
-chrome.webRequest.onBeforeRequest.addListener(
-  onBeforeRequest,
-  {
-    urls: ['http://*/*', 'https://*/*'],
-    types: ['main_frame'],
-  }, ['blocking'],
 )
 
 chrome.notifications.onButtonClicked.addListener(notificationOnButtonClicked)

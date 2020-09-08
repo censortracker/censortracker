@@ -1,5 +1,7 @@
 const ipRangeCheck = require('ip-range-check')
 
+// TODO: Convert to module with exported function.
+
 class Shortcuts {
   validURL = (urlStr) => {
     const pattern = new RegExp(

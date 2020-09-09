@@ -39,8 +39,8 @@ chrome.webRequest.onBeforeRequest.addListener(
 
 const onErrorOccurredListener = async ({ url, error, tabId }) => {
   const { hostname } = new URL(url)
-  const { ignoredSites, enableExtension } =
-    await asynchrome.storage.local.get({ ignoredSites: [], enableExtension: true })
+  const { enableExtension } =
+    await asynchrome.storage.local.get({ enableExtension: true })
 
   if (tmpIgnoredHosts.has(hostname) || shortcuts.isIgnoredHost(hostname)) {
     return
@@ -68,16 +68,7 @@ const onErrorOccurredListener = async ({ url, error, tabId }) => {
     return
   }
 
-  if (!ignoredSites.includes(hostname)) {
-    ignoredSites.push(hostname)
-    await asynchrome.storage.local.set({ ignoredSites })
-    console.warn(`Unable to redirect to HTTPS: ${hostname}`)
-  }
-
-  for (const site of ignoredSites) {
-    tmpIgnoredHosts.add(site)
-  }
-
+  tmpIgnoredHosts.add(hostname)
   chrome.tabs.update(tabId, {
     url: url.replace('https:', 'http:'),
   })
@@ -126,9 +117,8 @@ const updateTabState = async () => {
     return
   }
 
-  const { enableExtension, ignoredSites } = await asynchrome.storage.local.get({
+  const { enableExtension } = await asynchrome.storage.local.get({
     enableExtension: true,
-    ignoredSites: [],
   })
 
   if (!enableExtension) {
@@ -139,7 +129,7 @@ const updateTabState = async () => {
   const urlObject = new URL(tab.url)
   const currentHostname = shortcuts.cleanHostname(urlObject.hostname)
 
-  if (ignoredSites.includes(currentHostname)) {
+  if (tmpIgnoredHosts.has(currentHostname)) {
     console.warn(`Site ${currentHostname} found in ignore`)
     return
   }

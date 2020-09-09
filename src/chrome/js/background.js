@@ -24,7 +24,6 @@ const onBeforeRequestListener = ({ url }) => {
     console.warn(`Ignoring host: ${url}`)
     return undefined
   }
-
   proxies.allowProxying()
   return {
     redirectUrl: shortcuts.enforceHttps(url),
@@ -39,52 +38,49 @@ chrome.webRequest.onBeforeRequest.addListener(
 )
 
 const onErrorOccurredListener = async ({ url, error, tabId }) => {
-  const errorCode = error.replace('net::', '')
   const { hostname } = new URL(url)
-
   const { ignoredSites, enableExtension } =
-    await asynchrome.storage.local.get({
-      ignoredSites: [],
-      enableExtension: true,
-    })
+    await asynchrome.storage.local.get({ ignoredSites: [], enableExtension: true })
 
-  // TODO: Remove after closing #124
+  if (tmpIgnoredHosts.has(hostname) || shortcuts.isIgnoredHost(hostname)) {
+    return
+  }
+
+  // TODO: Remove "enableExtension" after closing #124
   if (!enableExtension) {
     return
   }
 
-  if (shortcuts.isIgnoredHost(url)) {
-    return
-  }
-
-  if (errors.isThereProxyConnectionError(errorCode)) {
+  if (errors.isThereProxyConnectionError(error)) {
     chrome.tabs.update(tabId, {
       url: chrome.runtime.getURL('proxy_unavailable.html'),
     })
+    return
   }
 
-  if (errors.isThereConnectionError(errorCode)) {
+  if (errors.isThereConnectionError(error)) {
     console.warn('Possible DPI lock detected: reporting domain...')
     registry.addBlockedByDPI(hostname)
     proxies.setProxy()
     chrome.tabs.update(tabId, {
       url: chrome.runtime.getURL(`unavailable.html?${window.btoa(url)}`),
     })
-  } else {
-    if (!ignoredSites.includes(hostname)) {
-      ignoredSites.push(hostname)
-      await asynchrome.storage.local.set({ ignoredSites })
-      console.warn(`Unable to redirect to HTTPS: ${hostname}`)
-    }
-
-    for (const site of ignoredSites) {
-      tmpIgnoredHosts.add(site)
-    }
-
-    chrome.tabs.update(tabId, {
-      url: url.replace('https:', 'http:'),
-    })
+    return
   }
+
+  if (!ignoredSites.includes(hostname)) {
+    ignoredSites.push(hostname)
+    await asynchrome.storage.local.set({ ignoredSites })
+    console.warn(`Unable to redirect to HTTPS: ${hostname}`)
+  }
+
+  for (const site of ignoredSites) {
+    tmpIgnoredHosts.add(site)
+  }
+
+  chrome.tabs.update(tabId, {
+    url: url.replace('https:', 'http:'),
+  })
 }
 
 chrome.webRequest.onErrorOccurred.addListener(

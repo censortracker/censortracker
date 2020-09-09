@@ -25,7 +25,7 @@ const onBeforeRequestListener = ({ url }) => {
     return undefined
   }
 
-  proxies.openPorts()
+  proxies.allowProxying()
   return {
     redirectUrl: shortcuts.enforceHttps(url),
   }

@@ -89,10 +89,9 @@ const notificationOnButtonClicked = async (notificationId, buttonIndex) => {
       lastFocusedWindow: true,
     })
 
-    const urlObject = new URL(tab.url)
-    const hostname = urlObject.hostname
-
-    const { mutedForever } = await asynchrome.storage.local.get({ mutedForever: [] })
+    const { hostname } = new URL(tab.url)
+    const { mutedForever } =
+      await asynchrome.storage.local.get({ mutedForever: [] })
 
     if (!mutedForever.find((item) => item === hostname)) {
       mutedForever.push(hostname)

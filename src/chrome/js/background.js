@@ -16,18 +16,11 @@ window.censortracker = {
   asynchrome,
 }
 
-let ignoredWebsites = new Set()
-const isIgnoredWebsite = (hostname) =>
-  ignoredWebsites.has(hostname)
-
+const ignoredWebsitesSet = new Set()
 const onBeforeRequest = ({ url }) => {
   const { hostname } = new URL(url)
 
-  if (hostname.indexOf('google.com') !== -1) {
-    return undefined
-  }
-
-  if (isIgnoredWebsite(hostname) || shortcuts.isSpecialPurposeHost(hostname)) {
+  if (ignoredWebsitesSet.has(hostname) || shortcuts.isIgnoredHost(hostname)) {
     console.warn(`Ignoring host: ${url}`)
     return undefined
   }
@@ -60,7 +53,7 @@ const onErrorOccurred = async ({ url, error, tabId }) => {
     return
   }
 
-  if (shortcuts.isSpecialPurposeHost(url)) {
+  if (shortcuts.isIgnoredHost(url)) {
     return
   }
 
@@ -85,7 +78,9 @@ const onErrorOccurred = async ({ url, error, tabId }) => {
     console.warn(`Unable to redirect to HTTPS: ${hostname}`)
   }
 
-  ignoredWebsites = new Set(ignoredSites)
+  for (const site of ignoredSites) {
+    ignoredWebsitesSet.add(site)
+  }
 
   chrome.tabs.update(tabId, {
     url: url.replace('https:', 'http:'),
@@ -123,7 +118,7 @@ const updateTabState = async () => {
     lastFocusedWindow: true,
   })
 
-  if (!tab || !shortcuts.validURL(tab.url) || shortcuts.isSpecialPurposeHost(tab.url)) {
+  if (!tab || !shortcuts.validURL(tab.url) || shortcuts.isIgnoredHost(tab.url)) {
     return
   }
 

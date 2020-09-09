@@ -38,7 +38,11 @@ class Shortcuts {
     return hostname.replace(/^http:/, 'https:')
   }
 
-  isSpecialPurposeHost = (host) => {
+  isIgnoredPermanently = (hostname) => {
+    return hostname.indexOf('google.com') !== -1
+  }
+
+  isSpecialPurposeIP = (ip) => {
     const specialIPs = [
       '0.0.0.0/8',
       '10.0.0.0/8',
@@ -62,12 +66,24 @@ class Shortcuts {
       'ff00::/8',
     ]
 
+    try {
+      return ipRangeCheck(ip, specialIPs)
+    } catch (error) {
+      return false
+    }
+  }
+
+  isIgnoredHost = (host) => {
     host = this.cleanHostname(host)
-    if (host.indexOf('localhost') !== -1) {
+
+    if (this.isIgnoredPermanently(host)) {
       return true
     }
 
-    return ipRangeCheck(host, specialIPs)
+    if (host.indexOf('localhost') !== -1) {
+      return true
+    }
+    return this.isSpecialPurposeIP(host)
   }
 }
 

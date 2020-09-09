@@ -16,11 +16,12 @@ window.censortracker = {
   asynchrome,
 }
 
-const ignoredWebsitesSet = new Set()
+const tmpIgnoredHosts = new Set()
+
 const onBeforeRequest = ({ url }) => {
   const { hostname } = new URL(url)
 
-  if (ignoredWebsitesSet.has(hostname) || shortcuts.isIgnoredHost(hostname)) {
+  if (tmpIgnoredHosts.has(hostname) || shortcuts.isIgnoredHost(hostname)) {
     console.warn(`Ignoring host: ${url}`)
     return undefined
   }
@@ -41,7 +42,6 @@ chrome.webRequest.onBeforeRequest.addListener(
 const onErrorOccurred = async ({ url, error, tabId }) => {
   const errorCode = error.replace('net::', '')
   const { hostname } = new URL(url)
-  const encodedUrl = window.btoa(url)
 
   const { ignoredSites, enableExtension } =
     await asynchrome.storage.local.get({
@@ -49,6 +49,7 @@ const onErrorOccurred = async ({ url, error, tabId }) => {
       enableExtension: true,
     })
 
+  // TODO: Remove after closing #124
   if (!enableExtension) {
     return
   }
@@ -68,23 +69,23 @@ const onErrorOccurred = async ({ url, error, tabId }) => {
     registry.addBlockedByDPI(hostname)
     proxies.setProxy()
     chrome.tabs.update(tabId, {
-      url: chrome.runtime.getURL(`unavailable.html?${encodedUrl}`),
+      url: chrome.runtime.getURL(`unavailable.html?${window.btoa(url)}`),
+    })
+  } else {
+    if (!ignoredSites.includes(hostname)) {
+      ignoredSites.push(hostname)
+      await asynchrome.storage.local.set({ ignoredSites })
+      console.warn(`Unable to redirect to HTTPS: ${hostname}`)
+    }
+
+    for (const site of ignoredSites) {
+      tmpIgnoredHosts.add(site)
+    }
+
+    chrome.tabs.update(tabId, {
+      url: url.replace('https:', 'http:'),
     })
   }
-
-  if (!ignoredSites.includes(hostname)) {
-    ignoredSites.push(hostname)
-    await asynchrome.storage.local.set({ ignoredSites })
-    console.warn(`Unable to redirect to HTTPS: ${hostname}`)
-  }
-
-  for (const site of ignoredSites) {
-    ignoredWebsitesSet.add(site)
-  }
-
-  chrome.tabs.update(tabId, {
-    url: url.replace('https:', 'http:'),
-  })
 }
 
 const notificationOnButtonClicked = async (notificationId, buttonIndex) => {

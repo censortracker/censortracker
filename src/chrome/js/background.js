@@ -17,8 +17,7 @@ window.censortracker = {
 }
 
 const tmpIgnoredHosts = new Set()
-
-const onBeforeRequest = ({ url }) => {
+const onBeforeRequestListener = ({ url }) => {
   const { hostname } = new URL(url)
 
   if (tmpIgnoredHosts.has(hostname) || shortcuts.isIgnoredHost(hostname)) {
@@ -33,7 +32,7 @@ const onBeforeRequest = ({ url }) => {
 }
 
 chrome.webRequest.onBeforeRequest.addListener(
-  onBeforeRequest, {
+  onBeforeRequestListener, {
     urls: ['http://*/*'],
     types: ['main_frame'],
   }, ['blocking'],

@@ -38,7 +38,7 @@ chrome.webRequest.onBeforeRequest.addListener(
   }, ['blocking'],
 )
 
-const onErrorOccurred = async ({ url, error, tabId }) => {
+const onErrorOccurredListener = async ({ url, error, tabId }) => {
   const errorCode = error.replace('net::', '')
   const { hostname } = new URL(url)
 
@@ -86,6 +86,14 @@ const onErrorOccurred = async ({ url, error, tabId }) => {
     })
   }
 }
+
+chrome.webRequest.onErrorOccurred.addListener(
+  onErrorOccurredListener,
+  {
+    urls: ['http://*/*', 'https://*/*'],
+    types: ['main_frame'],
+  },
+)
 
 const notificationOnButtonClicked = async (notificationId, buttonIndex) => {
   if (buttonIndex === 0) {
@@ -242,14 +250,6 @@ chrome.windows.onRemoved.addListener(async (_windowId) => {
 chrome.proxy.onProxyError.addListener((details) => {
   console.error(`Proxy error: ${JSON.stringify(details)}`)
 })
-
-chrome.webRequest.onErrorOccurred.addListener(
-  onErrorOccurred,
-  {
-    urls: ['http://*/*', 'https://*/*'],
-    types: ['main_frame'],
-  },
-)
 
 chrome.notifications.onButtonClicked.addListener(notificationOnButtonClicked)
 

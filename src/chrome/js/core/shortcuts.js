@@ -72,6 +72,9 @@ class Shortcuts {
   }
 
   addToTemporaryIgnore = (hostname) => {
+    if (this._ignoredHosts.size >= 500) {
+      this._ignoredHosts.clear()
+    }
     this._ignoredHosts.add(this.cleanHostname(hostname))
   }
 

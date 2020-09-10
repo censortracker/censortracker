@@ -52,7 +52,6 @@ const onErrorOccurredListener = async ({ url, error, tabId }) => {
   }
 
   if (errors.isThereConnectionError(error)) {
-    console.warn('Possible DPI lock detected: reporting domain...')
     registry.addBlockedByDPI(hostname)
     proxies.setProxy()
     chrome.tabs.update(tabId, {
@@ -105,7 +104,7 @@ const updateTabState = async () => {
     lastFocusedWindow: true,
   })
 
-  if (!tab || !shortcuts.validURL(tab.url) || shortcuts.isIgnoredHost(tab.url)) {
+  if (!shortcuts.validURL(tab.url) || shortcuts.isIgnoredHost(tab.url)) {
     return
   }
 
@@ -237,14 +236,10 @@ chrome.tabs.onCreated.addListener(onTabCreated)
 
 window.censortracker.chromeListeners = {
   remove: () => {
-    chrome.tabs.onActivated.removeListener(updateTabState)
-    chrome.tabs.onUpdated.removeListener(updateTabState)
     chrome.webRequest.onErrorOccurred.removeListener(onErrorOccurredListener)
     chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequestListener)
   },
   add: () => {
-    chrome.tabs.onActivated.addListener(updateTabState)
-    chrome.tabs.onUpdated.addListener(updateTabState)
     chrome.webRequest.onErrorOccurred.addListener(onErrorOccurredListener, {
       urls: ['http://*/*', 'https://*/*'],
       types: ['main_frame'],

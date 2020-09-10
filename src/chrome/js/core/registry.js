@@ -116,7 +116,7 @@ class Registry {
 
       alreadyReported.push(domain)
       await asynchrome.storage.local.set({ alreadyReported })
-
+      console.warn(`Reported possible DPI lock: ${domain}`)
       return json
     }
 

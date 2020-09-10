@@ -39,15 +39,8 @@ chrome.webRequest.onBeforeRequest.addListener(
 
 const onErrorOccurredListener = async ({ url, error, tabId }) => {
   const { hostname } = new URL(url)
-  const { enableExtension } =
-    await asynchrome.storage.local.get({ enableExtension: true })
 
   if (tmpIgnoredHosts.has(hostname) || shortcuts.isIgnoredHost(hostname)) {
-    return
-  }
-
-  // TODO: Remove "enableExtension" after closing #124
-  if (!enableExtension) {
     return
   }
 
@@ -241,3 +234,27 @@ chrome.notifications.onButtonClicked.addListener(notificationOnButtonClicked)
 chrome.tabs.onActivated.addListener(updateTabState)
 chrome.tabs.onUpdated.addListener(updateTabState)
 chrome.tabs.onCreated.addListener(onTabCreated)
+
+window.censortracker.chromeListeners = {
+  remove: () => {
+    chrome.tabs.onActivated.removeListener(updateTabState)
+    chrome.tabs.onUpdated.removeListener(updateTabState)
+    chrome.webRequest.onErrorOccurred.removeListener(onErrorOccurredListener)
+    chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequestListener)
+  },
+  add: () => {
+    chrome.tabs.onActivated.addListener(updateTabState)
+    chrome.tabs.onUpdated.addListener(updateTabState)
+    chrome.webRequest.onErrorOccurred.addListener(onErrorOccurredListener, {
+      urls: ['http://*/*', 'https://*/*'],
+      types: ['main_frame'],
+    })
+    chrome.webRequest.onBeforeRequest.addListener(
+      onBeforeRequestListener, {
+        urls: ['http://*/*'],
+        types: ['main_frame'],
+      },
+      ['blocking'],
+    )
+  },
+}

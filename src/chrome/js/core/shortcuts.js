@@ -1,8 +1,10 @@
 const ipRangeCheck = require('ip-range-check')
 
-// TODO: Convert to module with exported function.
-
 class Shortcuts {
+  constructor () {
+    this._ignoredHosts = new Set()
+  }
+
   validURL = (urlStr) => {
     const pattern = new RegExp(
       '^(https?:\\/\\/)?' +
@@ -38,10 +40,6 @@ class Shortcuts {
     return hostname.replace(/^http:/, 'https:')
   }
 
-  isIgnoredPermanently = (hostname) => {
-    return hostname.indexOf('google.com') !== -1
-  }
-
   isSpecialPurposeIP = (ip) => {
     const specialIPs = [
       '0.0.0.0/8',
@@ -73,10 +71,18 @@ class Shortcuts {
     }
   }
 
+  addToTemporaryIgnore = (hostname) => {
+    this._ignoredHosts.add(this.cleanHostname(hostname))
+  }
+
   isIgnoredHost = (host) => {
     host = this.cleanHostname(host)
 
-    if (this.isIgnoredPermanently(host)) {
+    if (this._ignoredHosts.has(host)) {
+      return true
+    }
+
+    if (host.indexOf('google.com') !== -1) {
       return true
     }
 

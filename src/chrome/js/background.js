@@ -16,11 +16,10 @@ window.censortracker = {
   asynchrome,
 }
 
-const tmpIgnoredHosts = new Set()
 const onBeforeRequestListener = ({ url }) => {
   const { hostname } = new URL(url)
 
-  if (tmpIgnoredHosts.has(hostname) || shortcuts.isIgnoredHost(hostname)) {
+  if (shortcuts.isIgnoredHost(hostname)) {
     console.warn(`Ignoring host: ${url}`)
     return undefined
   }
@@ -40,7 +39,7 @@ chrome.webRequest.onBeforeRequest.addListener(
 const onErrorOccurredListener = async ({ url, error, tabId }) => {
   const { hostname } = new URL(url)
 
-  if (tmpIgnoredHosts.has(hostname) || shortcuts.isIgnoredHost(hostname)) {
+  if (shortcuts.isIgnoredHost(hostname)) {
     return
   }
 
@@ -60,7 +59,7 @@ const onErrorOccurredListener = async ({ url, error, tabId }) => {
     return
   }
 
-  tmpIgnoredHosts.add(hostname)
+  shortcuts.addToTemporaryIgnore(hostname)
   chrome.tabs.update(tabId, {
     url: url.replace('https:', 'http:'),
   })
@@ -120,7 +119,7 @@ const updateTabState = async () => {
   const urlObject = new URL(tab.url)
   const currentHostname = shortcuts.cleanHostname(urlObject.hostname)
 
-  if (tmpIgnoredHosts.has(currentHostname)) {
+  if (shortcuts.isIgnoredHost(currentHostname)) {
     console.warn(`Site ${currentHostname} found in ignore`)
     return
   }

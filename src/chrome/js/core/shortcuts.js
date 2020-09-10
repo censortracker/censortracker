@@ -1,6 +1,10 @@
 const ipRangeCheck = require('ip-range-check')
 
 class Shortcuts {
+  constructor () {
+    this._ignoredHosts = new Set()
+  }
+
   validURL = (urlStr) => {
     const pattern = new RegExp(
       '^(https?:\\/\\/)?' +
@@ -36,7 +40,7 @@ class Shortcuts {
     return hostname.replace(/^http:/, 'https:')
   }
 
-  isSpecialPurposeHost = (host) => {
+  isSpecialPurposeIP = (ip) => {
     const specialIPs = [
       '0.0.0.0/8',
       '10.0.0.0/8',
@@ -60,11 +64,35 @@ class Shortcuts {
       'ff00::/8',
     ]
 
+    try {
+      return ipRangeCheck(ip, specialIPs)
+    } catch (error) {
+      return false
+    }
+  }
+
+  addToTemporaryIgnore = (hostname) => {
+    if (this._ignoredHosts.size >= 500) {
+      this._ignoredHosts.clear()
+    }
+    this._ignoredHosts.add(this.cleanHostname(hostname))
+  }
+
+  isIgnoredHost = (host) => {
     host = this.cleanHostname(host)
+
+    if (this._ignoredHosts.has(host)) {
+      return true
+    }
+
+    if (host.indexOf('google.com') !== -1) {
+      return true
+    }
+
     if (host.indexOf('localhost') !== -1) {
       return true
     }
-    return ipRangeCheck(host, specialIPs)
+    return this.isSpecialPurposeIP(host)
   }
 }
 

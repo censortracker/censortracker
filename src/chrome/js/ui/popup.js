@@ -98,17 +98,19 @@ chrome.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
   setTimeout(show, popupShowTimeout)
 })
 
-const addExtensionControlListeners = async ({ settings, proxies }) => {
+const addExtensionControlListeners = async ({ settings, proxies, chromeListeners }) => {
   document.addEventListener('click', (event) => {
     if (event.target.matches('#enableExtension')) {
       settings.enableExtension()
       proxies.setProxy()
+      chromeListeners.add()
       window.location.reload()
     }
 
     if (event.target.matches('#disableExtension')) {
       proxies.removeProxy()
       settings.disableExtension()
+      chromeListeners.remove()
       window.location.reload()
     }
   })

@@ -125,3 +125,19 @@ describe('Check if host is ignored one', () => {
     }
   })
 })
+
+describe('Check add to temporary ignore', () => {
+  test('returns true if host found in temporary ignore', () => {
+    const hostnames = [
+      'example.com',
+      'example.org',
+      'makuha.ru',
+      'github.com',
+    ]
+
+    for (const hostname of hostnames) {
+      shortcuts.addToTemporaryIgnore(hostname)
+      expect(shortcuts.isIgnoredHost(hostname)).toBeTruthy()
+    }
+  })
+})

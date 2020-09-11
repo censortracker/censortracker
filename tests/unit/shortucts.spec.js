@@ -136,7 +136,7 @@ describe('Check add to temporary ignore', () => {
     ]
 
     for (const hostname of hostnames) {
-      shortcuts.addToTemporaryIgnore(hostname)
+      shortcuts.addHostToIgnore(hostname)
       expect(shortcuts.isIgnoredHost(hostname)).toBeTruthy()
     }
   })

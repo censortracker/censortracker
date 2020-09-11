@@ -56,10 +56,11 @@ const onErrorOccurredListener = async ({ url, error, tabId }) => {
     })
     await registry.addBlockedByDPI(hostname)
     await proxies.setProxy()
+    await proxies.allowProxying()
     return
   }
 
-  shortcuts.addToTemporaryIgnore(hostname)
+  await shortcuts.addHostToIgnore(hostname)
   chrome.tabs.update(tabId, {
     url: url.replace('https:', 'http:'),
   })
@@ -120,7 +121,6 @@ const updateTabState = async () => {
   const currentHostname = shortcuts.cleanHostname(hostname)
 
   if (shortcuts.isIgnoredHost(currentHostname)) {
-    console.warn(`Site ${currentHostname} found in ignore`)
     return
   }
 

@@ -56,7 +56,6 @@ const onErrorOccurredListener = async ({ url, error, tabId }) => {
     })
     await registry.addBlockedByDPI(hostname)
     await proxies.setProxy()
-    await proxies.allowProxying()
     return
   }
 

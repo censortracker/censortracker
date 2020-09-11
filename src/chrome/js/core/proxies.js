@@ -35,6 +35,7 @@ class Proxies {
       scope: 'regular',
     }
 
+    await this.allowProxying()
     await asynchrome.proxy.settings.set(config).catch(console.error)
     console.warn('PAC has been set successfully!')
   }

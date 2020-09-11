@@ -51,11 +51,11 @@ const onErrorOccurredListener = async ({ url, error, tabId }) => {
   }
 
   if (errors.isThereConnectionError(error)) {
-    registry.addBlockedByDPI(hostname)
-    proxies.setProxy()
     chrome.tabs.update(tabId, {
       url: chrome.runtime.getURL(`unavailable.html?${window.btoa(url)}`),
     })
+    await registry.addBlockedByDPI(hostname)
+    await proxies.setProxy()
     return
   }
 
@@ -103,7 +103,7 @@ const updateTabState = async () => {
     lastFocusedWindow: true,
   })
 
-  if (!shortcuts.validURL(tab.url) || shortcuts.isIgnoredHost(tab.url)) {
+  if (!tab || !shortcuts.validURL(tab.url)) {
     return
   }
 
@@ -116,8 +116,8 @@ const updateTabState = async () => {
     return
   }
 
-  const urlObject = new URL(tab.url)
-  const currentHostname = shortcuts.cleanHostname(urlObject.hostname)
+  const { hostname } = new URL(tab.url)
+  const currentHostname = shortcuts.cleanHostname(hostname)
 
   if (shortcuts.isIgnoredHost(currentHostname)) {
     console.warn(`Site ${currentHostname} found in ignore`)

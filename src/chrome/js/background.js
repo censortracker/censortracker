@@ -141,14 +141,11 @@ const updateTabState = async () => {
 }
 
 const showCooperationAcceptedWarning = async (hostname) => {
-  if (!hostname) {
-    return
-  }
-
-  const { notifiedHosts, mutedForever } = await asynchrome.storage.local.get({
-    notifiedHosts: [],
-    mutedForever: [],
-  })
+  const { notifiedHosts, mutedForever } =
+    await asynchrome.storage.local.get({
+      notifiedHosts: [],
+      mutedForever: [],
+    })
 
   if (mutedForever.includes(hostname)) {
     return
@@ -191,7 +188,6 @@ chrome.runtime.onInstalled.addListener(async ({ reason }) => {
   })
 
   if (reason === 'install') {
-    console.log(`Installing ${settings.getName()}...`)
     const synced = await registry.syncDatabase()
 
     if (synced) {
@@ -201,16 +197,20 @@ chrome.runtime.onInstalled.addListener(async ({ reason }) => {
   }
 })
 
-const onTabCreated = async (tab) => {
+const onTabCreated = async ({ id }) => {
   const { enableExtension } =
-    await asynchrome.storage.local.get({ enableExtension: true })
+  await asynchrome.storage.local.get({
+    enableExtension: true,
+  })
 
-  if (enableExtension === false) {
-    settings.setDisableIcon(tab.id)
+  if (enableExtension) {
+    settings.setDefaultIcon(id)
   } else {
-    settings.setDefaultIcon(tab.id)
+    settings.setDisableIcon(id)
   }
 }
+
+chrome.tabs.onCreated.addListener(onTabCreated)
 
 chrome.runtime.onStartup.addListener(async () => {
   await registry.syncDatabase()
@@ -226,11 +226,9 @@ chrome.proxy.onProxyError.addListener((details) => {
   console.error(`Proxy error: ${JSON.stringify(details)}`)
 })
 
-chrome.notifications.onButtonClicked.addListener(notificationOnButtonClicked)
-
 chrome.tabs.onActivated.addListener(updateTabState)
 chrome.tabs.onUpdated.addListener(updateTabState)
-chrome.tabs.onCreated.addListener(onTabCreated)
+chrome.notifications.onButtonClicked.addListener(notificationOnButtonClicked)
 
 window.censortracker.chromeListeners = {
   remove: () => {

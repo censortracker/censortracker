@@ -117,8 +117,6 @@ class Registry {
       console.warn(`Reported possible DPI lock: ${domain}`)
       return json
     }
-
-    console.warn(`The domain ${domain} was already reported`)
     return null
   }
 }

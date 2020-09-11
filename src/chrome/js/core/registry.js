@@ -69,7 +69,6 @@ class Registry {
       console.log(`Registry match found: ${host}`)
       return { domainFound: true }
     }
-    console.log(`Registry match not found: ${host}`)
     return { domainFound: false }
   }
 
@@ -83,7 +82,6 @@ class Registry {
       console.warn(`Distributor match found: ${host}`)
       return dataObject
     }
-    console.warn(`Distributor match not found: ${host}`)
     return {}
   }
 

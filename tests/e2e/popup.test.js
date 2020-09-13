@@ -196,3 +196,9 @@ describe('Testing popup of the extension', () => {
     }, 30000)
   })
 })
+
+// TODO: Add to tests:
+// tula.ru, dom.ru
+// http://email.mg.buttondown.email/c/eJyNjk2KwzAUg08T72Lejx3bCy-aYXKN4ualjSF1SuIy15-0m24LAoH4hCTRTw7YqRw
+// JCCAAISKQ16h_evztB3DODNg7xsbA_aYvz1rXIutf0dM95UXN0dMVJ2sS2cSTY5FulODFm1E67IxRS5xrfewNnxoaDi15z0suc9qqzu
+// W6HpHa4g6viXLb9fZUNfI4BqKLbf3hrbHWtik4bjkwoBGxCbz6vDm_35yzfFd801-h_77FUaw

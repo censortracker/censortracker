@@ -1,6 +1,12 @@
+import asynchrome from './asynchrome'
+
 const ipRangeCheck = require('ip-range-check')
 
 class Shortcuts {
+  constructor () {
+    this._ignoredHosts = new Set()
+  }
+
   validURL = (urlStr) => {
     const pattern = new RegExp(
       '^(https?:\\/\\/)?' +
@@ -21,6 +27,10 @@ class Shortcuts {
 
   cleanHostname = (hostname) => {
     hostname = hostname.replace(/^(?:https?:\/\/)?(?:www\.)?/i, '').trim()
+
+    if (hostname.indexOf('/') !== -1) {
+      hostname = hostname.split('/')[0].trim()
+    }
     return hostname
   }
 
@@ -32,7 +42,7 @@ class Shortcuts {
     return hostname.replace(/^http:/, 'https:')
   }
 
-  isSpecialPurposeHost = (host) => {
+  isSpecialPurposeIP = (ip) => {
     const specialIPs = [
       '0.0.0.0/8',
       '10.0.0.0/8',
@@ -56,16 +66,45 @@ class Shortcuts {
       'ff00::/8',
     ]
 
-    if (host.indexOf('localhost') !== -1) {
-      return true
+    try {
+      return ipRangeCheck(ip, specialIPs)
+    } catch (error) {
+      return false
     }
+  }
+
+  saveIgnoredHosts = async () => {
+    const { ignoredHosts } =
+      await asynchrome.storage.local.get({ ignoredHosts: [] })
+
+    this._ignoredHosts.forEach((element) => {
+      if (!ignoredHosts.includes(element)) {
+        ignoredHosts.push(element)
+      }
+    })
+
+    await asynchrome.storage.local.set({ ignoredHosts })
+  }
+
+  addHostToIgnore = async (hostname) => {
+    if (this._ignoredHosts.size > 100) {
+      this._ignoredHosts.clear()
+    }
+    this._ignoredHosts.add(this.cleanHostname(hostname))
+
+    await this.saveIgnoredHosts()
+  }
+
+  isIgnoredHost = (host) => {
+    const ignoreRegEx = /(google.com|localhost)/
 
     host = this.cleanHostname(host)
 
-    if (host.indexOf('/') !== -1) {
-      host = host.split('/')[0].trim()
+    if (this._ignoredHosts.has(host) || host.match(ignoreRegEx)) {
+      return true
     }
-    return ipRangeCheck(host, specialIPs)
+
+    return this.isSpecialPurposeIP(host)
   }
 }
 

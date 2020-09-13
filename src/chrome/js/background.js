@@ -3,129 +3,75 @@ import {
   errors,
   proxies,
   registry,
-  sessions,
   settings,
   shortcuts,
 } from './core'
 
-const REQUEST_FILTERS = {
-  urls: ['http://*/*', 'https://*/*'],
-  types: ['main_frame'],
-}
-
 window.censortracker = {
   proxies,
   registry,
-  sessions,
   settings,
   shortcuts,
   errors,
   asynchrome,
 }
 
-const onBeforeRequest = ({ url }) => {
-  if (shortcuts.isSpecialPurposeHost(url)) {
+const onBeforeRequestListener = ({ url }) => {
+  const { hostname } = new URL(url)
+
+  if (shortcuts.isIgnoredHost(hostname)) {
     console.warn(`Ignoring host: ${url}`)
-    return null
+    return undefined
   }
-  proxies.openPorts()
-  console.log('Enforcing HTTPS...')
+  proxies.allowProxying()
   return {
     redirectUrl: shortcuts.enforceHttps(url),
   }
 }
 
-const onBeforeRedirect = async ({ requestId, url }) => {
+chrome.webRequest.onBeforeRequest.addListener(
+  onBeforeRequestListener, {
+    urls: ['http://*/*'],
+    types: ['main_frame'],
+  }, ['blocking'],
+)
+
+const onErrorOccurredListener = async ({ url, error, tabId }) => {
   const { hostname } = new URL(url)
-  const redirectCountKey = 'redirectCount'
 
-  const count = sessions.getRequest(requestId, redirectCountKey, 0)
-
-  if (count) {
-    sessions.putRequest(requestId, redirectCountKey, count + 1)
-  } else {
-    sessions.putRequest(requestId, redirectCountKey, 1)
-  }
-
-  if (sessions.areMaxRedirectsReached(count)) {
-    if (chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequest)) {
-      chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequest)
-    }
-
-    const { ignoredSites } = await asynchrome.storage.local.get({ ignoredSites: [] })
-
-    if (!ignoredSites.includes(hostname)) {
-      try {
-        ignoredSites.push(hostname)
-        await asynchrome.storage.local.set({ ignoredSites })
-        console.warn(`Reached max count of redirects: ignoring "${hostname}"...`)
-      } catch (error) {
-        console.error(error)
-      }
-    }
-  }
-}
-
-const onErrorOccurred = async ({ url, error, tabId }) => {
-  const errorText = error.replace('net::', '')
-  const { hostname } = new URL(url)
-  const encodedUrl = window.btoa(url)
-
-  const { ignoredSites, enableExtension } =
-    await asynchrome.storage.local.get({
-      ignoredSites: [],
-      enableExtension: true,
-    })
-
-  if (!enableExtension) {
+  if (shortcuts.isIgnoredHost(hostname)) {
     return
   }
 
-  if (shortcuts.isSpecialPurposeHost(url)) {
-    return
-  }
-
-  if (errors.isThereProxyConnectionError(errorText)) {
+  if (errors.isThereProxyConnectionError(error)) {
     chrome.tabs.update(tabId, {
       url: chrome.runtime.getURL('proxy_unavailable.html'),
     })
+    return
   }
 
-  if (errors.isThereConnectionError(errorText)) {
-    console.warn('Possible DPI lock detected: reporting domain...')
-    registry.addBlockedByDPI(hostname)
-    proxies.setProxy()
+  if (errors.isThereConnectionError(error)) {
     chrome.tabs.update(tabId, {
-      url: chrome.runtime.getURL(`unavailable.html?${encodedUrl}`),
+      url: chrome.runtime.getURL(`unavailable.html?${window.btoa(url)}`),
     })
+    await registry.addBlockedByDPI(hostname)
+    await proxies.setProxy()
+    return
   }
 
-  if (errors.isThereCertificateError(errorText) || errors.isThereAvailabilityError(errorText)) {
-    if (!ignoredSites.includes(hostname)) {
-      ignoredSites.push(hostname)
-      await asynchrome.storage.local.set({ ignoredSites })
-      console.warn(`Certificate validation issue: ignoring ${hostname}...`)
-    }
-
-    if (chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequest)) {
-      chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequest)
-    }
-    chrome.tabs.update({
-      url: url.replace('https:', 'http:'),
-    })
-  }
+  await shortcuts.addHostToIgnore(hostname)
+  chrome.tabs.update(tabId, {
+    url: url.replace('https:', 'http:'),
+  })
 }
 
-const onCompleted = ({ requestId }) => {
-  sessions.deleteRequest(requestId)
-  if (!chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequest)) {
-    chrome.webRequest.onBeforeRequest.addListener(
-      onBeforeRequest,
-      REQUEST_FILTERS,
-      ['blocking'],
-    )
-  }
-}
+chrome.webRequest.onErrorOccurred.addListener(
+  onErrorOccurredListener,
+  {
+    urls: ['http://*/*', 'https://*/*'],
+    types: ['main_frame'],
+  },
+)
 
 const notificationOnButtonClicked = async (notificationId, buttonIndex) => {
   if (buttonIndex === 0) {
@@ -134,10 +80,9 @@ const notificationOnButtonClicked = async (notificationId, buttonIndex) => {
       lastFocusedWindow: true,
     })
 
-    const urlObject = new URL(tab.url)
-    const hostname = urlObject.hostname
-
-    const { mutedForever } = await asynchrome.storage.local.get({ mutedForever: [] })
+    const { hostname } = new URL(tab.url)
+    const { mutedForever } =
+      await asynchrome.storage.local.get({ mutedForever: [] })
 
     if (!mutedForever.find((item) => item === hostname)) {
       mutedForever.push(hostname)
@@ -158,33 +103,24 @@ const updateTabState = async () => {
     lastFocusedWindow: true,
   })
 
-  if (!tab || !shortcuts.validURL(tab.url) || shortcuts.isSpecialPurposeHost(tab.url)) {
+  if (!tab || !shortcuts.validURL(tab.url)) {
     return
   }
 
-  const { enableExtension, ignoredSites } = await asynchrome.storage.local.get({
+  const { enableExtension } = await asynchrome.storage.local.get({
     enableExtension: true,
-    ignoredSites: [],
   })
 
   if (!enableExtension) {
     settings.setDisableIcon(tab.id)
-    if (chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequest)) {
-      chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequest)
-    }
     return
   }
 
-  const urlObject = new URL(tab.url)
-  const currentHostname = shortcuts.cleanHostname(urlObject.hostname)
+  const { hostname } = new URL(tab.url)
+  const currentHostname = shortcuts.cleanHostname(hostname)
 
-  if (ignoredSites.includes(currentHostname)) {
-    console.warn(`Site ${currentHostname} found in ignore`)
+  if (shortcuts.isIgnoredHost(currentHostname)) {
     return
-  }
-
-  if (!chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequest)) {
-    chrome.webRequest.onBeforeRequest.addListener(onBeforeRequest, REQUEST_FILTERS, ['blocking'])
   }
 
   const { domainFound } = await registry.domainsContains(currentHostname)
@@ -205,14 +141,11 @@ const updateTabState = async () => {
 }
 
 const showCooperationAcceptedWarning = async (hostname) => {
-  if (!hostname) {
-    return
-  }
-
-  const { notifiedHosts, mutedForever } = await asynchrome.storage.local.get({
-    notifiedHosts: [],
-    mutedForever: [],
-  })
+  const { notifiedHosts, mutedForever } =
+    await asynchrome.storage.local.get({
+      notifiedHosts: [],
+      mutedForever: [],
+    })
 
   if (mutedForever.includes(hostname)) {
     return
@@ -255,7 +188,6 @@ chrome.runtime.onInstalled.addListener(async ({ reason }) => {
   })
 
   if (reason === 'install') {
-    console.log(`Installing ${settings.getName()}...`)
     const synced = await registry.syncDatabase()
 
     if (synced) {
@@ -265,16 +197,20 @@ chrome.runtime.onInstalled.addListener(async ({ reason }) => {
   }
 })
 
-const onTabCreated = async (tab) => {
+const onTabCreated = async ({ id }) => {
   const { enableExtension } =
-    await asynchrome.storage.local.get({ enableExtension: true })
+  await asynchrome.storage.local.get({
+    enableExtension: true,
+  })
 
-  if (enableExtension === false) {
-    settings.setDisableIcon(tab.id)
+  if (enableExtension) {
+    settings.setDefaultIcon(id)
   } else {
-    settings.setDefaultIcon(tab.id)
+    settings.setDisableIcon(id)
   }
 }
+
+chrome.tabs.onCreated.addListener(onTabCreated)
 
 chrome.runtime.onStartup.addListener(async () => {
   await registry.syncDatabase()
@@ -290,27 +226,26 @@ chrome.proxy.onProxyError.addListener((details) => {
   console.error(`Proxy error: ${JSON.stringify(details)}`)
 })
 
-chrome.webRequest.onErrorOccurred.addListener(
-  onErrorOccurred,
-  REQUEST_FILTERS,
-)
-
-chrome.webRequest.onBeforeRequest.addListener(
-  onBeforeRequest,
-  REQUEST_FILTERS,
-  ['blocking'],
-)
-
-chrome.webRequest.onBeforeRedirect.addListener(onBeforeRedirect, {
-  urls: ['*://*/*'],
-})
-
-chrome.webRequest.onCompleted.addListener(onCompleted, {
-  urls: ['*://*/*'],
-})
-
-chrome.notifications.onButtonClicked.addListener(notificationOnButtonClicked)
-
 chrome.tabs.onActivated.addListener(updateTabState)
 chrome.tabs.onUpdated.addListener(updateTabState)
-chrome.tabs.onCreated.addListener(onTabCreated)
+chrome.notifications.onButtonClicked.addListener(notificationOnButtonClicked)
+
+window.censortracker.chromeListeners = {
+  remove: () => {
+    chrome.webRequest.onErrorOccurred.removeListener(onErrorOccurredListener)
+    chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequestListener)
+  },
+  add: () => {
+    chrome.webRequest.onErrorOccurred.addListener(onErrorOccurredListener, {
+      urls: ['http://*/*', 'https://*/*'],
+      types: ['main_frame'],
+    })
+    chrome.webRequest.onBeforeRequest.addListener(
+      onBeforeRequestListener, {
+        urls: ['http://*/*'],
+        types: ['main_frame'],
+      },
+      ['blocking'],
+    )
+  },
+}

@@ -35,6 +35,7 @@ class Proxies {
       scope: 'regular',
     }
 
+    await this.allowProxying()
     await asynchrome.proxy.settings.set(config).catch(console.error)
     console.warn('PAC has been set successfully!')
   }
@@ -101,7 +102,7 @@ function FindProxyForURL(url, host) {
     console.warn('Proxy auto-config data cleaned!')
   }
 
-  openPorts = () => {
+  allowProxying = () => {
     const request = new XMLHttpRequest()
     const proxyServerUrl = 'https://163.172.211.183:39263'
 

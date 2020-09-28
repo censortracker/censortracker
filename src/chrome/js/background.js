@@ -245,6 +245,7 @@ chrome.tabs.onActivated.addListener(updateTabState)
 chrome.tabs.onUpdated.addListener(updateTabState)
 chrome.notifications.onButtonClicked.addListener(notificationOnButtonClicked)
 
+// The mechanism for controlling handlers from popup.js
 window.censortracker.chromeListeners = {
   remove: () => {
     chrome.webRequest.onErrorOccurred.removeListener(onErrorOccurredListener)

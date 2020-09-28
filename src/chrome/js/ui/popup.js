@@ -27,7 +27,7 @@ const currentDomainBlocks = document.querySelectorAll('.current-domain')
 const popupShowTimeout = 60
 
 chrome.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
-  const { asynchrome, registry, shortcuts } = bgModules
+  const { asynchrome, registry } = bgModules
 
   await addExtensionControlListeners(bgModules)
 
@@ -40,7 +40,7 @@ chrome.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
   })
 
   const { hostname } = getAppropriateURL(currentURL)
-  const currentHostname = shortcuts.cleanHostname(hostname)
+  const currentHostname = bgModules.extractHostnameFromUrl(hostname)
 
   interpolateCurrentDomain(currentHostname)
 

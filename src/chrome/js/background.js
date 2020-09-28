@@ -18,6 +18,12 @@ window.censortracker = {
   extractHostnameFromUrl,
 }
 
+/**
+ * Fires when a request is about to occur. This event is sent before any TCP
+ * connection is made and can be used to cancel or redirect requests.
+ * @param url Current URL address.
+ * @returns {undefined|{redirectUrl: *}} Undefined or redirection to HTTPS.
+ */
 const onBeforeRequestListener = ({ url }) => {
   const { hostname } = new URL(url)
 
@@ -38,6 +44,13 @@ chrome.webRequest.onBeforeRequest.addListener(
   }, ['blocking'],
 )
 
+/**
+ * Fires when a request could not be processed successfully.
+ * @param url Current URL address.
+ * @param error Error code.
+ * @param tabId Current tab id.
+ * @returns {undefined} Undefined.
+ */
 const onErrorOccurredListener = async ({ url, error, tabId }) => {
   const { hostname } = new URL(url)
 

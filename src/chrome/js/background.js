@@ -6,7 +6,12 @@ import {
   registry,
   settings,
 } from './core'
-import { enforceHttpsConnection, extractHostnameFromUrl, validateUrl } from './core/utilities'
+import {
+  enforceHttpConnection,
+  enforceHttpsConnection,
+  extractHostnameFromUrl,
+  validateUrl,
+} from './core/utilities'
 
 window.censortracker = {
   proxies,
@@ -76,7 +81,7 @@ const onErrorOccurredListener = async ({ url, error, tabId }) => {
 
   await ignore.addHostToIgnore(hostname)
   chrome.tabs.update(tabId, {
-    url: url.replace('https:', 'http:'),
+    url: enforceHttpConnection(url),
   })
 }
 

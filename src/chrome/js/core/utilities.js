@@ -45,7 +45,16 @@ export const extractHostnameFromUrl = (url) => {
 }
 
 /**
- * Enforce HTTPS in for the passed URL.
+ * Enforce HTTP in for the passed URL.
+ * @param url URL address.
+ * @returns {*} URL with "http://" prefix.
+ */
+export const enforceHttpConnection = (url) => {
+  return url.replace('https:', 'http:')
+}
+
+/**
+ * Enforce HTTPS for the passed URL.
  * @param url URL address.
  * @returns {*} URL with "https://" prefix.
  */

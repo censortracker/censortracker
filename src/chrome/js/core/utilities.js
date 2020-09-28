@@ -1,3 +1,8 @@
+/**
+ * Validate passed URL using regex.
+ * @param url URL
+ * @returns {boolean} true if valid otherwise false
+ */
 export const validateUrl = (url) => {
   const pattern = new RegExp(
     '^(https?:\\/\\/)?' +
@@ -16,6 +21,11 @@ export const validateUrl = (url) => {
   return !!pattern.test(url)
 }
 
+/**
+ * Extract hostname from the URL address.
+ * @param url URL string.
+ * @returns {string} Extracted hostname.
+ */
 export const extractHostnameFromUrl = (url) => {
   const regEx = /^(?:https?:\/\/)?(?:www\.)?/i
 
@@ -34,6 +44,11 @@ export const extractHostnameFromUrl = (url) => {
   }
 }
 
-export const enforceHttpsConnection = (hostname) => {
-  return hostname.replace(/^http:/, 'https:')
+/**
+ * Enforce HTTPS in for the passed URL.
+ * @param url URL address.
+ * @returns {*} URL with "https://" prefix.
+ */
+export const enforceHttpsConnection = (url) => {
+  return url.replace(/^http:/, 'https:')
 }

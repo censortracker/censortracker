@@ -80,16 +80,10 @@ const onErrorOccurredListener = async ({ url, error, tabId }) => {
   }
 
   await ignore.addHostToIgnore(hostname)
-  setTimeout(() => {
-    chrome.tabs.update(tabId, {
-      url: enforceHttpConnection(url),
-    })
-  }, 300)
-
-  // chrome.tabs.remove(tabId)
-  // chrome.tabs.create({
-  //   url: enforceHttpConnection(url),
-  // })
+  chrome.tabs.remove(tabId)
+  chrome.tabs.create({
+    url: enforceHttpConnection(url),
+  })
 }
 
 chrome.webRequest.onErrorOccurred.addListener(

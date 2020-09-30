@@ -1,31 +1,44 @@
 import {
   asynchrome,
   errors,
+  ignore,
   proxies,
   registry,
   settings,
-  shortcuts,
 } from './core'
+import {
+  enforceHttpConnection,
+  enforceHttpsConnection,
+  extractHostnameFromUrl,
+  validateUrl,
+} from './core/utilities'
 
 window.censortracker = {
   proxies,
   registry,
   settings,
-  shortcuts,
   errors,
+  ignore,
   asynchrome,
+  extractHostnameFromUrl,
 }
 
+/**
+ * Fires when a request is about to occur. This event is sent before any TCP
+ * connection is made and can be used to cancel or redirect requests.
+ * @param url Current URL address.
+ * @returns {undefined|{redirectUrl: *}} Undefined or redirection to HTTPS§.
+ */
 const onBeforeRequestListener = ({ url }) => {
   const { hostname } = new URL(url)
 
-  if (shortcuts.isIgnoredHost(hostname)) {
+  if (ignore.isIgnoredHost(hostname)) {
     console.warn(`Ignoring host: ${url}`)
     return undefined
   }
   proxies.allowProxying()
   return {
-    redirectUrl: shortcuts.enforceHttps(url),
+    redirectUrl: enforceHttpsConnection(url),
   }
 }
 
@@ -36,10 +49,17 @@ chrome.webRequest.onBeforeRequest.addListener(
   }, ['blocking'],
 )
 
+/**
+ * Fires when a request could not be processed successfully.
+ * @param url Current URL address.
+ * @param error The error description.
+ * @param tabId The ID of the tab in which the request takes place.
+ * @returns {undefined} Undefined.
+ */
 const onErrorOccurredListener = async ({ url, error, tabId }) => {
   const { hostname } = new URL(url)
 
-  if (shortcuts.isIgnoredHost(hostname)) {
+  if (ignore.isIgnoredHost(hostname)) {
     return
   }
 
@@ -59,9 +79,9 @@ const onErrorOccurredListener = async ({ url, error, tabId }) => {
     return
   }
 
-  await shortcuts.addHostToIgnore(hostname)
+  await ignore.addHostToIgnore(hostname)
   chrome.tabs.update(tabId, {
-    url: url.replace('https:', 'http:'),
+    url: enforceHttpConnection(url),
   })
 }
 
@@ -103,7 +123,7 @@ const updateTabState = async () => {
     lastFocusedWindow: true,
   })
 
-  if (!tab || !shortcuts.validURL(tab.url)) {
+  if (!tab || !validateUrl(tab.url)) {
     return
   }
 
@@ -117,9 +137,9 @@ const updateTabState = async () => {
   }
 
   const { hostname } = new URL(tab.url)
-  const currentHostname = shortcuts.cleanHostname(hostname)
+  const currentHostname = extractHostnameFromUrl(hostname)
 
-  if (shortcuts.isIgnoredHost(currentHostname)) {
+  if (ignore.isIgnoredHost(currentHostname)) {
     return
   }
 
@@ -230,6 +250,7 @@ chrome.tabs.onActivated.addListener(updateTabState)
 chrome.tabs.onUpdated.addListener(updateTabState)
 chrome.notifications.onButtonClicked.addListener(notificationOnButtonClicked)
 
+// The mechanism for controlling handlers from popup.js
 window.censortracker.chromeListeners = {
   remove: () => {
     chrome.webRequest.onErrorOccurred.removeListener(onErrorOccurredListener)

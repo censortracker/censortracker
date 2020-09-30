@@ -1,4 +1,5 @@
 import asynchrome from './asynchrome'
+import { extractHostnameFromUrl } from './utilities'
 
 const ipRangeCheck = require('ip-range-check')
 
@@ -55,7 +56,7 @@ class Ignore {
     if (this.ignoredHosts.size > 100) {
       this.ignoredHosts.clear()
     }
-    this.ignoredHosts.add(this.cleanHostname(hostname))
+    this.ignoredHosts.add(extractHostnameFromUrl(hostname))
 
     await this.saveIgnoredHosts()
   }
@@ -63,7 +64,7 @@ class Ignore {
   isIgnoredHost = (host) => {
     const ignoreRegEx = /(google.com|localhost)/
 
-    host = this.cleanHostname(host)
+    host = extractHostnameFromUrl(host)
 
     if (this.ignoredHosts.has(host) || host.match(ignoreRegEx)) {
       return true

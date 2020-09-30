@@ -80,9 +80,16 @@ const onErrorOccurredListener = async ({ url, error, tabId }) => {
   }
 
   await ignore.addHostToIgnore(hostname)
-  chrome.tabs.update(tabId, {
-    url: enforceHttpConnection(url),
-  })
+  setTimeout(() => {
+    chrome.tabs.update(tabId, {
+      url: enforceHttpConnection(url),
+    })
+  }, 300)
+
+  // chrome.tabs.remove(tabId)
+  // chrome.tabs.create({
+  //   url: enforceHttpConnection(url),
+  // })
 }
 
 chrome.webRequest.onErrorOccurred.addListener(
@@ -219,9 +226,9 @@ chrome.runtime.onInstalled.addListener(async ({ reason }) => {
 
 const onTabCreated = async ({ id }) => {
   const { enableExtension } =
-  await asynchrome.storage.local.get({
-    enableExtension: true,
-  })
+    await asynchrome.storage.local.get({
+      enableExtension: true,
+    })
 
   if (enableExtension) {
     settings.setDefaultIcon(id)

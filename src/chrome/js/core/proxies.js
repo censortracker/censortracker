@@ -4,9 +4,13 @@ import settings from './settings'
 
 class Proxies {
   constructor () {
-    this.ignoredDomains = new Set([
-      'youtube.com',
-    ])
+    this.ignoredDomains = [
+      '^youtu.be',
+      '^youtube.com',
+      'deviantart.com',
+    ]
+    this.ignoreRegEx = new RegExp(
+      this.ignoredDomains.join('|'), 'gi')
 
     setInterval(async () => {
       await this.removeOutdatedBlockedDomains()
@@ -15,7 +19,7 @@ class Proxies {
 
   excludeIgnoredDomains = (domains) => {
     return domains.filter((domain) => {
-      return !Array.from(this.ignoredDomains).includes(domain)
+      return !domain.match(this.ignoreRegEx)
     })
   }
 

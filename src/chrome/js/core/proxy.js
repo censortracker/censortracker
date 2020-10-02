@@ -2,7 +2,7 @@ import asynchrome from './asynchrome'
 import registry from './registry'
 import settings from './settings'
 
-class Proxies {
+class Proxy {
   constructor () {
     this.ignoredDomains = [
       '^youtu.be',
@@ -117,6 +117,13 @@ function FindProxyForURL(url, host) {
     request.send(null)
   }
 
+  isControlledByThisExtension = async () => {
+    const { levelOfControl } =
+      await asynchrome.proxy.settings.get()
+
+    return levelOfControl === 'controlled_by_this_extension'
+  }
+
   removeOutdatedBlockedDomains = async () => {
     const monthInSeconds = 2628000
     let { blockedDomains } = await asynchrome.storage.local.get({ blockedDomains: [] })
@@ -135,4 +142,4 @@ function FindProxyForURL(url, host) {
   }
 }
 
-export default new Proxies()
+export default new Proxy()

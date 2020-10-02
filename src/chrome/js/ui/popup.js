@@ -27,7 +27,13 @@ const currentDomainBlocks = document.querySelectorAll('.current-domain')
 const popupShowTimeout = 60
 
 chrome.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
-  const { asynchrome, registry } = bgModules
+  const { asynchrome, registry, proxy } = bgModules
+
+  const isProxyControlledByThisExtension = await proxy.isControlledByThisExtension()
+
+  if (isProxyControlledByThisExtension) {
+    console.log('Controlled by this extension')
+  }
 
   await addExtensionControlListeners(bgModules)
 
@@ -98,17 +104,17 @@ chrome.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
   setTimeout(show, popupShowTimeout)
 })
 
-const addExtensionControlListeners = async ({ settings, proxies, chromeListeners }) => {
+const addExtensionControlListeners = async ({ settings, proxy, chromeListeners }) => {
   document.addEventListener('click', (event) => {
     if (event.target.matches('#enableExtension')) {
       settings.enableExtension()
-      proxies.setProxy()
+      proxy.setProxy()
       chromeListeners.add()
       window.location.reload()
     }
 
     if (event.target.matches('#disableExtension')) {
-      proxies.removeProxy()
+      proxy.removeProxy()
       settings.disableExtension()
       chromeListeners.remove()
       window.location.reload()

@@ -27,6 +27,11 @@ class Asynchrome {
             ns: this.chrome.proxy.settings,
             fn: 'clear',
           }, ...args),
+        get: () =>
+          promisify({
+            ns: this.chrome.proxy.settings,
+            fn: 'get',
+          }, { incognito: false }),
       },
     }
     this.declarativeContent = {

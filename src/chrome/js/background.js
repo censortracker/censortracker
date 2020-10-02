@@ -2,7 +2,7 @@ import {
   asynchrome,
   errors,
   ignore,
-  proxies,
+  proxy,
   registry,
   settings,
 } from './core'
@@ -14,7 +14,7 @@ import {
 } from './core/utilities'
 
 window.censortracker = {
-  proxies,
+  proxy,
   registry,
   settings,
   errors,
@@ -36,7 +36,7 @@ const onBeforeRequestListener = ({ url }) => {
     console.warn(`Ignoring host: ${url}`)
     return undefined
   }
-  proxies.allowProxying()
+  proxy.allowProxying()
   return {
     redirectUrl: enforceHttpsConnection(url),
   }
@@ -75,7 +75,7 @@ const onErrorOccurredListener = async ({ url, error, tabId }) => {
       url: chrome.runtime.getURL(`unavailable.html?${window.btoa(url)}`),
     })
     await registry.addBlockedByDPI(hostname)
-    await proxies.setProxy()
+    await proxy.setProxy()
     return
   }
 
@@ -213,7 +213,7 @@ chrome.runtime.onInstalled.addListener(async ({ reason }) => {
 
     if (synced) {
       settings.enableExtension()
-      await proxies.setProxy()
+      await proxy.setProxy()
     }
   }
 })

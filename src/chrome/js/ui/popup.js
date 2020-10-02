@@ -31,8 +31,8 @@ chrome.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
 
   const isProxyControlledByThisExtension = await proxy.isControlledByThisExtension()
 
-  if (isProxyControlledByThisExtension) {
-    console.log('Controlled by this extension')
+  if (!isProxyControlledByThisExtension) {
+    showControlledByOtherExtensionMessage()
   }
 
   await addExtensionControlListeners(bgModules)
@@ -103,6 +103,10 @@ chrome.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
 
   setTimeout(show, popupShowTimeout)
 })
+
+const showControlledByOtherExtensionMessage = () => {
+  console.log('Controlled by other extension')
+}
 
 const addExtensionControlListeners = async ({ settings, proxy, chromeListeners }) => {
   document.addEventListener('click', (event) => {

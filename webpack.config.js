@@ -43,7 +43,6 @@ const webpackConfig = {
 
   entry: {
     background: './src/chrome/js/background.js',
-    options: './src/chrome/js/ui/options.js',
     unavailable: './src/chrome/js/ui/unavailable.js',
     popup: './src/chrome/js/ui/popup.js',
   },
@@ -142,16 +141,6 @@ const webpackConfig = {
       template: 'src/chrome/pages/proxy_unavailable.html',
       inject: true,
       chunks: ['unavailable'],
-      meta: {
-        'Content-Security-Policy': 'script-src \'self\' \'unsafe-eval\'; object-src \'self\';',
-      },
-    }),
-    new HTMLWebpackPlugin({
-      title: 'Options | Censor Tracker',
-      filename: 'options.html',
-      template: 'src/chrome/pages/options.html',
-      inject: true,
-      chunks: ['options'],
       meta: {
         'Content-Security-Policy': 'script-src \'self\' \'unsafe-eval\'; object-src \'self\';',
       },

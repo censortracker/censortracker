@@ -4,8 +4,6 @@ const rksUrl = 'https://reestr.rublacklist.net'
 class Settings {
   getName = () => manifest.name;
 
-  getDescription = () => manifest.description;
-
   getVersion = () => manifest.version;
 
   getTitle = () => `${manifest.name} v${manifest.version}`;
@@ -14,44 +12,68 @@ class Settings {
 
   getDistributorsApiUrl = () => `${rksUrl}/api/v3/ori/refused/json`;
 
-  getLoggingApiUrl = () => 'https://ct-dev.rublacklist.net/api/domain/';
+  getLoggingApiUrl = () => 'https://ct-dev.rublacklist.net/api/case/';
 
-  getDangerIcon = () => chrome.extension.getURL('images/icons/128x128/danger.png');
-
-  getDefaultIcon = () => chrome.extension.getURL('images/icons/128x128/default.png');
-
-  getDisabledIcon = () => chrome.extension.getURL('images/icons/128x128/disabled.png');
-
-  getPopupImage = ({ size = '512', name = 'default' }) => {
-    return chrome.extension.getURL(`images/icons/${size}x${size}/${name}.png`)
+  getLoggingApiHeaders = () => {
+    return {
+      'Censortracker-D': new Date().getTime(),
+      'Censortracker-V': this.getVersion(),
+      'Content-Type': 'application/json',
+    }
   }
 
-  getProxyServerUrl = ({ ssl }) => {
-    const prefix = ssl ? 'proxy-ssl' : 'proxy-nossl'
+  getDangerIcon = () => chrome.runtime.getURL('images/icons/128x128/danger.png');
 
-    return `${prefix}.roskomsvoboda.org:33333`
+  getDefaultIcon = () => chrome.runtime.getURL('images/icons/128x128/default.png');
+
+  getDisabledIcon = () => chrome.runtime.getURL('images/icons/128x128/disabled.png');
+
+  getPopupImage = ({ size = '512', name = 'default' }) => {
+    return chrome.runtime.getURL(`images/icons/${size}x${size}/${name}.png`)
+  }
+
+  getProxyServerUrl = () => {
+    return 'proxy-ssl.roskomsvoboda.org:33333'
+  }
+
+  _setPageIcon = (tabId, path) => {
+    chrome.pageAction.setIcon({ tabId, path })
+    chrome.pageAction.setTitle({ title: this.getTitle(), tabId })
+  }
+
+  setDisableIcon = (tabId) => {
+    this._setPageIcon(tabId, this.getDisabledIcon())
+  }
+
+  setDefaultIcon = (tabId) => {
+    this._setPageIcon(tabId, this.getDefaultIcon())
+  }
+
+  setDangerIcon = (tabId) => {
+    this._setPageIcon(tabId, this.getDangerIcon())
+  }
+
+  _toggleExtension = ({ enableExtension }) => {
+    if (typeof enableExtension === 'boolean') {
+      chrome.storage.local.set({ enableExtension }, () => {
+        console.warn('Extension enabled')
+      })
+
+      chrome.tabs.query({}, (tabs) => {
+        tabs.forEach((tab) => {
+          enableExtension ? this.setDefaultIcon(tab.id)
+            : this.setDisableIcon(tab.id)
+        })
+      })
+    }
   }
 
   enableExtension = () => {
-    chrome.storage.local.set(
-      {
-        enableExtension: true,
-      },
-      () => {
-        console.warn('Extension enabled')
-      },
-    )
+    this._toggleExtension({ enableExtension: true })
   }
 
   disableExtension = () => {
-    chrome.storage.local.set(
-      {
-        enableExtension: false,
-      },
-      () => {
-        console.warn('Extension disabled')
-      },
-    )
+    this._toggleExtension({ enableExtension: false })
   }
 }
 

@@ -31,10 +31,6 @@ chrome.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
 
   const isProxyControlledByThisExtension = await proxy.isControlledByThisExtension()
 
-  if (!isProxyControlledByThisExtension) {
-    showControlledByOtherExtensionMessage()
-  }
-
   await addExtensionControlListeners(bgModules)
 
   const { enableExtension } = await asynchrome.storage.local.get({
@@ -97,6 +93,10 @@ chrome.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
     hideControlElements()
   }
 
+  if (!isProxyControlledByThisExtension) {
+    showControlledByOtherExtensionMessage()
+  }
+
   const show = () => {
     document.documentElement.style.visibility = 'initial'
   }
@@ -105,7 +105,17 @@ chrome.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
 })
 
 const showControlledByOtherExtensionMessage = () => {
-  console.log('Controlled by other extension')
+  document.getElementById('controlledByAnotherExtension').hidden = false
+  const ids = ['isNotOriBlock', 'isOriBlock', 'isNotForbidden',
+    'isForbidden', 'trackerOff', 'footerTrackerOn', 'footerTrackerOn']
+
+  ids.forEach((id) => {
+    try {
+      document.getElementById(id).hidden = true
+    } catch (error) {
+      console.log(error)
+    }
+  })
 }
 
 const addExtensionControlListeners = async ({ settings, proxy, chromeListeners }) => {

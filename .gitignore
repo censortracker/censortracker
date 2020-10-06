@@ -116,3 +116,4 @@ src/firefox/
 
 key.pem
 dist.crx
+dist/

@@ -24,12 +24,15 @@ const closeTextAboutNotOri = getElementById('closeTextAboutNotOri')
 const oriSiteInfo = getElementById('oriSiteInfo')
 const advertisingBlocks = document.querySelectorAll('.buy-vpn')
 const currentDomainBlocks = document.querySelectorAll('.current-domain')
+const controlledByAnotherExtensionInfo = document.getElementById('controlledByAnotherExtensionInfo')
 const popupShowTimeout = 60
+
+controlledByAnotherExtensionInfo.addEventListener('click', () => {
+  window.location.href = 'controlled.html'
+})
 
 chrome.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
   const { asynchrome, registry, proxy } = bgModules
-
-  const isProxyControlledByThisExtension = await proxy.isControlledByThisExtension()
 
   await addExtensionControlListeners(bgModules)
 
@@ -93,8 +96,10 @@ chrome.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
     hideControlElements()
   }
 
+  const isProxyControlledByThisExtension = await proxy.isControlledByThisExtension()
+
   if (!isProxyControlledByThisExtension) {
-    showControlledByOtherExtensionMessage()
+    controlledByAnotherExtensionInfo.hidden = false
   }
 
   const show = () => {
@@ -103,20 +108,6 @@ chrome.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
 
   setTimeout(show, popupShowTimeout)
 })
-
-const showControlledByOtherExtensionMessage = () => {
-  document.getElementById('controlledByAnotherExtension').hidden = false
-  const ids = ['isNotOriBlock', 'isOriBlock', 'isNotForbidden',
-    'isForbidden', 'trackerOff', 'footerTrackerOn', 'footerTrackerOn']
-
-  ids.forEach((id) => {
-    try {
-      document.getElementById(id).hidden = true
-    } catch (error) {
-      console.log(error)
-    }
-  })
-}
 
 const addExtensionControlListeners = async ({ settings, proxy, chromeListeners }) => {
   document.addEventListener('click', (event) => {
@@ -132,6 +123,10 @@ const addExtensionControlListeners = async ({ settings, proxy, chromeListeners }
       settings.disableExtension()
       chromeListeners.remove()
       window.location.reload()
+    }
+
+    if (event.target.matches('#chromeExtensionsPage')) {
+      chrome.runtime.getURL('chrome://extensions')
     }
   })
 }

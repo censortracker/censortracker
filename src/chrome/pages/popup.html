@@ -9,7 +9,7 @@
 <body>
 <div class="container">
   <div class="main-page">
-    <div class="main-page__image">
+    <div class="main-page__image" id="statusImageDiv">
       <img id="statusImage" class="image__status" src="images/icons/512x512/normal.png"
            width="75px" height="auto" alt="Status"/>
       <a class="icon__settings" href="settings.html" target="_blank"></a>
@@ -150,16 +150,16 @@
           Отключите &laquo;TunnelBear&raquo; в настройках браузера, если хотите получать доступ к
           заблокированным сайтам через Censor Tracker.
         </div>
-        <a href="" target="_blank" class="extension__btn">
+        <div id="chromeExtensionsPage" class="extension__btn">
           <span>К списку расширений &rarr;</span>
-        </a>
+        </div>
       </div>
 
     </div>
   </div>
 
-  <div class="another_extension" id="anotherExtensionInfo">
-    <div>Другое расширение контролирует доступ к сайтам. Прокси отключён.</div>
+  <div class="another_extension" id="controlledByAnotherExtensionInfo" hidden>
+    <div>Другое расширение контролирует прокси. Подробнее &rarr;</div>
   </div>
 
   <div class="footer" id="footerTrackerOn" hidden>

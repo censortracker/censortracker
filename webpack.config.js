@@ -45,6 +45,7 @@ const webpackConfig = {
     background: './src/chrome/js/background.js',
     unavailable: './src/chrome/js/ui/unavailable.js',
     popup: './src/chrome/js/ui/popup.js',
+    controlled: './src/chrome/js/ui/controlled.js',
   },
 
   output: {
@@ -131,6 +132,16 @@ const webpackConfig = {
       template: 'src/chrome/pages/unavailable.html',
       inject: true,
       chunks: ['unavailable'],
+      meta: {
+        'Content-Security-Policy': 'script-src \'self\' \'unsafe-eval\'; object-src \'self\';',
+      },
+    }),
+    new HTMLWebpackPlugin({
+      title: 'Controlled | Censor Tracker',
+      filename: 'controlled.html',
+      template: 'src/chrome/pages/controlled.html',
+      inject: true,
+      chunks: ['controlled'],
       meta: {
         'Content-Security-Policy': 'script-src \'self\' \'unsafe-eval\'; object-src \'self\';',
       },

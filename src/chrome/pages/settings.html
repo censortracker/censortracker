@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8" />
+     <title><%= htmlWebpackPlugin.options.title %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="stylesheet" href="css/settings.css" />
+</head>
+
+<body>
+    <div class="main-container">
+        <div class="main-page">
+            <div class="main-page__image">
+                <img src="images/settings/quokka.png"
+                     width="200px" height="200px" alt="<%= htmlWebpackPlugin.options.title %>" />
+            </div>
+            <div class="main-page__info">
+                <div class="main-page__title">Настройки расширения Censor Tracker</div>
+                <div class="main-page__turn">
+                  <label for="toggle-button" class="toggle-text">Использовать прокси</label>
+                  <input type="checkbox" id="toggle-button" class="toggle-button">
+                </div>
+                <div class="main-page__about">
+                  Если сайт заблокирован, то&nbsp;Censor Tracker предоставит к&nbsp;нему доступ. Отключите эту настройку, если вы&nbsp;пользуетесь другим сервисом для обхода блокировок (например, VPN), чтобы увеличить скорость соединения.
+                </div>
+                <div class="main-page__extension">
+                  <div class="extension__title">Сейчас другое расширение &laquo;<span id="extension">TunnelBear</span>&raquo; контролирует ваше соединение в&nbsp;браузере</div>
+                  <div class="extension__text">Отключите &laquo;TunnelBear&raquo; в&nbsp;настройках браузера, если хотите получать доступ к&nbsp;заблокированным сайтам через Censor Tracker.</div>
+                  <a class="extension__btn">К&nbsp;списку расширений&nbsp;&rarr;</a>
+
+                </div>
+                <a href="https://censortracker.org/" target="_blank" class="main-page__link">
+                  <span>О&nbsp;расширении</span>
+                  <span>&rarr;</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

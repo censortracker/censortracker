@@ -24,10 +24,15 @@ const closeTextAboutNotOri = getElementById('closeTextAboutNotOri')
 const oriSiteInfo = getElementById('oriSiteInfo')
 const advertisingBlocks = document.querySelectorAll('.buy-vpn')
 const currentDomainBlocks = document.querySelectorAll('.current-domain')
+const controlledByAnotherExtensionInfo = document.getElementById('controlledByAnotherExtensionInfo')
 const popupShowTimeout = 60
 
+controlledByAnotherExtensionInfo.addEventListener('click', () => {
+  window.location.href = 'controlled.html'
+})
+
 chrome.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
-  const { asynchrome, registry } = bgModules
+  const { asynchrome, registry, proxy } = bgModules
 
   await addExtensionControlListeners(bgModules)
 
@@ -91,6 +96,12 @@ chrome.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
     hideControlElements()
   }
 
+  const isProxyControlledByThisExtension = await proxy.isControlledByThisExtension()
+
+  if (!isProxyControlledByThisExtension) {
+    controlledByAnotherExtensionInfo.hidden = false
+  }
+
   const show = () => {
     document.documentElement.style.visibility = 'initial'
   }
@@ -98,20 +109,24 @@ chrome.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
   setTimeout(show, popupShowTimeout)
 })
 
-const addExtensionControlListeners = async ({ settings, proxies, chromeListeners }) => {
+const addExtensionControlListeners = async ({ settings, proxy, chromeListeners }) => {
   document.addEventListener('click', (event) => {
     if (event.target.matches('#enableExtension')) {
       settings.enableExtension()
-      proxies.setProxy()
+      proxy.setProxy()
       chromeListeners.add()
       window.location.reload()
     }
 
     if (event.target.matches('#disableExtension')) {
-      proxies.removeProxy()
+      proxy.removeProxy()
       settings.disableExtension()
       chromeListeners.remove()
       window.location.reload()
+    }
+
+    if (event.target.matches('#chromeExtensionsPage')) {
+      chrome.runtime.getURL('chrome://extensions')
     }
   })
 }

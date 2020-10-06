@@ -9,9 +9,10 @@
 <body>
 <div class="container">
   <div class="main-page">
-    <div class="main-page__image">
+    <div class="main-page__image" id="statusImageDiv">
       <img id="statusImage" class="image__status" src="images/icons/512x512/normal.png"
            width="75px" height="auto" alt="Status"/>
+      <a class="icon__settings" href="settings.html" target="_blank"></a>
     </div>
     <div class="main-page__info">
       <div class="main-page__title current-domain" id="currentDomainHeader" hidden>
@@ -137,6 +138,10 @@
       </div>
 
     </div>
+  </div>
+
+  <div class="another_extension" id="controlledByAnotherExtensionInfo" hidden>
+    <div>Другое расширение контролирует прокси. Подробнее &rarr;</div>
   </div>
 
   <div class="footer" id="footerTrackerOn" hidden>

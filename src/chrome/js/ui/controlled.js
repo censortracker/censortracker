@@ -16,7 +16,7 @@
 
     if (extensionsWithProxyPermissions.length > 1) {
       controlledByExtensions.hidden = false
-      controlledByExtension.hidden = true
+
       let result = ''
 
       for (const { name, shortName } of extensionsWithProxyPermissions) {
@@ -25,12 +25,11 @@
       extensionsWhichControlsProxy.innerHTML = result
     } else {
       controlledByExtension.hidden = false
-      controlledByExtensions.hidden = true
 
-      const extension = extensionsWithProxyPermissions[0]
+      const [{ shortName, name }] = extensionsWithProxyPermissions
 
       Array.from(extensionNameElements).forEach((element) => {
-        element.innerText = extension.shortName || extensions.name
+        element.innerText = shortName || name
       })
     }
 

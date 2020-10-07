@@ -7,37 +7,43 @@
   const controlledByExtensions = document.getElementById('controlledByOtherExtensions')
 
   chrome.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
-    const self = await bgModules.asynchrome.management.getSelf()
-    const extensions = await bgModules.asynchrome.management.getAll()
+    const { asynchrome, proxy } = bgModules
 
-    const extensionsWithProxyPermissions = extensions.filter(({ name, permissions }) => {
-      return permissions.includes('proxy') && name !== self.name
-    })
+    const isProxyControlledByOtherExtensions = await proxy.controlledByOtherExtensions()
 
-    if (extensionsWithProxyPermissions.length > 1) {
-      controlledByExtensions.hidden = false
+    if (isProxyControlledByOtherExtensions) {
+      const self = await asynchrome.management.getSelf()
+      const extensions = await asynchrome.management.getAll()
 
-      let result = ''
+      const extensionsWithProxyPermissions = extensions.filter(({ name, permissions }) => {
+        return permissions.includes('proxy') && name !== self.name
+      })
 
-      for (const { name, shortName } of extensionsWithProxyPermissions) {
-        result += `<li>${shortName || name}</li>`
+      if (extensionsWithProxyPermissions.length > 1) {
+        controlledByExtensions.hidden = false
+
+        let result = ''
+
+        for (const { name, shortName } of extensionsWithProxyPermissions) {
+          result += `<li>${shortName || name}</li>`
+        }
+        extensionsWhichControlsProxy.innerHTML = result
+      } else {
+        controlledByExtension.hidden = false
+
+        const [{ shortName, name }] = extensionsWithProxyPermissions
+
+        Array.from(extensionNameElements).forEach((element) => {
+          element.innerText = shortName || name
+        })
       }
-      extensionsWhichControlsProxy.innerHTML = result
-    } else {
-      controlledByExtension.hidden = false
 
-      const [{ shortName, name }] = extensionsWithProxyPermissions
-
-      Array.from(extensionNameElements).forEach((element) => {
-        element.innerText = shortName || name
+      Array.from(extensionsLink).forEach((element) => {
+        element.addEventListener('click', () => {
+          chrome.tabs.create({ url: 'chrome://extensions/' })
+        })
       })
     }
-
-    Array.from(extensionsLink).forEach((element) => {
-      element.addEventListener('click', () => {
-        chrome.tabs.create({ url: 'chrome://extensions/' })
-      })
-    })
   })
 
   if (backToPopup) {

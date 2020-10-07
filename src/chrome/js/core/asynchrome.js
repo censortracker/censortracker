@@ -126,6 +126,16 @@ class Asynchrome {
         fn: 'setTitle',
       }, ...args),
     }
+    this.management = {
+      getAll: (...args) => promisify({
+        ns: this.chrome.management,
+        fn: 'getAll',
+      }, ...args),
+      getSelf: (...args) => promisify({
+        ns: this.chrome.management,
+        fn: 'getSelf',
+      }, ...args),
+    }
   }
 }
 

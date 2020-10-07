@@ -332,3 +332,11 @@ a {
 .text-about {
   text-align: center;
 }
+
+.extension__name {
+  display: inline;
+}
+
+.extensions__link {
+  cursor: pointer;
+}

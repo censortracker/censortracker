@@ -117,11 +117,11 @@ function FindProxyForURL(url, host) {
     request.send(null)
   }
 
-  isControlledByThisExtension = async () => {
+  controlledByOtherExtensions = async () => {
     const { levelOfControl } =
       await asynchrome.proxy.settings.get()
 
-    return levelOfControl === 'controlled_by_this_extension'
+    return levelOfControl === 'controlled_by_other_extensions'
   }
 
   removeOutdatedBlockedDomains = async () => {

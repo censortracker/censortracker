@@ -22,12 +22,12 @@ const btnAboutNotOri = getElementById('btnAboutNotOri')
 const textAboutNotOri = getElementById('textAboutNotOri')
 const closeTextAboutNotOri = getElementById('closeTextAboutNotOri')
 const oriSiteInfo = getElementById('oriSiteInfo')
-const advertisingBlocks = document.querySelectorAll('.buy-vpn')
+// const advertisingBlocks = document.querySelectorAll('.buy-vpn')
 const currentDomainBlocks = document.querySelectorAll('.current-domain')
-const controlledByAnotherExtensionInfo = document.getElementById('controlledByAnotherExtensionInfo')
+const controlledOtherExtensionsInfo = document.getElementById('controlledOtherExtensionsInfo')
 const popupShowTimeout = 60
 
-controlledByAnotherExtensionInfo.addEventListener('click', () => {
+controlledOtherExtensionsInfo.addEventListener('click', () => {
   window.location.href = 'controlled.html'
 })
 
@@ -60,7 +60,7 @@ chrome.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
       changeStatusImage('blocked')
       isForbidden.removeAttribute('hidden')
       isNotForbidden.remove()
-      showAdvertising()
+      // showAdvertising()
     } else {
       isNotForbidden.removeAttribute('hidden')
       isForbidden.remove()
@@ -96,10 +96,10 @@ chrome.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
     hideControlElements()
   }
 
-  const isProxyControlledByThisExtension = await proxy.isControlledByThisExtension()
+  const isProxyControlledByOtherExtensions = await proxy.controlledByOtherExtensions()
 
-  if (!isProxyControlledByThisExtension) {
-    controlledByAnotherExtensionInfo.hidden = false
+  if (isProxyControlledByOtherExtensions) {
+    controlledOtherExtensionsInfo.hidden = false
   }
 
   const show = () => {
@@ -137,11 +137,11 @@ const changeStatusImage = (imageName) => {
   statusImage.setAttribute('src', imageSrc)
 }
 
-const showAdvertising = () => {
-  advertisingBlocks.forEach((ad) => {
-    ad.style.removeProperty('display')
-  })
-}
+// const showAdvertising = () => {
+//   advertisingBlocks.forEach((ad) => {
+//     ad.style.removeProperty('display')
+//   })
+// }
 
 const getAppropriateURL = (currentURL) => {
   const popupURL = chrome.runtime.getURL('popup.html')

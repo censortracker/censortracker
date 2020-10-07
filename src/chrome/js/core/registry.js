@@ -25,8 +25,7 @@ class Registry {
       await asynchrome.storage.local.set({
         [key]: domains,
         timestamp: new Date().getTime(),
-      })
-        .catch((console.error))
+      }).catch(console.error)
     }
 
     const { domains } = await asynchrome.storage.local.get({ [DOMAINS_DB_KEY]: [] })

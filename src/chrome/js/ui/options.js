@@ -16,13 +16,11 @@
 
     useProxyCheckbox.addEventListener('change', async () => {
       if (useProxyCheckbox.checked) {
-        await asynchrome.storage.local.set({ useProxy: true })
         await proxy.setProxy()
-        console.log('Proxying enabled!')
+        await asynchrome.storage.local.set({ useProxy: true })
       } else {
         await asynchrome.storage.local.set({ useProxy: false })
         await asynchrome.proxy.settings.clear({ scope: 'regular' }).catch(console.error)
-        console.log('Proxying disabled!')
       }
     }, false)
   })

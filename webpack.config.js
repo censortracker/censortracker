@@ -152,7 +152,7 @@ const webpackConfig = {
       filename: 'options.html',
       template: 'src/chrome/pages/options.html',
       inject: true,
-      chunks: ['options'],
+      chunks: ['options', 'controlled'],
       meta: {
         'Content-Security-Policy': 'script-src \'self\' \'unsafe-eval\'; object-src \'self\';',
       },

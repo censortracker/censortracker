@@ -6,8 +6,6 @@
   const controlledByExtension = document.getElementById('controlledByExtension')
   const controlledByExtensions = document.getElementById('controlledByExtensions')
 
-  const createExtensionLink = (name) => `<a class="extensions__link">${name}</a>`
-
   chrome.runtime.getBackgroundPage(async ({ censortracker: bg }) => {
     const self = await bg.asynchrome.management.getSelf()
     const extensions = await bg.asynchrome.management.getAll()
@@ -22,7 +20,7 @@
       let result = ''
 
       for (const { name, shortName } of extensionsWithProxyPermission) {
-        result += `<li>${createExtensionLink(shortName || name)}</li>`
+        result += `<li>${shortName || name}</li>`
       }
       extensionsWhichControlsProxy.innerHTML = result
     } else {

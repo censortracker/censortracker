@@ -10,16 +10,16 @@
     const self = await bgModules.asynchrome.management.getSelf()
     const extensions = await bgModules.asynchrome.management.getAll()
 
-    const extensionsWithProxyPermission = extensions.filter(({ name, permissions }) => {
+    const extensionsWithProxyPermissions = extensions.filter(({ name, permissions }) => {
       return permissions.includes('proxy') && name !== self.name
     })
 
-    if (extensionsWithProxyPermission.length > 1) {
+    if (extensionsWithProxyPermissions.length > 1) {
       controlledByExtensions.hidden = false
       controlledByExtension.hidden = true
       let result = ''
 
-      for (const { name, shortName } of extensionsWithProxyPermission) {
+      for (const { name, shortName } of extensionsWithProxyPermissions) {
         result += `<li>${shortName || name}</li>`
       }
       extensionsWhichControlsProxy.innerHTML = result
@@ -27,7 +27,7 @@
       controlledByExtension.hidden = false
       controlledByExtensions.hidden = true
 
-      const extension = extensionsWithProxyPermission[0]
+      const extension = extensionsWithProxyPermissions[0]
 
       Array.from(extensionNameElements).forEach((element) => {
         element.innerText = extension.shortName || extensions.name

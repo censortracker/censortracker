@@ -6,9 +6,9 @@
   const controlledByExtension = document.getElementById('controlledByExtension')
   const controlledByExtensions = document.getElementById('controlledByExtensions')
 
-  chrome.runtime.getBackgroundPage(async ({ censortracker: bg }) => {
-    const self = await bg.asynchrome.management.getSelf()
-    const extensions = await bg.asynchrome.management.getAll()
+  chrome.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
+    const self = await bgModules.asynchrome.management.getSelf()
+    const extensions = await bgModules.asynchrome.management.getAll()
 
     const extensionsWithProxyPermission = extensions.filter(({ name, permissions }) => {
       return permissions.includes('proxy') && name !== self.name

@@ -3,8 +3,8 @@
   const extensionsLink = document.getElementsByClassName('extensions__link')
   const extensionNameElements = document.getElementsByClassName('extension__name')
   const extensionsWhichControlsProxy = document.getElementById('extensionsWhichControlsProxy')
-  const controlledByExtension = document.getElementById('controlledByExtension')
-  const controlledByExtensions = document.getElementById('controlledByExtensions')
+  const controlledByExtension = document.getElementById('controlledByOtherExtension')
+  const controlledByExtensions = document.getElementById('controlledByOtherExtensions')
 
   chrome.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
     const self = await bgModules.asynchrome.management.getSelf()
@@ -41,9 +41,11 @@
     })
   })
 
-  backToPopup.addEventListener('click', () => {
-    window.location.href = chrome.runtime.getURL('popup.html')
-  })
+  if (backToPopup) {
+    backToPopup.addEventListener('click', () => {
+      window.location.href = chrome.runtime.getURL('popup.html')
+    })
+  }
 
   const show = () => {
     document.documentElement.style.visibility = 'initial'

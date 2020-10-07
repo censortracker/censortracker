@@ -45,6 +45,7 @@ const webpackConfig = {
     background: './src/chrome/js/background.js',
     unavailable: './src/chrome/js/ui/unavailable.js',
     popup: './src/chrome/js/ui/popup.js',
+    options: './src/chrome/js/ui/options.js',
     controlled: './src/chrome/js/ui/controlled.js',
   },
 
@@ -147,11 +148,11 @@ const webpackConfig = {
       },
     }),
     new HTMLWebpackPlugin({
-      title: 'Settings | Censor Tracker',
-      filename: 'settings.html',
-      template: 'src/chrome/pages/settings.html',
+      title: 'Options | Censor Tracker',
+      filename: 'options.html',
+      template: 'src/chrome/pages/options.html',
       inject: true,
-      chunks: ['settings'],
+      chunks: ['options'],
       meta: {
         'Content-Security-Policy': 'script-src \'self\' \'unsafe-eval\'; object-src \'self\';',
       },

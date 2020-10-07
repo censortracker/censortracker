@@ -1,6 +1,6 @@
 {
   "name": "Censor Tracker",
-  "version": "2.0.5.1199",
+  "version": "2.0.5.1206",
   "description": "Censor Tracker",
   "permissions": [
     "tabs",
@@ -32,6 +32,10 @@
     "default_name": "Censor Tracker",
     "default_popup": "popup.html",
     "default_icon": "images/icons/128x128/default.png"
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
   },
   "manifest_version": 2
 }

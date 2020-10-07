@@ -1,12 +1,13 @@
 {
   "name": "Censor Tracker",
-  "version": "2.0.5.1151",
+  "version": "2.0.5.1199",
   "description": "Censor Tracker",
   "permissions": [
     "tabs",
     "proxy",
     "storage",
     "activeTab",
+    "management",
     "webRequest",
     "notifications",
     "unlimitedStorage",

@@ -124,6 +124,27 @@ function FindProxyForURL(url, host) {
     return levelOfControl === 'controlled_by_other_extensions'
   }
 
+  controlledByThisExtensions = async () => {
+    const { levelOfControl } =
+      await asynchrome.proxy.settings.get()
+
+    return levelOfControl === 'controlled_by_this_extension'
+  }
+
+  isProxySet = async () => {
+    const { value } = await asynchrome.proxy.settings.get()
+    const { levelOfControl } = await asynchrome.proxy.settings.get()
+
+    if (Object.hasOwnProperty.call(value, 'pacScript')) {
+      if (Object.hasOwnProperty.call(value.pacScript, 'data')) {
+        if (value.pacScript.data && levelOfControl === 'controlled_by_this_extension') {
+          return true
+        }
+      }
+    }
+    return false
+  }
+
   removeOutdatedBlockedDomains = async () => {
     const monthInSeconds = 2628000
     let { blockedDomains } = await asynchrome.storage.local.get({ blockedDomains: [] })

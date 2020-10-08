@@ -5,10 +5,9 @@
   const extensionsWhichControlsProxy = document.getElementById('extensionsWhichControlsProxy')
   const controlledByExtension = document.getElementById('controlledByOtherExtension')
   const controlledByExtensions = document.getElementById('controlledByOtherExtensions')
+  const useProxyCheckbox = document.getElementById('useProxyCheckbox')
 
-  chrome.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
-    const { asynchrome, proxy } = bgModules
-
+  chrome.runtime.getBackgroundPage(async ({ censortracker: { asynchrome, proxy } }) => {
     const isProxyControlledByOtherExtensions = await proxy.controlledByOtherExtensions()
 
     if (isProxyControlledByOtherExtensions) {
@@ -40,18 +39,21 @@
 
       Array.from(disableOtherExtensionsButtons).forEach((element) => {
         element.addEventListener('click', async () => {
-          for (const { id, name } of extensionsWithProxyPermissions) {
+          for (const { id } of extensionsWithProxyPermissions) {
             await asynchrome.management.setEnabled(id, false)
-            console.warn(`An extension ${name} has been disabled by CensorTracker.`)
           }
 
           const currentPage = window.location.pathname.split('/').pop()
 
-          if (currentPage === 'controlled.html') {
+          if (currentPage.startsWith('controlled')) {
             window.location.href = 'popup.html'
           }
 
-          if (currentPage === 'options.html') {
+          if (currentPage.startsWith('options')) {
+            if (await proxy.controlledByThisExtensions()) {
+              useProxyCheckbox.checked = true
+              useProxyCheckbox.disabled = false
+            }
             element.parentElement.hidden = true
           }
         })

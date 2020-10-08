@@ -50,7 +50,7 @@
           }
 
           if (currentPage.startsWith('options')) {
-            if (await proxy.controlledByThisExtensions()) {
+            if (await proxy.controlledByThisExtension()) {
               useProxyCheckbox.checked = true
               useProxyCheckbox.disabled = false
             }

@@ -124,7 +124,7 @@ function FindProxyForURL(url, host) {
     return levelOfControl === 'controlled_by_other_extensions'
   }
 
-  controlledByThisExtensions = async () => {
+  controlledByThisExtension = async () => {
     const { levelOfControl } =
       await asynchrome.proxy.settings.get()
 

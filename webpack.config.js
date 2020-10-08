@@ -167,6 +167,16 @@ const webpackConfig = {
         'Content-Security-Policy': 'script-src \'self\' \'unsafe-eval\'; object-src \'self\';',
       },
     }),
+    new HTMLWebpackPlugin({
+      title: 'Proxy Disabled | Censor Tracker',
+      filename: 'proxy_disabled.html',
+      template: 'src/chrome/pages/proxy_disabled.html',
+      inject: true,
+      chunks: ['unavailable'],
+      meta: {
+        'Content-Security-Policy': 'script-src \'self\' \'unsafe-eval\'; object-src \'self\';',
+      },
+    }),
     process.env.NODE_ENV === 'production'
       ? new ZipPlugin({
         filename: `censortracker-chrome-ext.v${version}.zip`,

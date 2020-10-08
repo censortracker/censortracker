@@ -71,6 +71,16 @@ const onErrorOccurredListener = async ({ url, error, tabId }) => {
   }
 
   if (errors.isThereConnectionError(error)) {
+    const isProxyControlledByOtherExtensions = await proxy.controlledByOtherExtensions()
+    const isProxyControlledByThisExtension = await proxy.controlledByThisExtension()
+
+    if (!isProxyControlledByOtherExtensions && !isProxyControlledByThisExtension) {
+      chrome.tabs.update(tabId, {
+        url: chrome.runtime.getURL(`proxy_disabled.html?${window.btoa(url)}`),
+      })
+      return
+    }
+
     chrome.tabs.update(tabId, {
       url: chrome.runtime.getURL(`unavailable.html?${window.btoa(url)}`),
     })

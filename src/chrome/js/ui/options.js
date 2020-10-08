@@ -3,7 +3,7 @@
     await proxy.allowProxying()
 
     const useProxyCheckbox = document.getElementById('useProxyCheckbox')
-    const isProxyControlledByThisExtension = await proxy.controlledByThisExtensions()
+    const isProxyControlledByThisExtension = await proxy.controlledByThisExtension()
     const isProxyControlledByOtherExtensions = await proxy.controlledByOtherExtensions()
 
     if (isProxyControlledByOtherExtensions) {

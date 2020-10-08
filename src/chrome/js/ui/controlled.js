@@ -39,11 +39,11 @@
 
       Array.from(disableOtherExtensionsButtons).forEach((element) => {
         element.addEventListener('click', async () => {
+          const currentPage = window.location.pathname.split('/').pop()
+
           for (const { id } of extensionsWithProxyPermissions) {
             await asynchrome.management.setEnabled(id, false)
           }
-
-          const currentPage = window.location.pathname.split('/').pop()
 
           if (currentPage.startsWith('controlled')) {
             window.location.href = 'popup.html'

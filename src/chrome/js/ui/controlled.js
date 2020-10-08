@@ -1,22 +1,10 @@
 (() => {
   const backToPopup = document.getElementById('backToPopup')
-  const extensionsLink = document.getElementsByClassName('extensions__link')
+  const disableOtherExtensionsButtons = document.getElementsByClassName('disable-other-extensions__btn')
   const extensionNameElements = document.getElementsByClassName('extension__name')
   const extensionsWhichControlsProxy = document.getElementById('extensionsWhichControlsProxy')
   const controlledByExtension = document.getElementById('controlledByOtherExtension')
   const controlledByExtensions = document.getElementById('controlledByOtherExtensions')
-
-  // eslint-disable-next-line no-unused-vars
-  const disableExtensionsWithProxyPermissions = async (asynchrome) => {
-    const self = await asynchrome.management.getSelf()
-    const extensions = await asynchrome.management.getAll()
-    const extensionsWithProxyPermissions = extensions.filter(({ name, permissions }) => {
-      return permissions.includes('proxy') && name !== self.name
-    })
-
-    extensionsWithProxyPermissions.forEach(({ id }) =>
-      chrome.management.setEnabled(id, false))
-  }
 
   chrome.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
     const { asynchrome, proxy } = bgModules
@@ -50,9 +38,22 @@
         })
       }
 
-      Array.from(extensionsLink).forEach((element) => {
-        element.addEventListener('click', () => {
-          chrome.tabs.create({ url: 'chrome://extensions/' })
+      Array.from(disableOtherExtensionsButtons).forEach((element) => {
+        element.addEventListener('click', async () => {
+          for (const { id, name } of extensionsWithProxyPermissions) {
+            await asynchrome.management.setEnabled(id, false)
+            console.warn(`An extension ${name} has been disabled by CensorTracker.`)
+          }
+
+          const currentPage = window.location.pathname.split('/').pop()
+
+          if (currentPage === 'controlled.html') {
+            window.location.href = 'popup.html'
+          }
+
+          if (currentPage === 'options.html') {
+            element.parentElement.hidden = true
+          }
         })
       })
     }

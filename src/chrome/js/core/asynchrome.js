@@ -135,6 +135,10 @@ class Asynchrome {
         ns: this.chrome.management,
         fn: 'getSelf',
       }, ...args),
+      setEnabled: (...args) => promisify({
+        ns: this.chrome.management,
+        fn: 'setEnabled',
+      }, ...args),
     }
   }
 }

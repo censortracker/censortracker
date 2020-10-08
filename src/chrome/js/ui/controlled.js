@@ -6,6 +6,18 @@
   const controlledByExtension = document.getElementById('controlledByOtherExtension')
   const controlledByExtensions = document.getElementById('controlledByOtherExtensions')
 
+  // eslint-disable-next-line no-unused-vars
+  const disableExtensionsWithProxyPermissions = async (asynchrome) => {
+    const self = await asynchrome.management.getSelf()
+    const extensions = await asynchrome.management.getAll()
+    const extensionsWithProxyPermissions = extensions.filter(({ name, permissions }) => {
+      return permissions.includes('proxy') && name !== self.name
+    })
+
+    extensionsWithProxyPermissions.forEach(({ id }) =>
+      chrome.management.setEnabled(id, false))
+  }
+
   chrome.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
     const { asynchrome, proxy } = bgModules
 

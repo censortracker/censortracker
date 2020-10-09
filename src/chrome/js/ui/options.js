@@ -5,6 +5,7 @@ import proxy from '../core/proxy'
   const { censortracker: { chromeListeners } } = await asynchrome.runtime.getBackgroundPage()
 
   const useProxyCheckbox = document.getElementById('useProxyCheckbox')
+  const useNotificationsCheckbox = document.getElementById('useNotificationsCheckbox')
   const isProxyControlledByThisExtension = await proxy.controlledByThisExtension()
   const isProxyControlledByOtherExtensions = await proxy.controlledByOtherExtensions()
 
@@ -37,9 +38,22 @@ import proxy from '../core/proxy'
     }
   }, false)
 
-  const { useProxyChecked } = await asynchrome.storage.local.get({
-    useProxyChecked: true,
-  })
+  useNotificationsCheckbox.addEventListener('change', async () => {
+    if (useNotificationsCheckbox.checked) {
+      await asynchrome.storage.local.set({ useNotificationsChecked: true })
+      console.log('Notifications enabled.')
+    } else {
+      console.warn('Notifications disabled.')
+      await asynchrome.storage.local.set({ useNotificationsChecked: false })
+    }
+  }, false)
+
+  const { useProxyChecked, useNotificationsChecked } =
+    await asynchrome.storage.local.get({
+      useProxyChecked: true,
+      useNotificationsChecked: true,
+    })
 
   useProxyCheckbox.checked = useProxyChecked
+  useNotificationsCheckbox.checked = useNotificationsChecked
 })()

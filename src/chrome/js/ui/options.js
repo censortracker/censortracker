@@ -1,27 +1,59 @@
+import asynchrome from '../core/asynchrome'
+import proxy from '../core/proxy'
+
 (async () => {
-  chrome.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
-    const { asynchrome, proxy } = bgModules
-    const useProxyCheckbox = document.getElementById('useProxyCheckbox')
+  const { censortracker: { chromeListeners } } = await asynchrome.runtime.getBackgroundPage()
 
-    const { value: proxySettingsValue } = await asynchrome.proxy.settings.get()
+  const useProxyCheckbox = document.getElementById('useProxyCheckbox')
+  const useNotificationsCheckbox = document.getElementById('useNotificationsCheckbox')
+  const isProxyControlledByThisExtension = await proxy.controlledByThisExtension()
+  const isProxyControlledByOtherExtensions = await proxy.controlledByOtherExtensions()
 
-    if (Object.hasOwnProperty.call(proxySettingsValue, 'pacScript')) {
-      if (Object.hasOwnProperty.call(proxySettingsValue.pacScript, 'data')) {
-        await asynchrome.storage.local.set({ useProxy: true })
+  if (isProxyControlledByOtherExtensions) {
+    useProxyCheckbox.checked = false
+    useProxyCheckbox.disabled = true
+    await asynchrome.storage.local.set({ useProxyChecked: false })
+  } else if (isProxyControlledByThisExtension) {
+    useProxyCheckbox.checked = true
+    useProxyCheckbox.disabled = false
+    await asynchrome.storage.local.set({ useProxyChecked: true })
+  } else {
+    await asynchrome.storage.local.set({ useProxyChecked: false })
+    useProxyCheckbox.disabled = false
+  }
+
+  useProxyCheckbox.addEventListener('change', async () => {
+    if (useProxyCheckbox.checked) {
+      if (!chromeListeners.has()) {
+        chromeListeners.add()
       }
+
+      await proxy.setProxy()
+      useProxyCheckbox.checked = true
+      console.log('Proxying enabled.')
+    } else {
+      await proxy.removeProxy()
+      useProxyCheckbox.checked = false
+      console.warn('Proxying disabled.')
     }
-    const { useProxy } = await asynchrome.storage.local.get({ useProxy: true })
+  }, false)
 
-    useProxyCheckbox.checked = useProxy
+  useNotificationsCheckbox.addEventListener('change', async () => {
+    if (useNotificationsCheckbox.checked) {
+      await asynchrome.storage.local.set({ useNotificationsChecked: true })
+      console.log('Notifications enabled.')
+    } else {
+      console.warn('Notifications disabled.')
+      await asynchrome.storage.local.set({ useNotificationsChecked: false })
+    }
+  }, false)
 
-    useProxyCheckbox.addEventListener('change', async () => {
-      if (useProxyCheckbox.checked) {
-        await proxy.setProxy()
-        await asynchrome.storage.local.set({ useProxy: true })
-      } else {
-        await asynchrome.storage.local.set({ useProxy: false })
-        await asynchrome.proxy.settings.clear({ scope: 'regular' }).catch(console.error)
-      }
-    }, false)
-  })
+  const { useProxyChecked, useNotificationsChecked } =
+    await asynchrome.storage.local.get({
+      useProxyChecked: true,
+      useNotificationsChecked: true,
+    })
+
+  useProxyCheckbox.checked = useProxyChecked
+  useNotificationsCheckbox.checked = useNotificationsChecked
 })()

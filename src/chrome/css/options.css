@@ -203,3 +203,7 @@ a {
 .extensions__link {
   cursor: pointer;
 }
+
+.checkbox__group {
+  margin-bottom: 25px;
+}

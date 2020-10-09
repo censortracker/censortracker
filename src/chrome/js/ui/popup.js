@@ -124,10 +124,6 @@ const addExtensionControlListeners = async ({ settings, proxy, chromeListeners }
       chromeListeners.remove()
       window.location.reload()
     }
-
-    if (event.target.matches('#chromeExtensionsPage')) {
-      chrome.runtime.getURL('chrome://extensions')
-    }
   })
 }
 

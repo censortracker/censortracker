@@ -71,6 +71,16 @@ const onErrorOccurredListener = async ({ url, error, tabId }) => {
   }
 
   if (errors.isThereConnectionError(error)) {
+    const isProxyControlledByOtherExtensions = await proxy.controlledByOtherExtensions()
+    const isProxyControlledByThisExtension = await proxy.controlledByThisExtension()
+
+    if (!isProxyControlledByOtherExtensions && !isProxyControlledByThisExtension) {
+      chrome.tabs.update(tabId, {
+        url: chrome.runtime.getURL(`proxy_disabled.html?${window.btoa(url)}`),
+      })
+      return
+    }
+
     chrome.tabs.update(tabId, {
       url: chrome.runtime.getURL(`unavailable.html?${window.btoa(url)}`),
     })
@@ -128,9 +138,11 @@ const updateTabState = async () => {
     return
   }
 
-  const { enableExtension } = await asynchrome.storage.local.get({
-    enableExtension: true,
-  })
+  const { enableExtension, useNotificationsChecked } =
+    await asynchrome.storage.local.get({
+      enableExtension: true,
+      useNotificationsChecked: true,
+    })
 
   if (!enableExtension) {
     settings.setDisableIcon(tab.id)
@@ -155,7 +167,7 @@ const updateTabState = async () => {
 
   if (distributorUrl) {
     settings.setDangerIcon(tab.id)
-    if (!cooperationRefused) {
+    if (useNotificationsChecked && !cooperationRefused) {
       await showCooperationAcceptedWarning(currentHostname)
     }
   }
@@ -253,9 +265,18 @@ chrome.notifications.onButtonClicked.addListener(notificationOnButtonClicked)
 
 // The mechanism for controlling handlers from popup.js
 window.censortracker.chromeListeners = {
+  has: () => {
+    const hasOnErrorOccurredListener =
+      chrome.webRequest.onErrorOccurred.hasListener(onErrorOccurredListener)
+    const hasOnBeforeRequestListener =
+      chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequestListener)
+
+    return hasOnBeforeRequestListener && hasOnErrorOccurredListener
+  },
   remove: () => {
     chrome.webRequest.onErrorOccurred.removeListener(onErrorOccurredListener)
     chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequestListener)
+    console.warn('CensorTracker: listeners removed')
   },
   add: () => {
     chrome.webRequest.onErrorOccurred.addListener(onErrorOccurredListener, {
@@ -269,5 +290,6 @@ window.censortracker.chromeListeners = {
       },
       ['blocking'],
     )
+    console.warn('CensorTracker: listeners added')
   },
 }

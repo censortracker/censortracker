@@ -1,43 +1,64 @@
 (() => {
   const backToPopup = document.getElementById('backToPopup')
-  const extensionsLink = document.getElementsByClassName('extensions__link')
+  const disableOtherExtensionsButtons = document.getElementsByClassName('disable-other-extensions__btn')
   const extensionNameElements = document.getElementsByClassName('extension__name')
   const extensionsWhichControlsProxy = document.getElementById('extensionsWhichControlsProxy')
   const controlledByExtension = document.getElementById('controlledByOtherExtension')
   const controlledByExtensions = document.getElementById('controlledByOtherExtensions')
+  const useProxyCheckbox = document.getElementById('useProxyCheckbox')
 
-  chrome.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
-    const self = await bgModules.asynchrome.management.getSelf()
-    const extensions = await bgModules.asynchrome.management.getAll()
+  chrome.runtime.getBackgroundPage(async ({ censortracker: { asynchrome, proxy } }) => {
+    const isProxyControlledByOtherExtensions = await proxy.controlledByOtherExtensions()
 
-    const extensionsWithProxyPermissions = extensions.filter(({ name, permissions }) => {
-      return permissions.includes('proxy') && name !== self.name
-    })
+    if (isProxyControlledByOtherExtensions) {
+      const self = await asynchrome.management.getSelf()
+      const extensions = await asynchrome.management.getAll()
 
-    if (extensionsWithProxyPermissions.length > 1) {
-      controlledByExtensions.hidden = false
+      const extensionsWithProxyPermissions = extensions.filter(({ name, permissions }) => {
+        return permissions.includes('proxy') && name !== self.name
+      })
 
-      let result = ''
+      if (extensionsWithProxyPermissions.length > 1) {
+        controlledByExtensions.hidden = false
 
-      for (const { name, shortName } of extensionsWithProxyPermissions) {
-        result += `<li>${shortName || name}</li>`
+        let result = ''
+
+        for (const { name, shortName } of extensionsWithProxyPermissions) {
+          result += `<li>${shortName || name}</li>`
+        }
+        extensionsWhichControlsProxy.innerHTML = result
+      } else {
+        controlledByExtension.hidden = false
+
+        const [{ shortName, name }] = extensionsWithProxyPermissions
+
+        Array.from(extensionNameElements).forEach((element) => {
+          element.innerText = shortName || name
+        })
       }
-      extensionsWhichControlsProxy.innerHTML = result
-    } else {
-      controlledByExtension.hidden = false
 
-      const [{ shortName, name }] = extensionsWithProxyPermissions
+      Array.from(disableOtherExtensionsButtons).forEach((element) => {
+        element.addEventListener('click', async () => {
+          const currentPage = window.location.pathname.split('/').pop()
 
-      Array.from(extensionNameElements).forEach((element) => {
-        element.innerText = shortName || name
+          for (const { id } of extensionsWithProxyPermissions) {
+            await asynchrome.management.setEnabled(id, false)
+          }
+
+          if (currentPage.startsWith('controlled')) {
+            window.location.href = 'popup.html'
+          }
+
+          if (currentPage.startsWith('options')) {
+            if (await proxy.controlledByThisExtension()) {
+              useProxyCheckbox.checked = true
+              useProxyCheckbox.disabled = false
+            }
+            element.parentElement.hidden = true
+          }
+        })
       })
     }
-
-    Array.from(extensionsLink).forEach((element) => {
-      element.addEventListener('click', () => {
-        chrome.tabs.create({ url: 'chrome://extensions/' })
-      })
-    })
   })
 
   if (backToPopup) {

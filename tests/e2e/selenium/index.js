@@ -28,8 +28,8 @@ export const createDriver = async () => {
 
   options.addExtensions(extension)
   options.windowSize({
-    width: 200,
-    height: 200,
+    width: 650,
+    height: 500,
   })
 
   const driver = await new Builder()
@@ -37,10 +37,10 @@ export const createDriver = async () => {
     .setChromeOptions(options)
     .build()
 
-  driver
-    .manage()
-    .window()
-    .minimize()
+  // driver
+  //   .manage()
+  //   .window()
+  //   .minimize()
 
   return { driver, extensionId }
 }

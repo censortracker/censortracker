@@ -12,6 +12,7 @@ const promisify = ({ ns, fn }, ...args) => new Promise((resolve, reject) => {
   })
 })
 
+// TODO: create its properties dynamically
 class Asynchrome {
   constructor () {
     this.chrome = chrome

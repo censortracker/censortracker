@@ -1,39 +1,42 @@
+import asynchrome from '../core/asynchrome'
+import proxy from '../core/proxy'
+
 (async () => {
-  chrome.runtime.getBackgroundPage(async ({ censortracker: { asynchrome, proxy } }) => {
-    await proxy.allowProxying()
+  await proxy.allowProxying()
 
-    const useProxyCheckbox = document.getElementById('useProxyCheckbox')
-    const isProxyControlledByThisExtension = await proxy.controlledByThisExtension()
-    const isProxyControlledByOtherExtensions = await proxy.controlledByOtherExtensions()
+  const useProxyCheckbox = document.getElementById('useProxyCheckbox')
+  const isProxyControlledByThisExtension = await proxy.controlledByThisExtension()
+  const isProxyControlledByOtherExtensions = await proxy.controlledByOtherExtensions()
 
-    if (isProxyControlledByOtherExtensions) {
-      useProxyCheckbox.checked = false
-      useProxyCheckbox.disabled = true
-      await asynchrome.storage.local.set({ useProxyChecked: false })
-    } else if (isProxyControlledByThisExtension) {
+  if (isProxyControlledByOtherExtensions) {
+    useProxyCheckbox.checked = false
+    useProxyCheckbox.disabled = true
+    await asynchrome.storage.local.set({ useProxyChecked: false })
+  } else if (isProxyControlledByThisExtension) {
+    useProxyCheckbox.checked = true
+    useProxyCheckbox.disabled = false
+    await asynchrome.storage.local.set({ useProxyChecked: true })
+  } else {
+    await asynchrome.storage.local.set({ useProxyChecked: false })
+    useProxyCheckbox.disabled = false
+  }
+
+  useProxyCheckbox.addEventListener('change', async () => {
+    if (useProxyCheckbox.checked) {
+      await proxy.setProxy()
+      await proxy.allowProxying()
       useProxyCheckbox.checked = true
-      useProxyCheckbox.disabled = false
-      await asynchrome.storage.local.set({ useProxyChecked: true })
+      console.log('Proxying enabled.')
     } else {
-      await asynchrome.storage.local.set({ useProxyChecked: false })
-      useProxyCheckbox.disabled = false
+      await proxy.removeProxy()
+      useProxyCheckbox.checked = false
+      console.warn('Proxying disabled.')
     }
+  }, false)
 
-    useProxyCheckbox.addEventListener('change', async () => {
-      if (useProxyCheckbox.checked) {
-        await proxy.setProxy()
-        await proxy.allowProxying()
-        useProxyCheckbox.checked = true
-      } else {
-        await proxy.removeProxy()
-        useProxyCheckbox.checked = false
-      }
-    }, false)
-
-    const { useProxyChecked } = await asynchrome.storage.local.get({
-      useProxyChecked: true,
-    })
-
-    useProxyCheckbox.checked = useProxyChecked
+  const { useProxyChecked } = await asynchrome.storage.local.get({
+    useProxyChecked: true,
   })
+
+  useProxyCheckbox.checked = useProxyChecked
 })()

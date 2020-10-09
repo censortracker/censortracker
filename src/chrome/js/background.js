@@ -263,6 +263,14 @@ chrome.notifications.onButtonClicked.addListener(notificationOnButtonClicked)
 
 // The mechanism for controlling handlers from popup.js
 window.censortracker.chromeListeners = {
+  has: () => {
+    const hasOnErrorOccurredListener =
+      chrome.webRequest.onErrorOccurred.hasListener(onErrorOccurredListener)
+    const hasOnBeforeRequestListener =
+      chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequestListener)
+
+    return hasOnBeforeRequestListener && hasOnErrorOccurredListener
+  },
   remove: () => {
     chrome.webRequest.onErrorOccurred.removeListener(onErrorOccurredListener)
     chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequestListener)

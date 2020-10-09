@@ -2,8 +2,6 @@ import asynchrome from '../core/asynchrome'
 import proxy from '../core/proxy'
 
 (async () => {
-  await proxy.allowProxying()
-
   const { censortracker: { chromeListeners } } = await asynchrome.runtime.getBackgroundPage()
 
   const useProxyCheckbox = document.getElementById('useProxyCheckbox')
@@ -30,7 +28,6 @@ import proxy from '../core/proxy'
       }
 
       await proxy.setProxy()
-      await proxy.allowProxying()
       useProxyCheckbox.checked = true
       console.log('Proxying enabled.')
     } else {

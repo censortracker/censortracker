@@ -1,3 +1,5 @@
+// TODO: Use import/from to reduce duplication
+
 const extendProxyButton = document.getElementById('extendProxyAutoConfig')
 
 chrome.tabs.query({ active: true, lastFocusedWindow: true }, ([tab]) => {

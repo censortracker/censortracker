@@ -47,6 +47,7 @@ const webpackConfig = {
     popup: './src/chrome/js/ui/popup.js',
     options: './src/chrome/js/ui/options.js',
     controlled: './src/chrome/js/ui/controlled.js',
+    proxy_disabled: './src/chrome/js/ui/proxy_disabled.js',
   },
 
   output: {
@@ -172,7 +173,7 @@ const webpackConfig = {
       filename: 'proxy_disabled.html',
       template: 'src/chrome/pages/proxy_disabled.html',
       inject: true,
-      chunks: ['unavailable'],
+      chunks: ['proxy_disabled'],
       meta: {
         'Content-Security-Policy': 'script-src \'self\' \'unsafe-eval\'; object-src \'self\';',
       },

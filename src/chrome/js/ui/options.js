@@ -24,13 +24,8 @@
         await proxy.setProxy()
         await proxy.allowProxying()
         useProxyCheckbox.checked = true
-        await asynchrome.storage.local.set({ useProxyChecked: true })
       } else {
         await proxy.removeProxy()
-        await asynchrome.storage.local.set({
-          useProxyChecked: false,
-          proxyingPaused: true,
-        })
         useProxyCheckbox.checked = false
       }
     }, false)

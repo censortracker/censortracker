@@ -11,7 +11,7 @@ import proxy from '../core/proxy'
   unavailableWebsite.innerText = window.atob(encodedHostname)
 
   document.addEventListener('click', async (event) => {
-    if (event.target.matches('#extendProxyAutoConfig')) {
+    if (event.target.matches('#openThroughProxy')) {
       await proxy.setProxy()
 
       chrome.tabs.create({ url: targetUrl, index: tab.index }, () => {
@@ -20,7 +20,13 @@ import proxy from '../core/proxy'
     }
 
     if (event.target.matches('#doNotAskAnymore')) {
-      console.log('Don\'t ask anymore')
+      const { censortracker: { chromeListeners } } = await asynchrome.runtime.getBackgroundPage()
+
+      if (chromeListeners.has()) {
+        chromeListeners.remove()
+      }
+
+      chrome.tabs.update(tab.id, { url: targetUrl })
     }
 
     event.preventDefault()

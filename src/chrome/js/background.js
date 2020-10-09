@@ -274,6 +274,7 @@ window.censortracker.chromeListeners = {
   remove: () => {
     chrome.webRequest.onErrorOccurred.removeListener(onErrorOccurredListener)
     chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequestListener)
+    console.warn('CensorTracker: listeners removed')
   },
   add: () => {
     chrome.webRequest.onErrorOccurred.addListener(onErrorOccurredListener, {
@@ -287,5 +288,6 @@ window.censortracker.chromeListeners = {
       },
       ['blocking'],
     )
+    console.warn('CensorTracker: listeners added')
   },
 }

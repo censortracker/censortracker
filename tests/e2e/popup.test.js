@@ -14,49 +14,52 @@ describe('Testing popup of the extension', () => {
     await driver.quit()
   })
 
-  describe('checks that extension shows that website is or is not ORI', () => {
+  describe('checks that extension shows that website is ORI', () => {
     const urls = [
-      { url: 'https://meduza.io/', isORI: false },
-      { url: 'https://2ch.hk/', isORI: true },
-      { url: 'https://netflix.com/', isORI: false },
-      { url: 'https://vk.com/', isORI: true },
-      { url: 'https://tinder.com', isORI: true },
-      { url: 'https://hd.kinopoisk.ru/', isORI: false },
-      { url: 'https://disk.yandex.ru', isORI: true },
-      { url: 'http://avito.ru', isORI: true },
+      { url: 'https://2ch.hk/' },
+      { url: 'https://vk.com/' },
+      { url: 'https://tinder.com' },
+      { url: 'https://disk.yandex.ru' },
+      { url: 'http://avito.ru' },
     ]
 
-    it.each(urls)('popup contains the corresponding HTML elements', async ({ url, isORI }) => {
+    it.each(urls)('popup contains "isOriBlock" element', async ({ url }) => {
       await getPopupFor({ driver, extensionId }, url)
 
-      const oriBlock = await isElementExists(driver, { id: 'isOriBlock' }, 2000)
-      const notOriBlock = await isElementExists(driver, { id: 'isNotOriBlock' }, 2000)
+      const oriBlock = await isElementExists(driver, { id: 'isOriBlock' }, 2500)
+      const aboutOriButton = await waitGetElement(driver, { id: 'aboutOriButton' }, 2500)
 
-      if (isORI) {
-        const aboutOriButton =
-          await waitGetElement(driver, { id: 'aboutOriButton' }, 2000)
+      await aboutOriButton.click()
+      const closeTextAboutOriButton = await waitGetElement(driver, { id: 'closeTextAboutOri' }, 2500)
 
-        await aboutOriButton.click()
-        const closeTextAboutOriButton =
-          await waitGetElement(driver, { id: 'closeTextAboutOri' }, 1500)
+      await closeTextAboutOriButton.click()
 
-        await closeTextAboutOriButton.click()
+      expect(oriBlock).toBeTruthy()
+    }, timeout)
+  })
 
-        expect(oriBlock).toBeTruthy()
-        expect(notOriBlock).toBeFalsy()
-      } else {
-        const aboutNotOriButton =
-          await waitGetElement(driver, { id: 'btnAboutNotOri' }, 2000)
+  describe('checks that extension shows that website is not ORI', () => {
+    const urls = [
+      { url: 'https://meduza.io/' },
+      { url: 'https://netflix.com/' },
+      { url: 'https://hd.kinopoisk.ru/' },
+    ]
 
-        await aboutNotOriButton.click()
-        const closeTextAboutNotOriButton =
-          await waitGetElement(driver, { id: 'closeTextAboutNotOri' }, 1500)
+    it.each(urls)('popup contains "isNotOriBlock" element', async ({ url }) => {
+      await getPopupFor({ driver, extensionId }, url)
 
-        await closeTextAboutNotOriButton.click()
+      const notOriBlock = await isElementExists(driver, { id: 'isNotOriBlock' }, 1500)
 
-        expect(oriBlock).toBeFalsy()
-        expect(notOriBlock).toBeTruthy()
-      }
+      const aboutNotOriButton =
+          await waitGetElement(driver, { id: 'btnAboutNotOri' }, 1500)
+
+      await aboutNotOriButton.click()
+      // const closeTextAboutNotOri =
+      //     await waitGetElement(driver, { id: 'closeTextAboutNotOri' }, 3000)
+      //
+      // await closeTextAboutNotOri.click()
+
+      expect(notOriBlock).toBeTruthy()
     }, timeout)
   })
 

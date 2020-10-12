@@ -1,38 +1,34 @@
-(async () => {
-  // TODO: Use import/from to reduce duplication
+import asynchrome from '../core/asynchrome'
 
+(async () => {
   const unavailableWebsite = document.getElementById('unavailableWebsite')
   const extendProxyButton = document.getElementById('extendProxyAutoConfig')
 
-  chrome.tabs.query({ active: true, lastFocusedWindow: true }, ([tab]) => {
-    const [, encodedHostname] = tab.url.split('?')
+  const [tab] = await asynchrome.tabs.query({ active: true, lastFocusedWindow: true })
 
-    unavailableWebsite.innerText = window.atob(encodedHostname)
+  const [, encodedHostname] = tab.url.split('?')
+  const targetUrl = window.atob(encodedHostname)
 
-    if (encodedHostname) {
-      extendProxyButton.classList.remove('btn-hidden')
-    }
-  })
+  unavailableWebsite.innerText = window.atob(encodedHostname)
+
+  if (encodedHostname && extendProxyButton) {
+    extendProxyButton.classList.remove('btn-hidden')
+  }
 
   document.addEventListener('click', (event) => {
-    chrome.tabs.query({ active: true, lastFocusedWindow: true }, ([tab]) => {
-      const [, encodedHostname] = tab.url.split('?')
-      const targetUrl = window.atob(encodedHostname)
-
-      if (event.target.matches('#extendProxyAutoConfig')) {
-        chrome.tabs.create({ url: targetUrl, index: tab.index }, () => {
-          chrome.tabs.remove(tab.id)
-        })
-      }
-
-      if (event.target.matches('#tryAgain')) {
-        chrome.tabs.update(tab.id, { url: targetUrl })
-      }
-
-      if (event.target.matches('#closeTab')) {
+    if (event.target.matches('#extendProxyAutoConfig')) {
+      chrome.tabs.create({ url: targetUrl, index: tab.index }, () => {
         chrome.tabs.remove(tab.id)
-      }
-    })
+      })
+    }
+
+    if (event.target.matches('#tryAgain')) {
+      chrome.tabs.update(tab.id, { url: targetUrl })
+    }
+
+    if (event.target.matches('#closeTab')) {
+      chrome.tabs.remove(tab.id)
+    }
 
     event.preventDefault()
   }, false)

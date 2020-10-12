@@ -149,7 +149,7 @@ const webpackConfig = {
       },
     }),
     new HTMLWebpackPlugin({
-      title: 'Options | Censor Tracker',
+      title: 'Настройки | Censor Tracker',
       filename: 'options.html',
       template: 'src/chrome/pages/options.html',
       inject: true,
@@ -159,7 +159,7 @@ const webpackConfig = {
       },
     }),
     new HTMLWebpackPlugin({
-      title: 'Proxy Unavailable | Censor Tracker',
+      title: 'Проксирование недоступно | Censor Tracker',
       filename: 'proxy_unavailable.html',
       template: 'src/chrome/pages/proxy_unavailable.html',
       inject: true,
@@ -169,7 +169,7 @@ const webpackConfig = {
       },
     }),
     new HTMLWebpackPlugin({
-      title: 'Proxy Disabled | Censor Tracker',
+      title: 'Проксирование отключено | Censor Tracker',
       filename: 'proxy_disabled.html',
       template: 'src/chrome/pages/proxy_disabled.html',
       inject: true,

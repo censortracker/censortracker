@@ -2,10 +2,10 @@
 <html lang="ru">
 
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <title><%= htmlWebpackPlugin.options.title %></title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <link rel="stylesheet" href="css/unavailable.css" />
+  <link rel="stylesheet" href="css/unavailable.css"/>
 </head>
 
 <body>
@@ -16,11 +16,13 @@
   <div class="main-page">
     <div class="main-page__image">
       <img src="images/icons/512x512/blocked.png"
-           width="128px" height="128px" alt="Blocked" />
+           width="128px" height="128px" alt="Blocked"/>
     </div>
     <div class="main-page__info">
       <div class="main-page__title">Сайт недоступен или заблокирован в России</div>
-      <div class="main-page__text">Попробуйте открыть его через прокси</div>
+      <div class="main-page__text">
+        Не удалось открыть сайт <b id="unavailableWebsite"></b>. Попробовать открыть его через прокси Censor Tracker?
+      </div>
       <div class="main-page__btn">
         <button id="extendProxyAutoConfig"
                 class="btn btn-dark btn-disabled btn-hidden"

@@ -2,33 +2,40 @@
 <html lang="ru">
 
 <head>
-    <meta charset="UTF-8" />
-     <title><%= htmlWebpackPlugin.options.title %></title>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <link rel="stylesheet" href="css/unavailable.css" />
+  <meta charset="UTF-8"/>
+  <title><%= htmlWebpackPlugin.options.title %></title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="css/unavailable.css"/>
 </head>
 
 <body>
-    <div class="main-container">
-        <div class="page-header">
-            Censor Tracker
-        </div>
-        <div class="main-page">
-            <div class="main-page__image">
-                <img src="images/icons/512x512/disabled.png"
-                     width="128px" height="128px" alt="<%= htmlWebpackPlugin.options.title %>" />
-            </div>
-            <div class="main-page__info">
-                <div class="main-page__title">Не удалось открыть сайт через прокси Censor Tracker</div>
-                <div class="main-page__text">Мы работаем над исправлением проблемы, попробуйте открыть сайт позже.</div>
-                <div class="main-page__btn">
-                    <button id="closeTab" class="btn btn-dark" aria-label="Закрыть вкладку">
-                      <span class="btn__text">Закрыть вкладку</span>
-                    </button>
-                </div>
-            </div>
-        </div>
+<div class="main-container">
+  <div class="page-header">
+    Censor Tracker
+  </div>
+  <div class="main-page">
+    <div class="main-page__image">
+      <img src="images/icons/512x512/disabled.png"
+           width="128px" height="128px" alt="<%= htmlWebpackPlugin.options.title %>"/>
     </div>
+    <div class="main-page__info">
+      <div class="main-page__title">Не удалось открыть сайт через прокси Censor Tracker</div>
+      <div class="main-page__text">
+        Не удалось открыть сайт <b id="unavailableWebsite"></b>.
+        Мы работаем над исправлением проблемы, попробуйте открыть сайт позже.
+      </div>
+      <div class="main-page__btn">
+        <button id="closeTab" class="btn btn-dark" aria-label="Закрыть вкладку">
+          <span class="btn__text">Закрыть вкладку</span>
+        </button>
+
+        <button id="tryAgain" class="btn btn-light" aria-label="Попробовать еще раз">
+          <span class="btn__text">Попробовать еще раз</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 </body>
 
 </html>

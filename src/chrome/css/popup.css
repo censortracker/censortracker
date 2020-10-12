@@ -17,6 +17,10 @@ body {
   text-shadow: rgba(0, 0, 0, 0.2) 0 0 1px;
 }
 
+a {
+  text-decoration: none;
+}
+
 .main-page {
   margin: 20px;
 }
@@ -24,19 +28,95 @@ body {
 .main-page__image {
   padding: 10px 0;
   text-align: center;
+  position: relative;
 }
 
-.main-page__title {
+.icon__settings{
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 16px;
+  height: 16px;
+  mask: url(../images/icons/icon_settings.svg) no-repeat center / contain;
+  -webkit-mask: url(../images/icons/icon_settings.svg) no-repeat center / contain;
+  background-color: #3B332B;
+}
+.icon__settings:hover{
+  cursor: pointer;
+  filter: contrast(300%);
+}
+
+.icon__back {
+  position: absolute;
+}
+
+.icon__back path {
+  fill: #3B332B;
+  fill-opacity: 0.7;
+}
+.icon__back:hover {
+  cursor: pointer;
+}
+.icon__back:hover path {
+  fill: #625C55;
+
+}
+.icon__back:active path,
+.icon__back:focus path {
+  fill: #2A251F;
+}
+
+.main-page__another-extension{
+  position: relative;
+}
+
+.main-page__title,
+.title-extension {
   font-weight: 600;
   font-size: 20px;
   line-height: 22px;
+  padding: 20px 0;
+}
+
+.title-extension{
+  padding-top: 40px;
+}
+
+.main-page__title {
   text-align: center;
   text-transform: uppercase;
 
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  padding: 20px 0;
+}
+
+.text-extension{
+  color: #625C55;
+  margin-bottom: 30px;
+}
+
+.extension__btn {
+  background-color: #3B332B;
+  font-size: 14px;
+  line-height: 15px;
+  color: #FFFFFF;
+  padding: 9px 20px;
+  display: block;
+  font-weight: 400;
+  box-shadow: 0px 2.01027px 11.8382px rgba(15, 13, 11, 0.055), 0px 1.12694px 6.63642px rgba(15, 13, 11, 0.0655718), 0px 0.598509px 3.52455px rgba(15, 13, 11, 0.079074);
+  border-radius: 4px;
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.extension__btn:hover{
+  cursor: pointer;
+  background-color: #625C55;
+}
+.extension__btn:active,
+.extension__btn:focus {
+  background-color: #2A251F;
 }
 
 .main-page__block {
@@ -77,6 +157,7 @@ body {
   font-weight: 500;
   position: relative;
   margin-bottom: 5px;
+  padding-right: 40px;
 }
 
 .block__btn {
@@ -147,7 +228,8 @@ body {
   background: #F7EDED;
 }
 
-.footer {
+.footer,
+.another_extension {
   background: #F4F4F4;
   font-size: 13px;
   line-height: 20px;
@@ -163,6 +245,21 @@ body {
 
 .footer-on > .buy-vpn > a {
   margin: 0 auto;
+}
+
+.another_extension {
+  margin-bottom: 1px;
+  padding: 15px 24px 15px 20px;
+}
+
+.another_extension > div:hover{
+  cursor: pointer;
+  color: #625C55;
+}
+
+.another_extension > div:active,
+.another_extension > div:focus{
+  color: #2A251F;
 }
 
 .buy-vpn {
@@ -234,4 +331,12 @@ body {
 
 .text-about {
   text-align: center;
+}
+
+.extension__name {
+  display: inline;
+}
+
+.extensions__link {
+  cursor: pointer;
 }

@@ -124,6 +124,10 @@ body {
   opacity: 0.5;
 }
 
+.btn-hidden {
+  display: none;
+}
+
 .btn.btn-disabled:hover {
   cursor: auto;
 }

@@ -1,20 +1,19 @@
-import db from './database'
+import asynchrome from './asynchrome'
 import settings from './settings'
-import shortcuts from './shortcuts'
 
-const dbDomainItemName = 'domains'
-const dbDistributorsItemName = 'distributors'
+const DOMAINS_DB_KEY = 'domains'
+const DISTRIBUTORS_DB_KEY = 'distributors'
 
 class Registry {
   syncDatabase = async () => {
     console.warn('Synchronizing local database with registry...')
     const apis = [
       {
-        key: dbDomainItemName,
+        key: DOMAINS_DB_KEY,
         url: settings.getDomainsApiUrl(),
       },
       {
-        key: dbDistributorsItemName,
+        key: DISTRIBUTORS_DB_KEY,
         url: settings.getDistributorsApiUrl(),
       },
     ]
@@ -23,104 +22,100 @@ class Registry {
       const response = await fetch(url).catch(console.error)
       const domains = await response.json()
 
-      await db.set(key, {
-        domains,
+      await asynchrome.storage.local.set({
+        [key]: domains,
         timestamp: new Date().getTime(),
-      })
-        .catch((error) => {
-          console.error(`Error on updating local ${key} database: ${JSON.stringify(error)}`)
-        })
+      }).catch(console.error)
     }
-    await this.updateLastSyncDate()
-  }
 
-  updateLastSyncDate = async () => {
-    await db.set('lastSyncDate', new Date().toLocaleString()).catch((error) => {
-      console.error(`Error on updating updateDate: ${error}`)
-    })
-  }
+    const { domains } = await asynchrome.storage.local.get({ [DOMAINS_DB_KEY]: [] })
 
-  getLastSyncDate = () => new Promise((resolve, reject) => {
-    db.get('lastSyncDate')
-      .then(({ lastSyncDate }) => {
-        if (lastSyncDate) {
-          resolve(lastSyncDate.replace(/\//g, '.'))
-        }
-      })
-      .catch(reject)
-  })
+    if (!domains) {
+      console.log('Database is empty. Trying to sync...')
+      await this.syncDatabase()
+    }
+    return true
+  }
 
   getDomains = async () => {
-    await this.syncDatabase()
+    const { domains, blockedDomains } =
+      await asynchrome.storage.local.get({ [DOMAINS_DB_KEY]: [], blockedDomains: [] })
 
-    const { domains } = await db.get('domains')
+    const blockedDomainsArray = blockedDomains.map(({ domain }) => domain)
 
-    if (domains && Object.hasOwnProperty.call(domains, dbDomainItemName)) {
-      return domains.domains
+    if (domains && domains.length > 0) {
+      try {
+        return domains.concat(blockedDomainsArray)
+      } catch (error) {
+        console.log(error)
+      }
     }
 
+    console.warn('getDomains: domains not found')
     return []
   }
 
-  domainsContains = (host) => new Promise((resolve, reject) => {
-    db.get(dbDomainItemName)
-      .then(({ [dbDomainItemName]: { domains } }) => {
-        const found = domains.find((domain) => {
-          return host === shortcuts.cleanHostname(domain)
-        })
-
-        // TODO: Pass matched domains instead of array of domains
-        if (found) {
-          console.warn(`Registry match found: ${host}`)
-          resolve(domains)
-        } else {
-          console.log(`Registry match not found: ${host}`)
-          resolve([])
-        }
+  domainsContains = async (host) => {
+    const { domains, blockedDomains } =
+      await asynchrome.storage.local.get({
+        [DOMAINS_DB_KEY]: [],
+        blockedDomains: [],
       })
-      .catch(reject)
-  })
 
-  distributorsContains = (host) => new Promise((resolve, reject) => {
-    db.get(dbDistributorsItemName)
-      .then(({ [dbDistributorsItemName]: { domains } }) => {
-        const dataObject = domains.find((item) => (
-          host === shortcuts.cleanHostname(item.url)
-        ))
+    const domainsArray = domains.concat(blockedDomains)
 
-        if (dataObject) {
-          console.warn(`Distributor match found: ${host}`)
-          resolve(dataObject)
-        } else {
-          console.warn(`Distributor match not found: ${host}`)
-          resolve({})
-        }
+    if (domainsArray.includes(host)) {
+      console.log(`Registry match found: ${host}`)
+      return { domainFound: true }
+    }
+    return { domainFound: false }
+  }
+
+  distributorsContains = async (host) => {
+    const { distributors } =
+      await asynchrome.storage.local.get({ [DISTRIBUTORS_DB_KEY]: [] })
+
+    const dataObject = distributors.find(({ url }) => (host === url))
+
+    if (dataObject) {
+      console.warn(`Distributor match found: ${host}`)
+      return dataObject
+    }
+    return {}
+  }
+
+  addBlockedByDPI = async (hostname) => {
+    if (!hostname) {
+      return
+    }
+    const { blockedDomains } = await asynchrome.storage.local.get({ blockedDomains: [] })
+
+    if (!blockedDomains.find(({ domain }) => domain === hostname)) {
+      blockedDomains.push({
+        domain: hostname,
+        timestamp: new Date().getTime(),
       })
-      .catch(reject)
-  })
+      await this.reportBlockedByDPI(hostname)
+    }
+    await asynchrome.storage.local.set({ blockedDomains })
+  }
 
   reportBlockedByDPI = async (domain) => {
-    const { alreadyReported } = await db.get('alreadyReported')
+    const { alreadyReported } = await asynchrome.storage.local.get({ alreadyReported: [] })
 
-    if (alreadyReported && !alreadyReported.includes(domain)) {
+    if (!alreadyReported.includes(domain)) {
       const response = await fetch(settings.getLoggingApiUrl(), {
         method: 'POST',
-        headers: {
-          'Censortracker-D': new Date().getTime(),
-          'Censortracker-V': settings.getVersion(),
-          'Content-Type': 'application/json',
-        },
+        headers: settings.getLoggingApiHeaders(),
         body: JSON.stringify({ domain }),
       })
       const json = await response.json()
 
       alreadyReported.push(domain)
-      await db.set('alreadyReported', alreadyReported)
-
+      await asynchrome.storage.local.set({ alreadyReported })
+      console.warn(`Reported possible DPI lock: ${domain}`)
       return json
     }
-
-    console.warn(`The domain ${domain} was already reported`)
     return null
   }
 }

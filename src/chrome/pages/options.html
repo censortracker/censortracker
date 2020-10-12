@@ -1,26 +1,74 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 
 <head>
-  <meta charset="utf-8" />
+  <meta charset="UTF-8"/>
   <title><%= htmlWebpackPlugin.options.title %></title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="css/options.css"/>
 </head>
 
 <body>
-  Favorite color:
-  <select id="color">
-    <option value="red">red</option>
-    <option value="green">green</option>
-    <option value="blue">blue</option>
-    <option value="yellow">yellow</option>
-  </select>
+<div class="main-container">
+  <div class="main-page">
+    <div class="main-page__image">
+      <img src="images/settings/quokka.png"
+           width="200px" height="200px" alt="<%= htmlWebpackPlugin.options.title %>"/>
+    </div>
+    <div class="main-page__info">
+      <div class="main-page__title">Настройки расширения Censor Tracker</div>
 
-  <label>
-    <input type="checkbox" id="like" />
-    I like colors.
-  </label>
+      <div class="checkbox__group">
+        <div class="main-page__turn">
+          <label for="useProxyCheckbox" class="toggle-text">Использовать прокси</label>
+          <input id="useProxyCheckbox" type="checkbox" class="toggle-button">
+        </div>
+        <div class="main-page__about">
+          Если сайт заблокирован, то Censor Tracker предоставит к нему доступ. Отключите эту настройку, если вы
+          пользуетесь другим сервисом для обхода блокировок (например, VPN), чтобы увеличить скорость соединения.
+        </div>
 
-  <div id="status"></div>
-  <button id="save">Save</button>
+        <div id="controlledByOtherExtension" class="main-page__extension" hidden>
+          <div class="extension__title">
+            Сейчас другое расширение &laquo;<div class="extension__name"></div>&raquo; контролирует ваши настройки прокси
+          </div>
+          <div class="extension__text">
+            Для нормальной работы CensorTracker, отключите &laquo;<div class="extension__name"></div>&raquo;
+            в настройках браузера.
+          </div>
+          <a class="extension__btn disable-other-extensions__btn">Отключить</a>
+        </div>
+
+        <div id="controlledByOtherExtensions" class="main-page__extension" hidden>
+          <div class="extension__title">
+            Другие расширения контролируют ваши настройки прокси в браузере
+          </div>
+          <div class="extension__text">
+            Для нормальной работы CensorTracker, отключите следующие расширения в настройках браузера:
+            <ol id="extensionsWhichControlsProxy">
+            </ol>
+          </div>
+          <a class="extension__btn disable-other-extensions__btn">Отключить все</a>
+        </div>
+      </div>
+
+      <div class="checkbox__group">
+        <div class="main-page__turn">
+          <label for="useNotificationsCheckbox" class="toggle-text">Уведомления о сайтах из реестра ОРИ</label>
+          <input id="useNotificationsCheckbox" type="checkbox" class="toggle-button">
+        </div>
+        <div class="main-page__about">
+          Мы будем вас уведомлять о сайтах из реестра ОРИ.
+        </div>
+      </div>
+
+      <a href="https://censortracker.org/" target="_blank" class="main-page__link">
+        <span>О расширении</span>
+        <span>&rarr;</span>
+      </a>
+    </div>
+  </div>
+</div>
 </body>
+
 </html>

@@ -1,72 +1,33 @@
-import { chromeProxySettingsSet, chromeProxySettingsClear } from '../promises'
-import db from './database'
+import asynchrome from './asynchrome'
 import registry from './registry'
 import settings from './settings'
 
-class Proxies {
+class Proxy {
   constructor () {
-    this.ignoredDomains = new Set([
-      'youtube.com',
-      'tunnelbear.com',
-    ])
-    chrome.proxy.onProxyError.addListener((details) => {
-      console.error(`Proxy error: ${JSON.stringify(details)}`)
-    })
+    this.ignoredDomains = [
+      '^youtu.be',
+      '^youtube.com',
+      'deviantart.com',
+    ]
+    this.ignoreRegEx = new RegExp(
+      this.ignoredDomains.join('|'), 'gi')
 
-    setInterval(() => {
-      this.removeOutdatedBlockedDomains()
+    setInterval(async () => {
+      await this.removeOutdatedBlockedDomains()
     }, 60 * 1000 * 60 * 60 * 2)
-  }
-
-  addDomainToIgnore = (domain) => {
-    this.ignoredDomains.add(domain)
-  }
-
-  ignoredDomainsContains = (domain) => {
-    return Array.from(this.ignoredDomains).includes(domain)
   }
 
   excludeIgnoredDomains = (domains) => {
     return domains.filter((domain) => {
-      return !this.ignoredDomainsContains(domain)
+      return !domain.match(this.ignoreRegEx)
     })
   }
 
-  setProxy = async (hostname) => {
+  setProxy = async () => {
     let domains = await registry.getDomains()
 
     domains = this.excludeIgnoredDomains(domains)
 
-    const { blockedDomains } = await db.get({ blockedDomains: [] })
-
-    if (hostname) {
-      const domainInBlocked = blockedDomains
-        .find(({ domain }) => domain === hostname)
-
-      if (!domainInBlocked) {
-        blockedDomains.push({
-          domain: hostname,
-          timestamp: new Date().getTime(),
-        })
-      }
-    }
-
-    if (blockedDomains) {
-      domains = domains.concat(blockedDomains.map(({ domain }) => domain))
-    }
-
-    await db.set('blockedDomains', blockedDomains)
-
-    if (hostname) {
-      console.log(
-        `Site ${hostname} has been added to set of blocked by DPI.`,
-      )
-    }
-
-    await this.setProxyAutoConfig(domains)
-  }
-
-  setProxyAutoConfig = async (domains) => {
     const config = {
       value: {
         mode: 'pac_script',
@@ -78,7 +39,9 @@ class Proxies {
       scope: 'regular',
     }
 
-    await chromeProxySettingsSet(config).catch(console.error)
+    await this.allowProxying()
+    await asynchrome.proxy.settings.set(config).catch(console.error)
+    await asynchrome.storage.local.set({ useProxyChecked: true })
     console.warn('PAC has been set successfully!')
   }
 
@@ -90,9 +53,6 @@ class Proxies {
   generatePacScriptData = (domains = []) => {
     // The binary search works only with pre-sorted array.
     domains.sort()
-
-    const http = settings.getProxyServerUrl({ ssl: false })
-    const https = settings.getProxyServerUrl({ ssl: true })
 
     return `
 function FindProxyForURL(url, host) {
@@ -135,7 +95,7 @@ function FindProxyForURL(url, host) {
 
   // Return result
   if (isHostBlocked(domains, host)) {
-    return 'HTTPS ${https}; PROXY ${http};';
+    return 'HTTPS ${settings.getProxyServerUrl()};';
   } else {
     return 'DIRECT';
   }
@@ -143,29 +103,53 @@ function FindProxyForURL(url, host) {
   }
 
   removeProxy = async () => {
-    await chromeProxySettingsClear({ scope: 'regular' }).catch(console.error)
-    console.warn('Proxy auto-config disabled!')
+    await asynchrome.proxy.settings.clear({ scope: 'regular' }).catch(console.error)
+    await asynchrome.storage.local.set({ useProxyChecked: false })
+    console.warn('Proxy auto-config data cleaned!')
   }
 
-  openPorts = () => {
-    console.log('Sending ping to port...')
+  allowProxying = () => {
+    const request = new XMLHttpRequest()
     const proxyServerUrl = 'https://163.172.211.183:39263'
-    const xhr = new XMLHttpRequest()
 
-    xhr.open('GET', proxyServerUrl, true)
-    xhr.addEventListener('error', (e) => {
-      console.error(`Error on opening ports: ${e}`)
+    request.open('GET', proxyServerUrl, true)
+    request.addEventListener('error', (_error) => {
+      console.error('Error on opening port')
     })
-    xhr.send(null)
+    request.send(null)
+  }
 
-    setTimeout(() => {
-      xhr.abort()
-    }, 3000)
+  controlledByOtherExtensions = async () => {
+    const { levelOfControl } =
+      await asynchrome.proxy.settings.get()
+
+    return levelOfControl === 'controlled_by_other_extensions'
+  }
+
+  controlledByThisExtension = async () => {
+    const { levelOfControl } =
+      await asynchrome.proxy.settings.get()
+
+    return levelOfControl === 'controlled_by_this_extension'
+  }
+
+  isProxySet = async () => {
+    const { value } = await asynchrome.proxy.settings.get()
+    const { levelOfControl } = await asynchrome.proxy.settings.get()
+
+    if (Object.hasOwnProperty.call(value, 'pacScript')) {
+      if (Object.hasOwnProperty.call(value.pacScript, 'data')) {
+        if (value.pacScript.data && levelOfControl === 'controlled_by_this_extension') {
+          return true
+        }
+      }
+    }
+    return false
   }
 
   removeOutdatedBlockedDomains = async () => {
     const monthInSeconds = 2628000
-    let { blockedDomains } = await db.get('blockedDomains')
+    let { blockedDomains } = await asynchrome.storage.local.get({ blockedDomains: [] })
 
     if (blockedDomains) {
       blockedDomains = blockedDomains.filter((item) => {
@@ -175,10 +159,10 @@ function FindProxyForURL(url, host) {
       })
     }
 
-    await db.set('blockedDomains', blockedDomains)
+    await asynchrome.storage.local.set({ blockedDomains })
     console.warn('Outdated domains has been removed.')
     await this.setProxy()
   }
 }
 
-export default new Proxies()
+export default new Proxy()

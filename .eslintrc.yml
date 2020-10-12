@@ -7,6 +7,8 @@ env:
   es6: true
   node: true
   browser: true
+  jest/globals: true
+
 parserOptions:
   sourceType: module
   ecmaVersion: 2018
@@ -16,8 +18,17 @@ parserOptions:
     experimentalObjectRestSpread: true
 globals:
   chrome: true
+plugins:
+  - jest
+  - simple-import-sort
 rules:
   max-len: off
+  jest/no-disabled-tests: warn
+  jest/no-focused-tests: error
+  jest/no-identical-title: error
+  jest/prefer-to-have-length: warn
+  jest/valid-expect: error
+  simple-import-sort/sort: error
   import/no-cycle: off
   no-param-reassign: off
   prettier/prettier: off
@@ -31,6 +42,9 @@ rules:
   import/no-default-export: off
   unicorn/prefer-query-selector: off
   no-console: off
+  no-continue: off
+  no-magic-numbers: off
+  new-cap: off
   brace-style:
     - 2
     - 1tbs

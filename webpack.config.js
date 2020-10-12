@@ -43,9 +43,11 @@ const webpackConfig = {
 
   entry: {
     background: './src/chrome/js/background.js',
-    options: './src/chrome/js/ui/options.js',
     unavailable: './src/chrome/js/ui/unavailable.js',
     popup: './src/chrome/js/ui/popup.js',
+    options: './src/chrome/js/ui/options.js',
+    controlled: './src/chrome/js/ui/controlled.js',
+    proxy_disabled: './src/chrome/js/ui/proxy_disabled.js',
   },
 
   output: {
@@ -137,7 +139,27 @@ const webpackConfig = {
       },
     }),
     new HTMLWebpackPlugin({
-      title: 'Proxy Unavailable | Censor Tracker',
+      title: 'Controlled | Censor Tracker',
+      filename: 'controlled.html',
+      template: 'src/chrome/pages/controlled.html',
+      inject: true,
+      chunks: ['controlled'],
+      meta: {
+        'Content-Security-Policy': 'script-src \'self\' \'unsafe-eval\'; object-src \'self\';',
+      },
+    }),
+    new HTMLWebpackPlugin({
+      title: 'Настройки | Censor Tracker',
+      filename: 'options.html',
+      template: 'src/chrome/pages/options.html',
+      inject: true,
+      chunks: ['options', 'controlled'],
+      meta: {
+        'Content-Security-Policy': 'script-src \'self\' \'unsafe-eval\'; object-src \'self\';',
+      },
+    }),
+    new HTMLWebpackPlugin({
+      title: 'Проксирование недоступно | Censor Tracker',
       filename: 'proxy_unavailable.html',
       template: 'src/chrome/pages/proxy_unavailable.html',
       inject: true,
@@ -147,11 +169,11 @@ const webpackConfig = {
       },
     }),
     new HTMLWebpackPlugin({
-      title: 'Options | Censor Tracker',
-      filename: 'options.html',
-      template: 'src/chrome/pages/options.html',
+      title: 'Проксирование отключено | Censor Tracker',
+      filename: 'proxy_disabled.html',
+      template: 'src/chrome/pages/proxy_disabled.html',
       inject: true,
-      chunks: ['options'],
+      chunks: ['proxy_disabled'],
       meta: {
         'Content-Security-Policy': 'script-src \'self\' \'unsafe-eval\'; object-src \'self\';',
       },

@@ -179,11 +179,11 @@ const webpackConfig = {
       },
     }),
     new HTMLWebpackPlugin({
-      title: 'Спасибо за установку | Censor Tracker',
-      filename: 'after_installation.html',
-      template: 'src/chrome/pages/after_installation.html',
+      title: 'CensorTracker установлен',
+      filename: 'installed.html',
+      template: 'src/chrome/pages/installed.html',
       inject: true,
-      chunks: ['proxy_disabled'],
+      chunks: [],
       meta: {
         'Content-Security-Policy': 'script-src \'self\' \'unsafe-eval\'; object-src \'self\';',
       },

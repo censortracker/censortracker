@@ -221,9 +221,13 @@ chrome.runtime.onInstalled.addListener(async ({ reason }) => {
   })
 
   if (reason === 'install') {
-    const synced = await registry.syncDatabase()
+    chrome.tabs.create({
+      url: chrome.runtime.getURL('installed.html'),
+    })
 
-    if (synced) {
+    const synchronized = await registry.syncDatabase()
+
+    if (synchronized) {
       settings.enableExtension()
       await proxy.setProxy()
     }

@@ -124,6 +124,10 @@ const addExtensionControlListeners = async ({ settings, proxy, chromeListeners }
       chromeListeners.remove()
       window.location.reload()
     }
+
+    if (event.target.matches('#openOptionsPage')) {
+      chrome.runtime.openOptionsPage()
+    }
   })
 }
 

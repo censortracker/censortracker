@@ -85,7 +85,7 @@ const onErrorOccurredListener = async ({ url, error, tabId }) => {
       url: chrome.runtime.getURL(`unavailable.html?${window.btoa(url)}`),
     })
     await registry.addBlockedByDPI(hostname)
-    await proxy.setProxy()
+    // await proxy.setProxy()
     return
   }
 
@@ -207,19 +207,6 @@ const showCooperationAcceptedWarning = async (hostname) => {
 }
 
 chrome.runtime.onInstalled.addListener(async ({ reason }) => {
-  chrome.declarativeContent.onPageChanged.removeRules(undefined, () => {
-    chrome.declarativeContent.onPageChanged.addRules([{
-      conditions: [
-        new chrome.declarativeContent.PageStateMatcher({
-          pageUrl: {
-            schemes: ['http', 'https'],
-          },
-        }),
-      ],
-      actions: [new chrome.declarativeContent.ShowPageAction()],
-    }])
-  })
-
   if (reason === 'install') {
     chrome.tabs.create({
       url: chrome.runtime.getURL('installed.html'),
@@ -229,7 +216,7 @@ chrome.runtime.onInstalled.addListener(async ({ reason }) => {
 
     if (synchronized) {
       settings.enableExtension()
-      await proxy.setProxy()
+      // await proxy.setProxy()
     }
   }
 })
@@ -257,10 +244,6 @@ chrome.runtime.onStartup.addListener(async () => {
 chrome.windows.onRemoved.addListener(async (_windowId) => {
   await asynchrome.storage.local.remove('notifiedHosts').catch(console.error)
   console.warn('A list of notified hosts has been cleaned up!')
-})
-
-chrome.proxy.onProxyError.addListener((details) => {
-  console.error(`Proxy error: ${JSON.stringify(details)}`)
 })
 
 chrome.tabs.onActivated.addListener(updateTabState)
@@ -297,3 +280,26 @@ window.censortracker.chromeListeners = {
     console.warn('CensorTracker: listeners added')
   },
 }
+
+// TODO: This is how we should manage proxy in Firefox
+// TODO: Move this to setProxy/removeProxy
+const handleProxyRequest = async ({ url }) => {
+  const { hostname } = new URL(url)
+
+  proxy.allowProxying()
+
+  const isBlocked = await registry.isHostBlocked(hostname)
+
+  if (isBlocked) {
+    console.log(`Proxying: ${hostname}`)
+    return {
+      type: 'https',
+      host: 'proxy-ssl.roskomsvoboda.org',
+      port: 33333,
+    }
+  }
+  console.warn('Avoiding proxy')
+  return { type: 'direct' }
+}
+
+browser.proxy.onRequest.addListener(handleProxyRequest, { urls: ['http://*/*', 'https://*/*'], types: ['main_frame'] })

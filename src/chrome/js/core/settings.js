@@ -37,8 +37,8 @@ class Settings {
   }
 
   _setPageIcon = (tabId, path) => {
-    chrome.pageAction.setIcon({ tabId, path })
-    chrome.pageAction.setTitle({ title: this.getTitle(), tabId })
+    browser.browserAction.setIcon({ tabId, path })
+    browser.browserAction.setTitle({ title: this.getTitle(), tabId })
   }
 
   setDisableIcon = (tabId) => {

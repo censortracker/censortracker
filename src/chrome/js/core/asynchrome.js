@@ -35,24 +35,6 @@ class Asynchrome {
           }, { incognito: false }),
       },
     }
-    this.declarativeContent = {
-      PageStateMatcher: (...args) => promisify({
-        ns: this.chrome.declarativeContent,
-        fn: 'PageStateMatcher',
-      }, ...args),
-      ShowPageAction: (...args) => promisify({
-        ns: this.chrome.declarativeContent,
-        fn: 'ShowPageAction',
-      }, ...args),
-      removeRules: (...args) => promisify({
-        ns: this.chrome.declarativeContent.onPageChanged,
-        fn: 'removeRules',
-      }, ...args),
-      addRules: (...args) => promisify({
-        ns: this.chrome.declarativeContent.onPageChanged,
-        fn: 'addRules',
-      }, ...args),
-    }
     this.storage = {
       local: {
         get: (...args) => promisify({
@@ -117,13 +99,13 @@ class Asynchrome {
         fn: 'update',
       }, ...args),
     }
-    this.pageAction = {
+    this.browserAction = {
       setIcon: (...args) => promisify({
-        ns: this.chrome.pageAction,
+        ns: this.chrome.browserAction,
         fn: 'setIcon',
       }, ...args),
       setTitle: (...args) => promisify({
-        ns: this.chrome.pageAction,
+        ns: this.chrome.browserAction,
         fn: 'setTitle',
       }, ...args),
     }

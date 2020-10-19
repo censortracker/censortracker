@@ -1,6 +1,6 @@
 {
   "name": "Censor Tracker",
-  "version": "2.0.5.1489",
+  "version": "2.0.5.1520",
   "description": "Censor Tracker",
   "permissions": [
     "tabs",
@@ -11,7 +11,6 @@
     "webRequest",
     "notifications",
     "unlimitedStorage",
-    "declarativeContent",
     "webRequestBlocking",
     "http://*/*",
     "https://*/*"
@@ -23,13 +22,13 @@
     ],
     "persistent": true
   },
+  "incognito": "spanning",
   "icons": {
     "16": "images/icons/16x16/default.png",
     "48": "images/icons/48x48/default.png",
     "128": "images/icons/128x128/default.png"
   },
-  "page_action": {
-    "default_name": "Censor Tracker",
+  "browser_action": {
     "default_popup": "popup.html",
     "default_icon": "images/icons/128x128/default.png"
   },

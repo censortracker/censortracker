@@ -282,7 +282,7 @@ window.censortracker.chromeListeners = {
 }
 
 // TODO: This is how we should manage proxy in Firefox
-// TODO: Move this to setProxy/removeProxy
+// TODO: Move this to proxy.js and use through proxy.setProxy()/proxy.removeProxy()
 const handleProxyRequest = async ({ url }) => {
   const { hostname } = new URL(url)
 

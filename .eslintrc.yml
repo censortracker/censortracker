@@ -18,6 +18,7 @@ parserOptions:
     experimentalObjectRestSpread: true
 globals:
   chrome: true
+  browser: true
 plugins:
   - jest
   - simple-import-sort

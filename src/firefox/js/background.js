@@ -103,30 +103,6 @@ browser.webRequest.onErrorOccurred.addListener(
   },
 )
 
-const notificationOnButtonClicked = async (notificationId, buttonIndex) => {
-  if (buttonIndex === 0) {
-    const [tab] = await browser.tabs.query({
-      active: true,
-      lastFocusedWindow: true,
-    })
-
-    const { hostname } = new URL(tab.url)
-    const { mutedForever } =
-      await browser.storage.local.get({ mutedForever: [] })
-
-    if (!mutedForever.find((item) => item === hostname)) {
-      mutedForever.push(hostname)
-
-      try {
-        await browser.storage.local.set({ mutedForever })
-        console.warn(`We won't notify you about ${hostname} anymore`)
-      } catch (error) {
-        console.error(error)
-      }
-    }
-  }
-}
-
 const updateTabState = async () => {
   const [tab] = await browser.tabs.query({
     active: true,
@@ -189,10 +165,6 @@ const showCooperationAcceptedWarning = async (hostname) => {
       title: settings.getName(),
       priority: 2,
       message: `${hostname} может передавать информацию третьим лицам.`,
-      buttons: [
-        { title: '\u2715 Не показывать для этого сайта' },
-        { title: '\u2192 Подробнее' },
-      ],
       iconUrl: settings.getDangerIcon(),
     })
 
@@ -249,7 +221,6 @@ browser.windows.onRemoved.addListener(async (_windowId) => {
 
 browser.tabs.onActivated.addListener(updateTabState)
 browser.tabs.onUpdated.addListener(updateTabState)
-browser.notifications.onButtonClicked.addListener(notificationOnButtonClicked)
 
 const handleProxyRequest = async ({ url }) => {
   const { hostname } = new URL(url)

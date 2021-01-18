@@ -1,4 +1,3 @@
-import asynchrome from './asynchrome'
 import { extractHostnameFromUrl } from './utilities'
 
 const ipRangeCheck = require('ip-range-check')
@@ -41,7 +40,7 @@ class Ignore {
 
   saveIgnoredHosts = async () => {
     const { ignoredHosts } =
-      await asynchrome.storage.local.get({ ignoredHosts: [] })
+      await browser.storage.local.get({ ignoredHosts: [] })
 
     this.ignoredHosts.forEach((element) => {
       if (!ignoredHosts.includes(element)) {
@@ -49,7 +48,7 @@ class Ignore {
       }
     })
 
-    await asynchrome.storage.local.set({ ignoredHosts })
+    await browser.storage.local.set({ ignoredHosts })
   }
 
   addHostToIgnore = async (hostname) => {

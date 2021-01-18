@@ -1,4 +1,3 @@
-import asynchrome from './asynchrome'
 import registry from './registry'
 import settings from './settings'
 
@@ -40,8 +39,8 @@ class Proxy {
     }
 
     await this.allowProxying()
-    await asynchrome.proxy.settings.set(config).catch(console.error)
-    await asynchrome.storage.local.set({ useProxyChecked: true })
+    await browser.proxy.settings.set(config).catch(console.error)
+    await browser.storage.local.set({ useProxyChecked: true })
     console.warn('PAC has been set successfully!')
   }
 
@@ -103,8 +102,8 @@ function FindProxyForURL(url, host) {
   }
 
   removeProxy = async () => {
-    await asynchrome.proxy.settings.clear({ scope: 'regular' }).catch(console.error)
-    await asynchrome.storage.local.set({ useProxyChecked: false })
+    await browser.proxy.settings.clear({ scope: 'regular' }).catch(console.error)
+    await browser.storage.local.set({ useProxyChecked: false })
     console.warn('Proxy auto-config data cleaned!')
   }
 
@@ -121,21 +120,21 @@ function FindProxyForURL(url, host) {
 
   controlledByOtherExtensions = async () => {
     const { levelOfControl } =
-      await asynchrome.proxy.settings.get()
+      await browser.proxy.settings.get({})
 
     return levelOfControl === 'controlled_by_other_extensions'
   }
 
   controlledByThisExtension = async () => {
     const { levelOfControl } =
-      await asynchrome.proxy.settings.get()
+      await browser.proxy.settings.get({})
 
     return levelOfControl === 'controlled_by_this_extension'
   }
 
   isProxySet = async () => {
-    const { value } = await asynchrome.proxy.settings.get()
-    const { levelOfControl } = await asynchrome.proxy.settings.get()
+    const { value } = await browser.proxy.settings.get({})
+    const { levelOfControl } = await browser.proxy.settings.get({})
 
     if (Object.hasOwnProperty.call(value, 'pacScript')) {
       if (Object.hasOwnProperty.call(value.pacScript, 'data')) {
@@ -149,7 +148,7 @@ function FindProxyForURL(url, host) {
 
   removeOutdatedBlockedDomains = async () => {
     const monthInSeconds = 2628000
-    let { blockedDomains } = await asynchrome.storage.local.get({ blockedDomains: [] })
+    let { blockedDomains } = await browser.storage.local.get({ blockedDomains: [] })
 
     if (blockedDomains) {
       blockedDomains = blockedDomains.filter((item) => {
@@ -159,7 +158,7 @@ function FindProxyForURL(url, host) {
       })
     }
 
-    await asynchrome.storage.local.set({ blockedDomains })
+    await browser.storage.local.set({ blockedDomains })
     console.warn('Outdated domains has been removed.')
     await this.setProxy()
   }

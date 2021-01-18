@@ -1,5 +1,4 @@
 import {
-  asynchrome,
   errors,
   ignore,
   proxy,
@@ -19,7 +18,7 @@ window.censortracker = {
   settings,
   errors,
   ignore,
-  asynchrome,
+  browser, // TODO: There is no need in this hack
   extractHostnameFromUrl,
 }
 
@@ -106,20 +105,20 @@ chrome.webRequest.onErrorOccurred.addListener(
 
 const notificationOnButtonClicked = async (notificationId, buttonIndex) => {
   if (buttonIndex === 0) {
-    const [tab] = await asynchrome.tabs.query({
+    const [tab] = await browser.tabs.query({
       active: true,
       lastFocusedWindow: true,
     })
 
     const { hostname } = new URL(tab.url)
     const { mutedForever } =
-      await asynchrome.storage.local.get({ mutedForever: [] })
+      await browser.storage.local.get({ mutedForever: [] })
 
     if (!mutedForever.find((item) => item === hostname)) {
       mutedForever.push(hostname)
 
       try {
-        await asynchrome.storage.local.set({ mutedForever })
+        await browser.storage.local.set({ mutedForever })
         console.warn(`We won't notify you about ${hostname} anymore`)
       } catch (error) {
         console.error(error)
@@ -129,7 +128,7 @@ const notificationOnButtonClicked = async (notificationId, buttonIndex) => {
 }
 
 const updateTabState = async () => {
-  const [tab] = await asynchrome.tabs.query({
+  const [tab] = await browser.tabs.query({
     active: true,
     lastFocusedWindow: true,
   })
@@ -139,7 +138,7 @@ const updateTabState = async () => {
   }
 
   const { enableExtension, useNotificationsChecked } =
-    await asynchrome.storage.local.get({
+    await browser.storage.local.get({
       enableExtension: true,
       useNotificationsChecked: true,
     })
@@ -175,7 +174,7 @@ const updateTabState = async () => {
 
 const showCooperationAcceptedWarning = async (hostname) => {
   const { notifiedHosts, mutedForever } =
-    await asynchrome.storage.local.get({
+    await browser.storage.local.get({
       notifiedHosts: [],
       mutedForever: [],
     })
@@ -185,7 +184,7 @@ const showCooperationAcceptedWarning = async (hostname) => {
   }
 
   if (!notifiedHosts.includes(hostname)) {
-    await asynchrome.notifications.create({
+    await browser.notifications.create({
       type: 'basic',
       title: settings.getName(),
       priority: 2,
@@ -199,7 +198,7 @@ const showCooperationAcceptedWarning = async (hostname) => {
 
     try {
       notifiedHosts.push(hostname)
-      await asynchrome.storage.local.set({ notifiedHosts })
+      await browser.storage.local.set({ notifiedHosts })
     } catch (error) {
       console.error(error)
     }
@@ -225,7 +224,7 @@ browser.runtime.onInstalled.addListener(handleInstalled)
 
 const onTabCreated = async ({ id }) => {
   const { enableExtension } =
-    await asynchrome.storage.local.get({
+    await browser.storage.local.get({
       enableExtension: true,
     })
 
@@ -244,7 +243,7 @@ browser.runtime.onStartup.addListener(async () => {
 })
 
 chrome.windows.onRemoved.addListener(async (_windowId) => {
-  await asynchrome.storage.local.remove('notifiedHosts').catch(console.error)
+  await browser.storage.local.remove('notifiedHosts').catch(console.error)
   console.warn('A list of notified hosts has been cleaned up!')
 })
 

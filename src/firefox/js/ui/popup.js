@@ -32,15 +32,15 @@ controlledOtherExtensionsInfo.addEventListener('click', () => {
 })
 
 chrome.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
-  const { asynchrome, registry, proxy } = bgModules
+  const { browser, registry, proxy } = bgModules
 
   await addExtensionControlListeners(bgModules)
 
-  const { enableExtension } = await asynchrome.storage.local.get({
+  const { enableExtension } = await browser.storage.local.get({
     enableExtension: true,
   })
 
-  const [{ url: currentURL }] = await asynchrome.tabs.query({
+  const [{ url: currentURL }] = await browser.tabs.query({
     active: true, lastFocusedWindow: true,
   })
 

@@ -1,4 +1,3 @@
-import asynchrome from './asynchrome'
 import settings from './settings'
 
 const DOMAINS_DB_KEY = 'domains'
@@ -22,13 +21,13 @@ class Registry {
       const response = await fetch(url).catch(console.error)
       const domains = await response.json()
 
-      await asynchrome.storage.local.set({
+      await browser.storage.local.set({
         [key]: domains,
         timestamp: new Date().getTime(),
       }).catch(console.error)
     }
 
-    const { domains } = await asynchrome.storage.local.get({ [DOMAINS_DB_KEY]: [] })
+    const { domains } = await browser.storage.local.get({ [DOMAINS_DB_KEY]: [] })
 
     if (!domains) {
       console.log('Database is empty. Trying to sync...')
@@ -39,7 +38,7 @@ class Registry {
 
   getDomains = async () => {
     const { domains, blockedDomains } =
-      await asynchrome.storage.local.get({ [DOMAINS_DB_KEY]: [], blockedDomains: [] })
+      await browser.storage.local.get({ [DOMAINS_DB_KEY]: [], blockedDomains: [] })
 
     const blockedDomainsArray = blockedDomains.map(({ domain }) => domain)
 
@@ -57,7 +56,7 @@ class Registry {
 
   domainsContains = async (host) => {
     const { domains, blockedDomains } =
-      await asynchrome.storage.local.get({
+      await browser.storage.local.get({
         [DOMAINS_DB_KEY]: [],
         blockedDomains: [],
       })
@@ -73,7 +72,7 @@ class Registry {
 
   distributorsContains = async (host) => {
     const { distributors } =
-      await asynchrome.storage.local.get({ [DISTRIBUTORS_DB_KEY]: [] })
+      await browser.storage.local.get({ [DISTRIBUTORS_DB_KEY]: [] })
 
     const dataObject = distributors.find(({ url }) => (host === url))
 
@@ -88,7 +87,7 @@ class Registry {
     if (!hostname) {
       return
     }
-    const { blockedDomains } = await asynchrome.storage.local.get({ blockedDomains: [] })
+    const { blockedDomains } = await browser.storage.local.get({ blockedDomains: [] })
 
     if (!blockedDomains.find(({ domain }) => domain === hostname)) {
       blockedDomains.push({
@@ -97,11 +96,11 @@ class Registry {
       })
       await this.reportBlockedByDPI(hostname)
     }
-    await asynchrome.storage.local.set({ blockedDomains })
+    await browser.storage.local.set({ blockedDomains })
   }
 
   reportBlockedByDPI = async (domain) => {
-    const { alreadyReported } = await asynchrome.storage.local.get({ alreadyReported: [] })
+    const { alreadyReported } = await browser.storage.local.get({ alreadyReported: [] })
 
     if (!alreadyReported.includes(domain)) {
       const response = await fetch(settings.getLoggingApiUrl(), {
@@ -112,7 +111,7 @@ class Registry {
       const json = await response.json()
 
       alreadyReported.push(domain)
-      await asynchrome.storage.local.set({ alreadyReported })
+      await browser.storage.local.set({ alreadyReported })
       console.warn(`Reported possible DPI lock: ${domain}`)
       return json
     }

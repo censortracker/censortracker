@@ -1,10 +1,9 @@
-import asynchrome from '../core/asynchrome'
 import proxy from '../core/proxy'
 
 (async () => {
   const unavailableWebsite = document.getElementById('unavailableWebsite')
 
-  const [tab] = await asynchrome.tabs.query({ active: true, lastFocusedWindow: true })
+  const [tab] = await browser.tabs.query({ active: true, lastFocusedWindow: true })
   const [, encodedHostname] = tab.url.split('?')
   const targetUrl = window.atob(encodedHostname)
 
@@ -20,7 +19,7 @@ import proxy from '../core/proxy'
     }
 
     if (event.target.matches('#doNotAskAnymore')) {
-      const { censortracker: { chromeListeners } } = await asynchrome.runtime.getBackgroundPage()
+      const { censortracker: { chromeListeners } } = await browser.runtime.getBackgroundPage()
 
       if (chromeListeners.has()) {
         chromeListeners.remove()

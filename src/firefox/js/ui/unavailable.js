@@ -1,10 +1,8 @@
-import asynchrome from '../core/asynchrome'
-
 (async () => {
   const unavailableWebsite = document.getElementById('unavailableWebsite')
   const extendProxyButton = document.getElementById('extendProxyAutoConfig')
 
-  const [tab] = await asynchrome.tabs.query({ active: true, lastFocusedWindow: true })
+  const [tab] = await browser.tabs.query({ active: true, lastFocusedWindow: true })
 
   const [, encodedHostname] = tab.url.split('?')
   const targetUrl = window.atob(encodedHostname)

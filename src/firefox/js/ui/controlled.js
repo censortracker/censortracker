@@ -7,12 +7,12 @@
   const controlledByExtensions = document.getElementById('controlledByOtherExtensions')
   const useProxyCheckbox = document.getElementById('useProxyCheckbox')
 
-  chrome.runtime.getBackgroundPage(async ({ censortracker: { asynchrome, proxy } }) => {
+  chrome.runtime.getBackgroundPage(async ({ censortracker: { browser, proxy } }) => {
     const isProxyControlledByOtherExtensions = await proxy.controlledByOtherExtensions()
 
     if (isProxyControlledByOtherExtensions) {
-      const self = await asynchrome.management.getSelf()
-      const extensions = await asynchrome.management.getAll()
+      const self = await browser.management.getSelf()
+      const extensions = await browser.management.getAll()
 
       const extensionsWithProxyPermissions = extensions.filter(({ name, permissions }) => {
         return permissions.includes('proxy') && name !== self.name
@@ -42,7 +42,7 @@
           const currentPage = window.location.pathname.split('/').pop()
 
           for (const { id } of extensionsWithProxyPermissions) {
-            await asynchrome.management.setEnabled(id, false)
+            await browser.management.setEnabled(id, false)
           }
 
           if (currentPage.startsWith('controlled')) {

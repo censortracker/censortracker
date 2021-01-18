@@ -31,7 +31,7 @@ controlledOtherExtensionsInfo.addEventListener('click', () => {
   window.location.href = 'controlled.html'
 })
 
-chrome.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
+browser.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
   const { browser, registry, proxy } = bgModules
 
   await addExtensionControlListeners(bgModules)
@@ -109,30 +109,30 @@ chrome.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
   setTimeout(show, popupShowTimeout)
 })
 
-const addExtensionControlListeners = async ({ settings, proxy, chromeListeners }) => {
+const addExtensionControlListeners = async ({ settings, proxy, browserListeners }) => {
   document.addEventListener('click', (event) => {
     if (event.target.matches('#enableExtension')) {
       settings.enableExtension()
       proxy.setProxy()
-      chromeListeners.add()
+      browserListeners.add()
       window.location.reload()
     }
 
     if (event.target.matches('#disableExtension')) {
       proxy.removeProxy()
       settings.disableExtension()
-      chromeListeners.remove()
+      browserListeners.remove()
       window.location.reload()
     }
 
     if (event.target.matches('#openOptionsPage')) {
-      chrome.runtime.openOptionsPage()
+      browser.runtime.openOptionsPage()
     }
   })
 }
 
 const changeStatusImage = (imageName) => {
-  const imageSrc = chrome.runtime.getURL(`images/icons/512x512/${imageName}.png`)
+  const imageSrc = browser.runtime.getURL(`images/icons/512x512/${imageName}.png`)
 
   statusImage.setAttribute('src', imageSrc)
 }
@@ -144,7 +144,7 @@ const changeStatusImage = (imageName) => {
 // }
 
 const getAppropriateURL = (currentURL) => {
-  const popupURL = chrome.runtime.getURL('popup.html')
+  const popupURL = browser.runtime.getURL('popup.html')
 
   if (currentURL.startsWith(popupURL)) {
     const currentURLParams = currentURL.split('?')[1]

@@ -13,19 +13,19 @@ import proxy from '../core/proxy'
     if (event.target.matches('#openThroughProxy')) {
       await proxy.setProxy()
 
-      chrome.tabs.create({ url: targetUrl, index: tab.index }, () => {
-        chrome.tabs.remove(tab.id)
+      browser.tabs.create({ url: targetUrl, index: tab.index }, () => {
+        browser.tabs.remove(tab.id)
       })
     }
 
     if (event.target.matches('#doNotAskAnymore')) {
-      const { censortracker: { chromeListeners } } = await browser.runtime.getBackgroundPage()
+      const { censortracker: { browserListeners } } = await browser.runtime.getBackgroundPage()
 
-      if (chromeListeners.has()) {
-        chromeListeners.remove()
+      if (browserListeners.has()) {
+        browserListeners.remove()
       }
 
-      chrome.tabs.update(tab.id, { url: targetUrl })
+      browser.tabs.update(tab.id, { url: targetUrl })
     }
 
     event.preventDefault()

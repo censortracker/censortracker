@@ -1,4 +1,4 @@
-const manifest = chrome.runtime.getManifest()
+const manifest = browser.runtime.getManifest()
 const rksUrl = 'https://reestr.rublacklist.net'
 
 class Settings {
@@ -22,14 +22,14 @@ class Settings {
     }
   }
 
-  getDangerIcon = () => chrome.runtime.getURL('images/icons/128x128/danger.png');
+  getDangerIcon = () => browser.runtime.getURL('images/icons/128x128/danger.png');
 
-  getDefaultIcon = () => chrome.runtime.getURL('images/icons/128x128/default.png');
+  getDefaultIcon = () => browser.runtime.getURL('images/icons/128x128/default.png');
 
-  getDisabledIcon = () => chrome.runtime.getURL('images/icons/128x128/disabled.png');
+  getDisabledIcon = () => browser.runtime.getURL('images/icons/128x128/disabled.png');
 
   getPopupImage = ({ size = '512', name = 'default' }) => {
-    return chrome.runtime.getURL(`images/icons/${size}x${size}/${name}.png`)
+    return browser.runtime.getURL(`images/icons/${size}x${size}/${name}.png`)
   }
 
   getProxyServerUrl = () => {
@@ -55,11 +55,11 @@ class Settings {
 
   _toggleExtension = ({ enableExtension }) => {
     if (typeof enableExtension === 'boolean') {
-      chrome.storage.local.set({ enableExtension }, () => {
+      browser.storage.local.set({ enableExtension }, () => {
         console.warn('Extension enabled')
       })
 
-      chrome.tabs.query({}, (tabs) => {
+      browser.tabs.query({}, (tabs) => {
         tabs.forEach((tab) => {
           enableExtension ? this.setDefaultIcon(tab.id)
             : this.setDisableIcon(tab.id)

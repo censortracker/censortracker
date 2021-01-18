@@ -15,17 +15,17 @@
 
   document.addEventListener('click', (event) => {
     if (event.target.matches('#extendProxyAutoConfig')) {
-      chrome.tabs.create({ url: targetUrl, index: tab.index }, () => {
-        chrome.tabs.remove(tab.id)
+      browser.tabs.create({ url: targetUrl, index: tab.index }, () => {
+        browser.tabs.remove(tab.id)
       })
     }
 
     if (event.target.matches('#tryAgain')) {
-      chrome.tabs.update(tab.id, { url: targetUrl })
+      browser.tabs.update(tab.id, { url: targetUrl })
     }
 
     if (event.target.matches('#closeTab')) {
-      chrome.tabs.remove(tab.id)
+      browser.tabs.remove(tab.id)
     }
 
     event.preventDefault()

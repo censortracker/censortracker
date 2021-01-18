@@ -7,7 +7,7 @@
   const controlledByExtensions = document.getElementById('controlledByOtherExtensions')
   const useProxyCheckbox = document.getElementById('useProxyCheckbox')
 
-  chrome.runtime.getBackgroundPage(async ({ censortracker: { browser, proxy } }) => {
+  browser.runtime.getBackgroundPage(async ({ censortracker: { browser, proxy } }) => {
     const isProxyControlledByOtherExtensions = await proxy.controlledByOtherExtensions()
 
     if (isProxyControlledByOtherExtensions) {
@@ -63,7 +63,7 @@
 
   if (backToPopup) {
     backToPopup.addEventListener('click', () => {
-      window.location.href = chrome.runtime.getURL('popup.html')
+      window.location.href = browser.runtime.getURL('popup.html')
     })
   }
 

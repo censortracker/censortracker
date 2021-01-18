@@ -274,6 +274,7 @@ browser.proxy.onRequest.addListener(handleProxyRequest, { urls: ['http://*/*', '
 
 // The mechanism for controlling handlers from popup.js
 window.censortracker.browserListeners = {
+  // TODO: Pretty bad idea to use that name (fix it).
   has: () => {
     const hasOnErrorOccurredListener =
       browser.webRequest.onErrorOccurred.hasListener(onErrorOccurredListener)

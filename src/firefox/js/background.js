@@ -206,23 +206,10 @@ const showCooperationAcceptedWarning = async (hostname) => {
   }
 }
 
-chrome.runtime.onInstalled.addListener(async ({ reason }) => {
-  chrome.declarativeContent.onPageChanged.removeRules(undefined, () => {
-    chrome.declarativeContent.onPageChanged.addRules([{
-      conditions: [
-        new chrome.declarativeContent.PageStateMatcher({
-          pageUrl: {
-            schemes: ['http', 'https'],
-          },
-        }),
-      ],
-      actions: [new chrome.declarativeContent.ShowPageAction()],
-    }])
-  })
-
+const handleInstalled = async ({ reason }) => {
   if (reason === 'install') {
-    chrome.tabs.create({
-      url: chrome.runtime.getURL('installed.html'),
+    browser.tabs.create({
+      url: browser.runtime.getURL('installed.html'),
     })
 
     const synchronized = await registry.syncDatabase()
@@ -232,7 +219,9 @@ chrome.runtime.onInstalled.addListener(async ({ reason }) => {
       await proxy.setProxy()
     }
   }
-})
+}
+
+browser.runtime.onInstalled.addListener(handleInstalled)
 
 const onTabCreated = async ({ id }) => {
   const { enableExtension } =
@@ -249,7 +238,7 @@ const onTabCreated = async ({ id }) => {
 
 chrome.tabs.onCreated.addListener(onTabCreated)
 
-chrome.runtime.onStartup.addListener(async () => {
+browser.runtime.onStartup.addListener(async () => {
   await registry.syncDatabase()
   await updateTabState()
 })

@@ -72,7 +72,8 @@ const handleProxyRequest = async ({ url }) => {
 
 browser.proxy.onRequest.addListener(
   handleProxyRequest, {
-    urls: ['<all_urls>'],
+    urls: ['http://*/*', 'https://*/*'],
+    types: ['main_frame'],
   },
 )
 
@@ -195,6 +196,12 @@ const showCooperationAcceptedWarning = async (hostname) => {
   }
 }
 
+/**
+ * Fired when the extension is first installed, when the extension is
+ * updated to a new version, and when the browser is updated to a new version.
+ * @param reason The reason that the runtime.onInstalled event is being dispatched.
+ * @returns {Promise<void>}
+ */
 const handleInstalled = async ({ reason }) => {
   if (reason === 'install') {
     browser.tabs.create({

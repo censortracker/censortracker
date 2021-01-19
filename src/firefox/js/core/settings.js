@@ -28,10 +28,6 @@ class Settings {
 
   getDisabledIcon = () => browser.runtime.getURL('images/icons/128x128/disabled.png');
 
-  getPopupImage = ({ size = '512', name = 'default' }) => {
-    return browser.runtime.getURL(`images/icons/${size}x${size}/${name}.png`)
-  }
-
   getProxyServerUrl = () => {
     return 'proxy-ssl.roskomsvoboda.org:33333'
   }

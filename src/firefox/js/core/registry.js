@@ -1,4 +1,5 @@
 import settings from './settings'
+import { extractHostnameFromUrl } from './utilities'
 
 const DOMAINS_DB_KEY = 'domains'
 const DISTRIBUTORS_DB_KEY = 'distributors'
@@ -54,17 +55,8 @@ class Registry {
     return []
   }
 
-  extractHostnameFromUrl = (url) => {
-    try {
-      let { hostname } = new URL(url)
-      return hostname
-    } catch (error) {
-      return url
-    }
-  }
-
   domainsContains = async (url) => {
-    const hostname = this.extractHostnameFromUrl(url)
+    const hostname = extractHostnameFromUrl(url)
     const { domains, blockedDomains } =
       await browser.storage.local.get({
         [DOMAINS_DB_KEY]: [],
@@ -81,7 +73,7 @@ class Registry {
   }
 
   distributorsContains = async (url) => {
-    const hostname = this.extractHostnameFromUrl(url)
+    const hostname = extractHostnameFromUrl(url)
     const { distributors } =
       await browser.storage.local.get({ [DISTRIBUTORS_DB_KEY]: [] })
 

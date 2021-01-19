@@ -45,7 +45,7 @@ browser.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
   })
 
   const currentHostname = bgModules.extractHostnameFromUrl(
-    getAppropriateURL(currentURL)
+    getAppropriateURL(currentURL),
   )
 
   interpolateCurrentDomain(currentHostname)

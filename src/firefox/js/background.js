@@ -49,6 +49,34 @@ browser.webRequest.onBeforeRequest.addListener(
 )
 
 /**
+ * Fired when a web request is about to be made, to give the extension an opportunity to proxy it.
+ * @param url Current URL address.
+ * @returns {Promise<{port: number, host: string, type: string}|{type: string}>}
+ */
+const handleProxyRequest = async ({ url }) => {
+  proxy.allowProxying()
+
+  const isBlocked = await registry.domainsContains(url)
+
+  if (isBlocked) {
+    console.log(`Proxying: ${hostname}`)
+    return {
+      type: 'https',
+      host: 'proxy-ssl.roskomsvoboda.org',
+      port: 33333,
+    }
+  }
+  console.warn('Avoiding proxy')
+  return { type: 'direct' }
+}
+
+browser.proxy.onRequest.addListener(
+  handleProxyRequest, {
+    urls: ['<all_urls>'],
+  },
+)
+
+/**
  * Fires when a request could not be processed successfully.
  * @param url Current URL address.
  * @param error The error description.
@@ -215,25 +243,6 @@ browser.runtime.onStartup.addListener(async () => {
 
 browser.tabs.onActivated.addListener(handleTabState)
 browser.tabs.onUpdated.addListener(handleTabState)
-
-const handleProxyRequest = async ({ url }) => {
-  proxy.allowProxying()
-
-  const isBlocked = await registry.domainsContains(url)
-
-  if (isBlocked) {
-    console.log(`Proxying: ${hostname}`)
-    return {
-      type: 'https',
-      host: 'proxy-ssl.roskomsvoboda.org',
-      port: 33333,
-    }
-  }
-  console.warn('Avoiding proxy')
-  return { type: 'direct' }
-}
-
-browser.proxy.onRequest.addListener(handleProxyRequest, { urls: ['<all_urls>']})
 
 // The mechanism for controlling handlers from popup.js
 window.censortracker.browserListeners = {

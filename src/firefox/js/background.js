@@ -26,10 +26,10 @@ window.censortracker = {
  * Fires when a request is about to occur. This event is sent before any TCP
  * connection is made and can be used to cancel or redirect requests.
  * @param url Current URL address.
- * @returns {undefined|{redirectUrl: *}} Undefined or redirection to HTTPS§.
+ * @returns {undefined|{redirectUrl: *}} Undefined or redirection to HTTPS.
  */
 const handleBeforeRequest = ({ url }) => {
-  const { hostname } = new URL(url)
+  const hostname = extractHostnameFromUrl(url)
 
   if (ignore.isIgnoredHost(hostname)) {
     console.warn(`Ignoring host: ${url}`)

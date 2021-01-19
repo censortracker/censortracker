@@ -218,12 +218,9 @@ browser.tabs.onActivated.addListener(handleTabState)
 browser.tabs.onUpdated.addListener(handleTabState)
 
 const handleProxyRequest = async ({ url }) => {
-  const { hostname } = new URL(url)
-
   proxy.allowProxying()
 
-  // const isBlocked = await registry.isHostBlocked(hostname)
-  const isBlocked = true
+  const isBlocked = await registry.domainsContains(url)
 
   if (isBlocked) {
     console.log(`Proxying: ${hostname}`)

@@ -54,7 +54,17 @@ class Registry {
     return []
   }
 
-  domainsContains = async (host) => {
+  extractHostnameFromUrl = (url) => {
+    try {
+      let { hostname } = new URL(url)
+      return hostname
+    } catch (error) {
+      return url
+    }
+  }
+
+  domainsContains = async (url) => {
+    const hostname = this.extractHostnameFromUrl(url)
     const { domains, blockedDomains } =
       await browser.storage.local.get({
         [DOMAINS_DB_KEY]: [],
@@ -63,21 +73,22 @@ class Registry {
 
     const domainsArray = domains.concat(blockedDomains)
 
-    if (domainsArray.includes(host)) {
-      console.log(`Registry match found: ${host}`)
+    if (domainsArray.includes(hostname)) {
+      console.log(`Registry match found: ${hostname}`)
       return { domainFound: true }
     }
     return { domainFound: false }
   }
 
-  distributorsContains = async (host) => {
+  distributorsContains = async (url) => {
+    const hostname = this.extractHostnameFromUrl(url)
     const { distributors } =
       await browser.storage.local.get({ [DISTRIBUTORS_DB_KEY]: [] })
 
-    const dataObject = distributors.find(({ url }) => (host === url))
+    const dataObject = distributors.find(({ url }) => (hostname === url))
 
     if (dataObject) {
-      console.warn(`Distributor match found: ${host}`)
+      console.warn(`Distributor match found: ${hostname}`)
       return dataObject
     }
     return {}

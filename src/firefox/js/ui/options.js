@@ -27,7 +27,6 @@ import proxy from '../core/proxy'
         browserListeners.add()
       }
 
-      // await proxy.setProxy()
       useProxyCheckbox.checked = true
       console.log('Proxying enabled.')
     } else {

@@ -54,19 +54,13 @@ browser.webRequest.onBeforeRequest.addListener(
  * @returns {Promise<{port: number, host: string, type: string}|{type: string}>}
  */
 const handleProxyRequest = async ({ url }) => {
-  proxy.allowProxying()
+  const { domainFound } = await registry.domainsContains(url)
 
-  const isBlocked = await registry.domainsContains(url)
-
-  if (isBlocked) {
+  if (domainFound) {
+    proxy.allowProxying()
     console.log(`Proxying: ${extractHostnameFromUrl(url)}`)
-    return {
-      type: 'https',
-      host: 'proxy-ssl.roskomsvoboda.org',
-      port: 33333,
-    }
+    return settings.getProxyInfo()
   }
-  console.warn('Avoiding proxy')
   return { type: 'direct' }
 }
 
@@ -113,7 +107,6 @@ const handleErrorOccurred = async ({ url, error, tabId }) => {
       url: browser.runtime.getURL(`unavailable.html?${window.btoa(url)}`),
     })
     await registry.addBlockedByDPI(hostname)
-    // await proxy.setProxy()
     return
   }
 
@@ -212,7 +205,6 @@ const handleInstalled = async ({ reason }) => {
 
     if (synchronized) {
       settings.enableExtension()
-      // await proxy.setProxy()
     }
   }
 }

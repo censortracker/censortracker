@@ -28,8 +28,12 @@ class Settings {
 
   getDisabledIcon = () => browser.runtime.getURL('images/icons/128x128/disabled.png');
 
-  getProxyServerUrl = () => {
-    return 'proxy-ssl.roskomsvoboda.org:33333'
+  getProxyInfo = () => {
+    return {
+      type: 'https',
+      host: 'proxy-ssl.roskomsvoboda.org',
+      port: 33333,
+    }
   }
 
   _setPageIcon = (tabId, path) => {

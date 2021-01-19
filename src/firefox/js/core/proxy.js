@@ -1,6 +1,3 @@
-import registry from './registry'
-import settings from './settings'
-
 class Proxy {
   constructor () {
     this.ignoredDomains = [
@@ -22,87 +19,7 @@ class Proxy {
     })
   }
 
-  setProxy = async () => {
-    let domains = await registry.getDomains()
-
-    domains = this.excludeIgnoredDomains(domains)
-
-    const config = {
-      value: {
-        mode: 'pac_script',
-        pacScript: {
-          data: this.generatePacScriptData(domains),
-          mandatory: false,
-        },
-      },
-      scope: 'regular',
-    }
-
-    await this.allowProxying()
-    await browser.proxy.settings.set(config).catch(console.error)
-    await browser.storage.local.set({ useProxyChecked: true })
-    console.warn('PAC has been set successfully!')
-  }
-
-  /**
-   * ATTENTION: DO NOT MODIFY THIS FUNCTION!
-   * @param domains An array of domains.
-   * @returns {string} The PAC data.
-   */
-  generatePacScriptData = (domains = []) => {
-    // The binary search works only with pre-sorted array.
-    domains.sort()
-
-    return `
-function FindProxyForURL(url, host) {
-  function isHostBlocked(array, target) {
-    let left = 0;
-    let right = array.length - 1;
-
-    while (left <= right) {
-      const mid = left + Math.floor((right - left) / 2);
-
-      if (array[mid] === target) {
-        return true;
-      }
-
-      if (array[mid] < target) {
-        left = mid + 1;
-      } else {
-        right = mid - 1;
-      }
-    }
-    return false;
-  }
-
-  // Remove ending dot
-  if (host.endsWith('.')) {
-    host = host.substring(0, host.length - 1);
-  }
-
-  // Make domain second-level.
-  let lastDot = host.lastIndexOf('.');
-  if (lastDot !== -1) {
-    lastDot = host.lastIndexOf('.', lastDot - 1);
-    if (lastDot !== -1) {
-      host = host.substr(lastDot + 1);
-    }
-  }
-
-  // Domains, which are blocked.
-  let domains = ${JSON.stringify(domains)};
-
-  // Return result
-  if (isHostBlocked(domains, host)) {
-    return 'HTTPS ${settings.getProxyServerUrl()};';
-  } else {
-    return 'DIRECT';
-  }
-}`
-  }
-
   removeProxy = async () => {
-    await browser.proxy.settings.clear({ scope: 'regular' }).catch(console.error)
     await browser.storage.local.set({ useProxyChecked: false })
     console.warn('Proxy auto-config data cleaned!')
   }
@@ -132,20 +49,6 @@ function FindProxyForURL(url, host) {
     return levelOfControl === 'controlled_by_this_extension'
   }
 
-  isProxySet = async () => {
-    const { value } = await browser.proxy.settings.get({})
-    const { levelOfControl } = await browser.proxy.settings.get({})
-
-    if (Object.hasOwnProperty.call(value, 'pacScript')) {
-      if (Object.hasOwnProperty.call(value.pacScript, 'data')) {
-        if (value.pacScript.data && levelOfControl === 'controlled_by_this_extension') {
-          return true
-        }
-      }
-    }
-    return false
-  }
-
   removeOutdatedBlockedDomains = async () => {
     const monthInSeconds = 2628000
     let { blockedDomains } = await browser.storage.local.get({ blockedDomains: [] })
@@ -160,7 +63,6 @@ function FindProxyForURL(url, host) {
 
     await browser.storage.local.set({ blockedDomains })
     console.warn('Outdated domains has been removed.')
-    await this.setProxy()
   }
 }
 

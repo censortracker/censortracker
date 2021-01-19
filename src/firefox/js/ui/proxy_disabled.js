@@ -11,8 +11,6 @@
 
   document.addEventListener('click', async (event) => {
     if (event.target.matches('#openThroughProxy')) {
-      // await proxy.setProxy()
-
       browser.tabs.create({ url: targetUrl, index: tab.index }, () => {
         browser.tabs.remove(tab.id)
       })

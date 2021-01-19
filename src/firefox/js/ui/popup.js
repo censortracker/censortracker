@@ -44,8 +44,9 @@ browser.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
     active: true, lastFocusedWindow: true,
   })
 
-  const { hostname } = getAppropriateURL(currentURL)
-  const currentHostname = bgModules.extractHostnameFromUrl(hostname)
+  const currentHostname = bgModules.extractHostnameFromUrl(
+    getAppropriateURL(currentURL)
+  )
 
   interpolateCurrentDomain(currentHostname)
 
@@ -152,9 +153,9 @@ const getAppropriateURL = (currentURL) => {
     const encodedURL = searchParams.get('loadFor')
     const loadForURL = window.atob(encodedURL)
 
-    return new URL(loadForURL)
+    return loadForURL
   }
-  return new URL(currentURL)
+  return currentURL
 }
 
 const interpolateCurrentDomain = (domain) => {

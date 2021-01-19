@@ -124,8 +124,7 @@ const handleTabState = async () => {
     return
   }
 
-  const { hostname } = new URL(tab.url)
-  const currentHostname = extractHostnameFromUrl(hostname)
+  const currentHostname = extractHostnameFromUrl(tab.url)
 
   if (ignore.isIgnoredHost(currentHostname)) {
     return

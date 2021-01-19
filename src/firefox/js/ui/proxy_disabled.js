@@ -1,4 +1,4 @@
-import proxy from '../core/proxy'
+// import proxy from '../core/proxy'
 
 (async () => {
   const unavailableWebsite = document.getElementById('unavailableWebsite')
@@ -11,7 +11,7 @@ import proxy from '../core/proxy'
 
   document.addEventListener('click', async (event) => {
     if (event.target.matches('#openThroughProxy')) {
-      await proxy.setProxy()
+      // await proxy.setProxy()
 
       browser.tabs.create({ url: targetUrl, index: tab.index }, () => {
         browser.tabs.remove(tab.id)

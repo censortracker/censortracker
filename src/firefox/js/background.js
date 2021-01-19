@@ -113,7 +113,7 @@ const handleErrorOccurred = async ({ url, error, tabId }) => {
       url: browser.runtime.getURL(`unavailable.html?${window.btoa(url)}`),
     })
     await registry.addBlockedByDPI(hostname)
-    await proxy.setProxy()
+    // await proxy.setProxy()
     return
   }
 
@@ -212,7 +212,7 @@ const handleInstalled = async ({ reason }) => {
 
     if (synchronized) {
       settings.enableExtension()
-      await proxy.setProxy()
+      // await proxy.setProxy()
     }
   }
 }

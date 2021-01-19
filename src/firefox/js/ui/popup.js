@@ -114,7 +114,7 @@ const addExtensionControlListeners = async ({ settings, proxy, browserListeners 
   document.addEventListener('click', (event) => {
     if (event.target.matches('#enableExtension')) {
       settings.enableExtension()
-      proxy.setProxy()
+      // proxy.setProxy()
       browserListeners.add()
       window.location.reload()
     }

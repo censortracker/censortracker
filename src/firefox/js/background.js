@@ -176,23 +176,14 @@ const handleTabState = async () => {
 }
 
 const showCooperationAcceptedWarning = async (hostname) => {
-  const { notifiedHosts, mutedForever } =
-    await browser.storage.local.get({
-      notifiedHosts: [],
-      mutedForever: [],
-    })
-
-  if (mutedForever.includes(hostname)) {
-    return
-  }
+  const { notifiedHosts } = await browser.storage.local.get({ notifiedHosts: [] })
 
   if (!notifiedHosts.includes(hostname)) {
     await browser.notifications.create({
       type: 'basic',
       title: settings.getName(),
-      priority: 2,
-      message: `${hostname} может передавать информацию третьим лицам.`,
       iconUrl: settings.getDangerIcon(),
+      message: `${hostname} может передавать информацию третьим лицам.`,
     })
 
     try {

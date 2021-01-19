@@ -77,7 +77,7 @@ class Registry {
     const { distributors } =
       await browser.storage.local.get({ [DISTRIBUTORS_DB_KEY]: [] })
 
-    const dataObject = distributors.find(({ url }) => (hostname === url))
+    const dataObject = distributors.find(({ url: innerUrl }) => (hostname === innerUrl))
 
     if (dataObject) {
       console.warn(`Distributor match found: ${hostname}`)

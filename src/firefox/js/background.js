@@ -59,7 +59,7 @@ const handleProxyRequest = async ({ url }) => {
   const isBlocked = await registry.domainsContains(url)
 
   if (isBlocked) {
-    console.log(`Proxying: ${hostname}`)
+    console.log(`Proxying: ${extractHostnameFromUrl(url)}`)
     return {
       type: 'https',
       host: 'proxy-ssl.roskomsvoboda.org',

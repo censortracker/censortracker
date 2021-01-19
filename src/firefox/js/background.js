@@ -28,7 +28,7 @@ window.censortracker = {
  * @param url Current URL address.
  * @returns {undefined|{redirectUrl: *}} Undefined or redirection to HTTPS§.
  */
-const onBeforeRequestListener = ({ url }) => {
+const handleBeforeRequest = ({ url }) => {
   const { hostname } = new URL(url)
 
   if (ignore.isIgnoredHost(hostname)) {
@@ -42,7 +42,7 @@ const onBeforeRequestListener = ({ url }) => {
 }
 
 browser.webRequest.onBeforeRequest.addListener(
-  onBeforeRequestListener, {
+  handleBeforeRequest, {
     urls: ['http://*/*'],
     types: ['main_frame'],
   }, ['blocking'],
@@ -55,7 +55,7 @@ browser.webRequest.onBeforeRequest.addListener(
  * @param tabId The ID of the tab in which the request takes place.
  * @returns {undefined} Undefined.
  */
-const onErrorOccurredListener = async ({ url, error, tabId }) => {
+const handleErrorOccurred = async ({ url, error, tabId }) => {
   const { hostname } = new URL(url)
 
   if (ignore.isIgnoredHost(hostname)) {
@@ -95,15 +95,15 @@ const onErrorOccurredListener = async ({ url, error, tabId }) => {
   })
 }
 
-browser.webRequest.onErrorOccurred.addListener(
-  onErrorOccurredListener,
-  {
-    urls: ['http://*/*', 'https://*/*'],
-    types: ['main_frame'],
-  },
-)
+// browser.webRequest.onErrorOccurred.addListener(
+//   handleErrorOccurred,
+//   {
+//     urls: ['http://*/*', 'https://*/*'],
+//     types: ['main_frame'],
+//   },
+// )
 
-const updateTabState = async () => {
+const handleTabState = async () => {
   const [tab] = await browser.tabs.query({
     active: true,
     lastFocusedWindow: true,
@@ -194,7 +194,7 @@ const handleInstalled = async ({ reason }) => {
 
 browser.runtime.onInstalled.addListener(handleInstalled)
 
-const onTabCreated = async ({ id }) => {
+const handleTabCreate = async ({ id }) => {
   const { enableExtension } =
     await browser.storage.local.get({
       enableExtension: true,
@@ -207,27 +207,23 @@ const onTabCreated = async ({ id }) => {
   }
 }
 
-browser.tabs.onCreated.addListener(onTabCreated)
+browser.tabs.onCreated.addListener(handleTabCreate)
 
 browser.runtime.onStartup.addListener(async () => {
   await registry.syncDatabase()
-  await updateTabState()
+  await handleTabState()
 })
 
-browser.windows.onRemoved.addListener(async (_windowId) => {
-  await browser.storage.local.remove('notifiedHosts').catch(console.error)
-  console.warn('A list of notified hosts has been cleaned up!')
-})
-
-browser.tabs.onActivated.addListener(updateTabState)
-browser.tabs.onUpdated.addListener(updateTabState)
+browser.tabs.onActivated.addListener(handleTabState)
+browser.tabs.onUpdated.addListener(handleTabState)
 
 const handleProxyRequest = async ({ url }) => {
   const { hostname } = new URL(url)
 
   proxy.allowProxying()
 
-  const isBlocked = await registry.isHostBlocked(hostname)
+  // const isBlocked = await registry.isHostBlocked(hostname)
+  const isBlocked = true
 
   if (isBlocked) {
     console.log(`Proxying: ${hostname}`)
@@ -241,31 +237,31 @@ const handleProxyRequest = async ({ url }) => {
   return { type: 'direct' }
 }
 
-browser.proxy.onRequest.addListener(handleProxyRequest, { urls: ['http://*/*', 'https://*/*'], types: ['main_frame'] })
+browser.proxy.onRequest.addListener(handleProxyRequest, { urls: ['<all_urls>']})
 
 // The mechanism for controlling handlers from popup.js
 window.censortracker.browserListeners = {
   // TODO: Pretty bad idea to use that name (fix it).
   has: () => {
     const hasOnErrorOccurredListener =
-      browser.webRequest.onErrorOccurred.hasListener(onErrorOccurredListener)
+      browser.webRequest.onErrorOccurred.hasListener(handleErrorOccurred)
     const hasOnBeforeRequestListener =
-      browser.webRequest.onBeforeRequest.hasListener(onBeforeRequestListener)
+      browser.webRequest.onBeforeRequest.hasListener(handleBeforeRequest)
 
     return hasOnBeforeRequestListener && hasOnErrorOccurredListener
   },
   remove: () => {
-    browser.webRequest.onErrorOccurred.removeListener(onErrorOccurredListener)
-    browser.webRequest.onBeforeRequest.removeListener(onBeforeRequestListener)
+    browser.webRequest.onErrorOccurred.removeListener(handleErrorOccurred)
+    browser.webRequest.onBeforeRequest.removeListener(handleBeforeRequest)
     console.warn('CensorTracker: listeners removed')
   },
   add: () => {
-    browser.webRequest.onErrorOccurred.addListener(onErrorOccurredListener, {
+    browser.webRequest.onErrorOccurred.addListener(handleErrorOccurred, {
       urls: ['http://*/*', 'https://*/*'],
       types: ['main_frame'],
     })
     browser.webRequest.onBeforeRequest.addListener(
-      onBeforeRequestListener, {
+      handleBeforeRequest, {
         urls: ['http://*/*'],
         types: ['main_frame'],
       },

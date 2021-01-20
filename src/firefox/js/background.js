@@ -79,7 +79,7 @@ browser.proxy.onRequest.addListener(
  * @returns {undefined} Undefined.
  */
 const handleErrorOccurred = async ({ url, error, tabId }) => {
-  const { hostname } = new URL(url)
+  const hostname = extractHostnameFromUrl(url)
 
   if (ignore.isIgnoredHost(hostname)) {
     return
@@ -93,10 +93,10 @@ const handleErrorOccurred = async ({ url, error, tabId }) => {
   }
 
   if (errors.isThereConnectionError(error)) {
-    const isProxyControlledByOtherExtensions = await proxy.controlledByOtherExtensions()
-    const isProxyControlledByThisExtension = await proxy.controlledByThisExtension()
+    const proxyControlledByThisExtension = await proxy.controlledByThisExtension()
+    const proxyControlledByOtherExtensions = await proxy.controlledByOtherExtensions()
 
-    if (!isProxyControlledByOtherExtensions && !isProxyControlledByThisExtension) {
+    if (!proxyControlledByThisExtension && !proxyControlledByOtherExtensions) {
       browser.tabs.update(tabId, {
         url: browser.runtime.getURL(`proxy_disabled.html?${window.btoa(url)}`),
       })
@@ -170,6 +170,7 @@ const handleTabState = async () => {
 }
 
 const showCooperationAcceptedWarning = async (hostname) => {
+  console.log('Showing cooperation accepted warning...')
   const { notifiedHosts } = await browser.storage.local.get({ notifiedHosts: [] })
 
   if (!notifiedHosts.includes(hostname)) {

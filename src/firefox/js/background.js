@@ -249,6 +249,7 @@ window.censortracker.browserListeners = {
   remove: () => {
     browser.webRequest.onErrorOccurred.removeListener(handleErrorOccurred)
     browser.webRequest.onBeforeRequest.removeListener(handleBeforeRequest)
+    browser.proxy.onRequest.removeListener(handleProxyRequest)
     console.warn('CensorTracker: listeners removed')
   },
   add: () => {

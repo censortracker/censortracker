@@ -1,3 +1,6 @@
+
+const PROXY_GATE_URL = 'https://163.172.211.183:39263'
+
 class Proxy {
   constructor () {
     this.ignoredDomains = [
@@ -13,6 +16,14 @@ class Proxy {
     }, 60 * 1000 * 60 * 60 * 2)
   }
 
+  getProxyInfo = () => {
+    return {
+      type: 'https',
+      host: 'proxy-ssl.roskomsvoboda.org',
+      port: 33333,
+    }
+  }
+
   excludeIgnoredDomains = (domains) => {
     return domains.filter((domain) => {
       return !domain.match(this.ignoreRegEx)
@@ -20,15 +31,16 @@ class Proxy {
   }
 
   removeProxy = async () => {
-    await browser.storage.local.set({ useProxyChecked: false })
+    await browser.storage.local.set({
+      useProxyChecked: false,
+    })
     console.warn('Proxy auto-config data cleaned!')
   }
 
   allowProxying = () => {
     const request = new XMLHttpRequest()
-    const proxyServerUrl = 'https://163.172.211.183:39263'
 
-    request.open('GET', proxyServerUrl, true)
+    request.open('GET', PROXY_GATE_URL, true)
     request.addEventListener('error', (_error) => {
       console.error('Error on opening port')
     })

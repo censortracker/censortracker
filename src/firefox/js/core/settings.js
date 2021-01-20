@@ -28,14 +28,6 @@ class Settings {
 
   getDisabledIcon = () => browser.runtime.getURL('images/icons/128x128/disabled.png');
 
-  getProxyInfo = () => {
-    return {
-      type: 'https',
-      host: 'proxy-ssl.roskomsvoboda.org',
-      port: 33333,
-    }
-  }
-
   _setPageIcon = (tabId, path) => {
     browser.browserAction.setIcon({ tabId, path })
     browser.browserAction.setTitle({ title: this.getTitle(), tabId })

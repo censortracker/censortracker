@@ -59,7 +59,7 @@ const handleProxyRequest = async ({ url }) => {
   if (domainFound) {
     proxy.allowProxying()
     console.log(`Proxying: ${extractHostnameFromUrl(url)}`)
-    return settings.getProxyInfo()
+    return proxy.getProxyInfo()
   }
   return { type: 'direct' }
 }

@@ -22,7 +22,6 @@ const btnAboutNotOri = getElementById('btnAboutNotOri')
 const textAboutNotOri = getElementById('textAboutNotOri')
 const closeTextAboutNotOri = getElementById('closeTextAboutNotOri')
 const oriSiteInfo = getElementById('oriSiteInfo')
-// const advertisingBlocks = document.querySelectorAll('.buy-vpn')
 const currentDomainBlocks = document.querySelectorAll('.current-domain')
 const controlledOtherExtensionsInfo = document.getElementById('controlledOtherExtensionsInfo')
 const popupShowTimeout = 60
@@ -137,12 +136,6 @@ const changeStatusImage = (imageName) => {
   statusImage.setAttribute('src', imageSrc)
 }
 
-// const showAdvertising = () => {
-//   advertisingBlocks.forEach((ad) => {
-//     ad.style.removeProperty('display')
-//   })
-// }
-
 const getAppropriateURL = (currentURL) => {
   const popupURL = browser.runtime.getURL('popup.html')
 
@@ -150,9 +143,8 @@ const getAppropriateURL = (currentURL) => {
     const currentURLParams = currentURL.split('?')[1]
     const searchParams = new URLSearchParams(currentURLParams)
     const encodedURL = searchParams.get('loadFor')
-    const loadForURL = window.atob(encodedURL)
 
-    return loadForURL
+    return window.atob(encodedURL)
   }
   return currentURL
 }

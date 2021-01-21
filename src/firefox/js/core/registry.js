@@ -5,6 +5,12 @@ const DOMAINS_DB_KEY = 'domains'
 const DISTRIBUTORS_DB_KEY = 'distributors'
 
 class Registry {
+  constructor () {
+    setInterval(async () => {
+      await this.removeOutdatedBlockedDomains()
+    }, 60 * 1000 * 60 * 60 * 2)
+  }
+
   syncDatabase = async () => {
     console.warn('Synchronizing local database with registry...')
     const apis = [
@@ -119,6 +125,22 @@ class Registry {
       return json
     }
     return null
+  }
+
+  removeOutdatedBlockedDomains = async () => {
+    const monthInSeconds = 2628000
+    let { blockedDomains } = await browser.storage.local.get({ blockedDomains: [] })
+
+    if (blockedDomains) {
+      blockedDomains = blockedDomains.filter((item) => {
+        const timestamp = new Date().getTime()
+
+        return (timestamp - item.timestamp) / 1000 < monthInSeconds
+      })
+    }
+
+    await browser.storage.local.set({ blockedDomains })
+    console.warn('Outdated domains has been removed.')
   }
 }
 

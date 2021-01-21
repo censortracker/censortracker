@@ -10,10 +10,6 @@ class Proxy {
     ]
     this.ignoreRegEx = new RegExp(
       this.ignoredDomains.join('|'), 'gi')
-
-    setInterval(async () => {
-      await this.removeOutdatedBlockedDomains()
-    }, 60 * 1000 * 60 * 60 * 2)
   }
 
   getProxyInfo = () => {
@@ -59,22 +55,6 @@ class Proxy {
       await browser.proxy.settings.get({})
 
     return levelOfControl === 'controlled_by_this_extension'
-  }
-
-  removeOutdatedBlockedDomains = async () => {
-    const monthInSeconds = 2628000
-    let { blockedDomains } = await browser.storage.local.get({ blockedDomains: [] })
-
-    if (blockedDomains) {
-      blockedDomains = blockedDomains.filter((item) => {
-        const timestamp = new Date().getTime()
-
-        return (timestamp - item.timestamp) / 1000 < monthInSeconds
-      })
-    }
-
-    await browser.storage.local.set({ blockedDomains })
-    console.warn('Outdated domains has been removed.')
   }
 }
 

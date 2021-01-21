@@ -27,10 +27,12 @@ import proxy from '../core/proxy'
         browserListeners.add()
       }
 
+      await proxy.enableProxy()
+
       useProxyCheckbox.checked = true
       console.log('Proxying enabled.')
     } else {
-      await proxy.removeProxy()
+      await proxy.disableProxy()
       useProxyCheckbox.checked = false
       console.warn('Proxying disabled.')
     }

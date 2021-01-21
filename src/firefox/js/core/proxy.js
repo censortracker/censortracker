@@ -1,4 +1,3 @@
-
 const PROXY_GATE_URL = 'https://163.172.211.183:39263'
 
 class Proxy {
@@ -26,11 +25,16 @@ class Proxy {
     })
   }
 
-  removeProxy = async () => {
+  enableProxy = async () => {
+    await browser.storage.local.set({
+      useProxyChecked: true,
+    })
+  }
+
+  disableProxy = async () => {
     await browser.storage.local.set({
       useProxyChecked: false,
     })
-    console.warn('Proxy auto-config data cleaned!')
   }
 
   allowProxying = () => {
@@ -43,6 +47,7 @@ class Proxy {
     request.send(null)
   }
 
+  // TODO: Remove these methods
   controlledByOtherExtensions = async () => {
     const { levelOfControl } =
       await browser.proxy.settings.get({})

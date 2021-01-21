@@ -118,7 +118,7 @@ const addExtensionControlListeners = async ({ settings, proxy, browserListeners 
     }
 
     if (event.target.matches('#disableExtension')) {
-      proxy.removeProxy()
+      proxy.disableProxy()
       settings.disableExtension()
       browserListeners.remove()
       window.location.reload()

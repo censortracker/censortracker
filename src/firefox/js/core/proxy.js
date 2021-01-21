@@ -15,7 +15,8 @@ class Proxy {
   getProxyInfo = () => {
     return {
       type: 'https',
-      host: 'proxy-ssl.roskomsvoboda.org',
+      host: 'proxyssl.roskomsvoboda.org',
+      // host: 'proxy-ssl.roskomsvoboda.org',
       port: 33333,
     }
   }

@@ -79,6 +79,7 @@ browser.proxy.onRequest.addListener(
  * @returns {undefined} Undefined.
  */
 const handleErrorOccurred = async ({ url, error, tabId }) => {
+  console.error(`ERROR CODE IS: ${error}`)
   const hostname = extractHostnameFromUrl(url)
 
   if (ignore.isIgnoredHost(hostname)) {
@@ -117,13 +118,13 @@ const handleErrorOccurred = async ({ url, error, tabId }) => {
   })
 }
 
-// browser.webRequest.onErrorOccurred.addListener(
-//   handleErrorOccurred,
-//   {
-//     urls: ['http://*/*', 'https://*/*'],
-//     types: ['main_frame'],
-//   },
-// )
+browser.webRequest.onErrorOccurred.addListener(
+  handleErrorOccurred,
+  {
+    urls: ['http://*/*', 'https://*/*'],
+    types: ['main_frame'],
+  },
+)
 
 const handleTabState = async () => {
   const [tab] = await browser.tabs.query({

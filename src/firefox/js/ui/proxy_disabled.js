@@ -1,5 +1,3 @@
-// import proxy from '../core/proxy'
-
 (async () => {
   const unavailableWebsite = document.getElementById('unavailableWebsite')
 

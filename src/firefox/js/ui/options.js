@@ -1,50 +1,28 @@
-import proxy from '../core/proxy'
-
 (async () => {
-  const { censortracker: { browserListeners } } = await browser.runtime.getBackgroundPage()
+  const { censortracker: { browserListeners, settings, proxy } } = await browser.runtime.getBackgroundPage()
 
   const useProxyCheckbox = document.getElementById('useProxyCheckbox')
   const useNotificationsCheckbox = document.getElementById('useNotificationsCheckbox')
-  const isProxyControlledByThisExtension = await proxy.controlledByThisExtension()
-  const isProxyControlledByOtherExtensions = await proxy.controlledByOtherExtensions()
-
-  if (isProxyControlledByOtherExtensions) {
-    useProxyCheckbox.checked = false
-    useProxyCheckbox.disabled = true
-    await browser.storage.local.set({ useProxyChecked: false })
-  } else if (isProxyControlledByThisExtension) {
-    useProxyCheckbox.checked = true
-    useProxyCheckbox.disabled = false
-    await browser.storage.local.set({ useProxyChecked: true })
-  } else {
-    await browser.storage.local.set({ useProxyChecked: false })
-    useProxyCheckbox.disabled = false
-  }
 
   useProxyCheckbox.addEventListener('change', async () => {
     if (useProxyCheckbox.checked) {
+      await proxy.enableProxy()
+
       if (!browserListeners.has()) {
         browserListeners.add()
       }
-
-      await proxy.enableProxy()
-
       useProxyCheckbox.checked = true
-      console.log('Proxying enabled.')
     } else {
       await proxy.disableProxy()
       useProxyCheckbox.checked = false
-      console.warn('Proxying disabled.')
     }
   }, false)
 
   useNotificationsCheckbox.addEventListener('change', async () => {
     if (useNotificationsCheckbox.checked) {
-      await browser.storage.local.set({ useNotificationsChecked: true })
-      console.log('Notifications enabled.')
+      await settings.enableNotifications()
     } else {
-      console.warn('Notifications disabled.')
-      await browser.storage.local.set({ useNotificationsChecked: false })
+      await settings.disableNotifications()
     }
   }, false)
 

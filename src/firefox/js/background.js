@@ -95,14 +95,10 @@ const handleErrorOccurred = async ({ url, error, tabId }) => {
   }
 
   if (errors.isThereConnectionError(error)) {
-    const proxyControlledByThisExtension = await proxy.controlledByThisExtension()
-    const proxyControlledByOtherExtensions = await proxy.controlledByOtherExtensions()
-
-    if (!proxyControlledByThisExtension && !proxyControlledByOtherExtensions) {
+    if (!await proxy.enabled()) {
       browser.tabs.update(tabId, {
         url: browser.runtime.getURL(`proxy_disabled.html?${encodedUrl}`),
       })
-      return
     }
 
     browser.tabs.update(tabId, {

@@ -25,13 +25,23 @@ class Proxy {
     })
   }
 
+  enabled = async () => {
+    const { useProxyChecked } = await browser.storage.local.get({
+      useProxyChecked: true,
+    })
+
+    return useProxyChecked
+  }
+
   enableProxy = async () => {
+    console.warn('Proxying enabled.')
     await browser.storage.local.set({
       useProxyChecked: true,
     })
   }
 
   disableProxy = async () => {
+    console.warn('Proxying disabled.')
     await browser.storage.local.set({
       useProxyChecked: false,
     })
@@ -45,21 +55,6 @@ class Proxy {
       console.error('Error on opening port')
     })
     request.send(null)
-  }
-
-  // TODO: Remove these methods
-  controlledByOtherExtensions = async () => {
-    const { levelOfControl } =
-      await browser.proxy.settings.get({})
-
-    return levelOfControl === 'controlled_by_other_extensions'
-  }
-
-  controlledByThisExtension = async () => {
-    const { levelOfControl } =
-      await browser.proxy.settings.get({})
-
-    return levelOfControl === 'controlled_by_this_extension'
   }
 }
 

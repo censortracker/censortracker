@@ -23,15 +23,10 @@ const textAboutNotOri = getElementById('textAboutNotOri')
 const closeTextAboutNotOri = getElementById('closeTextAboutNotOri')
 const oriSiteInfo = getElementById('oriSiteInfo')
 const currentDomainBlocks = document.querySelectorAll('.current-domain')
-const controlledOtherExtensionsInfo = document.getElementById('controlledOtherExtensionsInfo')
 const popupShowTimeout = 60
 
-controlledOtherExtensionsInfo.addEventListener('click', () => {
-  window.location.href = 'controlled.html'
-})
-
 browser.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
-  const { browser, registry, proxy } = bgModules
+  const { browser, registry } = bgModules
 
   await addExtensionControlListeners(bgModules)
 
@@ -60,7 +55,6 @@ browser.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
       changeStatusImage('blocked')
       isForbidden.removeAttribute('hidden')
       isNotForbidden.remove()
-      // showAdvertising()
     } else {
       isNotForbidden.removeAttribute('hidden')
       isForbidden.remove()
@@ -94,12 +88,6 @@ browser.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
     }
   } else {
     hideControlElements()
-  }
-
-  const isProxyControlledByOtherExtensions = await proxy.controlledByOtherExtensions()
-
-  if (isProxyControlledByOtherExtensions) {
-    controlledOtherExtensionsInfo.hidden = false
   }
 
   const show = () => {

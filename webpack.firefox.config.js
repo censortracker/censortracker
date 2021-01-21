@@ -46,7 +46,6 @@ const webpackConfig = {
     unavailable: './src/firefox/js/ui/unavailable.js',
     popup: './src/firefox/js/ui/popup.js',
     options: './src/firefox/js/ui/options.js',
-    controlled: './src/firefox/js/ui/controlled.js',
     proxy_disabled: './src/firefox/js/ui/proxy_disabled.js',
   },
 
@@ -139,21 +138,11 @@ const webpackConfig = {
       },
     }),
     new HTMLWebpackPlugin({
-      title: 'Controlled | Censor Tracker',
-      filename: 'controlled.html',
-      template: 'src/firefox/pages/controlled.html',
-      inject: true,
-      chunks: ['controlled'],
-      meta: {
-        'Content-Security-Policy': 'script-src \'self\' \'unsafe-eval\'; object-src \'self\';',
-      },
-    }),
-    new HTMLWebpackPlugin({
       title: 'Настройки | Censor Tracker',
       filename: 'options.html',
       template: 'src/firefox/pages/options.html',
       inject: true,
-      chunks: ['options', 'controlled'],
+      chunks: ['options'],
       meta: {
         'Content-Security-Policy': 'script-src \'self\' \'unsafe-eval\'; object-src \'self\';',
       },

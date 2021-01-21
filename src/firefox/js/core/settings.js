@@ -67,6 +67,16 @@ class Settings {
   disableExtension = () => {
     this._toggleExtension({ enableExtension: false })
   }
+
+  enableNotifications = async () => {
+    console.log('Notifications enabled.')
+    await browser.storage.local.set({ useNotificationsChecked: true })
+  }
+
+  disableNotifications = async () => {
+    console.warn('Notifications disabled.')
+    await browser.storage.local.set({ useNotificationsChecked: false })
+  }
 }
 
 export default new Settings()

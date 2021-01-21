@@ -5,7 +5,7 @@
   const [, encodedHostname] = tab.url.split('?')
   const targetUrl = window.atob(encodedHostname)
 
-  unavailableWebsite.innerText = window.atob(encodedHostname)
+  unavailableWebsite.innerText = targetUrl
 
   document.addEventListener('click', async (event) => {
     if (event.target.matches('#openThroughProxy')) {

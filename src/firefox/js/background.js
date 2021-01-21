@@ -81,6 +81,7 @@ browser.proxy.onRequest.addListener(
 const handleErrorOccurred = async ({ url, error, tabId }) => {
   console.error(`ERROR CODE IS: ${error}`)
   const hostname = extractHostnameFromUrl(url)
+  const encodedUrl = window.btoa(url)
 
   if (ignore.isIgnoredHost(hostname)) {
     return
@@ -88,7 +89,7 @@ const handleErrorOccurred = async ({ url, error, tabId }) => {
 
   if (errors.isThereProxyConnectionError(error)) {
     browser.tabs.update(tabId, {
-      url: browser.runtime.getURL('proxy_unavailable.html'),
+      url: browser.runtime.getURL(`proxy_unavailable.html?${encodedUrl}`),
     })
     return
   }
@@ -99,13 +100,13 @@ const handleErrorOccurred = async ({ url, error, tabId }) => {
 
     if (!proxyControlledByThisExtension && !proxyControlledByOtherExtensions) {
       browser.tabs.update(tabId, {
-        url: browser.runtime.getURL(`proxy_disabled.html?${window.btoa(url)}`),
+        url: browser.runtime.getURL(`proxy_disabled.html?${encodedUrl}`),
       })
       return
     }
 
     browser.tabs.update(tabId, {
-      url: browser.runtime.getURL(`unavailable.html?${window.btoa(url)}`),
+      url: browser.runtime.getURL(`unavailable.html?${encodedUrl}`),
     })
     await registry.addBlockedByDPI(hostname)
     return

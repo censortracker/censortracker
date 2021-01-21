@@ -31,7 +31,7 @@ window.censortracker = {
 const handleBeforeRequest = ({ url }) => {
   const hostname = extractHostnameFromUrl(url)
 
-  if (ignore.isIgnoredHost(hostname)) {
+  if (ignore.contains(hostname)) {
     console.warn(`Ignoring host: ${url}`)
     return undefined
   }
@@ -58,7 +58,6 @@ const handleProxyRequest = async ({ url }) => {
 
   if (domainFound) {
     proxy.allowProxying()
-    console.log(`Proxying: ${extractHostnameFromUrl(url)}`)
     return proxy.getProxyInfo()
   }
   return { type: 'direct' }
@@ -83,7 +82,7 @@ const handleErrorOccurred = async ({ url, error, tabId }) => {
   const hostname = extractHostnameFromUrl(url)
   const encodedUrl = window.btoa(url)
 
-  if (ignore.isIgnoredHost(hostname)) {
+  if (ignore.contains(hostname)) {
     return
   }
 
@@ -108,7 +107,7 @@ const handleErrorOccurred = async ({ url, error, tabId }) => {
     return
   }
 
-  await ignore.addHostToIgnore(hostname)
+  await ignore.add(hostname)
   browser.tabs.remove(tabId)
   browser.tabs.create({
     url: enforceHttpConnection(url),
@@ -146,7 +145,7 @@ const handleTabState = async () => {
 
   const currentHostname = extractHostnameFromUrl(tab.url)
 
-  if (ignore.isIgnoredHost(currentHostname)) {
+  if (ignore.contains(currentHostname)) {
     return
   }
 

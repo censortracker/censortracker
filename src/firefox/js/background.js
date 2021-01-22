@@ -60,7 +60,7 @@ const handleProxyRequest = async ({ url }) => {
     proxy.allowProxying()
     return proxy.getProxyInfo()
   }
-  return { type: 'direct' }
+  return proxy.getDirectProxyInfo()
 }
 
 browser.proxy.onRequest.addListener(
@@ -82,6 +82,8 @@ const handleErrorOccurred = async ({ url, error, tabId }) => {
   const hostname = extractHostnameFromUrl(url)
   const encodedUrl = window.btoa(url)
 
+  const proxyEnabled = await proxy.enabled()
+
   if (ignore.contains(hostname)) {
     return
   }
@@ -94,7 +96,7 @@ const handleErrorOccurred = async ({ url, error, tabId }) => {
   }
 
   if (errors.isThereConnectionError(error)) {
-    if (!await proxy.enabled()) {
+    if (!proxyEnabled) {
       browser.tabs.update(tabId, {
         url: browser.runtime.getURL(`proxy_disabled.html?${encodedUrl}`),
       })

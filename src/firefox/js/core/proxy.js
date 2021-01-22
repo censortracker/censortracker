@@ -19,6 +19,10 @@ class Proxy {
     }
   }
 
+  getDirectProxyInfo = () => {
+    return { type: 'direct' }
+  }
+
   excludeIgnoredDomains = (domains) => {
     return domains.filter((domain) => {
       return !domain.match(this.ignoreRegEx)

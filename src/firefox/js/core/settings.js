@@ -1,3 +1,5 @@
+import storage from './storage'
+
 const manifest = browser.runtime.getManifest()
 const rksUrl = 'https://reestr.rublacklist.net'
 
@@ -47,7 +49,7 @@ class Settings {
 
   _toggleExtension = ({ enableExtension }) => {
     if (typeof enableExtension === 'boolean') {
-      browser.storage.local.set({ enableExtension }, () => {
+      storage.set({ enableExtension }, () => {
         console.warn('Extension enabled')
       })
 
@@ -70,12 +72,12 @@ class Settings {
 
   enableNotifications = async () => {
     console.log('Notifications enabled.')
-    await browser.storage.local.set({ showNotifications: true })
+    await storage.set({ showNotifications: true })
   }
 
   disableNotifications = async () => {
     console.warn('Notifications disabled.')
-    await browser.storage.local.set({ showNotifications: false })
+    await storage.set({ showNotifications: false })
   }
 }
 

@@ -28,7 +28,7 @@ const popupShowTimeout = 60
 browser.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
   await addExtensionControlListeners(bgModules)
 
-  const { enableExtension } = await browser.storage.local.get({
+  const { enableExtension } = await bgModules.storage.get({
     enableExtension: true,
   })
 

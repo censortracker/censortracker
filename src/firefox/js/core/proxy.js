@@ -1,3 +1,5 @@
+import storage from './storage'
+
 const PROXY_GATE_URL = 'https://163.172.211.183:39263'
 
 class Proxy {
@@ -15,14 +17,14 @@ class Proxy {
 
   enableProxy = async () => {
     console.warn('Proxying enabled.')
-    await browser.storage.local.set({
+    await storage.set({
       useProxy: true,
     })
   }
 
   disableProxy = async () => {
     console.warn('Proxying disabled.')
-    await browser.storage.local.set({
+    await storage.set({
       useProxy: false,
     })
   }

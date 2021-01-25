@@ -1,3 +1,4 @@
+import storage from './storage'
 import { extractHostnameFromUrl } from './utilities'
 
 const ipRangeCheck = require('ip-range-check')
@@ -40,7 +41,7 @@ class Ignore {
 
   save = async () => {
     const { ignoredHosts } =
-      await browser.storage.local.get({ ignoredHosts: [] })
+      await storage.get({ ignoredHosts: [] })
 
     this.ignoredHosts.forEach((element) => {
       if (!ignoredHosts.includes(element)) {
@@ -48,7 +49,7 @@ class Ignore {
       }
     })
 
-    await browser.storage.local.set({ ignoredHosts })
+    await storage.set({ ignoredHosts })
   }
 
   add = async (hostname) => {

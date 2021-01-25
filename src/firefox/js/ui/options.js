@@ -1,5 +1,5 @@
 (async () => {
-  const { censortracker: { browserListeners, settings, proxy } } = await browser.runtime.getBackgroundPage()
+  const { censortracker: { browserListeners, settings, proxy, storage } } = await browser.runtime.getBackgroundPage()
 
   const useProxyCheckbox = document.getElementById('useProxyCheckbox')
   const showNotificationsCheckbox = document.getElementById('showNotificationsCheckbox')
@@ -27,10 +27,7 @@
   }, false)
 
   const { useProxy, showNotifications } =
-    await browser.storage.local.get({
-      useProxy: true,
-      showNotifications: true,
-    })
+    await storage.get({ useProxy: true, showNotifications: true })
 
   useProxyCheckbox.checked = useProxy
   showNotificationsCheckbox.checked = showNotifications

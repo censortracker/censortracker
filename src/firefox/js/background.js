@@ -84,7 +84,7 @@ const handleErrorOccurred = async ({ url, error, tabId }) => {
   const hostname = extractHostnameFromUrl(url)
   const encodedUrl = window.btoa(url)
 
-  const { useProxy } = await browser.storage.local.get({ useProxy: true })
+  const { useProxy } = await storage.get({ useProxy: true })
 
   if (ignore.contains(hostname)) {
     return
@@ -136,7 +136,7 @@ const handleTabState = async () => {
     return
   }
 
-  const { enableExtension } = await browser.storage.local.get({ enableExtension: true })
+  const { enableExtension } = await storage.get({ enableExtension: true })
 
   if (!enableExtension) {
     settings.setDisableIcon(tab.id)
@@ -171,7 +171,7 @@ browser.tabs.onUpdated.addListener(handleTabState)
 
 const showCooperationAcceptedWarning = async (hostname) => {
   console.log(`Showing cooperation accepted warning for ${hostname}`)
-  const { notifiedHosts, showNotifications } = await browser.storage.local.get({
+  const { notifiedHosts, showNotifications } = await storage.get({
     notifiedHosts: new Set(),
     showNotifications: true,
   })
@@ -187,7 +187,7 @@ const showCooperationAcceptedWarning = async (hostname) => {
 
       try {
         notifiedHosts.add(hostname)
-        await browser.storage.local.set({ notifiedHosts })
+        await storage.set({ notifiedHosts })
       } catch (error) {
         console.error(error)
       }
@@ -196,7 +196,7 @@ const showCooperationAcceptedWarning = async (hostname) => {
 }
 
 const handleWindowRemoved = async (_windowId) => {
-  await browser.storage.local.remove('notifiedHosts')
+  await storage.remove('notifiedHosts')
   console.warn('A list of notified hosts has been cleaned up!')
 }
 
@@ -229,7 +229,7 @@ browser.management.onUninstalled.addListener(handleUninstalled)
 
 const handleTabCreate = async ({ id }) => {
   const { enableExtension } =
-    await browser.storage.local.get({
+    await storage.get({
       enableExtension: true,
     })
 

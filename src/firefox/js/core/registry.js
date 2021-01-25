@@ -1,4 +1,5 @@
 import settings from './settings'
+import storage from './storage'
 import { extractHostnameFromUrl } from './utilities'
 
 const DOMAINS_DB_KEY = 'domains'
@@ -28,13 +29,13 @@ class Registry {
       const response = await fetch(url).catch(console.error)
       const domains = await response.json()
 
-      await browser.storage.local.set({
+      await storage.set({
         [key]: domains,
         timestamp: new Date().getTime(),
       }).catch(console.error)
     }
 
-    const { domains } = await browser.storage.local.get({ [DOMAINS_DB_KEY]: [] })
+    const { domains } = await storage.get({ [DOMAINS_DB_KEY]: [] })
 
     if (!domains) {
       console.log('Database is empty. Trying to sync...')
@@ -45,7 +46,7 @@ class Registry {
 
   getDomains = async () => {
     const { domains, blockedDomains } =
-      await browser.storage.local.get({ [DOMAINS_DB_KEY]: [], blockedDomains: [] })
+      await storage.get({ [DOMAINS_DB_KEY]: [], blockedDomains: [] })
 
     const blockedDomainsArray = blockedDomains.map(({ domain }) => domain)
 
@@ -64,7 +65,7 @@ class Registry {
   domainsContains = async (url) => {
     const hostname = extractHostnameFromUrl(url)
     const { domains, blockedDomains } =
-      await browser.storage.local.get({
+      await storage.get({
         [DOMAINS_DB_KEY]: [],
         blockedDomains: [],
       })
@@ -81,7 +82,7 @@ class Registry {
   distributorsContains = async (url) => {
     const hostname = extractHostnameFromUrl(url)
     const { distributors } =
-      await browser.storage.local.get({ [DISTRIBUTORS_DB_KEY]: [] })
+      await storage.get({ [DISTRIBUTORS_DB_KEY]: [] })
 
     const dataObject = distributors.find(({ url: innerUrl }) => (hostname === innerUrl))
 
@@ -96,7 +97,7 @@ class Registry {
     if (!hostname) {
       return
     }
-    const { blockedDomains } = await browser.storage.local.get({ blockedDomains: [] })
+    const { blockedDomains } = await storage.get({ blockedDomains: [] })
 
     if (!blockedDomains.find(({ domain }) => domain === hostname)) {
       blockedDomains.push({
@@ -105,11 +106,11 @@ class Registry {
       })
       await this.reportBlockedByDPI(hostname)
     }
-    await browser.storage.local.set({ blockedDomains })
+    await storage.set({ blockedDomains })
   }
 
   reportBlockedByDPI = async (domain) => {
-    const { alreadyReported } = await browser.storage.local.get({ alreadyReported: [] })
+    const { alreadyReported } = await storage.get({ alreadyReported: [] })
 
     if (!alreadyReported.includes(domain)) {
       const response = await fetch(settings.getLoggingApiUrl(), {
@@ -120,7 +121,7 @@ class Registry {
       const json = await response.json()
 
       alreadyReported.push(domain)
-      await browser.storage.local.set({ alreadyReported })
+      await storage.set({ alreadyReported })
       console.warn(`Reported possible DPI lock: ${domain}`)
       return json
     }
@@ -129,7 +130,7 @@ class Registry {
 
   removeOutdatedBlockedDomains = async () => {
     const monthInSeconds = 2628000
-    let { blockedDomains } = await browser.storage.local.get({ blockedDomains: [] })
+    let { blockedDomains } = await storage.get({ blockedDomains: [] })
 
     if (blockedDomains) {
       blockedDomains = blockedDomains.filter((item) => {
@@ -139,7 +140,7 @@ class Registry {
       })
     }
 
-    await browser.storage.local.set({ blockedDomains })
+    await storage.set({ blockedDomains })
     console.warn('Outdated domains has been removed.')
   }
 }

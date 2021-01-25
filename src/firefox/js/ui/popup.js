@@ -26,7 +26,7 @@ const currentDomainBlocks = document.querySelectorAll('.current-domain')
 const popupShowTimeout = 60
 
 browser.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
-  const { browser, registry } = bgModules
+  const { registry } = bgModules
 
   await addExtensionControlListeners(bgModules)
 

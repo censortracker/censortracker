@@ -18,7 +18,6 @@ window.censortracker = {
   settings,
   errors,
   ignore,
-  browser, // TODO: There is no need in this hack
   extractHostnameFromUrl,
 }
 

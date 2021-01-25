@@ -127,50 +127,41 @@ browser.webRequest.onErrorOccurred.addListener(
 )
 
 const handleTabState = async () => {
-  const [tab] = await browser.tabs.query({
-    active: true,
-    lastFocusedWindow: true,
+  const { enableExtension } = await storage.get({ enableExtension: true })
+  const [{ url: currentUrl, id: tabId }] = await browser.tabs.query({
+    active: true, lastFocusedWindow: true,
   })
 
-  if (!tab || !validateUrl(tab.url)) {
+  if (ignore.contains(currentUrl)) {
     return
   }
 
-  const { enableExtension } = await storage.get({ enableExtension: true })
+  if (enableExtension && validateUrl(currentUrl)) {
+    const { domainFound } = await registry.domainsContains(currentUrl)
+    const { url: distributorUrl, cooperationRefused } =
+      await registry.distributorsContains(currentUrl)
 
-  if (!enableExtension) {
-    settings.setDisableIcon(tab.id)
-    return
-  }
-
-  const currentHostname = extractHostnameFromUrl(tab.url)
-
-  if (ignore.contains(currentHostname)) {
-    return
-  }
-
-  const { domainFound } = await registry.domainsContains(currentHostname)
-  const { url: distributorUrl, cooperationRefused } =
-    await registry.distributorsContains(currentHostname)
-
-  if (domainFound) {
-    settings.setDangerIcon(tab.id)
-    return
-  }
-
-  if (distributorUrl) {
-    settings.setDangerIcon(tab.id)
-    if (!cooperationRefused) {
-      await showCooperationAcceptedWarning(currentHostname)
+    if (domainFound) {
+      settings.setDangerIcon(tabId)
+      return
     }
+
+    if (distributorUrl) {
+      settings.setDangerIcon(tabId)
+      if (!cooperationRefused) {
+        await showCooperationAcceptedWarning(currentUrl)
+      }
+    }
+  } else {
+    settings.setDisableIcon(tabId)
   }
 }
 
 browser.tabs.onActivated.addListener(handleTabState)
 browser.tabs.onUpdated.addListener(handleTabState)
 
-const showCooperationAcceptedWarning = async (hostname) => {
-  console.log(`Showing cooperation accepted warning for ${hostname}`)
+const showCooperationAcceptedWarning = async (currentUrl) => {
+  const hostname = extractHostnameFromUrl(currentUrl)
   const { notifiedHosts, showNotifications } = await storage.get({
     notifiedHosts: new Set(),
     showNotifications: true,
@@ -178,6 +169,7 @@ const showCooperationAcceptedWarning = async (hostname) => {
 
   if (showNotifications) {
     if (!notifiedHosts.has(hostname)) {
+      console.log(`Showing notification for ${hostname}`)
       await browser.notifications.create(hostname, {
         type: 'basic',
         title: settings.getName(),

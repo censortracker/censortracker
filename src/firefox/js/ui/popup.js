@@ -26,8 +26,6 @@ const currentDomainBlocks = document.querySelectorAll('.current-domain')
 const popupShowTimeout = 60
 
 browser.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
-  const { registry } = bgModules
-
   await addExtensionControlListeners(bgModules)
 
   const { enableExtension } = await browser.storage.local.get({
@@ -49,7 +47,7 @@ browser.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
     renderCurrentDomain(currentHostname)
     footerTrackerOn.removeAttribute('hidden')
 
-    const { domainFound } = await registry.domainsContains(currentHostname)
+    const { domainFound } = await bgModules.registry.domainsContains(currentHostname)
 
     if (domainFound) {
       changeStatusImage('blocked')
@@ -62,7 +60,7 @@ browser.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
     }
 
     const { url: distributorUrl, cooperationRefused } =
-      await registry.distributorsContains(currentHostname)
+      await bgModules.registry.distributorsContains(currentHostname)
 
     if (distributorUrl) {
       currentDomainHeader.classList.add('title-ori')

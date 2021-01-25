@@ -44,22 +44,6 @@ class Registry {
     return true
   }
 
-  getDomains = async () => {
-    const { domains, blockedDomains } =
-      await storage.get({ [DOMAINS_DB_KEY]: [], blockedDomains: [] })
-
-    const blockedDomainsArray = blockedDomains.map(({ domain }) => domain)
-
-    if (domains && domains.length > 0) {
-      try {
-        return domains.concat(blockedDomainsArray)
-      } catch (error) {
-        console.log(error)
-      }
-    }
-    return []
-  }
-
   domainsContains = async (url) => {
     const hostname = extractHostnameFromUrl(url)
     const { domains, blockedDomains } =

@@ -4,6 +4,7 @@ import {
   proxy,
   registry,
   settings,
+  storage,
 } from './core'
 import {
   enforceHttpConnection,
@@ -18,6 +19,7 @@ window.censortracker = {
   settings,
   errors,
   ignore,
+  storage,
   extractHostnameFromUrl,
 }
 
@@ -53,7 +55,7 @@ browser.webRequest.onBeforeRequest.addListener(
  * @returns {Promise<{port: number, host: string, type: string}|{type: string}>}
  */
 const handleProxyRequest = async ({ url }) => {
-  const { useProxy } = await browser.storage.local.get({ useProxy: true })
+  const { useProxy } = await storage.get({ useProxy: true })
   const { domainFound } = await registry.domainsContains(url)
 
   if (useProxy && domainFound) {

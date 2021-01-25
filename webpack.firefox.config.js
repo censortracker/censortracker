@@ -167,16 +167,6 @@ const webpackConfig = {
         'Content-Security-Policy': 'script-src \'self\' \'unsafe-eval\'; object-src \'self\';',
       },
     }),
-    new HTMLWebpackPlugin({
-      title: 'CensorTracker установлен',
-      filename: 'installed.html',
-      template: 'src/firefox/pages/installed.html',
-      inject: true,
-      chunks: [],
-      meta: {
-        'Content-Security-Policy': 'script-src \'self\' \'unsafe-eval\'; object-src \'self\';',
-      },
-    }),
     process.env.NODE_ENV === 'production'
       ? new ZipPlugin({
         filename: `censortracker-firefox-ext.v${version}.zip`,
@@ -187,21 +177,6 @@ const webpackConfig = {
         pathPrefix: `censortracker-firefox-ext.v${version}-dev`,
       }),
   ],
-
-  // node: {
-  //   // prevent webpack from injecting mocks to Node native modules
-  //   // that does not make sense for the client
-  //   dgram: 'empty',
-  //   fs: 'empty',
-  //   net: 'empty',
-  //   tls: 'empty',
-  //   child_process: 'empty',
-  //   // fix "Invalid y value for curve" issue:
-  //   crypto: true,
-  //   module: false,
-  //   process: true,
-  //   global: true,
-  // },
 
   optimization: {
     minimize: false,
@@ -214,13 +189,6 @@ if (process.env.NODE_ENV === 'production') {
   webpackConfig.plugins.push(new TerserPlugin({
     terserOptions: {
       parallel: true,
-      // module: false,
-      // keep_fnames: true,
-      // keep_classnames: true,
-      // safari10: true,
-      // mangle: {
-      //   reserved: ['Block', 'BigInteger', 'ECSignature', 'ECPair', 'Point', 'HDNode'],
-      // },
     },
   }))
 }

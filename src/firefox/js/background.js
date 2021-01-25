@@ -208,10 +208,6 @@ browser.windows.onRemoved.addListener(handleWindowRemoved)
  */
 const handleInstalled = async ({ reason }) => {
   if (reason === 'install') {
-    browser.tabs.create({
-      url: browser.runtime.getURL('installed.html'),
-    })
-
     const synchronized = await registry.syncDatabase()
 
     if (synchronized) {
@@ -222,6 +218,12 @@ const handleInstalled = async ({ reason }) => {
 }
 
 browser.runtime.onInstalled.addListener(handleInstalled)
+
+const handleUninstalled = async (info) => {
+  // TODO: Clear storage
+}
+
+browser.management.onUninstalled.addListener(handleUninstalled)
 
 const handleTabCreate = async ({ id }) => {
   const { enableExtension } =

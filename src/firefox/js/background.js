@@ -56,12 +56,9 @@ const handleProxyRequest = async ({ url }) => {
   const { useProxy } = await browser.storage.local.get({ useProxy: true })
   const { domainFound } = await registry.domainsContains(url)
 
-  if (useProxy) {
+  if (useProxy && domainFound) {
     proxy.allowProxying()
-
-    if (domainFound) {
-      return proxy.getProxyInfo()
-    }
+    return proxy.getProxyInfo()
   }
   return proxy.getDirectProxyInfo()
 }

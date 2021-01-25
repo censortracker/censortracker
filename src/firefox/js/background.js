@@ -221,8 +221,8 @@ const handleInstalled = async ({ reason }) => {
 
 browser.runtime.onInstalled.addListener(handleInstalled)
 
-const handleUninstalled = async (info) => {
-  // TODO: Clear storage
+const handleUninstalled = async (_info) => {
+  await storage.clear()
 }
 
 browser.management.onUninstalled.addListener(handleUninstalled)

@@ -57,8 +57,6 @@ class Registry {
         console.log(error)
       }
     }
-
-    console.warn('getDomains: domains not found')
     return []
   }
 
@@ -87,7 +85,6 @@ class Registry {
     const dataObject = distributors.find(({ url: innerUrl }) => (hostname === innerUrl))
 
     if (dataObject) {
-      console.warn(`Distributor match found: ${hostname}`)
       return dataObject
     }
     return {}

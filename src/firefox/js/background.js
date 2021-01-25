@@ -134,11 +134,7 @@ const handleTabState = async () => {
     return
   }
 
-  const { enableExtension, useNotificationsChecked } =
-    await browser.storage.local.get({
-      enableExtension: true,
-      useNotificationsChecked: true,
-    })
+  const { enableExtension } = await browser.storage.local.get({ enableExtension: true })
 
   if (!enableExtension) {
     settings.setDisableIcon(tab.id)
@@ -162,32 +158,47 @@ const handleTabState = async () => {
 
   if (distributorUrl) {
     settings.setDangerIcon(tab.id)
-    if (useNotificationsChecked && !cooperationRefused) {
+    if (!cooperationRefused) {
       await showCooperationAcceptedWarning(currentHostname)
     }
   }
 }
 
+browser.tabs.onActivated.addListener(handleTabState)
+browser.tabs.onUpdated.addListener(handleTabState)
+
 const showCooperationAcceptedWarning = async (hostname) => {
-  console.log('Showing cooperation accepted warning...')
-  const { notifiedHosts } = await browser.storage.local.get({ notifiedHosts: [] })
+  console.log(`Showing cooperation accepted warning for ${hostname}`)
+  const { notifiedHosts, useNotificationsChecked } = await browser.storage.local.get({
+    notifiedHosts: new Set(),
+    useNotificationsChecked: true,
+  })
 
-  if (!notifiedHosts.includes(hostname)) {
-    await browser.notifications.create({
-      type: 'basic',
-      title: settings.getName(),
-      iconUrl: settings.getDangerIcon(),
-      message: `${hostname} может передавать информацию третьим лицам.`,
-    })
+  if (useNotificationsChecked) {
+    if (!notifiedHosts.has(hostname)) {
+      await browser.notifications.create(hostname, {
+        type: 'basic',
+        title: settings.getName(),
+        iconUrl: settings.getDangerIcon(),
+        message: `${hostname} может передавать информацию третьим лицам.`,
+      })
 
-    try {
-      notifiedHosts.push(hostname)
-      await browser.storage.local.set({ notifiedHosts })
-    } catch (error) {
-      console.error(error)
+      try {
+        notifiedHosts.add(hostname)
+        await browser.storage.local.set({ notifiedHosts })
+      } catch (error) {
+        console.error(error)
+      }
     }
   }
 }
+
+const handleWindowRemoved = async (_windowId) => {
+  await browser.storage.local.remove('notifiedHosts')
+  console.warn('A list of notified hosts has been cleaned up!')
+}
+
+browser.windows.onRemoved.addListener(handleWindowRemoved)
 
 /**
  * Fired when the extension is first installed, when the extension is
@@ -231,9 +242,6 @@ browser.runtime.onStartup.addListener(async () => {
   await registry.syncDatabase()
   await handleTabState()
 })
-
-browser.tabs.onActivated.addListener(handleTabState)
-browser.tabs.onUpdated.addListener(handleTabState)
 
 // The mechanism for controlling handlers from popup.js
 window.censortracker.browserListeners = {

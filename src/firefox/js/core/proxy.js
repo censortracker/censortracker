@@ -1,16 +1,6 @@
 const PROXY_GATE_URL = 'https://163.172.211.183:39263'
 
 class Proxy {
-  constructor () {
-    this.ignoredDomains = [
-      '^youtu.be',
-      '^youtube.com',
-      'deviantart.com',
-    ]
-    this.ignoreRegEx = new RegExp(
-      this.ignoredDomains.join('|'), 'gi')
-  }
-
   getProxyInfo = () => {
     return {
       type: 'https',
@@ -21,20 +11,6 @@ class Proxy {
 
   getDirectProxyInfo = () => {
     return { type: 'direct' }
-  }
-
-  excludeIgnoredDomains = (domains) => {
-    return domains.filter((domain) => {
-      return !domain.match(this.ignoreRegEx)
-    })
-  }
-
-  enabled = async () => {
-    const { useProxy } = await browser.storage.local.get({
-      useProxy: true,
-    })
-
-    return useProxy
   }
 
   enableProxy = async () => {

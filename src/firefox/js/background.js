@@ -168,12 +168,12 @@ browser.tabs.onUpdated.addListener(handleTabState)
 
 const showCooperationAcceptedWarning = async (hostname) => {
   console.log(`Showing cooperation accepted warning for ${hostname}`)
-  const { notifiedHosts, useNotificationsChecked } = await browser.storage.local.get({
+  const { notifiedHosts, showNotifications } = await browser.storage.local.get({
     notifiedHosts: new Set(),
-    useNotificationsChecked: true,
+    showNotifications: true,
   })
 
-  if (useNotificationsChecked) {
+  if (showNotifications) {
     if (!notifiedHosts.has(hostname)) {
       await browser.notifications.create(hostname, {
         type: 'basic',

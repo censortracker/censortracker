@@ -30,24 +30,24 @@ class Proxy {
   }
 
   enabled = async () => {
-    const { useProxyChecked } = await browser.storage.local.get({
-      useProxyChecked: true,
+    const { useProxy } = await browser.storage.local.get({
+      useProxy: true,
     })
 
-    return useProxyChecked
+    return useProxy
   }
 
   enableProxy = async () => {
     console.warn('Proxying enabled.')
     await browser.storage.local.set({
-      useProxyChecked: true,
+      useProxy: true,
     })
   }
 
   disableProxy = async () => {
     console.warn('Proxying disabled.')
     await browser.storage.local.set({
-      useProxyChecked: false,
+      useProxy: false,
     })
   }
 

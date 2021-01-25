@@ -2,7 +2,7 @@
   const { censortracker: { browserListeners, settings, proxy } } = await browser.runtime.getBackgroundPage()
 
   const useProxyCheckbox = document.getElementById('useProxyCheckbox')
-  const useNotificationsCheckbox = document.getElementById('useNotificationsCheckbox')
+  const showNotificationsCheckbox = document.getElementById('showNotificationsCheckbox')
 
   useProxyCheckbox.addEventListener('change', async () => {
     if (useProxyCheckbox.checked) {
@@ -18,20 +18,20 @@
     }
   }, false)
 
-  useNotificationsCheckbox.addEventListener('change', async () => {
-    if (useNotificationsCheckbox.checked) {
+  showNotificationsCheckbox.addEventListener('change', async () => {
+    if (showNotificationsCheckbox.checked) {
       await settings.enableNotifications()
     } else {
       await settings.disableNotifications()
     }
   }, false)
 
-  const { useProxyChecked, useNotificationsChecked } =
+  const { useProxy, showNotifications } =
     await browser.storage.local.get({
-      useProxyChecked: true,
-      useNotificationsChecked: true,
+      useProxy: true,
+      showNotifications: true,
     })
 
-  useProxyCheckbox.checked = useProxyChecked
-  useNotificationsCheckbox.checked = useNotificationsChecked
+  useProxyCheckbox.checked = useProxy
+  showNotificationsCheckbox.checked = showNotifications
 })()

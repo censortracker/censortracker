@@ -70,12 +70,12 @@ class Settings {
 
   enableNotifications = async () => {
     console.log('Notifications enabled.')
-    await browser.storage.local.set({ useNotificationsChecked: true })
+    await browser.storage.local.set({ showNotifications: true })
   }
 
   disableNotifications = async () => {
     console.warn('Notifications disabled.')
-    await browser.storage.local.set({ useNotificationsChecked: false })
+    await browser.storage.local.set({ showNotifications: false })
   }
 }
 

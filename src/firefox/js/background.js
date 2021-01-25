@@ -229,6 +229,7 @@ browser.management.onUninstalled.addListener(handleUninstalled)
 
 const handleTabCreate = async ({ id }) => {
   const { enableExtension } = await storage.get({ enableExtension: true })
+
   if (enableExtension) {
     settings.setDefaultIcon(id)
   } else {

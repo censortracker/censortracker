@@ -17,8 +17,6 @@ window.censortracker = {
   proxy,
   registry,
   settings,
-  errors,
-  ignore,
   storage,
   extractHostnameFromUrl,
 }

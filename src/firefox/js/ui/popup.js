@@ -28,16 +28,14 @@ const popupShowTimeout = 60
 browser.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
   await addExtensionControlListeners(bgModules)
 
-  const { enableExtension } = await bgModules.storage.get({
-    enableExtension: true,
-  })
+  const { enableExtension } = await bgModules.storage.get({ enableExtension: true })
 
-  const [{ url: currentURL }] = await browser.tabs.query({
+  const [{ url: currentUrl }] = await browser.tabs.query({
     active: true, lastFocusedWindow: true,
   })
 
   const currentHostname = bgModules.extractHostnameFromUrl(
-    getAppropriateURL(currentURL),
+    getAppropriateURL(currentUrl),
   )
 
   interpolateCurrentDomain(currentHostname)

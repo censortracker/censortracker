@@ -236,28 +236,24 @@ browser.runtime.onStartup.addListener(async () => {
   await handleTabState()
 })
 
-// The mechanism for controlling handlers from popup.js
-window.censortracker.browserListeners = {
-  // TODO: Pretty bad idea to use that name (fix it).
-  has: () => {
-    const hasOnErrorOccurredListener =
-      browser.webRequest.onErrorOccurred.hasListener(handleErrorOccurred)
-    const hasOnBeforeRequestListener =
+window.censortracker.events = {
+  hasListeners: () => {
+    return (
+      browser.webRequest.onErrorOccurred.hasListener(handleErrorOccurred) &&
       browser.webRequest.onBeforeRequest.hasListener(handleBeforeRequest)
-
-    return hasOnBeforeRequestListener && hasOnErrorOccurredListener
+    )
   },
-  remove: () => {
+  removeListeners: () => {
     browser.webRequest.onErrorOccurred.removeListener(handleErrorOccurred)
     browser.webRequest.onBeforeRequest.removeListener(handleBeforeRequest)
-    browser.proxy.onRequest.removeListener(handleProxyRequest)
-    console.warn('CensorTracker: listeners removed')
+    console.warn('CensorTracker: listeners are removed')
   },
-  add: () => {
-    browser.webRequest.onErrorOccurred.addListener(handleErrorOccurred, {
-      urls: ['http://*/*', 'https://*/*'],
-      types: ['main_frame'],
-    })
+  addListeners: () => {
+    browser.webRequest.onErrorOccurred.addListener(
+      handleErrorOccurred, {
+        urls: ['http://*/*', 'https://*/*'],
+        types: ['main_frame'],
+      })
     browser.webRequest.onBeforeRequest.addListener(
       handleBeforeRequest, {
         urls: ['http://*/*'],
@@ -265,6 +261,6 @@ window.censortracker.browserListeners = {
       },
       ['blocking'],
     )
-    console.warn('CensorTracker: listeners added')
+    console.warn('CensorTracker: listeners are added')
   },
 }

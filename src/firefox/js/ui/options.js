@@ -1,5 +1,5 @@
 (async () => {
-  const { censortracker: { browserListeners, settings, proxy, storage } } = await browser.runtime.getBackgroundPage()
+  const { censortracker: { events, settings, proxy, storage } } = await browser.runtime.getBackgroundPage()
 
   const useProxyCheckbox = document.getElementById('useProxyCheckbox')
   const showNotificationsCheckbox = document.getElementById('showNotificationsCheckbox')
@@ -8,8 +8,8 @@
     if (useProxyCheckbox.checked) {
       await proxy.enableProxy()
 
-      if (!browserListeners.has()) {
-        browserListeners.add()
+      if (!events.hasListeners()) {
+        events.addListeners()
       }
       useProxyCheckbox.checked = true
     } else {

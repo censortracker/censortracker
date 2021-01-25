@@ -15,10 +15,10 @@
     }
 
     if (event.target.matches('#doNotAskAnymore')) {
-      const { censortracker: { browserListeners } } = await browser.runtime.getBackgroundPage()
+      const { censortracker: { events } } = await browser.runtime.getBackgroundPage()
 
-      if (browserListeners.has()) {
-        browserListeners.remove()
+      if (events.hasListeners()) {
+        events.remove()
       }
 
       browser.tabs.update(tab.id, { url: targetUrl })

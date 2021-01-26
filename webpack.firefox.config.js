@@ -167,15 +167,15 @@ const webpackConfig = {
         'Content-Security-Policy': 'script-src \'self\' \'unsafe-eval\'; object-src \'self\';',
       },
     }),
-    process.env.NODE_ENV === 'production'
-      ? new ZipPlugin({
-        filename: `censortracker-firefox-ext.v${version}.zip`,
-        pathPrefix: `censortracker-firefox-ext.v${version}`,
-      })
-      : new ZipPlugin({
-        filename: `censortracker-firefox-ext.v${version}-dev.zip`,
-        pathPrefix: `censortracker-firefox-ext.v${version}-dev`,
-      }),
+    // process.env.NODE_ENV === 'production'
+    //   ? new ZipPlugin({
+    //     filename: `censortracker-firefox-ext.v${version}.zip`,
+    //     pathPrefix: `censortracker-firefox-ext.v${version}`,
+    //   })
+    //   : new ZipPlugin({
+    //     filename: `censortracker-firefox-ext.v${version}-dev.zip`,
+    //     pathPrefix: `censortracker-firefox-ext.v${version}-dev`,
+    //   }),
   ],
 
   optimization: {

@@ -78,7 +78,6 @@ browser.proxy.onRequest.addListener(
  * @returns {undefined} Undefined.
  */
 const handleErrorOccurred = async ({ url, error, tabId }) => {
-  console.error(`ERROR CODE IS: ${error}`)
   const hostname = extractHostnameFromUrl(url)
   const encodedUrl = window.btoa(url)
 
@@ -102,12 +101,13 @@ const handleErrorOccurred = async ({ url, error, tabId }) => {
       })
     }
 
+    await registry.addBlockedByDPI(hostname)
     browser.tabs.update(tabId, {
       url: browser.runtime.getURL(`unavailable.html?${encodedUrl}`),
     })
-    await registry.addBlockedByDPI(hostname)
     return
   }
+  console.warn(`CURRENT ERROR: ${error}`)
 
   await ignore.add(hostname)
   browser.tabs.remove(tabId)

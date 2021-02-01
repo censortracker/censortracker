@@ -7,6 +7,7 @@ import {
   storage,
 } from './core'
 import {
+  // eslint-disable-next-line no-unused-vars
   enforceHttpConnection,
   enforceHttpsConnection,
   extractHostnameFromUrl,
@@ -18,6 +19,7 @@ window.censortracker = {
   registry,
   settings,
   storage,
+  errors,
   extractHostnameFromUrl,
 }
 
@@ -77,43 +79,44 @@ browser.proxy.onRequest.addListener(
  * @param tabId The ID of the tab in which the request takes place.
  * @returns {undefined} Undefined.
  */
-const handleErrorOccurred = async ({ url, error, tabId }) => {
-  const hostname = extractHostnameFromUrl(url)
+const handleErrorOccurred = async ({ error, url, tabId }) => {
+  console.warn({ error, url, tabId })
   const encodedUrl = window.btoa(url)
+  // const hostname = extractHostnameFromUrl(url)
 
   const { useProxy } = await storage.get({ useProxy: true })
+  const { proxyError, connectionError } = errors.determineError(error)
 
-  if (ignore.contains(hostname)) {
-    return
-  }
+  console.warn({ proxyError, connectionError })
 
-  if (errors.isThereProxyConnectionError(error)) {
+  if (proxyError) {
     browser.tabs.update(tabId, {
       url: browser.runtime.getURL(`proxy_unavailable.html?${encodedUrl}`),
     })
     return
   }
 
-  if (errors.isThereConnectionError(error)) {
+  if (connectionError) {
+    // TODO: Fix this feature
+    // await registry.add(hostname)
+
     if (!useProxy) {
       browser.tabs.update(tabId, {
         url: browser.runtime.getURL(`proxy_disabled.html?${encodedUrl}`),
       })
+      return
     }
 
-    await registry.addBlockedByDPI(hostname)
     browser.tabs.update(tabId, {
       url: browser.runtime.getURL(`unavailable.html?${encodedUrl}`),
     })
-    return
   }
-  console.warn(`CURRENT ERROR: ${error}`)
 
-  await ignore.add(hostname)
-  browser.tabs.remove(tabId)
-  browser.tabs.create({
-    url: enforceHttpConnection(url),
-  })
+  // await ignore.add(hostname)
+  // browser.tabs.remove(tabId)
+  // browser.tabs.create({
+  //   url: enforceHttpConnection(url),
+  // })
 }
 
 browser.webRequest.onErrorOccurred.addListener(
@@ -200,7 +203,7 @@ browser.windows.onRemoved.addListener(handleWindowRemoved)
  */
 const handleInstalled = async ({ reason }) => {
   if (reason === 'install') {
-    const synchronized = await registry.syncDatabase()
+    const synchronized = await registry.sync()
 
     if (synchronized) {
       settings.enableExtension()
@@ -230,7 +233,7 @@ const handleTabCreate = async ({ id }) => {
 browser.tabs.onCreated.addListener(handleTabCreate)
 
 browser.runtime.onStartup.addListener(async () => {
-  await registry.syncDatabase()
+  await registry.sync()
   await handleTabState()
 })
 

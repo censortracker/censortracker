@@ -8,11 +8,11 @@ const DISTRIBUTORS_DB_KEY = 'distributors'
 class Registry {
   constructor () {
     setInterval(async () => {
-      await this.removeOutdatedBlockedDomains()
+      await this.removeOutdated()
     }, 60 * 1000 * 60 * 60 * 2)
   }
 
-  syncDatabase = async () => {
+  sync = async () => {
     console.warn('Synchronizing local database with registry...')
     const apis = [
       {
@@ -39,7 +39,7 @@ class Registry {
 
     if (!domains) {
       console.log('Database is empty. Trying to sync...')
-      await this.syncDatabase()
+      await this.sync()
     }
     return true
   }
@@ -74,7 +74,7 @@ class Registry {
     return {}
   }
 
-  addBlockedByDPI = async (hostname) => {
+  add = async (hostname) => {
     if (!hostname) {
       return
     }
@@ -85,12 +85,12 @@ class Registry {
         domain: hostname,
         timestamp: new Date().getTime(),
       })
-      await this.reportBlockedByDPI(hostname)
+      await this.sendReport(hostname)
     }
     await storage.set({ blockedDomains })
   }
 
-  reportBlockedByDPI = async (domain) => {
+  sendReport = async (domain) => {
     const { alreadyReported } = await storage.get({ alreadyReported: [] })
 
     if (!alreadyReported.includes(domain)) {
@@ -109,7 +109,7 @@ class Registry {
     return null
   }
 
-  removeOutdatedBlockedDomains = async () => {
+  removeOutdated = async () => {
     const monthInSeconds = 2628000
     let { blockedDomains } = await storage.get({ blockedDomains: [] })
 

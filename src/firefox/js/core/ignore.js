@@ -62,6 +62,9 @@ class Ignore {
   }
 
   contains = (host) => {
+    if (!host) {
+      return false
+    }
     const ignoreRegEx = /(google.com|localhost)/
 
     host = extractHostnameFromUrl(host)
@@ -71,7 +74,6 @@ class Ignore {
     }
 
     console.warn(`Ignoring host: ${host}`)
-
     return this.isSpecialPurposeIP(host)
   }
 }

@@ -61,20 +61,17 @@ class Ignore {
     await this.save()
   }
 
-  contains = (host) => {
-    if (!host) {
-      return false
-    }
+  contains = (hostname) => {
     const ignoreRegEx = /(google.com|localhost)/
 
-    host = extractHostnameFromUrl(host)
+    hostname = extractHostnameFromUrl(hostname)
 
-    if (this.ignoredHosts.has(host) || host.match(ignoreRegEx)) {
+    if (this.ignoredHosts.has(hostname) || hostname.match(ignoreRegEx)) {
       return true
     }
 
-    console.warn(`Ignoring host: ${host}`)
-    return this.isSpecialPurposeIP(host)
+    console.warn(`Ignoring host: ${hostname}`)
+    return this.isSpecialPurposeIP(hostname)
   }
 }
 

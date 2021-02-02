@@ -6,12 +6,6 @@ const DOMAINS_DB_KEY = 'domains'
 const DISTRIBUTORS_DB_KEY = 'distributors'
 
 class Registry {
-  constructor () {
-    setInterval(async () => {
-      await this.removeOutdated()
-    }, 60 * 1000 * 60 * 60 * 2)
-  }
-
   sync = async () => {
     console.warn('Synchronizing local database with registry...')
     const apis = [
@@ -78,19 +72,13 @@ class Registry {
     await storage.set({ key: hostname })
     const { blockedDomains } = await storage.get({ blockedDomains: [] })
 
-    blockedDomains.push(hostname)
+    if (!blockedDomains.includes(hostname)) {
+      blockedDomains.push(hostname)
+      // await this.sendReport(hostname)
+    }
 
-    console.warn(`Blocked domains: ${blockedDomains}`)
     await storage.set({ blockedDomains })
-
-    // if (!blockedDomains.find(({ domain }) => domain === hostname)) {
-    //   blockedDomains.push({
-    //     domain: hostname,
-    //     timestamp: new Date().getTime(),
-    //   })
-    //   await this.sendReport(hostname)
-    // }
-    // await storage.set({ blockedDomains })
+    console.warn(`Blocked domains: ${blockedDomains}`)
   }
 
   sendReport = async (domain) => {
@@ -110,22 +98,6 @@ class Registry {
       return json
     }
     return null
-  }
-
-  removeOutdated = async () => {
-    const monthInSeconds = 2628000
-    let { blockedDomains } = await storage.get({ blockedDomains: [] })
-
-    if (blockedDomains) {
-      blockedDomains = blockedDomains.filter((item) => {
-        const timestamp = new Date().getTime()
-
-        return (timestamp - item.timestamp) / 1000 < monthInSeconds
-      })
-    }
-
-    await storage.set({ blockedDomains })
-    console.warn('Outdated domains has been removed.')
   }
 }
 

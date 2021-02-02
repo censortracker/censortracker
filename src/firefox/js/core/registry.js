@@ -68,11 +68,15 @@ class Registry {
     return {}
   }
 
-  sendReport = async (domain) => {
-    const { alreadyReported } = await storage.get({ alreadyReported: new Set() })
+  sendReport = async (hostname) => {
+    const { alreadyReported } = await storage.get({
+      alreadyReported: new Set(),
+    })
 
-    alreadyReported.add(domain)
+    alreadyReported.add(hostname)
     await storage.set({ alreadyReported })
+
+    console.warn(`Reported new lock: ${hostname}`)
     // TODO: Add reporting mechanism
   }
 
@@ -82,7 +86,6 @@ class Registry {
     if (!blockedDomains.includes(hostname)) {
       blockedDomains.push(hostname)
       await this.sendReport(hostname)
-      console.warn(`Added to registry: ${hostname}`)
     }
 
     await storage.set({ blockedDomains })

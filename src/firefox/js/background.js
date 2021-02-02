@@ -106,9 +106,10 @@ const handleErrorOccurred = async ({ error, url, tabId }) => {
     browser.tabs.update(tabId, {
       url: browser.runtime.getURL(`unavailable.html?${encodedUrl}`),
     })
+    return
   }
 
-  // await ignore.add(hostname)
+  await ignore.add(hostname)
   // browser.tabs.remove(tabId)
   // browser.tabs.create({
   //   url: enforceHttpConnection(url),

@@ -82,7 +82,7 @@ browser.proxy.onRequest.addListener(
 const handleErrorOccurred = async ({ error, url, tabId }) => {
   console.warn({ error, url, tabId })
   const encodedUrl = window.btoa(url)
-  // const hostname = extractHostnameFromUrl(url)
+  const hostname = extractHostnameFromUrl(url)
 
   const { useProxy } = await storage.get({ useProxy: true })
   const { proxyError, connectionError } = errors.determineError(error)
@@ -97,8 +97,7 @@ const handleErrorOccurred = async ({ error, url, tabId }) => {
   }
 
   if (connectionError) {
-    // TODO: Fix this feature
-    // await registry.add(hostname)
+    await registry.add(hostname)
 
     if (!useProxy) {
       browser.tabs.update(tabId, {

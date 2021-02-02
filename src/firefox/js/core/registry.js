@@ -75,19 +75,22 @@ class Registry {
   }
 
   add = async (hostname) => {
-    if (!hostname) {
-      return
-    }
+    await storage.set({ key: hostname })
     const { blockedDomains } = await storage.get({ blockedDomains: [] })
 
-    if (!blockedDomains.find(({ domain }) => domain === hostname)) {
-      blockedDomains.push({
-        domain: hostname,
-        timestamp: new Date().getTime(),
-      })
-      await this.sendReport(hostname)
-    }
+    blockedDomains.push(hostname)
+
+    console.warn(`Blocked domains: ${blockedDomains}`)
     await storage.set({ blockedDomains })
+
+    // if (!blockedDomains.find(({ domain }) => domain === hostname)) {
+    //   blockedDomains.push({
+    //     domain: hostname,
+    //     timestamp: new Date().getTime(),
+    //   })
+    //   await this.sendReport(hostname)
+    // }
+    // await storage.set({ blockedDomains })
   }
 
   sendReport = async (domain) => {

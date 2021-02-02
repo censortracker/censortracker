@@ -81,9 +81,8 @@ class Registry {
 
     if (!blockedDomains.includes(hostname)) {
       blockedDomains.push(hostname)
-      this.sendReport(hostname).then((_json) => {
-        console.warn(`Added to registry: ${hostname}`)
-      })
+      await this.sendReport(hostname)
+      console.warn(`Added to registry: ${hostname}`)
     }
 
     await storage.set({ blockedDomains })

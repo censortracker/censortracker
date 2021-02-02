@@ -10,7 +10,9 @@
   unavailableWebsite.innerText = targetUrl
 
   if (encodedHostname && openThroughProxyButton) {
+    openThroughProxyButton.disabled = false
     openThroughProxyButton.classList.remove('btn-hidden')
+    openThroughProxyButton.classList.remove('btn-disabled')
   }
 
   document.addEventListener('click', (event) => {
@@ -30,11 +32,4 @@
 
     event.preventDefault()
   }, false)
-
-  setTimeout(() => {
-    if (openThroughProxyButton && openThroughProxyButton.classList.contains('btn-disabled')) {
-      openThroughProxyButton.classList.remove('btn-disabled')
-      openThroughProxyButton.disabled = false
-    }
-  }, 600)
 })()

@@ -7,7 +7,6 @@ import {
   storage,
 } from './core'
 import {
-  // eslint-disable-next-line no-unused-vars
   enforceHttpConnection,
   enforceHttpsConnection,
   extractHostnameFromUrl,
@@ -20,6 +19,7 @@ window.censortracker = {
   settings,
   storage,
   errors,
+  ignore,
   extractHostnameFromUrl,
 }
 
@@ -33,10 +33,8 @@ const handleBeforeRequest = ({ url }) => {
   const hostname = extractHostnameFromUrl(url)
 
   if (ignore.contains(hostname)) {
-    console.warn(`Ignoring host: ${url}`)
     return undefined
   }
-  proxy.allowProxying()
   return {
     redirectUrl: enforceHttpsConnection(url),
   }
@@ -57,6 +55,10 @@ browser.webRequest.onBeforeRequest.addListener(
 const handleProxyRequest = async ({ url }) => {
   const { useProxy } = await storage.get({ useProxy: true })
   const { domainFound } = await registry.domainsContains(url)
+
+  if (ignore.contains(url)) {
+    return proxy.getDirectProxyInfo()
+  }
 
   if (useProxy && domainFound) {
     proxy.allowProxying()
@@ -110,10 +112,9 @@ const handleErrorOccurred = async ({ error, url, tabId }) => {
   }
 
   await ignore.add(hostname)
-  // browser.tabs.remove(tabId)
-  // browser.tabs.create({
-  //   url: enforceHttpConnection(url),
-  // })
+  browser.tabs.update(tabId, {
+    url: enforceHttpConnection(url),
+  })
 }
 
 browser.webRequest.onErrorOccurred.addListener(

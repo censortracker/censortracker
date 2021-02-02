@@ -70,6 +70,8 @@ class Ignore {
       return true
     }
 
+    console.warn(`Ignoring host: ${host}`)
+
     return this.isSpecialPurposeIP(host)
   }
 }

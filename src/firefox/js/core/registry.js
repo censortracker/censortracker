@@ -20,7 +20,7 @@ class Registry {
     ]
 
     for (const { key, url } of apis) {
-      const response = await fetch(url).catch(console.error)
+      const response = await fetch(url)
       const domains = await response.json()
 
       await storage.set({
@@ -68,36 +68,25 @@ class Registry {
     return {}
   }
 
+  sendReport = async (domain) => {
+    const { alreadyReported } = await storage.get({ alreadyReported: new Set() })
+
+    alreadyReported.add(domain)
+    await storage.set({ alreadyReported })
+    // TODO: Add reporting mechanism
+  }
+
   add = async (hostname) => {
-    await storage.set({ key: hostname })
     const { blockedDomains } = await storage.get({ blockedDomains: [] })
 
     if (!blockedDomains.includes(hostname)) {
       blockedDomains.push(hostname)
-      // await this.sendReport(hostname)
+      this.sendReport(hostname).then((_json) => {
+        console.warn(`Added to registry: ${hostname}`)
+      })
     }
 
     await storage.set({ blockedDomains })
-    console.warn(`Blocked domains: ${blockedDomains}`)
-  }
-
-  sendReport = async (domain) => {
-    const { alreadyReported } = await storage.get({ alreadyReported: [] })
-
-    if (!alreadyReported.includes(domain)) {
-      const response = await fetch(settings.getLoggingApiUrl(), {
-        method: 'POST',
-        headers: settings.getLoggingApiHeaders(),
-        body: JSON.stringify({ domain }),
-      })
-      const json = await response.json()
-
-      alreadyReported.push(domain)
-      await storage.set({ alreadyReported })
-      console.warn(`Reported possible DPI lock: ${domain}`)
-      return json
-    }
-    return null
   }
 }
 

@@ -80,14 +80,11 @@ browser.proxy.onRequest.addListener(
  * @returns {undefined} Undefined.
  */
 const handleErrorOccurred = async ({ error, url, tabId }) => {
-  console.warn({ error, url, tabId })
   const encodedUrl = window.btoa(url)
   const hostname = extractHostnameFromUrl(url)
 
   const { useProxy } = await storage.get({ useProxy: true })
   const { proxyError, connectionError } = errors.determineError(error)
-
-  console.warn({ proxyError, connectionError })
 
   if (proxyError) {
     browser.tabs.update(tabId, {

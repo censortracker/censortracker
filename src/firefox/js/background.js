@@ -10,6 +10,7 @@ import {
   enforceHttpConnection,
   enforceHttpsConnection,
   extractHostnameFromUrl,
+  getRequestFilter,
   validateUrl,
 } from './core/utilities'
 
@@ -41,10 +42,9 @@ const handleBeforeRequest = ({ url }) => {
 }
 
 browser.webRequest.onBeforeRequest.addListener(
-  handleBeforeRequest, {
-    urls: ['http://*/*'],
-    types: ['main_frame'],
-  }, ['blocking'],
+  handleBeforeRequest,
+  getRequestFilter({ http: true, https: false }),
+  ['blocking'],
 )
 
 /**
@@ -68,10 +68,8 @@ const handleProxyRequest = async ({ url }) => {
 }
 
 browser.proxy.onRequest.addListener(
-  handleProxyRequest, {
-    urls: ['http://*/*', 'https://*/*'],
-    types: ['main_frame'],
-  },
+  handleProxyRequest,
+  getRequestFilter({ http: true, https: true }),
 )
 
 /**
@@ -119,10 +117,7 @@ const handleErrorOccurred = async ({ error, url, tabId }) => {
 
 browser.webRequest.onErrorOccurred.addListener(
   handleErrorOccurred,
-  {
-    urls: ['http://*/*', 'https://*/*'],
-    types: ['main_frame'],
-  },
+  getRequestFilter({ http: true, https: true }),
 )
 
 const handleTabState = async () => {
@@ -251,21 +246,16 @@ window.censortracker.events = {
   },
   addListeners: () => {
     browser.proxy.onRequest.addListener(
-      handleProxyRequest, {
-        urls: ['http://*/*', 'https://*/*'],
-        types: ['main_frame'],
-      },
+      handleProxyRequest,
+      getRequestFilter({ http: true, https: true }),
     )
     browser.webRequest.onErrorOccurred.addListener(
-      handleErrorOccurred, {
-        urls: ['http://*/*', 'https://*/*'],
-        types: ['main_frame'],
-      })
+      handleErrorOccurred,
+      getRequestFilter({ http: true, https: true }),
+    )
     browser.webRequest.onBeforeRequest.addListener(
-      handleBeforeRequest, {
-        urls: ['http://*/*'],
-        types: ['main_frame'],
-      },
+      handleBeforeRequest,
+      getRequestFilter({ http: true, https: false }),
       ['blocking'],
     )
     console.warn('CensorTracker: listeners are added')

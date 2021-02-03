@@ -238,16 +238,24 @@ browser.runtime.onStartup.addListener(async () => {
 window.censortracker.events = {
   hasListeners: () => {
     return (
+      browser.proxy.onRequest.hasListener(handleProxyRequest) &&
       browser.webRequest.onErrorOccurred.hasListener(handleErrorOccurred) &&
       browser.webRequest.onBeforeRequest.hasListener(handleBeforeRequest)
     )
   },
   removeListeners: () => {
+    browser.proxy.onRequest.removeListener(handleProxyRequest)
     browser.webRequest.onErrorOccurred.removeListener(handleErrorOccurred)
     browser.webRequest.onBeforeRequest.removeListener(handleBeforeRequest)
     console.warn('CensorTracker: listeners are removed')
   },
   addListeners: () => {
+    browser.proxy.onRequest.addListener(
+      handleProxyRequest, {
+        urls: ['http://*/*', 'https://*/*'],
+        types: ['main_frame'],
+      },
+    )
     browser.webRequest.onErrorOccurred.addListener(
       handleErrorOccurred, {
         urls: ['http://*/*', 'https://*/*'],

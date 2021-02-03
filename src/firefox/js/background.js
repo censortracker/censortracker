@@ -126,10 +126,6 @@ const handleTabState = async () => {
     active: true, lastFocusedWindow: true,
   })
 
-  if (ignore.contains(currentUrl)) {
-    return
-  }
-
   if (enableExtension && validateUrl(currentUrl)) {
     const { domainFound } = await registry.domainsContains(currentUrl)
     const { url: distributorUrl, cooperationRefused } =

@@ -74,7 +74,7 @@ class Registry {
     })
 
     if (!alreadyReported.has(hostname)) {
-      fetch(settings.getLoggingApiUrl(), {
+      await fetch(settings.getLoggingApiUrl(), {
         method: 'POST',
         headers: settings.getLoggingApiHeaders(),
         body: JSON.stringify({ hostname }),
@@ -90,7 +90,7 @@ class Registry {
 
     if (!blockedDomains.includes(hostname)) {
       blockedDomains.push(hostname)
-      await this.sendReport(hostname)
+      this.sendReport(hostname).then()
     }
 
     await storage.set({ blockedDomains })

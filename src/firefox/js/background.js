@@ -14,8 +14,6 @@ import {
   validateUrl,
 } from './core/utilities'
 
-import { Reasons } from "./core/constants"
-
 window.censortracker = {
   proxy,
   registry,

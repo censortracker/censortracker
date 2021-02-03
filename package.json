@@ -1,13 +1,13 @@
 {
   "name": "censortracker",
-  "version": "2.0.5+1730",
+  "version": "2.0.5+1733",
   "description": "|",
   "author": "Roskomsvoboda",
   "license": "MIT",
   "main": "dist/index.js",
   "scripts": {
     "dev:chrome": "webpack --progress --config webpack.chrome.config.js",
-    "dev:firefox": "eslint --ext=.js ./src/firefox && webpack --progress --config webpack.firefox.config.js",
+    "dev:firefox": "eslint --fix --ext=.js ./src/firefox && webpack --progress --config webpack.firefox.config.js",
     "ff-debug": "web-ext run --source-dir=dist/firefox",
     "watch:chrome": "webpack --watch --progress --config webpack.chrome.config.js",
     "watch:firefox": "webpack --watch --progress --config webpack.firefox.config.js",

@@ -73,11 +73,16 @@ class Registry {
       alreadyReported: new Set(),
     })
 
-    alreadyReported.add(hostname)
-    await storage.set({ alreadyReported })
-
-    console.warn(`Reported new lock: ${hostname}`)
-    // TODO: Add reporting mechanism
+    if (!alreadyReported.has(hostname)) {
+      fetch(settings.getLoggingApiUrl(), {
+        method: 'POST',
+        headers: settings.getLoggingApiHeaders(),
+        body: JSON.stringify({ hostname }),
+      })
+      alreadyReported.add(hostname)
+      await storage.set({ alreadyReported })
+      console.warn(`Reported new lock: ${hostname}`)
+    }
   }
 
   add = async (hostname) => {

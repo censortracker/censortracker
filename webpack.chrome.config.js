@@ -51,7 +51,7 @@ const webpackConfig = {
   },
 
   output: {
-    path: resolve('dist'),
+    path: resolve('dist/chrome'),
     libraryTarget: 'var',
     filename: `[name]${process.env.NODE_ENV === 'production' ? '.min' : ''}.js`,
     publicPath: process.env.NODE_ENV === 'production' ? '' : '/',
@@ -91,7 +91,7 @@ const webpackConfig = {
             loader: 'file-loader',
             options: {
               name: '[name].[ext]',
-              outputPath: 'dist/img/',
+              outputPath: 'dist/chrome/img/',
             },
           },
         ],
@@ -106,15 +106,15 @@ const webpackConfig = {
       patterns: [
         {
           from: resolve('src/chrome/manifest.json'),
-          to: resolve('dist'),
+          to: resolve('dist/chrome'),
         },
         {
           from: resolve('src/chrome/images'),
-          to: resolve('dist/images'),
+          to: resolve('dist/chrome/images'),
         },
         {
           from: resolve('src/chrome/css'),
-          to: resolve('dist/css'),
+          to: resolve('dist/chrome/css'),
         },
       ],
     }),

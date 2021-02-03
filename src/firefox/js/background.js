@@ -263,3 +263,13 @@ window.censortracker.events = {
     console.warn('CensorTracker: listeners are added')
   },
 }
+
+// TODO: Delete this before release
+window.censortracker.debugMode = async () => {
+  const { domains } = await storage.get({ domains: [] })
+  const excluded = ['rutracker.org', 'lostfilm.tv', 'rezka.ag']
+
+  await storage.set({
+    domains: domains.filter((domain) => !excluded.includes(domain)),
+  })
+}

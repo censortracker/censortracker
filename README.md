@@ -3,9 +3,8 @@
 ![Build](https://github.com/roskomsvoboda/censortracker/workflows/Build/badge.svg?branch=master)
 [![CodeFactor](https://www.codefactor.io/repository/github/roskomsvoboda/censortracker/badge)](https://www.codefactor.io/repository/github/roskomsvoboda/censortracker)
 
-**Censor Tracker** is an extension for [Google Chrome](https://www.google.com/chrome/) which helps to
-bypass censorship in Russian Federation and helps to detect resources
-blocked using DPI.
+**Censor Tracker** is an extension for [Google Chrome] and [Mozilla Firefox] which helps to
+bypass censorship in Russia and helps to detect resources blocked using DPI filters.
 
 Note
 ----
@@ -21,8 +20,8 @@ Features
 Censor Tracker provides a lot of useful features, here are most
 important:
 
--   Detects [DPI] locks
--   Bypass [DPI] locks
+-   Detects [DPI]-based locks
+-   Bypass [DPI]-based locks
 -   Bypass [registry](https://eais.rkn.gov.ru/) locks
 -   Warns if a user visits a website that can merge or modify https traffic
     (site in [ORI](https://97-fz.rkn.gov.ru/))
@@ -30,13 +29,15 @@ important:
 Installation
 ============
 
-To build extension run:
+To build extension for Chrome (Chromium), run:
 
-    ~ npm install && npm run dev
-    ~ cd dist/
+    ~ npm install && npm run dev:chrome
+    ~ cd dist/chrome
 
-Make sure that "Developer Mode" is enabled and then just "Load unpacked"
-from <span class="title-ref">dist/</span> to your browser.
+To build extension for Firefox, run:
+
+    ~ npm install && npm run dev:firefox
+    ~ cd dist/firefox
 
 Testing
 =======
@@ -65,3 +66,5 @@ information.
 
   [DPI]: https://en.wikipedia.org/wiki/Deep_packet_inspection
   [LICENSE]: https://github.com/roskomsvoboda/censortracker/blob/master/LICENSE
+  [Google Chrome]: https://www.google.com/chrome/
+  [Mozilla Firefox]: https://www.mozilla.org/en-US/firefox/new/

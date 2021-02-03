@@ -6,7 +6,7 @@
   "license": "MIT",
   "main": "dist/index.js",
   "scripts": {
-    "dev:chrome": "webpack --progress --config webpack.chrome.config.js",
+    "dev:chrome": "eslint --fix --ext=.js ./src/chrome && webpack --progress --config webpack.chrome.config.js",
     "dev:firefox": "eslint --fix --ext=.js ./src/firefox && webpack --progress --config webpack.firefox.config.js",
     "ff-debug": "web-ext run --source-dir=dist/firefox",
     "watch:chrome": "webpack --watch --progress --config webpack.chrome.config.js",

@@ -27,6 +27,16 @@ class Storage {
       return false
     }
   }
+
+  remove = async (keys = []) => {
+    try {
+      await browser.storage.local.remove(keys)
+      return true
+    } catch (error) {
+      console.error(error)
+      return false
+    }
+  }
 }
 
 export default new Storage()

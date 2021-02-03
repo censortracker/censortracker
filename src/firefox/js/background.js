@@ -14,6 +14,8 @@ import {
   validateUrl,
 } from './core/utilities'
 
+import { Reasons } from "./core/constants"
+
 window.censortracker = {
   proxy,
   registry,
@@ -128,13 +130,14 @@ const handleTabState = async () => {
 
   if (enableExtension && validateUrl(currentUrl)) {
     const { domainFound } = await registry.domainsContains(currentUrl)
-    const { url: distributorUrl, cooperationRefused } =
-      await registry.distributorsContains(currentUrl)
 
     if (domainFound) {
       settings.setDangerIcon(tabId)
       return
     }
+
+    const { url: distributorUrl, cooperationRefused } =
+      await registry.distributorsContains(currentUrl)
 
     if (distributorUrl) {
       settings.setDangerIcon(tabId)
@@ -178,8 +181,7 @@ const showCooperationAcceptedWarning = async (currentUrl) => {
 }
 
 const handleWindowRemoved = async (_windowId) => {
-  await storage.remove('notifiedHosts')
-  console.warn('A list of notified hosts has been cleaned up!')
+  await storage.remove(['notifiedHosts'])
 }
 
 browser.windows.onRemoved.addListener(handleWindowRemoved)

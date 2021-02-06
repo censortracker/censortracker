@@ -35,7 +35,7 @@ browser.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
   })
 
   const currentHostname = bgModules.extractHostnameFromUrl(
-    getAppropriateURL(currentUrl),
+    getAppropriateUrl(currentUrl),
   )
 
   interpolateCurrentDomain(currentHostname)
@@ -120,17 +120,17 @@ const changeStatusImage = (imageName) => {
   statusImage.setAttribute('src', imageSrc)
 }
 
-const getAppropriateURL = (currentURL) => {
-  const popupURL = browser.runtime.getURL('popup.html')
+const getAppropriateUrl = (currentUrl) => {
+  const popupUrl = browser.runtime.getURL('popup.html')
 
-  if (currentURL.startsWith(popupURL)) {
-    const currentURLParams = currentURL.split('?')[1]
+  if (currentUrl.startsWith(popupUrl)) {
+    const currentURLParams = currentUrl.split('?')[1]
     const searchParams = new URLSearchParams(currentURLParams)
-    const encodedURL = searchParams.get('loadFor')
+    const encodedUrl = searchParams.get('loadFor')
 
-    return window.atob(encodedURL)
+    return window.atob(encodedUrl)
   }
-  return currentURL
+  return currentUrl
 }
 
 const interpolateCurrentDomain = (domain) => {

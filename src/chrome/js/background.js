@@ -33,7 +33,6 @@ const handleBeforeRequest = ({ url }) => {
   const hostname = extractHostnameFromUrl(url)
 
   if (ignore.contains(hostname)) {
-    console.warn(`Ignoring host: ${url}`)
     return undefined
   }
   proxy.allowProxying()

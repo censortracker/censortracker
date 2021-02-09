@@ -61,3 +61,25 @@ export const enforceHttpConnection = (url) => {
 export const enforceHttpsConnection = (url) => {
   return url.replace(/^http:/, 'https:')
 }
+
+/**
+ * Returns an object describing filters to apply to webRequest events.
+ * @param http Include all HTTP resource to "urls" array.
+ * @param https Include all HTTPS resource to "urls" array.
+ * @returns {{urls: [], types: [string]}} Request filter.
+ */
+export const getRequestFilter = ({ http = true, https = true } = {}) => {
+  // See: https://mzl.la/3tnkndy
+  const urls = []
+  const types = ['main_frame']
+
+  if (http) {
+    urls.push('http://*/*')
+  }
+
+  if (https) {
+    urls.push('https://*/*')
+  }
+
+  return { urls, types }
+}

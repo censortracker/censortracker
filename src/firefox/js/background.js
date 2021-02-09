@@ -127,6 +127,7 @@ const handleTabState = async () => {
   })
 
   if (enableExtension && validateUrl(currentUrl)) {
+    await browser.browserAction.enable(tabId)
     const { domainFound } = await registry.domainsContains(currentUrl)
 
     if (domainFound) {
@@ -145,6 +146,7 @@ const handleTabState = async () => {
     }
   } else {
     settings.setDisableIcon(tabId)
+    await browser.browserAction.disable(tabId)
   }
 }
 

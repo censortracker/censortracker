@@ -30,7 +30,7 @@ window.censortracker = {
  * @returns {undefined|{redirectUrl: *}} Undefined or redirection to HTTPS§.
  */
 const handleBeforeRequest = ({ url }) => {
-  const { hostname } = new URL(url)
+  const hostname = extractHostnameFromUrl(url)
 
   if (ignore.isIgnoredHost(hostname)) {
     console.warn(`Ignoring host: ${url}`)
@@ -57,7 +57,7 @@ chrome.webRequest.onBeforeRequest.addListener(
  * @returns {undefined} Undefined.
  */
 const handleErrorOccurred = async ({ url, error, tabId }) => {
-  const { hostname } = new URL(url)
+  const hostname = extractHostnameFromUrl(url)
   const { proxyError, connectionError } = errors.determineError(error)
 
   if (ignore.isIgnoredHost(hostname)) {
@@ -112,7 +112,7 @@ const notificationButtonClickedHandler = async (notificationId, buttonIndex) => 
       lastFocusedWindow: true,
     })
 
-    const { hostname } = new URL(tab.url)
+    const hostname = extractHostnameFromUrl(tab.url)
     const { mutedForever } =
       await asynchrome.storage.local.get({ mutedForever: [] })
 
@@ -150,7 +150,7 @@ const handleTabState = async () => {
     return
   }
 
-  const { hostname } = new URL(tab.url)
+  const hostname = extractHostnameFromUrl(tab.url)
   const currentHostname = extractHostnameFromUrl(hostname)
 
   if (ignore.isIgnoredHost(currentHostname)) {

@@ -95,12 +95,12 @@ class Registry {
         domain: hostname,
         timestamp: new Date().getTime(),
       })
-      await this.reportBlockedByDPI(hostname)
+      await this.sendReport(hostname)
     }
     await asynchrome.storage.local.set({ blockedDomains })
   }
 
-  reportBlockedByDPI = async (domain) => {
+  sendReport = async (domain) => {
     const { alreadyReported } = await asynchrome.storage.local.get({ alreadyReported: [] })
 
     if (!alreadyReported.includes(domain)) {

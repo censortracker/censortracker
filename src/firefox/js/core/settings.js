@@ -30,44 +30,52 @@ class Settings {
 
   getDisabledIcon = () => browser.runtime.getURL('images/icons/128x128/disabled.png');
 
-  _setPageIcon = (tabId, path) => {
+  changePageIcon = (tabId, path) => {
     browser.browserAction.setIcon({ tabId, path })
     browser.browserAction.setTitle({ title: this.getTitle(), tabId })
   }
 
   setDisableIcon = (tabId) => {
-    this._setPageIcon(tabId, this.getDisabledIcon())
+    this.changePageIcon(tabId, this.getDisabledIcon())
   }
 
   setDefaultIcon = (tabId) => {
-    this._setPageIcon(tabId, this.getDefaultIcon())
+    this.changePageIcon(tabId, this.getDefaultIcon())
   }
 
   setDangerIcon = (tabId) => {
-    this._setPageIcon(tabId, this.getDangerIcon())
+    this.changePageIcon(tabId, this.getDangerIcon())
   }
 
-  _toggleExtension = ({ enableExtension }) => {
-    if (typeof enableExtension === 'boolean') {
-      storage.set({ enableExtension }, () => {
-        console.warn('Extension enabled')
-      })
+  changeExtensionState = async ({ useProxy, enableExtension, showNotifications }) => {
+    await storage.set({ useProxy, enableExtension, showNotifications })
+    const tabs = await browser.tabs.query({})
 
-      browser.tabs.query({}, (tabs) => {
-        tabs.forEach((tab) => {
-          enableExtension ? this.setDefaultIcon(tab.id)
-            : this.setDisableIcon(tab.id)
-        })
-      })
+    for (const { id } of tabs) {
+      if (enableExtension) {
+        this.setDefaultIcon(id)
+      } else {
+        this.setDisableIcon(id)
+      }
     }
   }
 
-  enableExtension = () => {
-    this._toggleExtension({ enableExtension: true })
+  enableExtension = async () => {
+    await this.changeExtensionState({
+      useProxy: true,
+      enableExtension: true,
+      showNotifications: true,
+    })
+    console.warn('Extension enabled')
   }
 
-  disableExtension = () => {
-    this._toggleExtension({ enableExtension: false })
+  disableExtension = async () => {
+    await this.changeExtensionState({
+      useProxy: false,
+      enableExtension: false,
+      showNotifications: false,
+    })
+    console.warn('Extension disabled')
   }
 
   enableNotifications = async () => {

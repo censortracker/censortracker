@@ -104,7 +104,7 @@ chrome.webRequest.onErrorOccurred.addListener(
   },
 )
 
-const notificationOnButtonClicked = async (notificationId, buttonIndex) => {
+const notificationButtonClickedHandler = async (notificationId, buttonIndex) => {
   if (buttonIndex === 0) {
     const [tab] = await asynchrome.tabs.query({
       active: true,
@@ -128,7 +128,7 @@ const notificationOnButtonClicked = async (notificationId, buttonIndex) => {
   }
 }
 
-const updateTabState = async () => {
+const handleTabState = async () => {
   const [tab] = await asynchrome.tabs.query({
     active: true,
     lastFocusedWindow: true,
@@ -234,7 +234,7 @@ chrome.runtime.onInstalled.addListener(async ({ reason }) => {
   }
 })
 
-const onTabCreated = async ({ id }) => {
+const handleTabCreate = async ({ id }) => {
   const { enableExtension } =
     await asynchrome.storage.local.get({
       enableExtension: true,
@@ -247,11 +247,11 @@ const onTabCreated = async ({ id }) => {
   }
 }
 
-chrome.tabs.onCreated.addListener(onTabCreated)
+chrome.tabs.onCreated.addListener(handleTabCreate)
 
 chrome.runtime.onStartup.addListener(async () => {
   await registry.syncDatabase()
-  await updateTabState()
+  await handleTabState()
 })
 
 chrome.windows.onRemoved.addListener(async (_windowId) => {
@@ -263,9 +263,9 @@ chrome.proxy.onProxyError.addListener((details) => {
   console.error(`Proxy error: ${JSON.stringify(details)}`)
 })
 
-chrome.tabs.onActivated.addListener(updateTabState)
-chrome.tabs.onUpdated.addListener(updateTabState)
-chrome.notifications.onButtonClicked.addListener(notificationOnButtonClicked)
+chrome.tabs.onActivated.addListener(handleTabState)
+chrome.tabs.onUpdated.addListener(handleTabState)
+chrome.notifications.onButtonClicked.addListener(notificationButtonClickedHandler)
 
 // The mechanism for controlling handlers from popup.js
 window.censortracker.chromeListeners = {

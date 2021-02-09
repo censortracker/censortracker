@@ -5,7 +5,7 @@ const DOMAINS_DB_KEY = 'domains'
 const DISTRIBUTORS_DB_KEY = 'distributors'
 
 class Registry {
-  syncDatabase = async () => {
+  sync = async () => {
     console.warn('Synchronizing local database with registry...')
     const apis = [
       {
@@ -32,7 +32,7 @@ class Registry {
 
     if (!domains) {
       console.log('Database is empty. Trying to sync...')
-      await this.syncDatabase()
+      await this.sync()
     }
     return true
   }
@@ -84,7 +84,7 @@ class Registry {
     return {}
   }
 
-  addBlockedByDPI = async (hostname) => {
+  add = async (hostname) => {
     if (!hostname) {
       return
     }
@@ -95,12 +95,12 @@ class Registry {
         domain: hostname,
         timestamp: new Date().getTime(),
       })
-      await this.reportBlockedByDPI(hostname)
+      await this.sendReport(hostname)
     }
     await asynchrome.storage.local.set({ blockedDomains })
   }
 
-  reportBlockedByDPI = async (domain) => {
+  sendReport = async (domain) => {
     const { alreadyReported } = await asynchrome.storage.local.get({ alreadyReported: [] })
 
     if (!alreadyReported.includes(domain)) {

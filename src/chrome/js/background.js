@@ -10,6 +10,7 @@ import {
   enforceHttpConnection,
   enforceHttpsConnection,
   extractHostnameFromUrl,
+  getRequestFilter,
   validateUrl,
 } from './core/utilities'
 
@@ -29,11 +30,10 @@ window.censortracker = {
  * @param url Current URL address.
  * @returns {undefined|{redirectUrl: *}} Undefined or redirection to HTTPS§.
  */
-const onBeforeRequestListener = ({ url }) => {
-  const { hostname } = new URL(url)
+const handleBeforeRequest = ({ url }) => {
+  const hostname = extractHostnameFromUrl(url)
 
-  if (ignore.isIgnoredHost(hostname)) {
-    console.warn(`Ignoring host: ${url}`)
+  if (ignore.contains(hostname)) {
     return undefined
   }
   proxy.allowProxying()
@@ -43,10 +43,9 @@ const onBeforeRequestListener = ({ url }) => {
 }
 
 chrome.webRequest.onBeforeRequest.addListener(
-  onBeforeRequestListener, {
-    urls: ['http://*/*'],
-    types: ['main_frame'],
-  }, ['blocking'],
+  handleBeforeRequest,
+  getRequestFilter({ http: true, https: false }),
+  ['blocking'],
 )
 
 /**
@@ -56,21 +55,22 @@ chrome.webRequest.onBeforeRequest.addListener(
  * @param tabId The ID of the tab in which the request takes place.
  * @returns {undefined} Undefined.
  */
-const onErrorOccurredListener = async ({ url, error, tabId }) => {
-  const { hostname } = new URL(url)
+const handleErrorOccurred = async ({ url, error, tabId }) => {
+  const hostname = extractHostnameFromUrl(url)
+  const { proxyError, connectionError } = errors.determineError(error)
 
-  if (ignore.isIgnoredHost(hostname)) {
+  if (ignore.contains(hostname)) {
     return
   }
 
-  if (errors.isThereProxyConnectionError(error)) {
+  if (proxyError) {
     chrome.tabs.update(tabId, {
       url: chrome.runtime.getURL('proxy_unavailable.html'),
     })
     return
   }
 
-  if (errors.isThereConnectionError(error)) {
+  if (connectionError) {
     const isProxyControlledByOtherExtensions = await proxy.controlledByOtherExtensions()
     const isProxyControlledByThisExtension = await proxy.controlledByThisExtension()
 
@@ -84,12 +84,12 @@ const onErrorOccurredListener = async ({ url, error, tabId }) => {
     chrome.tabs.update(tabId, {
       url: chrome.runtime.getURL(`unavailable.html?${window.btoa(url)}`),
     })
-    await registry.addBlockedByDPI(hostname)
+    await registry.add(hostname)
     await proxy.setProxy()
     return
   }
 
-  await ignore.addHostToIgnore(hostname)
+  await ignore.add(hostname)
   chrome.tabs.remove(tabId)
   chrome.tabs.create({
     url: enforceHttpConnection(url),
@@ -97,21 +97,18 @@ const onErrorOccurredListener = async ({ url, error, tabId }) => {
 }
 
 chrome.webRequest.onErrorOccurred.addListener(
-  onErrorOccurredListener,
-  {
-    urls: ['http://*/*', 'https://*/*'],
-    types: ['main_frame'],
-  },
+  handleErrorOccurred,
+  getRequestFilter({ http: true, https: true }),
 )
 
-const notificationOnButtonClicked = async (notificationId, buttonIndex) => {
+const notificationButtonClickedHandler = async (notificationId, buttonIndex) => {
   if (buttonIndex === 0) {
     const [tab] = await asynchrome.tabs.query({
       active: true,
       lastFocusedWindow: true,
     })
 
-    const { hostname } = new URL(tab.url)
+    const hostname = extractHostnameFromUrl(tab.url)
     const { mutedForever } =
       await asynchrome.storage.local.get({ mutedForever: [] })
 
@@ -128,7 +125,7 @@ const notificationOnButtonClicked = async (notificationId, buttonIndex) => {
   }
 }
 
-const updateTabState = async () => {
+const handleTabState = async () => {
   const [tab] = await asynchrome.tabs.query({
     active: true,
     lastFocusedWindow: true,
@@ -138,10 +135,10 @@ const updateTabState = async () => {
     return
   }
 
-  const { enableExtension, useNotificationsChecked } =
+  const { enableExtension, showNotifications } =
     await asynchrome.storage.local.get({
       enableExtension: true,
-      useNotificationsChecked: true,
+      showNotifications: true,
     })
 
   if (!enableExtension) {
@@ -149,10 +146,10 @@ const updateTabState = async () => {
     return
   }
 
-  const { hostname } = new URL(tab.url)
+  const hostname = extractHostnameFromUrl(tab.url)
   const currentHostname = extractHostnameFromUrl(hostname)
 
-  if (ignore.isIgnoredHost(currentHostname)) {
+  if (ignore.contains(currentHostname)) {
     return
   }
 
@@ -167,7 +164,7 @@ const updateTabState = async () => {
 
   if (distributorUrl) {
     settings.setDangerIcon(tab.id)
-    if (useNotificationsChecked && !cooperationRefused) {
+    if (showNotifications && !cooperationRefused) {
       await showCooperationAcceptedWarning(currentHostname)
     }
   }
@@ -225,7 +222,7 @@ chrome.runtime.onInstalled.addListener(async ({ reason }) => {
       url: chrome.runtime.getURL('installed.html'),
     })
 
-    const synchronized = await registry.syncDatabase()
+    const synchronized = await registry.sync()
 
     if (synchronized) {
       settings.enableExtension()
@@ -234,7 +231,7 @@ chrome.runtime.onInstalled.addListener(async ({ reason }) => {
   }
 })
 
-const onTabCreated = async ({ id }) => {
+const handleTabCreate = async ({ id }) => {
   const { enableExtension } =
     await asynchrome.storage.local.get({
       enableExtension: true,
@@ -247,51 +244,46 @@ const onTabCreated = async ({ id }) => {
   }
 }
 
-chrome.tabs.onCreated.addListener(onTabCreated)
+chrome.tabs.onCreated.addListener(handleTabCreate)
 
 chrome.runtime.onStartup.addListener(async () => {
-  await registry.syncDatabase()
-  await updateTabState()
+  await registry.sync()
+  await handleTabState()
 })
 
 chrome.windows.onRemoved.addListener(async (_windowId) => {
-  await asynchrome.storage.local.remove('notifiedHosts').catch(console.error)
-  console.warn('A list of notified hosts has been cleaned up!')
+  await asynchrome.storage.local.remove('notifiedHosts')
 })
 
 chrome.proxy.onProxyError.addListener((details) => {
   console.error(`Proxy error: ${JSON.stringify(details)}`)
 })
 
-chrome.tabs.onActivated.addListener(updateTabState)
-chrome.tabs.onUpdated.addListener(updateTabState)
-chrome.notifications.onButtonClicked.addListener(notificationOnButtonClicked)
+chrome.tabs.onActivated.addListener(handleTabState)
+chrome.tabs.onUpdated.addListener(handleTabState)
+chrome.notifications.onButtonClicked.addListener(notificationButtonClickedHandler)
 
 // The mechanism for controlling handlers from popup.js
-window.censortracker.chromeListeners = {
+window.censortracker.events = {
   has: () => {
-    const hasOnErrorOccurredListener =
-      chrome.webRequest.onErrorOccurred.hasListener(onErrorOccurredListener)
-    const hasOnBeforeRequestListener =
-      chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequestListener)
-
-    return hasOnBeforeRequestListener && hasOnErrorOccurredListener
+    return (
+      chrome.webRequest.onErrorOccurred.hasListener(handleErrorOccurred) &&
+      chrome.webRequest.onBeforeRequest.hasListener(handleBeforeRequest)
+    )
   },
   remove: () => {
-    chrome.webRequest.onErrorOccurred.removeListener(onErrorOccurredListener)
-    chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequestListener)
+    chrome.webRequest.onErrorOccurred.removeListener(handleErrorOccurred)
+    chrome.webRequest.onBeforeRequest.removeListener(handleBeforeRequest)
     console.warn('CensorTracker: listeners removed')
   },
   add: () => {
-    chrome.webRequest.onErrorOccurred.addListener(onErrorOccurredListener, {
-      urls: ['http://*/*', 'https://*/*'],
-      types: ['main_frame'],
-    })
+    chrome.webRequest.onErrorOccurred.addListener(
+      handleErrorOccurred,
+      getRequestFilter({ http: true, https: true }),
+    )
     chrome.webRequest.onBeforeRequest.addListener(
-      onBeforeRequestListener, {
-        urls: ['http://*/*'],
-        types: ['main_frame'],
-      },
+      handleBeforeRequest,
+      getRequestFilter({ http: true, https: false }),
       ['blocking'],
     )
     console.warn('CensorTracker: listeners added')

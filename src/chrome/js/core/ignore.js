@@ -39,7 +39,7 @@ class Ignore {
     }
   }
 
-  saveIgnoredHosts = async () => {
+  save = async () => {
     const { ignoredHosts } =
       await asynchrome.storage.local.get({ ignoredHosts: [] })
 
@@ -52,25 +52,26 @@ class Ignore {
     await asynchrome.storage.local.set({ ignoredHosts })
   }
 
-  addHostToIgnore = async (hostname) => {
+  add = async (hostname) => {
     if (this.ignoredHosts.size > 100) {
       this.ignoredHosts.clear()
     }
     this.ignoredHosts.add(extractHostnameFromUrl(hostname))
 
-    await this.saveIgnoredHosts()
+    await this.save()
   }
 
-  isIgnoredHost = (host) => {
+  contains = (hostname) => {
     const ignoreRegEx = /(google.com|localhost)/
 
-    host = extractHostnameFromUrl(host)
+    hostname = extractHostnameFromUrl(hostname)
 
-    if (this.ignoredHosts.has(host) || host.match(ignoreRegEx)) {
+    if (this.ignoredHosts.has(hostname) || hostname.match(ignoreRegEx)) {
       return true
     }
 
-    return this.isSpecialPurposeIP(host)
+    console.warn(`Ignoring host: ${hostname}`)
+    return this.isSpecialPurposeIP(hostname)
   }
 }
 

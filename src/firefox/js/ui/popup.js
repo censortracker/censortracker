@@ -26,7 +26,23 @@ const currentDomainBlocks = document.querySelectorAll('.current-domain')
 const popupShowTimeout = 60
 
 browser.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
-  await addExtensionControlListeners(bgModules)
+  document.addEventListener('click', (event) => {
+    if (event.target.matches('#enableExtension')) {
+      bgModules.proxy.enableProxy()
+      bgModules.settings.enableExtension()
+      window.location.reload()
+    }
+
+    if (event.target.matches('#disableExtension')) {
+      bgModules.proxy.disableProxy()
+      bgModules.settings.disableExtension()
+      window.location.reload()
+    }
+
+    if (event.target.matches('#openOptionsPage')) {
+      browser.runtime.openOptionsPage()
+    }
+  })
 
   const { enableExtension } = await bgModules.storage.get({ enableExtension: true })
 
@@ -92,26 +108,6 @@ browser.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
 
   setTimeout(show, popupShowTimeout)
 })
-
-const addExtensionControlListeners = async ({ settings, proxy }) => {
-  document.addEventListener('click', (event) => {
-    if (event.target.matches('#enableExtension')) {
-      proxy.enableProxy()
-      settings.enableExtension()
-      window.location.reload()
-    }
-
-    if (event.target.matches('#disableExtension')) {
-      proxy.disableProxy()
-      settings.disableExtension()
-      window.location.reload()
-    }
-
-    if (event.target.matches('#openOptionsPage')) {
-      browser.runtime.openOptionsPage()
-    }
-  })
-}
 
 const changeStatusImage = (imageName) => {
   const imageSrc = browser.runtime.getURL(`images/icons/512x512/${imageName}.png`)

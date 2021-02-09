@@ -1,5 +1,5 @@
 (async () => {
-  const { censortracker: { events, proxy } } = await browser.runtime.getBackgroundPage()
+  const { censortracker: { proxy } } = await browser.runtime.getBackgroundPage()
 
   const unavailableWebsite = document.getElementById('unavailableWebsite')
 
@@ -18,9 +18,7 @@
     }
 
     if (event.target.matches('#doNotAskAnymore')) {
-      if (events.hasListeners()) {
-        events.removeListeners()
-      }
+      // TODO: Remove webRequest listeners
 
       browser.tabs.update(tab.id, { url: targetUrl })
     }

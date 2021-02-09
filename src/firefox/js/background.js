@@ -229,14 +229,18 @@ browser.runtime.onStartup.addListener(async () => {
 /**
  * Fired when one or more items change.
  * @param changes Object describing the change. This contains one property for each key that changed.
- * @param areaName The name of the storage area ("sync", "local") to which the changes were made.
+ * @param _areaName The name of the storage area ("sync", "local") to which the changes were made.
  */
-const handleStorageChanged = (changes, areaName) => {
+const handleStorageChanged = ({ enableExtension: { newValue: extensionEnabled = false } = {} }, _areaName) => {
   // See: https://git.io/Jtw5D
-  const { enableExtension: { newValue = undefined } } = changes
 
-  if (typeof newValue === 'boolean') {
-    if (newValue === true) {
+  const webRequestHasListeners = (
+    browser.webRequest.onErrorOccurred.hasListener(handleErrorOccurred) &&
+    browser.webRequest.onBeforeRequest.hasListener(handleBeforeRequest)
+  )
+
+  if (extensionEnabled === true) {
+    if (!webRequestHasListeners) {
       browser.proxy.onRequest.addListener(
         handleProxyRequest, getRequestFilter({ http: true, https: true }),
       )
@@ -247,50 +251,16 @@ const handleStorageChanged = (changes, areaName) => {
         handleBeforeRequest, getRequestFilter({ http: true, https: false }),
         ['blocking'],
       )
-    } else {
-      browser.proxy.onRequest.removeListener(handleProxyRequest)
-      browser.webRequest.onErrorOccurred.removeListener(handleErrorOccurred)
-      browser.webRequest.onBeforeRequest.removeListener(handleBeforeRequest)
-      console.warn('CensorTracker: listeners are removed')
+      console.warn('webRequest listeners enabled')
     }
+  } else {
+    browser.webRequest.onErrorOccurred.removeListener(handleErrorOccurred)
+    browser.webRequest.onBeforeRequest.removeListener(handleBeforeRequest)
+    console.warn('webRequest listeners disabled')
   }
-
-  console.log(`Extension enabled: ${newValue}`)
 }
 
 browser.storage.onChanged.addListener(handleStorageChanged)
-
-window.censortracker.events = {
-  hasListeners: () => {
-    return (
-      browser.proxy.onRequest.hasListener(handleProxyRequest) &&
-      browser.webRequest.onErrorOccurred.hasListener(handleErrorOccurred) &&
-      browser.webRequest.onBeforeRequest.hasListener(handleBeforeRequest)
-    )
-  },
-  removeListeners: () => {
-    browser.proxy.onRequest.removeListener(handleProxyRequest)
-    browser.webRequest.onErrorOccurred.removeListener(handleErrorOccurred)
-    browser.webRequest.onBeforeRequest.removeListener(handleBeforeRequest)
-    console.warn('CensorTracker: listeners are removed')
-  },
-  addListeners: () => {
-    browser.proxy.onRequest.addListener(
-      handleProxyRequest,
-      getRequestFilter({ http: true, https: true }),
-    )
-    browser.webRequest.onErrorOccurred.addListener(
-      handleErrorOccurred,
-      getRequestFilter({ http: true, https: true }),
-    )
-    browser.webRequest.onBeforeRequest.addListener(
-      handleBeforeRequest,
-      getRequestFilter({ http: true, https: false }),
-      ['blocking'],
-    )
-    console.warn('CensorTracker: listeners are added')
-  },
-}
 
 // TODO: Delete this before release
 window.censortracker.debugMode = async () => {

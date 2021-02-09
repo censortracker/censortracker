@@ -29,7 +29,7 @@ window.censortracker = {
  * @param url Current URL address.
  * @returns {undefined|{redirectUrl: *}} Undefined or redirection to HTTPS§.
  */
-const onBeforeRequestListener = ({ url }) => {
+const handleBeforeRequest = ({ url }) => {
   const { hostname } = new URL(url)
 
   if (ignore.isIgnoredHost(hostname)) {
@@ -43,7 +43,7 @@ const onBeforeRequestListener = ({ url }) => {
 }
 
 chrome.webRequest.onBeforeRequest.addListener(
-  onBeforeRequestListener, {
+  handleBeforeRequest, {
     urls: ['http://*/*'],
     types: ['main_frame'],
   }, ['blocking'],
@@ -273,13 +273,13 @@ window.censortracker.chromeListeners = {
     const hasOnErrorOccurredListener =
       chrome.webRequest.onErrorOccurred.hasListener(onErrorOccurredListener)
     const hasOnBeforeRequestListener =
-      chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequestListener)
+      chrome.webRequest.onBeforeRequest.hasListener(handleBeforeRequest)
 
     return hasOnBeforeRequestListener && hasOnErrorOccurredListener
   },
   remove: () => {
     chrome.webRequest.onErrorOccurred.removeListener(onErrorOccurredListener)
-    chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequestListener)
+    chrome.webRequest.onBeforeRequest.removeListener(handleBeforeRequest)
     console.warn('CensorTracker: listeners removed')
   },
   add: () => {
@@ -288,7 +288,7 @@ window.censortracker.chromeListeners = {
       types: ['main_frame'],
     })
     chrome.webRequest.onBeforeRequest.addListener(
-      onBeforeRequestListener, {
+      handleBeforeRequest, {
         urls: ['http://*/*'],
         types: ['main_frame'],
       },

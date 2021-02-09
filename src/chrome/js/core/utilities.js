@@ -50,7 +50,7 @@ export const extractHostnameFromUrl = (url) => {
  * @returns {*} URL with "http://" prefix.
  */
 export const enforceHttpConnection = (url) => {
-  return url.replace('https:', 'http:')
+  return url.replace(/^https:/, 'http:')
 }
 
 /**

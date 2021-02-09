@@ -225,7 +225,7 @@ chrome.runtime.onInstalled.addListener(async ({ reason }) => {
       url: chrome.runtime.getURL('installed.html'),
     })
 
-    const synchronized = await registry.syncDatabase()
+    const synchronized = await registry.sync()
 
     if (synchronized) {
       settings.enableExtension()
@@ -250,7 +250,7 @@ const handleTabCreate = async ({ id }) => {
 chrome.tabs.onCreated.addListener(handleTabCreate)
 
 chrome.runtime.onStartup.addListener(async () => {
-  await registry.syncDatabase()
+  await registry.sync()
   await handleTabState()
 })
 

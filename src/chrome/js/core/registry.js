@@ -5,7 +5,7 @@ const DOMAINS_DB_KEY = 'domains'
 const DISTRIBUTORS_DB_KEY = 'distributors'
 
 class Registry {
-  syncDatabase = async () => {
+  sync = async () => {
     console.warn('Synchronizing local database with registry...')
     const apis = [
       {
@@ -32,7 +32,7 @@ class Registry {
 
     if (!domains) {
       console.log('Database is empty. Trying to sync...')
-      await this.syncDatabase()
+      await this.sync()
     }
     return true
   }

@@ -12,13 +12,13 @@ import proxy from '../core/proxy'
   if (isProxyControlledByOtherExtensions) {
     useProxyCheckbox.checked = false
     useProxyCheckbox.disabled = true
-    await asynchrome.storage.local.set({ useProxyChecked: false })
+    await asynchrome.storage.local.set({ useProxy: false })
   } else if (isProxyControlledByThisExtension) {
     useProxyCheckbox.checked = true
     useProxyCheckbox.disabled = false
-    await asynchrome.storage.local.set({ useProxyChecked: true })
+    await asynchrome.storage.local.set({ useProxy: true })
   } else {
-    await asynchrome.storage.local.set({ useProxyChecked: false })
+    await asynchrome.storage.local.set({ useProxy: false })
     useProxyCheckbox.disabled = false
   }
 
@@ -48,12 +48,12 @@ import proxy from '../core/proxy'
     }
   }, false)
 
-  const { useProxyChecked, useNotificationsChecked } =
+  const { useProxy, useNotificationsChecked } =
     await asynchrome.storage.local.get({
-      useProxyChecked: true,
+      useProxy: true,
       useNotificationsChecked: true,
     })
 
-  useProxyCheckbox.checked = useProxyChecked
+  useProxyCheckbox.checked = useProxy
   useNotificationsCheckbox.checked = useNotificationsChecked
 })()

@@ -41,7 +41,7 @@ class Proxy {
 
     await this.allowProxying()
     await asynchrome.proxy.settings.set(config).catch(console.error)
-    await asynchrome.storage.local.set({ useProxyChecked: true })
+    await asynchrome.storage.local.set({ useProxy: true })
     console.warn('PAC has been set successfully!')
   }
 
@@ -104,7 +104,7 @@ function FindProxyForURL(url, host) {
 
   removeProxy = async () => {
     await asynchrome.proxy.settings.clear({ scope: 'regular' }).catch(console.error)
-    await asynchrome.storage.local.set({ useProxyChecked: false })
+    await asynchrome.storage.local.set({ useProxy: false })
     console.warn('Proxy auto-config data cleaned!')
   }
 

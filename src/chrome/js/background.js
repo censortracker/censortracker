@@ -58,19 +58,20 @@ chrome.webRequest.onBeforeRequest.addListener(
  */
 const handleErrorOccurred = async ({ url, error, tabId }) => {
   const { hostname } = new URL(url)
+  const { proxyError, connectionError } = errors.determineError(error)
 
   if (ignore.isIgnoredHost(hostname)) {
     return
   }
 
-  if (errors.isThereProxyConnectionError(error)) {
+  if (proxyError) {
     chrome.tabs.update(tabId, {
       url: chrome.runtime.getURL('proxy_unavailable.html'),
     })
     return
   }
 
-  if (errors.isThereConnectionError(error)) {
+  if (connectionError) {
     const isProxyControlledByOtherExtensions = await proxy.controlledByOtherExtensions()
     const isProxyControlledByThisExtension = await proxy.controlledByThisExtension()
 

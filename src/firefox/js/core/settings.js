@@ -47,24 +47,34 @@ class Settings {
     this.changePageIcon(tabId, this.getDangerIcon())
   }
 
-  _toggleExtension = ({ enableExtension }) => {
-    if (typeof enableExtension === 'boolean') {
-      browser.tabs.query({}, (tabs) => {
-        tabs.forEach((tab) => {
-          enableExtension ? this.setDefaultIcon(tab.id)
-            : this.setDisableIcon(tab.id)
-        })
-      })
+  changeExtensionState = async ({ useProxy, enableExtension, showNotifications }) => {
+    await storage.set({ useProxy, enableExtension, showNotifications })
+    const tabs = await browser.tabs.query({})
+
+    for (const { id } of tabs) {
+      if (enableExtension) {
+        this.setDefaultIcon(id)
+      } else {
+        this.setDisableIcon(id)
+      }
     }
   }
 
   enableExtension = async () => {
-    await storage.set({ enableExtension: true })
+    await this.changeExtensionState({
+      useProxy: true,
+      enableExtension: true,
+      showNotifications: true,
+    })
     console.warn('Extension enabled')
   }
 
   disableExtension = async () => {
-    await storage.set({ enableExtension: false })
+    await this.changeExtensionState({
+      useProxy: false,
+      enableExtension: false,
+      showNotifications: false,
+    })
     console.warn('Extension disabled')
   }
 

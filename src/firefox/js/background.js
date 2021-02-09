@@ -251,12 +251,12 @@ const handleStorageChanged = ({ enableExtension: { newValue: extensionEnabled } 
           getRequestFilter({ http: true, https: false }),
           ['blocking'],
         )
-        console.warn('webRequest listeners enabled')
+        console.warn('Web request listeners enabled')
       }
     } else {
       browser.webRequest.onErrorOccurred.removeListener(handleErrorOccurred)
       browser.webRequest.onBeforeRequest.removeListener(handleBeforeRequest)
-      console.warn('webRequest listeners disabled')
+      console.warn('Web request listeners disabled')
     }
   }
 }

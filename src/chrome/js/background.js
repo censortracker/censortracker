@@ -256,8 +256,7 @@ chrome.runtime.onStartup.addListener(async () => {
 })
 
 chrome.windows.onRemoved.addListener(async (_windowId) => {
-  await asynchrome.storage.local.remove('notifiedHosts').catch(console.error)
-  console.warn('A list of notified hosts has been cleaned up!')
+  await asynchrome.storage.local.remove('notifiedHosts')
 })
 
 chrome.proxy.onProxyError.addListener((details) => {

@@ -96,6 +96,7 @@ browser.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
 const addExtensionControlListeners = async ({ settings, proxy }) => {
   document.addEventListener('click', (event) => {
     if (event.target.matches('#enableExtension')) {
+      proxy.enableProxy()
       settings.enableExtension()
       window.location.reload()
     }

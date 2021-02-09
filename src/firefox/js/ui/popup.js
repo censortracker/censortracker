@@ -28,13 +28,11 @@ const popupShowTimeout = 60
 browser.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
   document.addEventListener('click', async (event) => {
     if (event.target.matches('#enableExtension')) {
-      await bgModules.proxy.enableProxy()
       await bgModules.settings.enableExtension()
       window.location.reload()
     }
 
     if (event.target.matches('#disableExtension')) {
-      await bgModules.proxy.disableProxy()
       await bgModules.settings.disableExtension()
       window.location.reload()
     }

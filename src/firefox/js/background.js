@@ -264,8 +264,7 @@ const handleStorageChanged = ({ enableExtension: { newValue: extensionEnabled } 
 
 browser.storage.onChanged.addListener(handleStorageChanged)
 
-// TODO: Delete this before release
-window.censortracker.debugMode = async () => {
+window.censortracker.debugging = async () => {
   const { domains } = await storage.get({ domains: [] })
   const excluded = ['rutracker.org', 'lostfilm.tv', 'rezka.ag']
 

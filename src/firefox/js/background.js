@@ -229,9 +229,9 @@ browser.runtime.onStartup.addListener(async () => {
 /**
  * Fired when one or more items change.
  * @param changes Object describing the change. This contains one property for each key that changed.
- * @param _areaName The name of the storage area ("sync", "local") to which the changes were made.
+ * @param areaName The name of the storage area ("sync", "local") to which the changes were made.
  */
-const handleStorageChanged = ({ enableExtension: { newValue: extensionEnabled = false } = {} }, _areaName) => {
+const handleStorageChanged = ({ enableExtension: { newValue: extensionEnabled } = {} }, areaName) => {
   // See: https://git.io/Jtw5D
 
   const webRequestHasListeners = (
@@ -239,24 +239,25 @@ const handleStorageChanged = ({ enableExtension: { newValue: extensionEnabled = 
     browser.webRequest.onBeforeRequest.hasListener(handleBeforeRequest)
   )
 
-  if (extensionEnabled === true) {
-    if (!webRequestHasListeners) {
-      browser.proxy.onRequest.addListener(
-        handleProxyRequest, getRequestFilter({ http: true, https: true }),
-      )
-      browser.webRequest.onErrorOccurred.addListener(
-        handleErrorOccurred, getRequestFilter({ http: true, https: true }),
-      )
-      browser.webRequest.onBeforeRequest.addListener(
-        handleBeforeRequest, getRequestFilter({ http: true, https: false }),
-        ['blocking'],
-      )
-      console.warn('webRequest listeners enabled')
+  if (typeof extensionEnabled === 'boolean') {
+    if (extensionEnabled === true) {
+      if (!webRequestHasListeners) {
+        browser.webRequest.onErrorOccurred.addListener(
+          handleErrorOccurred,
+          getRequestFilter({ http: true, https: true }),
+        )
+        browser.webRequest.onBeforeRequest.addListener(
+          handleBeforeRequest,
+          getRequestFilter({ http: true, https: false }),
+          ['blocking'],
+        )
+        console.warn('webRequest listeners enabled')
+      }
+    } else {
+      browser.webRequest.onErrorOccurred.removeListener(handleErrorOccurred)
+      browser.webRequest.onBeforeRequest.removeListener(handleBeforeRequest)
+      console.warn('webRequest listeners disabled')
     }
-  } else {
-    browser.webRequest.onErrorOccurred.removeListener(handleErrorOccurred)
-    browser.webRequest.onBeforeRequest.removeListener(handleBeforeRequest)
-    console.warn('webRequest listeners disabled')
   }
 }
 

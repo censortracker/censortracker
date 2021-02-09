@@ -56,7 +56,7 @@ chrome.webRequest.onBeforeRequest.addListener(
  * @param tabId The ID of the tab in which the request takes place.
  * @returns {undefined} Undefined.
  */
-const onErrorOccurredListener = async ({ url, error, tabId }) => {
+const handleErrorOccurred = async ({ url, error, tabId }) => {
   const { hostname } = new URL(url)
 
   if (ignore.isIgnoredHost(hostname)) {
@@ -97,7 +97,7 @@ const onErrorOccurredListener = async ({ url, error, tabId }) => {
 }
 
 chrome.webRequest.onErrorOccurred.addListener(
-  onErrorOccurredListener,
+  handleErrorOccurred,
   {
     urls: ['http://*/*', 'https://*/*'],
     types: ['main_frame'],
@@ -271,19 +271,19 @@ chrome.notifications.onButtonClicked.addListener(notificationOnButtonClicked)
 window.censortracker.chromeListeners = {
   has: () => {
     const hasOnErrorOccurredListener =
-      chrome.webRequest.onErrorOccurred.hasListener(onErrorOccurredListener)
+      chrome.webRequest.onErrorOccurred.hasListener(handleErrorOccurred)
     const hasOnBeforeRequestListener =
       chrome.webRequest.onBeforeRequest.hasListener(handleBeforeRequest)
 
     return hasOnBeforeRequestListener && hasOnErrorOccurredListener
   },
   remove: () => {
-    chrome.webRequest.onErrorOccurred.removeListener(onErrorOccurredListener)
+    chrome.webRequest.onErrorOccurred.removeListener(handleErrorOccurred)
     chrome.webRequest.onBeforeRequest.removeListener(handleBeforeRequest)
     console.warn('CensorTracker: listeners removed')
   },
   add: () => {
-    chrome.webRequest.onErrorOccurred.addListener(onErrorOccurredListener, {
+    chrome.webRequest.onErrorOccurred.addListener(handleErrorOccurred, {
       urls: ['http://*/*', 'https://*/*'],
       types: ['main_frame'],
     })

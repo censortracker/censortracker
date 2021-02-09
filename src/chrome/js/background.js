@@ -10,6 +10,7 @@ import {
   enforceHttpConnection,
   enforceHttpsConnection,
   extractHostnameFromUrl,
+  getRequestFilter,
   validateUrl,
 } from './core/utilities'
 
@@ -42,10 +43,9 @@ const handleBeforeRequest = ({ url }) => {
 }
 
 chrome.webRequest.onBeforeRequest.addListener(
-  handleBeforeRequest, {
-    urls: ['http://*/*'],
-    types: ['main_frame'],
-  }, ['blocking'],
+  handleBeforeRequest,
+  getRequestFilter({ http: true, https: false }),
+  ['blocking'],
 )
 
 /**
@@ -98,10 +98,7 @@ const handleErrorOccurred = async ({ url, error, tabId }) => {
 
 chrome.webRequest.onErrorOccurred.addListener(
   handleErrorOccurred,
-  {
-    urls: ['http://*/*', 'https://*/*'],
-    types: ['main_frame'],
-  },
+  getRequestFilter({ http: true, https: true }),
 )
 
 const notificationButtonClickedHandler = async (notificationId, buttonIndex) => {
@@ -282,15 +279,13 @@ window.censortracker.events = {
     console.warn('CensorTracker: listeners removed')
   },
   add: () => {
-    chrome.webRequest.onErrorOccurred.addListener(handleErrorOccurred, {
-      urls: ['http://*/*', 'https://*/*'],
-      types: ['main_frame'],
-    })
+    chrome.webRequest.onErrorOccurred.addListener(
+      handleErrorOccurred,
+      getRequestFilter({ http: true, https: true }),
+    )
     chrome.webRequest.onBeforeRequest.addListener(
-      handleBeforeRequest, {
-        urls: ['http://*/*'],
-        types: ['main_frame'],
-      },
+      handleBeforeRequest,
+      getRequestFilter({ http: true, https: false }),
       ['blocking'],
     )
     console.warn('CensorTracker: listeners added')

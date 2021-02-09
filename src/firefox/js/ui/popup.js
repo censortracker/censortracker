@@ -26,21 +26,21 @@ const currentDomainBlocks = document.querySelectorAll('.current-domain')
 const popupShowTimeout = 60
 
 browser.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
-  document.addEventListener('click', (event) => {
+  document.addEventListener('click', async (event) => {
     if (event.target.matches('#enableExtension')) {
-      bgModules.proxy.enableProxy()
-      bgModules.settings.enableExtension()
+      await bgModules.proxy.enableProxy()
+      await bgModules.settings.enableExtension()
       window.location.reload()
     }
 
     if (event.target.matches('#disableExtension')) {
-      bgModules.proxy.disableProxy()
-      bgModules.settings.disableExtension()
+      await bgModules.proxy.disableProxy()
+      await bgModules.settings.disableExtension()
       window.location.reload()
     }
 
     if (event.target.matches('#openOptionsPage')) {
-      browser.runtime.openOptionsPage()
+      await browser.runtime.openOptionsPage()
     }
   })
 

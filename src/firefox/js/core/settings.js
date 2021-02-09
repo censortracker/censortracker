@@ -30,29 +30,25 @@ class Settings {
 
   getDisabledIcon = () => browser.runtime.getURL('images/icons/128x128/disabled.png');
 
-  _setPageIcon = (tabId, path) => {
+  changePageIcon = (tabId, path) => {
     browser.browserAction.setIcon({ tabId, path })
     browser.browserAction.setTitle({ title: this.getTitle(), tabId })
   }
 
   setDisableIcon = (tabId) => {
-    this._setPageIcon(tabId, this.getDisabledIcon())
+    this.changePageIcon(tabId, this.getDisabledIcon())
   }
 
   setDefaultIcon = (tabId) => {
-    this._setPageIcon(tabId, this.getDefaultIcon())
+    this.changePageIcon(tabId, this.getDefaultIcon())
   }
 
   setDangerIcon = (tabId) => {
-    this._setPageIcon(tabId, this.getDangerIcon())
+    this.changePageIcon(tabId, this.getDangerIcon())
   }
 
   _toggleExtension = ({ enableExtension }) => {
     if (typeof enableExtension === 'boolean') {
-      storage.set({ enableExtension }, () => {
-        console.warn('Extension enabled')
-      })
-
       browser.tabs.query({}, (tabs) => {
         tabs.forEach((tab) => {
           enableExtension ? this.setDefaultIcon(tab.id)
@@ -62,12 +58,14 @@ class Settings {
     }
   }
 
-  enableExtension = () => {
-    this._toggleExtension({ enableExtension: true })
+  enableExtension = async () => {
+    await storage.set({ enableExtension: true })
+    console.warn('Extension enabled')
   }
 
-  disableExtension = () => {
-    this._toggleExtension({ enableExtension: false })
+  disableExtension = async () => {
+    await storage.set({ enableExtension: false })
+    console.warn('Extension disabled')
   }
 
   enableNotifications = async () => {

@@ -139,10 +139,10 @@ const handleTabState = async () => {
     return
   }
 
-  const { enableExtension, useNotificationsChecked } =
+  const { enableExtension, showNotifications } =
     await asynchrome.storage.local.get({
       enableExtension: true,
-      useNotificationsChecked: true,
+      showNotifications: true,
     })
 
   if (!enableExtension) {
@@ -168,7 +168,7 @@ const handleTabState = async () => {
 
   if (distributorUrl) {
     settings.setDangerIcon(tab.id)
-    if (useNotificationsChecked && !cooperationRefused) {
+    if (showNotifications && !cooperationRefused) {
       await showCooperationAcceptedWarning(currentHostname)
     }
   }

@@ -40,20 +40,20 @@ import proxy from '../core/proxy'
 
   useNotificationsCheckbox.addEventListener('change', async () => {
     if (useNotificationsCheckbox.checked) {
-      await asynchrome.storage.local.set({ useNotificationsChecked: true })
+      await asynchrome.storage.local.set({ showNotifications: true })
       console.log('Notifications enabled.')
     } else {
       console.warn('Notifications disabled.')
-      await asynchrome.storage.local.set({ useNotificationsChecked: false })
+      await asynchrome.storage.local.set({ showNotifications: false })
     }
   }, false)
 
-  const { useProxy, useNotificationsChecked } =
+  const { useProxy, showNotifications } =
     await asynchrome.storage.local.get({
       useProxy: true,
-      useNotificationsChecked: true,
+      showNotifications: true,
     })
 
   useProxyCheckbox.checked = useProxy
-  useNotificationsCheckbox.checked = useNotificationsChecked
+  useNotificationsCheckbox.checked = showNotifications
 })()

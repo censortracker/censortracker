@@ -32,7 +32,7 @@ window.censortracker = {
 const handleBeforeRequest = ({ url }) => {
   const hostname = extractHostnameFromUrl(url)
 
-  if (ignore.isIgnoredHost(hostname)) {
+  if (ignore.contains(hostname)) {
     console.warn(`Ignoring host: ${url}`)
     return undefined
   }
@@ -60,7 +60,7 @@ const handleErrorOccurred = async ({ url, error, tabId }) => {
   const hostname = extractHostnameFromUrl(url)
   const { proxyError, connectionError } = errors.determineError(error)
 
-  if (ignore.isIgnoredHost(hostname)) {
+  if (ignore.contains(hostname)) {
     return
   }
 
@@ -90,7 +90,7 @@ const handleErrorOccurred = async ({ url, error, tabId }) => {
     return
   }
 
-  await ignore.addHostToIgnore(hostname)
+  await ignore.add(hostname)
   chrome.tabs.remove(tabId)
   chrome.tabs.create({
     url: enforceHttpConnection(url),
@@ -153,7 +153,7 @@ const handleTabState = async () => {
   const hostname = extractHostnameFromUrl(tab.url)
   const currentHostname = extractHostnameFromUrl(hostname)
 
-  if (ignore.isIgnoredHost(currentHostname)) {
+  if (ignore.contains(currentHostname)) {
     return
   }
 

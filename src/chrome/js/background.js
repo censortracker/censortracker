@@ -268,7 +268,7 @@ chrome.tabs.onUpdated.addListener(handleTabState)
 chrome.notifications.onButtonClicked.addListener(notificationButtonClickedHandler)
 
 // The mechanism for controlling handlers from popup.js
-window.censortracker.chromeListeners = {
+window.censortracker.events = {
   has: () => {
     const hasOnErrorOccurredListener =
       chrome.webRequest.onErrorOccurred.hasListener(handleErrorOccurred)

@@ -84,7 +84,7 @@ const handleErrorOccurred = async ({ url, error, tabId }) => {
     chrome.tabs.update(tabId, {
       url: chrome.runtime.getURL(`unavailable.html?${window.btoa(url)}`),
     })
-    await registry.addBlockedByDPI(hostname)
+    await registry.add(hostname)
     await proxy.setProxy()
     return
   }

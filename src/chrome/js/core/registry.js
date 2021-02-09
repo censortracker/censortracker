@@ -84,7 +84,7 @@ class Registry {
     return {}
   }
 
-  addBlockedByDPI = async (hostname) => {
+  add = async (hostname) => {
     if (!hostname) {
       return
     }

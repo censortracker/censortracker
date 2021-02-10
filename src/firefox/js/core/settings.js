@@ -60,6 +60,12 @@ class Settings {
     }
   }
 
+  isEnabled = async () => {
+    const { enableExtension } = await storage.get({ enableExtension: true })
+
+    return enableExtension
+  }
+
   enableExtension = async () => {
     await this.changeExtensionState({
       useProxy: true,

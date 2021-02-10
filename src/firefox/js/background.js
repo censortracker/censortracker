@@ -122,31 +122,30 @@ browser.webRequest.onErrorOccurred.addListener(
 
 const handleTabState = async () => {
   const { enableExtension } = await storage.get({ enableExtension: true })
-  const [{ url: currentUrl, id: tabId }] = await browser.tabs.query({
-    active: true, lastFocusedWindow: true,
+  const [{ url, id }] = await browser.tabs.query({
+    active: true,
+    lastFocusedWindow: true,
   })
 
-  if (enableExtension && validateUrl(currentUrl)) {
-    await browser.browserAction.enable(tabId)
-    const { domainFound } = await registry.domainsContains(currentUrl)
+  if (enableExtension && validateUrl(url)) {
+    const { domainFound } = await registry.domainsContains(url)
 
     if (domainFound) {
-      settings.setDangerIcon(tabId)
+      settings.setDangerIcon(id)
       return
     }
 
     const { url: distributorUrl, cooperationRefused } =
-      await registry.distributorsContains(currentUrl)
+      await registry.distributorsContains(url)
 
     if (distributorUrl) {
-      settings.setDangerIcon(tabId)
+      settings.setDangerIcon(id)
       if (!cooperationRefused) {
-        await showCooperationAcceptedWarning(currentUrl)
+        await showCooperationAcceptedWarning(url)
       }
     }
   } else {
-    settings.setDisableIcon(tabId)
-    await browser.browserAction.disable(tabId)
+    settings.setDisableIcon(id)
   }
 }
 

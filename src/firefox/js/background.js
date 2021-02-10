@@ -121,6 +121,7 @@ browser.webRequest.onErrorOccurred.addListener(
 )
 
 const handleTabState = async () => {
+  // TODO: use settings.extensionEnabled()
   const { enableExtension } = await storage.get({ enableExtension: true })
   const [{ url, id }] = await browser.tabs.query({
     active: true,

@@ -60,7 +60,7 @@ class Settings {
     }
   }
 
-  isEnabled = async () => {
+  extensionEnabled = async () => {
     const { enableExtension } = await storage.get({ enableExtension: true })
 
     return enableExtension

@@ -3,7 +3,6 @@ require('dotenv').config()
 const fs = require('fs')
 const path = require('path')
 const webpack = require('webpack')
-const ZipPlugin = require('zip-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const HTMLWebpackPlugin = require('html-webpack-plugin')
@@ -108,11 +107,11 @@ const webpackConfig = {
           to: resolve('dist/firefox/'),
         },
         {
-          from: resolve('src/firefox/images'),
+          from: resolve('src/common/images'),
           to: resolve('dist/firefox/images'),
         },
         {
-          from: resolve('src/firefox/css'),
+          from: resolve('src/common/css'),
           to: resolve('dist/firefox/css'),
         },
       ],
@@ -120,7 +119,7 @@ const webpackConfig = {
     new HTMLWebpackPlugin({
       title: 'Censor Tracker',
       filename: 'popup.html',
-      template: 'src/firefox/pages/popup.html',
+      template: 'src/common/pages/popup.html',
       inject: true,
       chunks: ['popup'],
       meta: {
@@ -130,7 +129,7 @@ const webpackConfig = {
     new HTMLWebpackPlugin({
       title: 'Unavailable | Censor Tracker',
       filename: 'unavailable.html',
-      template: 'src/firefox/pages/unavailable.html',
+      template: 'src/common/pages/unavailable.html',
       inject: true,
       chunks: ['unavailable'],
       meta: {
@@ -140,7 +139,7 @@ const webpackConfig = {
     new HTMLWebpackPlugin({
       title: 'Настройки | Censor Tracker',
       filename: 'options.html',
-      template: 'src/firefox/pages/options.html',
+      template: 'src/common/pages/options.html',
       inject: true,
       chunks: ['options'],
       meta: {
@@ -150,7 +149,7 @@ const webpackConfig = {
     new HTMLWebpackPlugin({
       title: 'Проксирование недоступно | Censor Tracker',
       filename: 'proxy_unavailable.html',
-      template: 'src/firefox/pages/proxy_unavailable.html',
+      template: 'src/common/pages/proxy_unavailable.html',
       inject: true,
       chunks: ['unavailable'],
       meta: {
@@ -160,22 +159,13 @@ const webpackConfig = {
     new HTMLWebpackPlugin({
       title: 'Проксирование отключено | Censor Tracker',
       filename: 'proxy_disabled.html',
-      template: 'src/firefox/pages/proxy_disabled.html',
+      template: 'src/common/pages/proxy_disabled.html',
       inject: true,
       chunks: ['proxy_disabled'],
       meta: {
         'Content-Security-Policy': 'script-src \'self\' \'unsafe-eval\'; object-src \'self\';',
       },
     }),
-    // process.env.NODE_ENV === 'production'
-    //   ? new ZipPlugin({
-    //     filename: `censortracker-firefox-ext.v${version}.zip`,
-    //     pathPrefix: `censortracker-firefox-ext.v${version}`,
-    //   })
-    //   : new ZipPlugin({
-    //     filename: `censortracker-firefox-ext.v${version}-dev.zip`,
-    //     pathPrefix: `censortracker-firefox-ext.v${version}-dev`,
-    //   }),
   ],
 
   optimization: {

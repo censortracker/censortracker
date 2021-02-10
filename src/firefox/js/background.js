@@ -153,8 +153,8 @@ const handleTabState = async () => {
 browser.tabs.onActivated.addListener(handleTabState)
 browser.tabs.onUpdated.addListener(handleTabState)
 
-const showCooperationAcceptedWarning = async (currentUrl) => {
-  const hostname = extractHostnameFromUrl(currentUrl)
+const showCooperationAcceptedWarning = async (url) => {
+  const hostname = extractHostnameFromUrl(url)
   const { notifiedHosts, showNotifications } = await storage.get({
     notifiedHosts: new Set(),
     showNotifications: true,

@@ -109,11 +109,11 @@ const webpackConfig = {
           to: resolve('dist/chrome'),
         },
         {
-          from: resolve('src/chrome/images'),
+          from: resolve('src/common/images'),
           to: resolve('dist/chrome/images'),
         },
         {
-          from: resolve('src/chrome/css'),
+          from: resolve('src/common/css'),
           to: resolve('dist/chrome/css'),
         },
       ],

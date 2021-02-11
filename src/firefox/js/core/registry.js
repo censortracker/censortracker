@@ -1,6 +1,6 @@
+import { extractHostnameFromUrl } from '../../../common/js/utilities'
 import settings from './settings'
 import storage from './storage'
-import { extractHostnameFromUrl } from './utilities'
 
 const DOMAINS_DB_KEY = 'domains'
 const DISTRIBUTORS_DB_KEY = 'distributors'

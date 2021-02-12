@@ -97,5 +97,5 @@ export const getBrowserName = () => {
   if (userAgent.includes('Firefox')) {
     return { firefox: true }
   }
-  return {}
+  return { unknown: true }
 }

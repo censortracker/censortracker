@@ -2,7 +2,7 @@ import asynchrome from '../core/asynchrome'
 
 (async () => {
   const unavailableWebsite = document.getElementById('unavailableWebsite')
-  const extendProxyButton = document.getElementById('extendProxyAutoConfig')
+  const extendProxyButton = document.getElementById('openThroughProxy')
 
   const [tab] = await asynchrome.tabs.query({ active: true, lastFocusedWindow: true })
 
@@ -16,7 +16,7 @@ import asynchrome from '../core/asynchrome'
   }
 
   document.addEventListener('click', (event) => {
-    if (event.target.matches('#extendProxyAutoConfig')) {
+    if (event.target.matches('#openThroughProxy')) {
       chrome.tabs.create({ url: targetUrl, index: tab.index }, () => {
         chrome.tabs.remove(tab.id)
       })

@@ -14,7 +14,7 @@ export const validateUrl = (url) => {
     'i',
   )
 
-  if (url.startsWith('chrome-extension://')) {
+  if (url.startsWith('about:') || url.startsWith('chrome-extension:')) {
     return false
   }
 
@@ -82,4 +82,20 @@ export const getRequestFilter = ({ http = true, https = true } = {}) => {
   }
 
   return { urls, types }
+}
+
+/**
+ * Returns object with browser name.
+ * @returns {{firefox: boolean}|{}|{chrome: boolean}}
+ */
+export const getBrowserName = () => {
+  const userAgent = navigator.userAgent.match(/Chrome|Firefox/i)
+
+  if (userAgent.includes('Chrome')) {
+    return { chrome: true }
+  }
+  if (userAgent.includes('Firefox')) {
+    return { firefox: true }
+  }
+  return { unknown: true }
 }

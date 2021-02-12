@@ -2,7 +2,7 @@ import {
   enforceHttpsConnection,
   extractHostnameFromUrl,
   validateUrl,
-} from '../../src/chrome/js/core/utilities'
+} from '../../src/common/js/utilities'
 
 describe('Validate URL', () => {
   test('returns true when URL is valid otherwise false', () => {

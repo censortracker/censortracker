@@ -1,5 +1,5 @@
+import { extractHostnameFromUrl } from '../../../common/js/utilities'
 import asynchrome from './asynchrome'
-import { extractHostnameFromUrl } from './utilities'
 
 const ipRangeCheck = require('ip-range-check')
 

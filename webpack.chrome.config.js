@@ -3,7 +3,6 @@ require('dotenv').config()
 const fs = require('fs')
 const path = require('path')
 const webpack = require('webpack')
-const ZipPlugin = require('zip-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const HTMLWebpackPlugin = require('html-webpack-plugin')
@@ -109,11 +108,11 @@ const webpackConfig = {
           to: resolve('dist/chrome'),
         },
         {
-          from: resolve('src/chrome/images'),
+          from: resolve('src/common/images'),
           to: resolve('dist/chrome/images'),
         },
         {
-          from: resolve('src/chrome/css'),
+          from: resolve('src/common/css'),
           to: resolve('dist/chrome/css'),
         },
       ],
@@ -121,7 +120,7 @@ const webpackConfig = {
     new HTMLWebpackPlugin({
       title: 'Censor Tracker',
       filename: 'popup.html',
-      template: 'src/chrome/pages/popup.html',
+      template: 'src/common/pages/popup.html',
       inject: true,
       chunks: ['popup'],
       meta: {
@@ -131,7 +130,7 @@ const webpackConfig = {
     new HTMLWebpackPlugin({
       title: 'Unavailable | Censor Tracker',
       filename: 'unavailable.html',
-      template: 'src/chrome/pages/unavailable.html',
+      template: 'src/common/pages/unavailable.html',
       inject: true,
       chunks: ['unavailable'],
       meta: {
@@ -161,7 +160,7 @@ const webpackConfig = {
     new HTMLWebpackPlugin({
       title: 'Проксирование недоступно | Censor Tracker',
       filename: 'proxy_unavailable.html',
-      template: 'src/chrome/pages/proxy_unavailable.html',
+      template: 'src/common/pages/proxy_unavailable.html',
       inject: true,
       chunks: ['unavailable'],
       meta: {
@@ -171,7 +170,7 @@ const webpackConfig = {
     new HTMLWebpackPlugin({
       title: 'Проксирование отключено | Censor Tracker',
       filename: 'proxy_disabled.html',
-      template: 'src/chrome/pages/proxy_disabled.html',
+      template: 'src/common/pages/proxy_disabled.html',
       inject: true,
       chunks: ['proxy_disabled'],
       meta: {
@@ -188,32 +187,7 @@ const webpackConfig = {
         'Content-Security-Policy': 'script-src \'self\' \'unsafe-eval\'; object-src \'self\';',
       },
     }),
-    process.env.NODE_ENV === 'production'
-      ? new ZipPlugin({
-        filename: `censortracker-chrome-ext.v${version}.zip`,
-        pathPrefix: `censortracker-chrome-ext.v${version}`,
-      })
-      : new ZipPlugin({
-        filename: `censortracker-chrome-ext.v${version}-dev.zip`,
-        pathPrefix: `censortracker-chrome-ext.v${version}-dev`,
-      }),
   ],
-
-  // node: {
-  //   // prevent webpack from injecting mocks to Node native modules
-  //   // that does not make sense for the client
-  //   dgram: 'empty',
-  //   fs: 'empty',
-  //   net: 'empty',
-  //   tls: 'empty',
-  //   child_process: 'empty',
-  //   // fix "Invalid y value for curve" issue:
-  //   crypto: true,
-  //   module: false,
-  //   process: true,
-  //   global: true,
-  // },
-
   optimization: {
     minimize: false,
     minimizer: [],
@@ -225,13 +199,6 @@ if (process.env.NODE_ENV === 'production') {
   webpackConfig.plugins.push(new TerserPlugin({
     terserOptions: {
       parallel: true,
-      // module: false,
-      // keep_fnames: true,
-      // keep_classnames: true,
-      // safari10: true,
-      // mangle: {
-      //   reserved: ['Block', 'BigInteger', 'ECSignature', 'ECPair', 'Point', 'HDNode'],
-      // },
     },
   }))
 }

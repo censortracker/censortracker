@@ -1,5 +1,6 @@
-import errors from '../../src/chrome/js/core/errors'
+import errors from 'src/common/js/errors'
 
+// TODO: Add checks for Firefox
 const ERR_CONNECTION_RESET = 'net::ERR_CONNECTION_RESET'
 const ERR_CERT_AUTHORITY_INVALID = 'net::ERR_CERT_AUTHORITY_INVALID'
 const ERR_CONNECTION_TIMED_OUT = 'net::ERR_CONNECTION_TIMED_OUT'

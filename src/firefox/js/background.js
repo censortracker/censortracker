@@ -69,7 +69,11 @@ const handleProxyRequest = async ({ url }) => {
 
 browser.proxy.onRequest.addListener(
   handleProxyRequest,
-  getRequestFilter({ http: true, https: true }),
+  getRequestFilter({
+    http: true,
+    https: true,
+    types: ['main_frame', 'stylesheet', 'script'],
+  }),
 )
 
 /**
@@ -121,7 +125,6 @@ browser.webRequest.onErrorOccurred.addListener(
 )
 
 const handleTabState = async () => {
-  // TODO: use settings.extensionEnabled()
   const { enableExtension } = await storage.get({ enableExtension: true })
   const [{ url, id }] = await browser.tabs.query({
     active: true,
@@ -130,14 +133,12 @@ const handleTabState = async () => {
 
   if (enableExtension && validateUrl(url)) {
     const { domainFound } = await registry.domainsContains(url)
+    const { url: distributorUrl, cooperationRefused } = await registry.distributorsContains(url)
 
     if (domainFound) {
-      settings.setDangerIcon(id)
+      settings.setBlockedIcon(id)
       return
     }
-
-    const { url: distributorUrl, cooperationRefused } =
-      await registry.distributorsContains(url)
 
     if (distributorUrl) {
       settings.setDangerIcon(id)

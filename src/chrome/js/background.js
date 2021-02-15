@@ -158,7 +158,7 @@ const handleTabState = async () => {
     await registry.distributorsContains(currentHostname)
 
   if (domainFound) {
-    settings.setDangerIcon(tab.id)
+    settings.setBlockedIcon(tab.id)
     return
   }
 

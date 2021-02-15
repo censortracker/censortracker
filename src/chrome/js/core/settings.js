@@ -28,29 +28,27 @@ class Settings {
 
   getDisabledIcon = () => chrome.runtime.getURL('images/icons/128x128/disabled.png');
 
-  getPopupImage = ({ size = '512', name = 'default' }) => {
-    return chrome.runtime.getURL(`images/icons/${size}x${size}/${name}.png`)
-  }
+  getBlockedIcon = () => chrome.runtime.getURL('images/icons/128x128/blocked.png');
 
-  getProxyServerUrl = () => {
-    return 'proxy-ssl.roskomsvoboda.org:33333'
-  }
-
-  _setPageIcon = (tabId, path) => {
+  changePageIcon = (tabId, path) => {
     chrome.pageAction.setIcon({ tabId, path })
     chrome.pageAction.setTitle({ title: this.getTitle(), tabId })
   }
 
   setDisableIcon = (tabId) => {
-    this._setPageIcon(tabId, this.getDisabledIcon())
+    this.changePageIcon(tabId, this.getDisabledIcon())
   }
 
   setDefaultIcon = (tabId) => {
-    this._setPageIcon(tabId, this.getDefaultIcon())
+    this.changePageIcon(tabId, this.getDefaultIcon())
   }
 
   setDangerIcon = (tabId) => {
-    this._setPageIcon(tabId, this.getDangerIcon())
+    this.changePageIcon(tabId, this.getDangerIcon())
+  }
+
+  setBlockedIcon = (tabId) => {
+    this.changePageIcon(tabId, this.getBlockedIcon())
   }
 
   _toggleExtension = ({ enableExtension }) => {

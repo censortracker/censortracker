@@ -1,6 +1,5 @@
 import asynchrome from './asynchrome'
 import registry from './registry'
-import settings from './settings'
 
 class Proxy {
   constructor () {
@@ -15,6 +14,10 @@ class Proxy {
     setInterval(async () => {
       await this.removeOutdatedBlockedDomains()
     }, 60 * 1000 * 60 * 60 * 2)
+  }
+
+  getProxyServerUrl = () => {
+    return 'proxy-ssl.roskomsvoboda.org:33333'
   }
 
   excludeIgnoredDomains = (domains) => {
@@ -95,7 +98,7 @@ function FindProxyForURL(url, host) {
 
   // Return result
   if (isHostBlocked(domains, host)) {
-    return 'HTTPS ${settings.getProxyServerUrl()};';
+    return 'HTTPS ${this.getProxyServerUrl()};';
   } else {
     return 'DIRECT';
   }

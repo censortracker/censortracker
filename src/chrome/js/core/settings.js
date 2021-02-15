@@ -30,10 +30,6 @@ class Settings {
 
   getBlockedIcon = () => chrome.runtime.getURL('images/icons/128x128/blocked.png');
 
-  getProxyServerUrl = () => {
-    return 'proxy-ssl.roskomsvoboda.org:33333'
-  }
-
   changePageIcon = (tabId, path) => {
     chrome.pageAction.setIcon({ tabId, path })
     chrome.pageAction.setTitle({ title: this.getTitle(), tabId })

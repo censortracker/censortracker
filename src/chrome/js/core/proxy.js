@@ -43,7 +43,7 @@ class Proxy {
     }
 
     await this.allowProxying()
-    await asynchrome.proxy.settings.set(config).catch(console.error)
+    await asynchrome.proxy.settings.set(config)
     await asynchrome.storage.local.set({ useProxy: true })
     console.warn('PAC has been set successfully!')
   }

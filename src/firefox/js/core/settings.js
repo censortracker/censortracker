@@ -30,6 +30,8 @@ class Settings {
 
   getDisabledIcon = () => browser.runtime.getURL('images/icons/128x128/disabled.png');
 
+  getBlockedIcon = () => browser.runtime.getURL('images/icons/128x128/blocked.png');
+
   changePageIcon = (tabId, path) => {
     browser.browserAction.setIcon({ tabId, path })
     browser.browserAction.setTitle({ title: this.getTitle(), tabId })
@@ -45,6 +47,10 @@ class Settings {
 
   setDangerIcon = (tabId) => {
     this.changePageIcon(tabId, this.getDangerIcon())
+  }
+
+  setBlockedIcon = (tabId) => {
+    this.changePageIcon(tabId, this.getBlockedIcon())
   }
 
   changeExtensionState = async ({ useProxy, enableExtension, showNotifications }) => {

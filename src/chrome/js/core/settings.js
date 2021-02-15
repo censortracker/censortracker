@@ -34,21 +34,21 @@ class Settings {
     return 'proxy-ssl.roskomsvoboda.org:33333'
   }
 
-  _setPageIcon = (tabId, path) => {
+  changePageIcon = (tabId, path) => {
     chrome.pageAction.setIcon({ tabId, path })
     chrome.pageAction.setTitle({ title: this.getTitle(), tabId })
   }
 
   setDisableIcon = (tabId) => {
-    this._setPageIcon(tabId, this.getDisabledIcon())
+    this.changePageIcon(tabId, this.getDisabledIcon())
   }
 
   setDefaultIcon = (tabId) => {
-    this._setPageIcon(tabId, this.getDefaultIcon())
+    this.changePageIcon(tabId, this.getDefaultIcon())
   }
 
   setDangerIcon = (tabId) => {
-    this._setPageIcon(tabId, this.getDangerIcon())
+    this.changePageIcon(tabId, this.getDangerIcon())
   }
 
   setBlockedIcon = (tabId) => {

@@ -1,3 +1,4 @@
+import { extractHostnameFromUrl } from '../../../common/js/utilities'
 import asynchrome from './asynchrome'
 import settings from './settings'
 
@@ -55,7 +56,8 @@ class Registry {
     return []
   }
 
-  domainsContains = async (host) => {
+  domainsContains = async (url) => {
+    const hostname = extractHostnameFromUrl(url)
     const { domains, blockedDomains } =
       await asynchrome.storage.local.get({
         [DOMAINS_DB_KEY]: [],
@@ -64,21 +66,22 @@ class Registry {
 
     const domainsArray = domains.concat(blockedDomains)
 
-    if (domainsArray.includes(host)) {
-      console.log(`Registry match found: ${host}`)
+    if (domainsArray.includes(hostname)) {
+      console.log(`Registry match found: ${hostname}`)
       return { domainFound: true }
     }
     return { domainFound: false }
   }
 
-  distributorsContains = async (host) => {
-    const { distributors } =
-      await asynchrome.storage.local.get({ [DISTRIBUTORS_DB_KEY]: [] })
+  distributorsContains = async (url) => {
+    const hostname = extractHostnameFromUrl(url)
+    const { distributors } = await asynchrome.storage.local.get({
+      [DISTRIBUTORS_DB_KEY]: [],
+    })
 
-    const dataObject = distributors.find(({ url }) => (host === url))
+    const dataObject = distributors.find(({ url: innerUrl }) => (hostname === innerUrl))
 
     if (dataObject) {
-      console.warn(`Distributor match found: ${host}`)
       return dataObject
     }
     return {}

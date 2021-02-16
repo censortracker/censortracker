@@ -101,7 +101,7 @@ chrome.webRequest.onErrorOccurred.addListener(
   getRequestFilter({ http: true, https: true }),
 )
 
-const notificationButtonClickedHandler = async (notificationId, buttonIndex) => {
+const handleNotificationButtonClicked = async (notificationId, buttonIndex) => {
   if (buttonIndex === 0) {
     const [tab] = await asynchrome.tabs.query({
       active: true,
@@ -125,80 +125,73 @@ const notificationButtonClickedHandler = async (notificationId, buttonIndex) => 
   }
 }
 
+chrome.notifications.onButtonClicked.addListener(handleNotificationButtonClicked)
+
 const handleTabState = async () => {
-  const [tab] = await asynchrome.tabs.query({
+  const { enableExtension } = await asynchrome.storage.local.get({ enableExtension: true })
+  const [{ url, id }] = await asynchrome.tabs.query({
     active: true,
     lastFocusedWindow: true,
   })
 
-  if (!tab || !validateUrl(tab.url)) {
-    return
-  }
-
-  const { enableExtension, showNotifications } =
-    await asynchrome.storage.local.get({
-      enableExtension: true,
-      showNotifications: true,
-    })
-
-  if (!enableExtension) {
-    settings.setDisableIcon(tab.id)
-    return
-  }
-
-  const hostname = extractHostnameFromUrl(tab.url)
-  const currentHostname = extractHostnameFromUrl(hostname)
-
-  if (ignore.contains(currentHostname)) {
-    return
-  }
-
-  const { domainFound } = await registry.domainsContains(currentHostname)
-  const { url: distributorUrl, cooperationRefused } =
-    await registry.distributorsContains(currentHostname)
-
-  if (domainFound) {
-    settings.setBlockedIcon(tab.id)
-    return
-  }
-
-  if (distributorUrl) {
-    settings.setDangerIcon(tab.id)
-    if (showNotifications && !cooperationRefused) {
-      await showCooperationAcceptedWarning(currentHostname)
+  if (enableExtension && validateUrl(url)) {
+    if (ignore.contains(url)) {
+      return
     }
+
+    const { domainFound } = await registry.domainsContains(url)
+    const { url: distributorUrl, cooperationRefused } =
+      await registry.distributorsContains(url)
+
+    if (domainFound) {
+      settings.setBlockedIcon(id)
+      return
+    }
+
+    if (distributorUrl) {
+      settings.setDangerIcon(id)
+      if (!cooperationRefused) {
+        await showCooperationAcceptedWarning(url)
+      }
+    }
+  } else {
+    settings.setDisableIcon(id)
   }
 }
 
-const showCooperationAcceptedWarning = async (hostname) => {
-  const { notifiedHosts, mutedForever } =
+const showCooperationAcceptedWarning = async (url) => {
+  const hostname = extractHostnameFromUrl(url)
+  const { notifiedHosts, mutedForever, showNotifications } =
     await asynchrome.storage.local.get({
       notifiedHosts: [],
       mutedForever: [],
+      showNotifications: true,
     })
 
-  if (mutedForever.includes(hostname)) {
-    return
-  }
+  if (showNotifications) {
+    if (mutedForever.includes(hostname)) {
+      return
+    }
 
-  if (!notifiedHosts.includes(hostname)) {
-    await asynchrome.notifications.create({
-      type: 'basic',
-      title: settings.getName(),
-      priority: 2,
-      message: `${hostname} может передавать информацию третьим лицам.`,
-      buttons: [
-        { title: '\u2715 Не показывать для этого сайта' },
-        { title: '\u2192 Подробнее' },
-      ],
-      iconUrl: settings.getDangerIcon(),
-    })
+    if (!notifiedHosts.includes(hostname)) {
+      await asynchrome.notifications.create({
+        type: 'basic',
+        title: settings.getName(),
+        priority: 2,
+        message: `${hostname} может передавать информацию третьим лицам.`,
+        buttons: [
+          { title: '\u2715 Не показывать для этого сайта' },
+          { title: '\u2192 Подробнее' },
+        ],
+        iconUrl: settings.getDangerIcon(),
+      })
 
-    try {
-      notifiedHosts.push(hostname)
-      await asynchrome.storage.local.set({ notifiedHosts })
-    } catch (error) {
-      console.error(error)
+      try {
+        notifiedHosts.push(hostname)
+        await asynchrome.storage.local.set({ notifiedHosts })
+      } catch (error) {
+        console.error(error)
+      }
     }
   }
 }
@@ -261,7 +254,6 @@ chrome.proxy.onProxyError.addListener((details) => {
 
 chrome.tabs.onActivated.addListener(handleTabState)
 chrome.tabs.onUpdated.addListener(handleTabState)
-chrome.notifications.onButtonClicked.addListener(notificationButtonClickedHandler)
 
 // The mechanism for controlling handlers from popup.js
 window.censortracker.events = {

@@ -1,33 +1,28 @@
 import { extractHostnameFromUrl, settings, storage } from '.'
 
-const DOMAINS_DB_KEY = 'domains'
-const DISTRIBUTORS_DB_KEY = 'distributors'
-
 class Registry {
   sync = async () => {
     console.warn('Synchronizing local database with registry...')
     const apis = [
       {
-        key: DOMAINS_DB_KEY,
+        key: 'domains',
         url: settings.getDomainsApiUrl(),
       },
       {
-        key: DISTRIBUTORS_DB_KEY,
+        key: 'distributors',
         url: settings.getDistributorsApiUrl(),
       },
     ]
+    const timestamp = new Date().getTime()
 
     for (const { key, url } of apis) {
       const response = await fetch(url)
-      const domains = await response.json()
+      const data = await response.json()
 
-      await storage.set({
-        [key]: domains,
-        timestamp: new Date().getTime(),
-      }).catch(console.error)
+      await storage.set({ [key]: data, timestamp })
     }
 
-    const { domains } = await storage.get({ [DOMAINS_DB_KEY]: [] })
+    const { domains } = await storage.get({ domains: [] })
 
     if (!domains) {
       console.log('Database is empty. Trying to sync...')
@@ -40,7 +35,7 @@ class Registry {
     const hostname = extractHostnameFromUrl(url)
     const { domains, blockedDomains } =
       await storage.get({
-        [DOMAINS_DB_KEY]: [],
+        domains: [],
         blockedDomains: [],
       })
 
@@ -56,7 +51,7 @@ class Registry {
   distributorsContains = async (url) => {
     const hostname = extractHostnameFromUrl(url)
     const { distributors } =
-      await storage.get({ [DISTRIBUTORS_DB_KEY]: [] })
+      await storage.get({ distributors: [] })
 
     const dataObject = distributors.find(({ url: innerUrl }) => (hostname === innerUrl))
 

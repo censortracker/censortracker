@@ -1,5 +1,4 @@
-import { extractHostnameFromUrl } from '../../../common/js/utilities'
-import storage from './storage'
+import { extractHostnameFromUrl, storage } from '.'
 
 const ipRangeCheck = require('ip-range-check')
 

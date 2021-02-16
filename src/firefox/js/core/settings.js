@@ -1,4 +1,4 @@
-import storage from './storage'
+import { storage } from '.'
 
 const manifest = browser.runtime.getManifest()
 const rksUrl = 'https://reestr.rublacklist.net'

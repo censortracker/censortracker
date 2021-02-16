@@ -1,4 +1,4 @@
-import storage from './storage'
+import { storage } from '.'
 
 const PROXY_GATE_URL = 'https://163.172.211.183:39263'
 

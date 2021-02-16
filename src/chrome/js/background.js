@@ -101,7 +101,7 @@ chrome.webRequest.onErrorOccurred.addListener(
   getRequestFilter({ http: true, https: true }),
 )
 
-const notificationButtonClickedHandler = async (notificationId, buttonIndex) => {
+const handleNotificationButtonClicked = async (notificationId, buttonIndex) => {
   if (buttonIndex === 0) {
     const [tab] = await asynchrome.tabs.query({
       active: true,
@@ -124,6 +124,8 @@ const notificationButtonClickedHandler = async (notificationId, buttonIndex) => 
     }
   }
 }
+
+chrome.notifications.onButtonClicked.addListener(handleNotificationButtonClicked)
 
 const handleTabState = async () => {
   const { enableExtension } = await asynchrome.storage.local.get({ enableExtension: true })
@@ -252,7 +254,6 @@ chrome.proxy.onProxyError.addListener((details) => {
 
 chrome.tabs.onActivated.addListener(handleTabState)
 chrome.tabs.onUpdated.addListener(handleTabState)
-chrome.notifications.onButtonClicked.addListener(notificationButtonClickedHandler)
 
 // The mechanism for controlling handlers from popup.js
 window.censortracker.events = {

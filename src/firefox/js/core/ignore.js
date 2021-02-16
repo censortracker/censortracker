@@ -32,6 +32,7 @@ class Ignore {
 
   isSpecialPurposeIP = (ip) => {
     try {
+      console.warn('Ignoring special purpose ip')
       return ipRangeCheck(ip, SPECIAL_PURPOSE_IPS)
     } catch (error) {
       return false
@@ -66,10 +67,9 @@ class Ignore {
     hostname = extractHostnameFromUrl(hostname)
 
     if (this.ignoredHosts.has(hostname) || hostname.match(ignoreRegEx)) {
+      console.warn(`Ignoring host: ${hostname}`)
       return true
     }
-
-    console.warn(`Ignoring host: ${hostname}`)
     return this.isSpecialPurposeIP(hostname)
   }
 }

@@ -158,7 +158,6 @@ const handleTabState = async () => {
 }
 
 const showCooperationAcceptedWarning = async (url) => {
-  // TODO: Use Set instead of array
   const hostname = extractHostnameFromUrl(url)
   const { notifiedHosts, mutedForever, showNotifications } =
     await asynchrome.storage.local.get({
@@ -167,11 +166,11 @@ const showCooperationAcceptedWarning = async (url) => {
       showNotifications: true,
     })
 
-  if (mutedForever.includes(hostname)) {
-    return
-  }
-
   if (showNotifications) {
+    if (mutedForever.includes(hostname)) {
+      return
+    }
+
     if (!notifiedHosts.includes(hostname)) {
       await asynchrome.notifications.create({
         type: 'basic',

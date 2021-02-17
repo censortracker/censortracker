@@ -10,4 +10,5 @@ export {
   extractHostnameFromUrl,
   getRequestFilter,
   validateUrl,
+  arrayContains,
 } from '../../../common/js/utilities'

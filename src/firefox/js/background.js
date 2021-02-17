@@ -68,9 +68,9 @@ const handleProxyRequest = async ({ url }) => {
 browser.proxy.onRequest.addListener(
   handleProxyRequest,
   getRequestFilter({
-    http: true,
+    http: false,
     https: true,
-    types: ['main_frame', 'stylesheet', 'script'],
+    types: ['main_frame', 'stylesheet'],
   }),
 )
 

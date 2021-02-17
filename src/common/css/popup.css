@@ -37,8 +37,8 @@ a {
   right: 0;
   width: 16px;
   height: 16px;
-  mask: url(../images/icons/icon_settings.svg) no-repeat center / contain;
-  -webkit-mask: url(../images/icons/icon_settings.svg) no-repeat center / contain;
+  mask: url(../images/settings/cog.svg) no-repeat center / contain;
+  -webkit-mask: url(../images/settings/cog.svg) no-repeat center / contain;
   background-color: #3B332B;
 }
 .icon__settings:hover{

@@ -83,12 +83,13 @@ class Registry {
     return {}
   }
 
+  // TODO: Report domains automatically
   sendReport = async (hostname) => {
     const { alreadyReported } = await storage.get({
-      alreadyReported: new Set(),
+      alreadyReported: [],
     })
 
-    if (!alreadyReported.has(hostname)) {
+    if (!alreadyReported.includes(hostname)) {
       await fetch(
         LOGGING_API_URL, {
           method: 'POST',
@@ -99,7 +100,7 @@ class Registry {
           },
           body: JSON.stringify({ hostname }),
         })
-      alreadyReported.add(hostname)
+      alreadyReported.push(hostname)
       await storage.set({ alreadyReported })
       console.warn(`Reported new lock: ${hostname}`)
     }
@@ -110,9 +111,7 @@ class Registry {
 
     if (!blockedDomains.includes(hostname)) {
       blockedDomains.push(hostname)
-      this.sendReport(hostname).then()
     }
-
     await storage.set({ blockedDomains })
   }
 }

@@ -196,7 +196,7 @@ const showCooperationAcceptedWarning = async (url) => {
   }
 }
 
-chrome.runtime.onInstalled.addListener(async ({ reason }) => {
+const handleInstalled = async ({ reason }) => {
   chrome.declarativeContent.onPageChanged.removeRules(undefined, () => {
     chrome.declarativeContent.onPageChanged.addRules([{
       conditions: [
@@ -222,7 +222,9 @@ chrome.runtime.onInstalled.addListener(async ({ reason }) => {
       await proxy.setProxy()
     }
   }
-})
+}
+
+chrome.runtime.onInstalled.addListener(handleInstalled)
 
 const handleTabCreate = async ({ id }) => {
   const { enableExtension } =

@@ -1,4 +1,5 @@
-import { extractHostnameFromUrl, storage } from '.'
+import storage from './storage'
+import { extractHostnameFromUrl } from './utilities'
 
 const ipRangeCheck = require('ip-range-check')
 
@@ -32,7 +33,6 @@ class Ignore {
 
   isSpecialPurposeIP = (ip) => {
     try {
-      console.warn('Ignoring special purpose ip')
       return ipRangeCheck(ip, SPECIAL_PURPOSE_IPS)
     } catch (error) {
       return false

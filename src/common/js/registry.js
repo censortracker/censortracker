@@ -1,4 +1,10 @@
-import { extractHostnameFromUrl, settings, storage } from '.'
+import storage from './storage'
+import { extractHostnameFromUrl } from './utilities'
+
+const BASE_URL = 'https://reestr.rublacklist.net'
+const DOMAINS_API_URL = `${BASE_URL}/api/v3/domains/json`
+const DISTRIBUTORS_API_URL = `${BASE_URL}/api/v3/ori/refused/json`
+const LOGGING_API_URL = 'https://ct-dev.rublacklist.net/api/case/'
 
 class Registry {
   sync = async () => {
@@ -6,11 +12,11 @@ class Registry {
     const apis = [
       {
         key: 'domains',
-        url: settings.getDomainsApiUrl(),
+        url: DOMAINS_API_URL,
       },
       {
         key: 'distributors',
-        url: settings.getDistributorsApiUrl(),
+        url: DISTRIBUTORS_API_URL,
       },
     ]
     const timestamp = new Date().getTime()
@@ -29,6 +35,22 @@ class Registry {
       await this.sync()
     }
     return true
+  }
+
+  getDomains = async () => {
+    const { domains, blockedDomains } =
+      await storage.get({ domains: [], blockedDomains: [] })
+
+    const blockedDomainsArray = blockedDomains.map(({ domain }) => domain)
+
+    if (domains && domains.length > 0) {
+      try {
+        return domains.concat(blockedDomainsArray)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    return []
   }
 
   domainsContains = async (url) => {
@@ -67,11 +89,16 @@ class Registry {
     })
 
     if (!alreadyReported.has(hostname)) {
-      await fetch(settings.getLoggingApiUrl(), {
-        method: 'POST',
-        headers: settings.getLoggingApiHeaders(),
-        body: JSON.stringify({ hostname }),
-      })
+      await fetch(
+        LOGGING_API_URL, {
+          method: 'POST',
+          headers: {
+            'Censortracker-D': new Date().getTime(),
+            'Censortracker-V': '3.0.0',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ hostname }),
+        })
       alreadyReported.add(hostname)
       await storage.set({ alreadyReported })
       console.warn(`Reported new lock: ${hostname}`)

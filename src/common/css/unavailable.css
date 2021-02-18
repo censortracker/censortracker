@@ -5,7 +5,7 @@ body {
   width: 100%;
   margin: 0;
   font-family: 'IBM Plex Sans', Arial, sans-serif;
-  color: #3B332B;
+  color: #3b332b;
   font-weight: 700;
   font-size: 20px;
   line-height: 22px;
@@ -72,19 +72,19 @@ body {
 }
 
 .btn-dark {
-  background: #3B332B;
-  color: #ffffff;
+  background: #3b332b;
+  color: #fff;
   margin-right: 30px;
   border: 1px solid transparent;
-  box-shadow: 0px 0.598509px 3.52455px rgba(15, 13, 11, 0.079074), 0px 1.12694px 6.63642px rgba(15, 13, 11, 0.0655718), 0px 2.01027px 11.8382px rgba(15, 13, 11, 0.055);
+  box-shadow: 0 0.598509px 3.52455px rgba(15, 13, 11, 0.079074), 0 1.12694px 6.63642px rgba(15, 13, 11, 0.0655718), 0 2.01027px 11.8382px rgba(15, 13, 11, 0.055);
 }
 
 .btn-dark:hover {
-  background: #4F4740;
+  background: #4f4740;
 }
 
 .btn-dark:active {
-  background: #352E27;
+  background: #352e27;
   border: 1px solid transparent;
 }
 
@@ -101,23 +101,23 @@ body {
 }
 
 .btn-light {
-  border: 1px solid #3B332B;
+  border: 1px solid #3b332b;
 }
 
 .btn-light:hover {
-  border: 1px solid #625C55;
+  border: 1px solid #625c55;
 }
 
 .btn-light:hover > .btn__text {
-  color: #625C55;
+  color: #625c55;
 }
 
 .btn-light:active > .btn__text {
-  color: #352E27;
+  color: #352e27;
 }
 
 .btn-light:active {
-  border: 1px solid #352E27;
+  border: 1px solid #352e27;
 }
 
 .btn-disabled {
@@ -133,7 +133,7 @@ body {
 }
 
 .btn-dark.btn-disabled:hover {
-  background: #3B332B;
+  background: #3b332b;
 }
 
 .btn-dark.btn-disabled:hover > .btn__text {
@@ -141,11 +141,11 @@ body {
 }
 
 .btn-light.btn-disabled:hover > .btn__text {
-  color: #3B332B;
+  color: #3b332b;
 }
 
 .btn-light.btn-disabled:hover {
-  border-color: #3B332B;
+  border-color: #3b332b;
 }
 
 @media (max-width: 768px) {

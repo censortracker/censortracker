@@ -9,6 +9,7 @@ import {
   proxy,
   registry,
   settings,
+  storage,
   validateUrl,
 } from './core'
 
@@ -19,6 +20,7 @@ window.censortracker = {
   errors,
   ignore,
   asynchrome,
+  storage,
   extractHostnameFromUrl,
 }
 
@@ -107,14 +109,13 @@ const handleNotificationButtonClicked = async (notificationId, buttonIndex) => {
     })
 
     const hostname = extractHostnameFromUrl(tab.url)
-    const { mutedForever } =
-      await asynchrome.storage.local.get({ mutedForever: [] })
+    const { mutedForever } = await storage.get({ mutedForever: [] })
 
     if (!mutedForever.find((item) => item === hostname)) {
       mutedForever.push(hostname)
 
       try {
-        await asynchrome.storage.local.set({ mutedForever })
+        await storage.set({ mutedForever })
         console.warn(`We won't notify you about ${hostname} anymore`)
       } catch (error) {
         console.error(error)
@@ -126,7 +127,7 @@ const handleNotificationButtonClicked = async (notificationId, buttonIndex) => {
 chrome.notifications.onButtonClicked.addListener(handleNotificationButtonClicked)
 
 const handleTabState = async () => {
-  const { enableExtension } = await asynchrome.storage.local.get({ enableExtension: true })
+  const { enableExtension } = await storage.get({ enableExtension: true })
   const [{ url, id }] = await asynchrome.tabs.query({
     active: true,
     lastFocusedWindow: true,
@@ -160,7 +161,7 @@ const handleTabState = async () => {
 const showCooperationAcceptedWarning = async (url) => {
   const hostname = extractHostnameFromUrl(url)
   const { notifiedHosts, mutedForever, showNotifications } =
-    await asynchrome.storage.local.get({
+    await storage.get({
       notifiedHosts: [],
       mutedForever: [],
       showNotifications: true,
@@ -186,7 +187,7 @@ const showCooperationAcceptedWarning = async (url) => {
 
       try {
         notifiedHosts.push(hostname)
-        await asynchrome.storage.local.set({ notifiedHosts })
+        await storage.set({ notifiedHosts })
       } catch (error) {
         console.error(error)
       }
@@ -194,7 +195,7 @@ const showCooperationAcceptedWarning = async (url) => {
   }
 }
 
-chrome.runtime.onInstalled.addListener(async ({ reason }) => {
+const handleInstalled = async ({ reason }) => {
   chrome.declarativeContent.onPageChanged.removeRules(undefined, () => {
     chrome.declarativeContent.onPageChanged.addRules([{
       conditions: [
@@ -220,13 +221,12 @@ chrome.runtime.onInstalled.addListener(async ({ reason }) => {
       await proxy.setProxy()
     }
   }
-})
+}
+
+chrome.runtime.onInstalled.addListener(handleInstalled)
 
 const handleTabCreate = async ({ id }) => {
-  const { enableExtension } =
-    await asynchrome.storage.local.get({
-      enableExtension: true,
-    })
+  const { enableExtension } = await storage.get({ enableExtension: true })
 
   if (enableExtension) {
     settings.setDefaultIcon(id)
@@ -243,7 +243,7 @@ chrome.runtime.onStartup.addListener(async () => {
 })
 
 chrome.windows.onRemoved.addListener(async (_windowId) => {
-  await asynchrome.storage.local.remove('notifiedHosts')
+  await storage.remove(['notifiedHosts'])
 })
 
 chrome.proxy.onProxyError.addListener((details) => {

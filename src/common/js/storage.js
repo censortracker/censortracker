@@ -1,12 +1,8 @@
-import asynchrome from '../../chrome/js/core/asynchrome'
+import { getBrowser } from './browser'
 
-class StorageProxy {
+class Storage {
   constructor () {
-    try {
-      this.browser = browser
-    } catch (error) {
-      this.browser = asynchrome
-    }
+    this.browser = getBrowser()
   }
 
   set = async (keys = {}) => {
@@ -49,4 +45,4 @@ class StorageProxy {
   }
 }
 
-export default new StorageProxy()
+export default new Storage()

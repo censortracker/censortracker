@@ -1,6 +1,6 @@
 {
   "name": "Censor Tracker",
-  "version": "3.0.0.80",
+  "version": "3.0.0.84",
   "description": "Censor Tracker",
   "permissions": [
     "tabs",

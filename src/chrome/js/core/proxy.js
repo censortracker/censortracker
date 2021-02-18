@@ -1,5 +1,4 @@
-import asynchrome from './asynchrome'
-import registry from './registry'
+import { asynchrome, registry, storage } from '.'
 
 class Proxy {
   constructor () {
@@ -44,7 +43,7 @@ class Proxy {
 
     await this.allowProxying()
     await asynchrome.proxy.settings.set(config)
-    await asynchrome.storage.local.set({ useProxy: true })
+    await storage.set({ useProxy: true })
     console.warn('PAC has been set successfully!')
   }
 
@@ -106,8 +105,8 @@ function FindProxyForURL(url, host) {
   }
 
   removeProxy = async () => {
-    await asynchrome.proxy.settings.clear({ scope: 'regular' }).catch(console.error)
-    await asynchrome.storage.local.set({ useProxy: false })
+    await asynchrome.proxy.settings.clear({ scope: 'regular' })
+    await storage.set({ useProxy: false })
     console.warn('Proxy auto-config data cleaned!')
   }
 
@@ -138,7 +137,7 @@ function FindProxyForURL(url, host) {
 
   removeOutdatedBlockedDomains = async () => {
     const monthInSeconds = 2628000
-    let { blockedDomains } = await asynchrome.storage.local.get({ blockedDomains: [] })
+    let { blockedDomains } = await storage.get({ blockedDomains: [] })
 
     if (blockedDomains) {
       blockedDomains = blockedDomains.filter((item) => {
@@ -148,7 +147,7 @@ function FindProxyForURL(url, host) {
       })
     }
 
-    await asynchrome.storage.local.set({ blockedDomains })
+    await storage.set({ blockedDomains })
     console.warn('Outdated domains has been removed.')
     await this.setProxy()
   }

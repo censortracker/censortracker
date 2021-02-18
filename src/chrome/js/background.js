@@ -9,6 +9,7 @@ import {
   proxy,
   registry,
   settings,
+  storage,
   validateUrl,
 } from './core'
 
@@ -19,6 +20,7 @@ window.censortracker = {
   errors,
   ignore,
   asynchrome,
+  storage,
   extractHostnameFromUrl,
 }
 

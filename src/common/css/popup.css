@@ -5,12 +5,11 @@ body {
   display: block;
   margin: 0;
   font-family: 'IBM Plex Sans', Arial, sans-serif;
-  color: #3B332B;
+  color: #3b332b;
   font-weight: 400;
   font-size: 14px;
   font-style: normal;
   line-height: 20px;
-
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -31,7 +30,7 @@ a {
   position: relative;
 }
 
-.icon__settings{
+.icon__settings {
   position: absolute;
   top: 0;
   right: 0;
@@ -39,9 +38,10 @@ a {
   height: 16px;
   mask: url(../images/settings/cog.svg) no-repeat center / contain;
   -webkit-mask: url(../images/settings/cog.svg) no-repeat center / contain;
-  background-color: #3B332B;
+  background-color: #3b332b;
 }
-.icon__settings:hover{
+
+.icon__settings:hover {
   cursor: pointer;
   filter: contrast(300%);
 }
@@ -51,22 +51,24 @@ a {
 }
 
 .icon__back path {
-  fill: #3B332B;
+  fill: #3b332b;
   fill-opacity: 0.7;
 }
+
 .icon__back:hover {
   cursor: pointer;
 }
-.icon__back:hover path {
-  fill: #625C55;
 
+.icon__back:hover path {
+  fill: #625c55;
 }
+
 .icon__back:active path,
 .icon__back:focus path {
-  fill: #2A251F;
+  fill: #2a251f;
 }
 
-.main-page__another-extension{
+.main-page__another-extension {
   position: relative;
 }
 
@@ -78,45 +80,45 @@ a {
   padding: 20px 0;
 }
 
-.title-extension{
+.title-extension {
   padding-top: 40px;
 }
 
 .main-page__title {
   text-align: center;
   text-transform: uppercase;
-
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.text-extension{
-  color: #625C55;
+.text-extension {
+  color: #625c55;
   margin-bottom: 30px;
 }
 
 .extension__btn {
-  background-color: #3B332B;
+  background-color: #3b332b;
   font-size: 14px;
   line-height: 15px;
-  color: #FFFFFF;
+  color: #fff;
   padding: 9px 20px;
   display: block;
   font-weight: 400;
-  box-shadow: 0px 2.01027px 11.8382px rgba(15, 13, 11, 0.055), 0px 1.12694px 6.63642px rgba(15, 13, 11, 0.0655718), 0px 0.598509px 3.52455px rgba(15, 13, 11, 0.079074);
+  box-shadow: 0 2.01027px 11.8382px rgba(15, 13, 11, 0.055), 0 1.12694px 6.63642px rgba(15, 13, 11, 0.0655718), 0 0.598509px 3.52455px rgba(15, 13, 11, 0.079074);
   border-radius: 4px;
   text-align: center;
   margin-bottom: 50px;
 }
 
-.extension__btn:hover{
+.extension__btn:hover {
   cursor: pointer;
-  background-color: #625C55;
+  background-color: #625c55;
 }
+
 .extension__btn:active,
 .extension__btn:focus {
-  background-color: #2A251F;
+  background-color: #2a251f;
 }
 
 .main-page__block {
@@ -124,22 +126,22 @@ a {
 }
 
 .title-disabled {
-  color: #3B332B;
-  text-transform: none
+  color: #3b332b;
+  text-transform: none;
 }
 
 .title-blocked {
-  color: #3B332B;
+  color: #3b332b;
   text-transform: uppercase;
 }
 
 .title-normal {
-  color: #6C9E2C;
+  color: #6c9e2c;
   text-transform: uppercase;
 }
 
 .title-ori {
-  color: #B61414;
+  color: #b61414;
   text-transform: uppercase;
 }
 
@@ -173,21 +175,21 @@ a {
 }
 
 .block__btn:hover {
-  color: #625C55;
+  color: #625c55;
   cursor: pointer;
 }
 
 .block__btn:active {
-  color: #2B251F;
+  color: #2b251f;
   cursor: pointer;
 }
 
 .block__btn:hover path {
-  stroke: #2B251F;
+  stroke: #2b251f;
 }
 
 .block__btn:hover path {
-  stroke: #625C55;
+  stroke: #625c55;
 }
 
 .block__btn.icon {
@@ -195,12 +197,11 @@ a {
 }
 
 .btn-ok {
-  border: 1px solid #3B332B;
+  border: 1px solid #3b332b;
   box-sizing: border-box;
   border-radius: 4px;
   padding: 5px 10px;
   margin-right: 20px;
-
 }
 
 .block__text {
@@ -221,16 +222,15 @@ a {
 
 .text-normal {
   background: rgba(237, 242, 247, 0.6);
-
 }
 
 .text-warning {
-  background: #F7EDED;
+  background: #f7eded;
 }
 
 .footer,
 .another_extension {
-  background: #F4F4F4;
+  background: #f4f4f4;
   font-size: 13px;
   line-height: 20px;
 }
@@ -252,14 +252,14 @@ a {
   padding: 15px 24px 15px 20px;
 }
 
-.another_extension > div:hover{
+.another_extension > div:hover {
   cursor: pointer;
-  color: #625C55;
+  color: #625c55;
 }
 
 .another_extension > div:active,
-.another_extension > div:focus{
-  color: #2A251F;
+.another_extension > div:focus {
+  color: #2a251f;
 }
 
 .buy-vpn {
@@ -292,19 +292,19 @@ a {
   position: relative;
   width: 40px;
   height: 40px;
-  background: #FFFFFF;
+  background: #fff;
   border-radius: 50%;
-  box-shadow: 0px 0.598509px 3.52455px rgba(15, 13, 11, 0.079074), 0px 1.12694px 6.63642px rgba(15, 13, 11, 0.0655718), 0px 2.01027px 11.8382px rgba(15, 13, 11, 0.055);
+  box-shadow: 0 0.598509px 3.52455px rgba(15, 13, 11, 0.079074), 0 1.12694px 6.63642px rgba(15, 13, 11, 0.0655718), 0 2.01027px 11.8382px rgba(15, 13, 11, 0.055);
 }
 
 .censor-tracker__btn:hover {
   cursor: pointer;
-  background-color: #F7F7F7;
+  background-color: #f7f7f7;
 }
 
 .censor-tracker__btn:active {
   cursor: pointer;
-  box-shadow: 0px 1px 4px rgba(15, 13, 11, 0.1), 0px 0px 2px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 4px rgba(15, 13, 11, 0.1), 0 0 2px rgba(0, 0, 0, 0.1);
 }
 
 .btn-on {

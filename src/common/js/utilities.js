@@ -90,17 +90,27 @@ export const getRequestFilter = ({ http = true, https = true, types = undefined 
 }
 
 /**
- * Returns object with browser name.
- * @returns {{firefox: boolean}|{}|{chrome: boolean}}
+ * Search for target in array
+ * @param array Array for search.
+ * @param target Target.
+ * @returns {boolean} true or false
  */
-export const getBrowserName = () => {
-  const userAgent = navigator.userAgent.match(/Chrome|Firefox/i)
+export const arrayContains = (array, target) => {
+  let left = 0
+  let right = array.length - 1
 
-  if (userAgent.includes('Chrome')) {
-    return { chrome: true }
+  while (left <= right) {
+    const mid = left + Math.floor((right - left) / 2)
+
+    if (array[mid] === target) {
+      return true
+    }
+
+    if (array[mid] < target) {
+      left = mid + 1
+    } else {
+      right = mid - 1
+    }
   }
-  if (userAgent.includes('Firefox')) {
-    return { firefox: true }
-  }
-  return { unknown: true }
+  return false
 }

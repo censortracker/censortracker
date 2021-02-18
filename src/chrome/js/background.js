@@ -1,17 +1,15 @@
 import {
+  asynchrome,
   enforceHttpConnection,
   enforceHttpsConnection,
+  errors,
   extractHostnameFromUrl,
   getRequestFilter,
-  validateUrl,
-} from '../../common/js/utilities'
-import {
-  asynchrome,
-  errors,
   ignore,
   proxy,
   registry,
   settings,
+  validateUrl,
 } from './core'
 
 window.censortracker = {

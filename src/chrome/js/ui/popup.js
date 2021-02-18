@@ -22,7 +22,6 @@ const btnAboutNotOri = getElementById('btnAboutNotOri')
 const textAboutNotOri = getElementById('textAboutNotOri')
 const closeTextAboutNotOri = getElementById('closeTextAboutNotOri')
 const oriSiteInfo = getElementById('oriSiteInfo')
-// const advertisingBlocks = document.querySelectorAll('.buy-vpn')
 const currentDomainBlocks = document.querySelectorAll('.current-domain')
 const controlledOtherExtensionsInfo = document.getElementById('controlledOtherExtensionsInfo')
 const popupShowTimeout = 60
@@ -32,13 +31,11 @@ controlledOtherExtensionsInfo.addEventListener('click', () => {
 })
 
 chrome.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
-  const { asynchrome, registry, proxy } = bgModules
+  const { asynchrome, registry, proxy, storage } = bgModules
 
   await addExtensionControlListeners(bgModules)
 
-  const { enableExtension } = await asynchrome.storage.local.get({
-    enableExtension: true,
-  })
+  const { enableExtension } = await storage.get({ enableExtension: true })
 
   const [{ url: currentURL }] = await asynchrome.tabs.query({
     active: true, lastFocusedWindow: true,
@@ -47,7 +44,9 @@ chrome.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
   const { hostname } = getAppropriateURL(currentURL)
   const currentHostname = bgModules.extractHostnameFromUrl(hostname)
 
-  interpolateCurrentDomain(currentHostname)
+  currentDomainBlocks.forEach((element) => {
+    element.innerText = currentHostname
+  })
 
   if (enableExtension) {
     changeStatusImage('normal')
@@ -60,7 +59,6 @@ chrome.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
       changeStatusImage('blocked')
       isForbidden.removeAttribute('hidden')
       isNotForbidden.remove()
-      // showAdvertising()
     } else {
       isNotForbidden.removeAttribute('hidden')
       isForbidden.remove()
@@ -137,12 +135,6 @@ const changeStatusImage = (imageName) => {
   statusImage.setAttribute('src', imageSrc)
 }
 
-// const showAdvertising = () => {
-//   advertisingBlocks.forEach((ad) => {
-//     ad.style.removeProperty('display')
-//   })
-// }
-
 const getAppropriateURL = (currentURL) => {
   const popupURL = chrome.runtime.getURL('popup.html')
 
@@ -155,12 +147,6 @@ const getAppropriateURL = (currentURL) => {
     return new URL(loadForURL)
   }
   return new URL(currentURL)
-}
-
-const interpolateCurrentDomain = (domain) => {
-  currentDomainBlocks.forEach((element) => {
-    element.innerText = domain
-  })
 }
 
 const renderCurrentDomain = ({ length }) => {

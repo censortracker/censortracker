@@ -68,18 +68,8 @@ class Asynchrome {
       }, ...args),
     }
     this.runtime = {
-      getURL: (...args) => promisify({
-        ns: this.chrome.runtime,
-        fn: 'getURL',
-      }, ...args),
-      getManifest: (...args) => promisify({
-        ns: this.chrome.runtime,
-        fn: 'getManifest',
-      }, ...args),
-      lastError: (...args) => promisify({
-        ns: this.chrome.runtime,
-        fn: 'lastError',
-      }, ...args),
+      getURL: (path) => this.chrome.runtime.getURL(path),
+      getManifest: () => this.chrome.runtime.getManifest(),
       getBackgroundPage: (...args) => promisify({
         ns: this.chrome.runtime,
         fn: 'getBackgroundPage',

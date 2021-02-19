@@ -12,11 +12,11 @@ export const getBrowser = () => {
   }
 }
 
-export const getBrowserName = async () => {
+export const isFirefox = async () => {
   try {
     await browser.runtime.getBrowserInfo()
-    return { firefox: true }
+    return true
   } catch (error) {
-    return { chrome: true }
+    return false
   }
 }

@@ -11,3 +11,12 @@ export const getBrowser = () => {
     return asynchrome
   }
 }
+
+export const getBrowserName = async () => {
+  try {
+    await browser.runtime.getBrowserInfo()
+    return { firefox: true }
+  } catch (error) {
+    return { chrome: true }
+  }
+}

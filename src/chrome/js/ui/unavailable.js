@@ -2,7 +2,7 @@ import asynchrome from '../core/asynchrome'
 
 (async () => {
   const unavailableWebsite = document.getElementById('unavailableWebsite')
-  const extendProxyButton = document.getElementById('openThroughProxy')
+  const openThroughProxyButton = document.getElementById('openThroughProxy')
 
   const [tab] = await asynchrome.tabs.query({ active: true, lastFocusedWindow: true })
 
@@ -11,8 +11,8 @@ import asynchrome from '../core/asynchrome'
 
   unavailableWebsite.innerText = window.atob(encodedHostname)
 
-  if (encodedHostname && extendProxyButton) {
-    extendProxyButton.classList.remove('btn-hidden')
+  if (encodedHostname && openThroughProxyButton) {
+    openThroughProxyButton.classList.remove('btn-hidden')
   }
 
   document.addEventListener('click', (event) => {
@@ -34,9 +34,9 @@ import asynchrome from '../core/asynchrome'
   }, false)
 
   setTimeout(() => {
-    if (extendProxyButton && extendProxyButton.classList.contains('btn-disabled')) {
-      extendProxyButton.classList.remove('btn-disabled')
-      extendProxyButton.disabled = false
+    if (openThroughProxyButton && openThroughProxyButton.classList.contains('btn-disabled')) {
+      openThroughProxyButton.classList.remove('btn-disabled')
+      openThroughProxyButton.disabled = false
     }
   }, 3500)
 })()

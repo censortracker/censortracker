@@ -8,11 +8,10 @@ bypass censorship in Russia and helps to detect resources blocked using DPI filt
 
 Note
 ----
+This extension developed for users from Russian and will work correctly only in Russia since there are 
+too many dependencies in data that is specific only for Russia.
 
-This extension oriented only for Russian users and will work correctly only in Russia since
-there are too many dependencies in data which is specific only for Russia.
-
-You can find the Russian version of README [here](/README_RU.md).
+You can find the Russian version of this README [here](/README_RU.md).
 
 Features
 ========

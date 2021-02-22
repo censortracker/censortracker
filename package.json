@@ -1,6 +1,6 @@
 {
   "name": "censortracker",
-  "version": "3.0.0+100",
+  "version": "3.0.0+101",
   "description": "|",
   "author": "Roskomsvoboda",
   "license": "MIT",
@@ -49,6 +49,7 @@
     "html-webpack-plugin": "^4.3.0",
     "husky": "^4.2.5",
     "jest": "^26.1.0",
+    "merge-jsons-webpack-plugin": "^2.0.0-alpha",
     "prettier": "^2.0.5",
     "selenium-webdriver": "^4.0.0-alpha.7",
     "stylelint": "^13.9.0",

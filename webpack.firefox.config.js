@@ -1,41 +1,15 @@
 require('dotenv').config()
 
-const fs = require('fs')
 const path = require('path')
 const webpack = require('webpack')
 const TerserPlugin = require('terser-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const HTMLWebpackPlugin = require('html-webpack-plugin')
-
-let { version } = require('./package.json')
+const MergeJsonWebpackPlugin = require('merge-jsons-webpack-plugin')
 
 function resolve (dir) {
   return path.join(__dirname, dir)
 }
-
-function buildUp (ver, sep = '+') {
-  let [core, build] = ver.split('+')
-
-  build = +build || 0
-  return `${core}${sep}${build + 1}`
-}
-
-function updateJson (json, prop, value) {
-  const file = fs.readFileSync(json)
-  const object = JSON.parse(file)
-
-  object[prop] = value
-  fs.writeFileSync(json, JSON.stringify(object, null, '  '))
-  console.info(`${json} updated`)
-}
-
-const oldVersion = version
-
-version = buildUp(version)
-console.info(`Version updated ${oldVersion} -> ${version}`)
-
-updateJson(resolve('package.json'), 'version', version)
-updateJson(resolve('src/firefox/manifest.json'), 'version', buildUp(oldVersion, '.'))
 
 const webpackConfig = {
   mode: process.env.NODE_ENV || 'development',
@@ -103,10 +77,6 @@ const webpackConfig = {
     new CopyWebpackPlugin({
       patterns: [
         {
-          from: resolve('src/firefox/manifest.json'),
-          to: resolve('dist/firefox/'),
-        },
-        {
           from: resolve('src/common/images'),
           to: resolve('dist/firefox/images'),
         },
@@ -164,6 +134,18 @@ const webpackConfig = {
       chunks: ['proxy_disabled'],
       meta: {
         'Content-Security-Policy': 'script-src \'self\' \'unsafe-eval\'; object-src \'self\';',
+      },
+    }),
+    new MergeJsonWebpackPlugin({
+      globOptions: {
+        nosort: false,
+      },
+      files: [
+        './src/common/manifest/base.json',
+        './src/common/manifest/firefox.json',
+      ],
+      output: {
+        fileName: 'manifest.json',
       },
     }),
   ],

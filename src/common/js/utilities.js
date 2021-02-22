@@ -14,7 +14,7 @@ export const validateUrl = (url) => {
     'i',
   )
 
-  if (url.startsWith('about:') || url.startsWith('chrome-extension:')) {
+  if (!url || url.startsWith('about:') || url.startsWith('chrome-extension:')) {
     return false
   }
 

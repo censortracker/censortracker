@@ -1,0 +1,10 @@
+{
+  "permissions": [
+    "declarativeContent"
+  ],
+  "page_action": {
+    "default_name": "Censor Tracker",
+    "default_popup": "popup.html",
+    "default_icon": "images/icons/128x128/default.png"
+  }
+}

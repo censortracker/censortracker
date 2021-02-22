@@ -1,0 +1,36 @@
+{
+  "name": "Censor Tracker",
+  "version": "3.0.0.99",
+  "description": "Censor Tracker",
+  "homepage_url": "https://censortracker.org/",
+  "permissions": [
+    "tabs",
+    "proxy",
+    "storage",
+    "activeTab",
+    "management",
+    "webRequest",
+    "notifications",
+    "unlimitedStorage",
+    "webRequestBlocking",
+    "http://*/*",
+    "https://*/*"
+  ],
+  "content_security_policy": "script-src 'self' 'unsafe-eval' 'sha256-EmtrypMkEq0dFud+9u9fLPIo2VN6p0FvSrq0tWdOzBk='; object-src 'self';",
+  "background": {
+    "scripts": [
+      "background.js"
+    ],
+    "persistent": true
+  },
+  "icons": {
+    "16": "images/icons/16x16/default.png",
+    "48": "images/icons/48x48/default.png",
+    "128": "images/icons/128x128/default.png"
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "manifest_version": 2
+}

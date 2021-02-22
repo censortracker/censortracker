@@ -69,7 +69,7 @@
   "homepage": "https://github.com/roskomsvoboda/censortracker#readme",
   "husky": {
     "hooks": {
-      "pre-push": "npm run lint"
+      "pre-push": "npm run lint:fix"
     }
   }
 }

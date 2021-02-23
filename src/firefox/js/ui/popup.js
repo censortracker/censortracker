@@ -52,7 +52,9 @@ browser.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
     getAppropriateUrl(currentUrl),
   )
 
-  interpolateCurrentDomain(currentHostname)
+  currentDomainBlocks.forEach((element) => {
+    element.innerText = currentHostname
+  })
 
   if (enableExtension) {
     changeStatusImage('normal')
@@ -124,12 +126,6 @@ const getAppropriateUrl = (currentUrl) => {
     return window.atob(encodedUrl)
   }
   return currentUrl
-}
-
-const interpolateCurrentDomain = (domain) => {
-  currentDomainBlocks.forEach((element) => {
-    element.innerText = domain
-  })
 }
 
 const renderCurrentDomain = ({ length }) => {

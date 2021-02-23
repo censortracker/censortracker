@@ -1,7 +1,8 @@
 {
   "name": "Censor Tracker",
-  "version": "3.0.0.98",
+  "version": "3.2.0.0",
   "description": "Censor Tracker",
+  "homepage_url": "https://censortracker.org/",
   "permissions": [
     "tabs",
     "proxy",
@@ -26,10 +27,6 @@
     "16": "images/icons/16x16/default.png",
     "48": "images/icons/48x48/default.png",
     "128": "images/icons/128x128/default.png"
-  },
-  "browser_action": {
-    "default_popup": "popup.html",
-    "default_icon": "images/icons/128x128/default.png"
   },
   "options_ui": {
     "page": "options.html",

@@ -1,18 +1,18 @@
 {
   "name": "censortracker",
-  "version": "3.0.0+99",
+  "version": "3.0.0+101",
   "description": "|",
   "author": "Roskomsvoboda",
   "license": "MIT",
   "main": "dist/index.js",
   "scripts": {
-    "dev:chrome": "eslint --fix --ext=.js ./src/chrome && webpack --progress --config webpack.chrome.config.js",
-    "dev:firefox": "eslint --fix --ext=.js ./src/firefox && webpack --progress --config webpack.firefox.config.js",
-    "ff-debug": "web-ext run --source-dir=dist/firefox",
-    "watch:chrome": "webpack --watch --progress --config webpack.chrome.config.js",
-    "watch:firefox": "webpack --watch --progress --config webpack.firefox.config.js",
+    "build:chrome": "webpack --progress --config webpack.chrome.config.js",
+    "build:firefox": "webpack --progress --config webpack.firefox.config.js",
     "lint": "eslint --ext=.js ./src/",
     "lint:fix": "eslint --fix --ext=.js ./src/ tests/",
+    "debug:firefox": "web-ext run --source-dir=dist/firefox",
+    "watch:chrome": "webpack --watch --progress --config webpack.chrome.config.js",
+    "watch:firefox": "webpack --watch --progress --config webpack.firefox.config.js",
     "test": "jest && rm -f key.pem tests/e2e/selenium/extension/dist.crx",
     "test:unit": "jest tests/unit",
     "test:e2e": "jest tests/e2e/ && rm -f key.pem tests/e2e/selenium/extension/dist.crx"
@@ -49,6 +49,7 @@
     "html-webpack-plugin": "^4.3.0",
     "husky": "^4.2.5",
     "jest": "^26.1.0",
+    "merge-jsons-webpack-plugin": "^2.0.0-alpha",
     "prettier": "^2.0.5",
     "selenium-webdriver": "^4.0.0-alpha.7",
     "stylelint": "^13.9.0",
@@ -69,7 +70,7 @@
   "homepage": "https://github.com/roskomsvoboda/censortracker#readme",
   "husky": {
     "hooks": {
-      "pre-push": "npm run lint"
+      "pre-push": "npm run lint:fix"
     }
   }
 }

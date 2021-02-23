@@ -8,7 +8,8 @@
   "scripts": {
     "build:chrome": "webpack --progress --config webpack.chrome.config.js",
     "build:firefox": "webpack --progress --config webpack.firefox.config.js",
-    "lint:fix": "eslint --ext=.js ./src/",
+    "lint": "eslint --ext=.js ./src/",
+    "lint:fix": "eslint --fix --ext=.js ./src/ tests/",
     "debug:firefox": "web-ext run --source-dir=dist/firefox",
     "watch:chrome": "webpack --watch --progress --config webpack.chrome.config.js",
     "watch:firefox": "webpack --watch --progress --config webpack.firefox.config.js",

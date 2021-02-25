@@ -22,8 +22,6 @@ important:
 -   Detects [DPI]-based locks
 -   Bypass [DPI]-based locks
 -   Bypass [registry](https://eais.rkn.gov.ru/) locks
--   Warns if a user visits a website that can merge or modify https traffic
-    (site in [ORI](https://97-fz.rkn.gov.ru/))
 
 Installation
 ============

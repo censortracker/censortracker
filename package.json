@@ -46,7 +46,7 @@
     "file-loader": "^6.0.0",
     "fs": "0.0.1-security",
     "html-loader": "^1.1.0",
-    "html-webpack-plugin": "^4.3.0",
+    "html-webpack-plugin": "^4.5.2",
     "husky": "^4.2.5",
     "jest": "^26.1.0",
     "merge-jsons-webpack-plugin": "^2.0.0-alpha",

@@ -98,6 +98,20 @@ a {
   justify-content: space-between;
 }
 
+.link-ignored {
+  margin-top: 0;
+  margin-bottom: 7px;
+}
+
+.main-page__link svg{
+  fill:#3B332B;
+}
+
+.main-page__link:hover svg{
+  fill:#625C55;
+}
+
+
 .extension__title {
   margin-bottom: 10px;
 }

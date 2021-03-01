@@ -19,6 +19,7 @@ const webpackConfig = {
     unavailable: './src/chrome/js/ui/unavailable.js',
     popup: './src/chrome/js/ui/popup.js',
     options: './src/chrome/js/ui/options.js',
+    ignored: './src/chrome/js/ui/ignored.js',
     controlled: './src/chrome/js/ui/controlled.js',
     proxy_disabled: './src/chrome/js/ui/proxy_disabled.js',
   },
@@ -123,6 +124,16 @@ const webpackConfig = {
       template: 'src/chrome/pages/options.html',
       inject: true,
       chunks: ['options', 'controlled'],
+      meta: {
+        'Content-Security-Policy': 'script-src \'self\' \'unsafe-eval\'; object-src \'self\';',
+      },
+    }),
+    new HTMLWebpackPlugin({
+      title: 'Игнорируемые сайты | Censor Tracker',
+      filename: 'ignored.html',
+      template: 'src/chrome/pages/ignored.html',
+      inject: true,
+      chunks: ['ignored'],
       meta: {
         'Content-Security-Policy': 'script-src \'self\' \'unsafe-eval\'; object-src \'self\';',
       },

@@ -6,6 +6,10 @@
 **Censor Tracker** is an extension for [Google Chrome] and [Mozilla Firefox] which helps to
 bypass censorship in Russia and helps to detect resources blocked using DPI filters.
 
+[<img src="/.github/chrome-web-store.png" title="Chrome Web Store" width="170" height="48" />](https://chrome.google.com/webstore/detail/censor-tracker/gaidoampbkcknofoejhnhbhbhhifgdop)
+[<img src="/.github/firefox-add-ons.png" title="Firefox Add-ons" width="170" height="48" />](https://addons.mozilla.org/ru/firefox/addon/censor-tracker/)
+
+
 Note
 ----
 This extension developed for users from Russian and will work correctly only in Russia since there are 

@@ -120,7 +120,7 @@ const webpackConfig = {
     new HTMLWebpackPlugin({
       title: 'Настройки | Censor Tracker',
       filename: 'options.html',
-      template: 'src/chrome/pages/options.html',
+      template: 'src/common/pages/options.html',
       inject: true,
       chunks: ['options', 'controlled'],
       meta: {

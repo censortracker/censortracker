@@ -1,4 +1,4 @@
-import { getBrowser } from './browser'
+import { getBrowser, isFirefox } from './browser'
 
 (async (browser) => {
   const unavailableWebsite = document.getElementById('unavailableWebsite')
@@ -12,9 +12,16 @@ import { getBrowser } from './browser'
   unavailableWebsite.innerText = targetUrl
 
   if (encodedHostname && openThroughProxyButton) {
-    openThroughProxyButton.disabled = false
     openThroughProxyButton.classList.remove('btn-hidden')
-    openThroughProxyButton.classList.remove('btn-disabled')
+
+    const timeout = isFirefox() ? 300 : 3500
+
+    setTimeout(() => {
+      if (openThroughProxyButton.classList.contains('btn-disabled')) {
+        openThroughProxyButton.disabled = false
+        openThroughProxyButton.classList.remove('btn-disabled')
+      }
+    }, timeout)
   }
 
   document.addEventListener('click', (event) => {

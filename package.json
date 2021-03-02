@@ -52,7 +52,7 @@
     "merge-jsons-webpack-plugin": "^2.0.0-alpha",
     "prettier": "^2.0.5",
     "selenium-webdriver": "^4.0.0-alpha.7",
-    "stylelint": "^13.9.0",
+    "stylelint": "^13.11.0",
     "stylelint-config-standard": "^20.0.0",
     "terser-webpack-plugin": "^4.2.3",
     "web-ext": "^5.5.0",

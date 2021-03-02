@@ -51,7 +51,7 @@
     "jest": "^26.6.3",
     "merge-jsons-webpack-plugin": "^2.0.0-alpha",
     "prettier": "^2.2.1",
-    "selenium-webdriver": "^4.0.0-alpha.7",
+    "selenium-webdriver": "^4.0.0-beta.1",
     "stylelint": "^13.11.0",
     "stylelint-config-standard": "^20.0.0",
     "terser-webpack-plugin": "^4.2.3",

@@ -56,7 +56,7 @@
     "stylelint-config-standard": "^21.0.0",
     "terser-webpack-plugin": "^5.1.1",
     "web-ext": "^6.0.0",
-    "webpack": "^5.24.4",
+    "webpack": "^5.25.1",
     "webpack-cli": "^3.3.12",
     "zip-webpack-plugin": "^4.0.1"
   },

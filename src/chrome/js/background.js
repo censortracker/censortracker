@@ -57,7 +57,12 @@ chrome.webRequest.onBeforeRequest.addListener(
  */
 const handleErrorOccurred = async ({ url, error, tabId }) => {
   const hostname = extractHostnameFromUrl(url)
-  const { proxyError, connectionError } = errors.determineError(error)
+  const { proxyError, connectionError, interruptedError } = errors.determineError(error)
+
+  if (interruptedError) {
+    console.log(`Request interrupted for: ${hostname}`)
+    return
+  }
 
   if (ignore.contains(hostname)) {
     return

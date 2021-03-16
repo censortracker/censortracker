@@ -22,6 +22,10 @@ const PROXY_CONNECTION_ERRORS = [
   'net::ERR_PROXY_CERTIFICATE_INVALID',
 ]
 
+const REQUEST_INTERRUPTED_ERRORS = [
+  'net::ERR_ABORTED',
+]
+
 class Errors {
   determineError = (error) => {
     if (PROXY_CONNECTION_ERRORS.includes(error)) {
@@ -30,6 +34,10 @@ class Errors {
     if (CONNECTION_ERRORS.includes(error)) {
       return { connectionError: true }
     }
+    if (REQUEST_INTERRUPTED_ERRORS.includes(error)) {
+      return { interruptedError: true }
+    }
+
     return { unknownError: true }
   }
 }

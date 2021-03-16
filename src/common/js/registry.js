@@ -5,6 +5,7 @@ const BASE_URL = 'https://reestr.rublacklist.net'
 const DOMAINS_API_URL = `${BASE_URL}/api/v3/domains/json`
 const DISTRIBUTORS_API_URL = `${BASE_URL}/api/v3/ori/refused/json`
 const LOGGING_API_URL = 'https://ct-dev.rublacklist.net/api/case/'
+const CUSTOM_RECORDS_API_URL = `${BASE_URL}/registry-api/domains/`
 
 class Registry {
   sync = async () => {
@@ -17,6 +18,10 @@ class Registry {
       {
         key: 'distributors',
         url: DISTRIBUTORS_API_URL,
+      },
+      {
+        key: 'customRecords',
+        url: CUSTOM_RECORDS_API_URL,
       },
     ]
     const timestamp = new Date().getTime()
@@ -35,6 +40,12 @@ class Registry {
       await this.sync()
     }
     return true
+  }
+
+  getCustomRecords = async () => {
+    const { customRecords } = await storage.get({ customRecords: [] })
+
+    return customRecords
   }
 
   getDomains = async () => {

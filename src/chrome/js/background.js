@@ -172,11 +172,7 @@ const showCooperationAcceptedWarning = async (url) => {
       showNotifications: true,
     })
 
-  if (showNotifications) {
-    if (mutedForever.includes(hostname)) {
-      return
-    }
-
+  if (showNotifications && !mutedForever.includes(hostname)) {
     if (!notifiedHosts.includes(hostname)) {
       await asynchrome.notifications.create({
         type: 'basic',

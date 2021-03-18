@@ -32,12 +32,12 @@ Installation
 
 To build extension for Chrome (Chromium), run:
 
-    ~ npm install && npm run dev:chrome
+    ~ npm install && npm run build:chrome
     ~ cd dist/chrome
 
 To build extension for Firefox, run:
 
-    ~ npm install && npm run dev:firefox
+    ~ npm install && npm run build:firefox
     ~ cd dist/firefox
 
 Testing

@@ -163,6 +163,9 @@ const handleTabState = async () => {
   }
 }
 
+chrome.tabs.onActivated.addListener(handleTabState)
+chrome.tabs.onUpdated.addListener(handleTabState)
+
 const showCooperationAcceptedWarning = async (url) => {
   const hostname = extractHostnameFromUrl(url)
   const { notifiedHosts, mutedForever, showNotifications } =
@@ -250,9 +253,6 @@ chrome.windows.onRemoved.addListener(async (_windowId) => {
 chrome.proxy.onProxyError.addListener((details) => {
   console.error(`Proxy error: ${JSON.stringify(details)}`)
 })
-
-chrome.tabs.onActivated.addListener(handleTabState)
-chrome.tabs.onUpdated.addListener(handleTabState)
 
 // The mechanism for controlling handlers from popup.js
 window.censortracker.events = {

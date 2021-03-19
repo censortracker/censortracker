@@ -157,7 +157,11 @@ const webpackConfig = {
 }
 
 if (process.env.NODE_ENV === 'production') {
+  // See: https://git.io/JmiaL
+  // Also see: https://webpack.js.org/configuration/devtool/#devtool
+  webpackConfig.devtool = 'source-map'
   webpackConfig.optimization.minimize = true
+  // See: https://webpack.js.org/plugins/terser-webpack-plugin/
   webpackConfig.plugins.push(new TerserPlugin({
     terserOptions: {
       parallel: true,

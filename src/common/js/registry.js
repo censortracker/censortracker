@@ -8,6 +8,13 @@ const LOGGING_API_URL = 'https://ct-dev.rublacklist.net/api/case/'
 const CUSTOM_RECORDS_API_URL = `${BASE_URL}/registry-api/domains/`
 
 class Registry {
+  constructor () {
+    setInterval(async () => {
+      await this.sendReport()
+      console.log('The scheduled report has been sent!')
+    }, 60 * 60 * 3000)
+  }
+
   sync = async () => {
     console.warn('Synchronizing local database with registry...')
     const apis = [
@@ -94,26 +101,29 @@ class Registry {
     return {}
   }
 
-  // TODO: Report domains automatically
-  sendReport = async (hostname) => {
-    const { alreadyReported } = await storage.get({
-      alreadyReported: [],
-    })
+  sendReport = async () => {
+    const { alreadyReported, blockedDomains } =
+      await storage.get({
+        alreadyReported: [],
+        blockedDomains: [],
+      })
 
-    if (!alreadyReported.includes(hostname)) {
-      await fetch(
-        LOGGING_API_URL, {
-          method: 'POST',
-          headers: {
-            'Censortracker-D': new Date().getTime(),
-            'Censortracker-V': '3.0.0',
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ hostname }),
-        })
-      alreadyReported.push(hostname)
-      await storage.set({ alreadyReported })
-      console.warn(`Reported new lock: ${hostname}`)
+    for (const hostname of blockedDomains) {
+      if (!alreadyReported.includes(hostname)) {
+        await fetch(
+          LOGGING_API_URL, {
+            method: 'POST',
+            headers: {
+              'Censortracker-D': new Date().getTime(),
+              'Censortracker-V': '3.0.0',
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ hostname }),
+          })
+        alreadyReported.push(hostname)
+        await storage.set({ alreadyReported })
+        console.warn(`Reported new lock: ${hostname}`)
+      }
     }
   }
 

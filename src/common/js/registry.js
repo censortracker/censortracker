@@ -115,7 +115,7 @@ class Registry {
             method: 'POST',
             headers: {
               'Censortracker-D': new Date().getTime(),
-              'Censortracker-V': '3.0.0',
+              'Censortracker-V': '^3.0.0',
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({ hostname }),

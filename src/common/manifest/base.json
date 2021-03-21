@@ -1,6 +1,6 @@
 {
   "name": "Censor Tracker",
-  "version": "3.2.1.1",
+  "version": "3.2.1.2",
   "description": "Censor Tracker",
   "homepage_url": "https://censortracker.org/",
   "permissions": [
@@ -16,10 +16,9 @@
     "http://*/*",
     "https://*/*"
   ],
-  "content_security_policy": "script-src 'self' 'unsafe-eval' 'sha256-EmtrypMkEq0dFud+9u9fLPIo2VN6p0FvSrq0tWdOzBk='; object-src 'self';",
   "background": {
     "scripts": [
-      "background.js"
+      "background.min.js"
     ],
     "persistent": true
   },

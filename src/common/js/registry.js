@@ -1,11 +1,11 @@
 import storage from './storage'
 import { extractHostnameFromUrl } from './utilities'
 
-const BASE_URL = 'https://reestr.rublacklist.net'
-const DOMAINS_API_URL = `${BASE_URL}/api/v3/domains/json`
-const DISTRIBUTORS_API_URL = `${BASE_URL}/api/v3/ori/refused/json`
-const LOGGING_API_URL = 'https://ct-dev.rublacklist.net/api/case/'
-const CUSTOM_RECORDS_API_URL = `${BASE_URL}/registry-api/domains/`
+const REGISTRY_BASE_URL = 'https://reestr.rublacklist.net'
+const REGISTRY_LOGGING_API_URL = 'https://ct.rublacklist.net/api/case/'
+const REGISTRY_DOMAINS_API_URL = `${REGISTRY_BASE_URL}/api/v3/domains/json`
+const REGISTRY_DISTRIBUTORS_API_URL = `${REGISTRY_BASE_URL}/api/v3/ori/refused/json`
+const REGISTRY_CUSTOM_RECORDS_API_URL = `${REGISTRY_BASE_URL}/registry-api/domains/`
 
 class Registry {
   constructor () {
@@ -20,15 +20,15 @@ class Registry {
     const apis = [
       {
         key: 'domains',
-        url: DOMAINS_API_URL,
+        url: REGISTRY_DOMAINS_API_URL,
       },
       {
         key: 'distributors',
-        url: DISTRIBUTORS_API_URL,
+        url: REGISTRY_DISTRIBUTORS_API_URL,
       },
       {
         key: 'customRecords',
-        url: CUSTOM_RECORDS_API_URL,
+        url: REGISTRY_CUSTOM_RECORDS_API_URL,
       },
     ]
     const timestamp = new Date().getTime()
@@ -111,7 +111,7 @@ class Registry {
     for (const hostname of blockedDomains) {
       if (!alreadyReported.includes(hostname)) {
         await fetch(
-          LOGGING_API_URL, {
+          REGISTRY_LOGGING_API_URL, {
             method: 'POST',
             headers: {
               'Censortracker-D': new Date().getTime(),

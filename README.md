@@ -28,28 +28,56 @@ important:
 -   Bypass [registry](https://eais.rkn.gov.ru/) locks
 
 
-Pre Requirements
-================
+Development
+===========
 
-1. `node v15.4.0`
-2. `npm 7.0.15`
+Prerequisites
+-------------
+
+Make sure you have required versions of `node` and `npm`, which are:
+
+- `node v15.4.0`
+- `npm 7.0.15`
+
+We don't guarantee that CensorTracker will work on outdated versions of browsers,
+so make sure you're using the latest ones.
 
 
 Installation
-============
+------------
 
-To build extension for Chrome (Chromium), run:
+Firstly, you will need to install dependencies:
 
-    ~ npm install && npm run build:chrome
+    ~ npm install
+
+
+Now you can build an extension for Chrome like this:
+
+    ~ npm run build:chrome
     ~ cd dist/chrome
 
-To build extension for Firefox, run:
+and for Firefox, like this:
 
-    ~ npm install && npm run build:firefox
+    ~ npm run build:firefox
     ~ cd dist/firefox
 
+
+Going to production
+-------------------
+
+You can build a production version of the extension for Chrome like this:
+
+    ~ npm run build:chrome:prod
+    ~ cd dist/chrome
+
+and for Firefox like this:
+
+    ~ npm run build:firefox:prod
+    ~ cd dist/firefox
+
+
 Testing
-=======
+-------
 
 
 To run all the kind of tests just run following command:

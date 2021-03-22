@@ -11,6 +11,14 @@ function resolve (dir) {
   return path.join(__dirname, dir)
 }
 
+const contentSecurityPolicy = {
+  'Content-Security-Policy': '' +
+    'script-src \'self\'; ' +
+    'object-src \'self\'; ' +
+    'style-src \'self\' https://fonts.googleapis.com; ' +
+    'font-src \'self\' https://fonts.gstatic.com ',
+}
+
 const webpackConfig = {
   mode: process.env.NODE_ENV || 'development',
 
@@ -93,9 +101,7 @@ const webpackConfig = {
       template: 'src/common/pages/popup.html',
       inject: true,
       chunks: ['popup'],
-      meta: {
-        'Content-Security-Policy': 'script-src \'self\' \'unsafe-eval\'; object-src \'self\';',
-      },
+      meta: contentSecurityPolicy,
     }),
     new HTMLWebpackPlugin({
       title: 'Unavailable | Censor Tracker',
@@ -113,9 +119,7 @@ const webpackConfig = {
       template: 'src/chrome/pages/controlled.html',
       inject: true,
       chunks: ['controlled'],
-      meta: {
-        'Content-Security-Policy': 'script-src \'self\' \'unsafe-eval\'; object-src \'self\';',
-      },
+      meta: contentSecurityPolicy,
     }),
     new HTMLWebpackPlugin({
       title: 'Настройки | Censor Tracker',
@@ -123,9 +127,7 @@ const webpackConfig = {
       template: 'src/common/pages/options.html',
       inject: true,
       chunks: ['options', 'controlled'],
-      meta: {
-        'Content-Security-Policy': 'script-src \'self\' \'unsafe-eval\'; object-src \'self\';',
-      },
+      meta: contentSecurityPolicy,
     }),
     new HTMLWebpackPlugin({
       title: 'Проксирование недоступно | Censor Tracker',
@@ -133,9 +135,7 @@ const webpackConfig = {
       template: 'src/common/pages/proxy_unavailable.html',
       inject: true,
       chunks: ['unavailable'],
-      meta: {
-        'Content-Security-Policy': 'script-src \'self\' \'unsafe-eval\'; object-src \'self\';',
-      },
+      meta: contentSecurityPolicy,
     }),
     new HTMLWebpackPlugin({
       title: 'Проксирование отключено | Censor Tracker',
@@ -143,9 +143,7 @@ const webpackConfig = {
       template: 'src/common/pages/proxy_disabled.html',
       inject: true,
       chunks: ['proxy_disabled'],
-      meta: {
-        'Content-Security-Policy': 'script-src \'self\' \'unsafe-eval\'; object-src \'self\';',
-      },
+      meta: contentSecurityPolicy,
     }),
     new HTMLWebpackPlugin({
       title: 'CensorTracker установлен',
@@ -153,9 +151,7 @@ const webpackConfig = {
       template: 'src/chrome/pages/installed.html',
       inject: true,
       chunks: [],
-      meta: {
-        'Content-Security-Policy': 'script-src \'self\' \'unsafe-eval\'; object-src \'self\';',
-      },
+      meta: contentSecurityPolicy,
     }),
     new MergeJsonWebpackPlugin({
       globOptions: {

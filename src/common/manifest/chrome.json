@@ -7,5 +7,5 @@
     "default_popup": "popup.html",
     "default_icon": "images/icons/128x128/default.png"
   },
-  "content_security_policy": "object-src 'self'; script-src 'self' 'unsafe-eval' 'sha256-EmtrypMkEq0dFud+9u9fLPIo2VN6p0FvSrq0tWdOzBk='; "
+  "content_security_policy": "object-src 'self'; script-src 'self' 'sha256-EmtrypMkEq0dFud+9u9fLPIo2VN6p0FvSrq0tWdOzBk=';"
 }

@@ -1,6 +1,7 @@
 {
   "name": "Censor Tracker",
   "description": "Censor Tracker",
+  "author": "Roskomsvoboda",
   "homepage_url": "https://censortracker.org/",
   "permissions": [
     "tabs",

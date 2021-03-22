@@ -47,6 +47,11 @@ The build was tested only on the following operating systems:
 We don't guarantee that CensorTracker will work on outdated versions of browsers,
 so make sure you're using the latest ones.
 
+We've tested CensorTracker on the following versions:
+
+- `Firefox 80 - 86`
+- `Chrome 80 - 89`
+
 Installation
 ------------
 

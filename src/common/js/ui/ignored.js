@@ -1,41 +1,58 @@
-import CodeMirror from 'codemirror/src/codemirror'
+import 'codemirror/addon/search/search'
+import 'codemirror/addon/search/matchesonscrollbar'
+import 'codemirror/addon/search/searchcursor'
 
-let ignoredListEditor = 'app.slack.com\nh53u3jlin.ru\nlive.browserstack.com\nm.pokupki.market.yandex.ru\nmargn.ru\ndoors.ru\npxj3re.com\nreadymag.com'
-const searchInput = document.getElementById('search')
-const ignoredList = document.getElementById('ignored_list')
+import CodeMirror from 'codemirror'
 
-const editor = CodeMirror.fromTextArea(ignoredList, {
-  lineNumbers: true,
-  lineWrapping: true,
-  mode: 'text/x-mysql',
-  styleActiveLine: true,
-  styleActiveSelected: true,
-})
+(async () => {
+  let ignoredListEditor = ['app.slack.com', 'rutracker.org', 'api.telegram.org'].join('\n')
 
-editor.setValue(ignoredListEditor)
+  const searchInput = document.getElementById('search')
+  const ignoredList = document.getElementById('ignoreList')
 
-editor.on('change', (cm, change) => {
-  ignoredListEditor = cm.getValue()
-})
+  const editor = CodeMirror.fromTextArea(
+    ignoredList, {
+      // https://codemirror.net/doc/manual.html#config
+      lineNumbers: true,
+      lineWrapping: true,
+      mode: 'text/x-mysql',
+      styleActiveLine: true,
+      styleActiveSelected: true,
+      disableSpellcheck: false,
+    },
+  )
 
-function search (val) {
-  const cursor = editor.getSearchCursor(val)
+  // Set the editor content.
+  editor.setValue(ignoredListEditor)
 
-  while (cursor.findNext()) {
-    editor.markText(
-      cursor.from(),
-      cursor.to(),
-      { className: 'highlight' },
-    )
+  // Fires every time the content of the editor is changed.
+  editor.on('change', (instance, _changeObj) => {
+    ignoredListEditor = instance.getValue(0)
+  })
+
+  const search = (val) => {
+    const cursor = editor.getSearchCursor(val)
+
+    while (cursor.findNext()) {
+      // Can be used to mark a range of text with a specific CSS class name.
+      editor.markText(
+        cursor.from(),
+        cursor.to(),
+        {
+          className: 'highlight',
+        },
+      )
+    }
   }
-}
 
-searchInput.addEventListener('input', () => {
-  const markers = editor.getAllMarks()
+  searchInput.addEventListener('input', () => {
+    // Returns an array containing all marked ranges in the document.
+    const markers = editor.getAllMarks()
 
-  markers.forEach((marker) => marker.clear())
+    markers.forEach((marker) => marker.clear())
 
-  const value = searchInput.value
+    const value = searchInput.value
 
-  search(value)
-})
+    search(value)
+  })
+})()

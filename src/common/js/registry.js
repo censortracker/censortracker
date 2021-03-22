@@ -11,9 +11,9 @@ class Registry {
   constructor () {
     setInterval(async () => {
       const day = new Date().getDate()
-      const cleanDays = [5, 15, 20, 25, 30]
+      const cleaningDays = [5, 15, 20, 25, 30]
 
-      if (cleanDays.includes(day)) {
+      if (cleaningDays.includes(day)) {
         await storage.set({ blockedDomains: [] })
         console.warn('Outdated domains has been removed.')
       }

@@ -34,7 +34,7 @@ class Proxy {
 
     request.open('GET', PROXY_GATE_URL, true)
     request.addEventListener('error', (_error) => {
-      console.error('Error on opening port')
+      console.warn('Error on opening port')
     })
     request.send(null)
   }

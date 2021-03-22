@@ -116,7 +116,7 @@ function FindProxyForURL(url, host) {
 
     request.open('GET', proxyServerUrl, true)
     request.addEventListener('error', (_error) => {
-      console.error('Error on opening port')
+      console.log('Error on opening port')
     })
     request.send(null)
   }

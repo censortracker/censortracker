@@ -59,11 +59,9 @@ class Registry {
     const { domains, blockedDomains } =
       await storage.get({ domains: [], blockedDomains: [] })
 
-    const blockedDomainsArray = blockedDomains.map(({ domain }) => domain)
-
     if (domains && domains.length > 0) {
       try {
-        return domains.concat(blockedDomainsArray)
+        return domains.concat(blockedDomains)
       } catch (error) {
         console.log(error)
       }

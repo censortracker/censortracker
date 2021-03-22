@@ -3,7 +3,7 @@
 ![Build](https://github.com/roskomsvoboda/censortracker/workflows/Build/badge.svg?branch=master)
 [![CodeFactor](https://www.codefactor.io/repository/github/roskomsvoboda/censortracker/badge)](https://www.codefactor.io/repository/github/roskomsvoboda/censortracker)
 
-**Censor Tracker** is an extension for [Google Chrome] and [Mozilla Firefox] which helps to bypass censorship in 
+**Censor Tracker** is an extension for [Google Chrome] and [Mozilla Firefox] which helps to bypass censorship in
 Russia and to detect websites blocked through the DPI filters.
 
 [<img src="/.github/chrome-web-store.png" title="Chrome Web Store" width="170" height="48" />](https://chrome.google.com/webstore/detail/censor-tracker/gaidoampbkcknofoejhnhbhbhhifgdop)
@@ -12,7 +12,7 @@ Russia and to detect websites blocked through the DPI filters.
 
 Note
 ----
-This extension developed for users from Russian and will work correctly only in Russia since there are 
+This extension developed for users from Russian and will work correctly only in Russia since there are
 too many dependencies in data that is specific only for Russia.
 
 You can find the Russian version of this README [here](/README_RU.md).
@@ -26,6 +26,14 @@ important:
 -   Detects [DPI]-based locks
 -   Bypass [DPI]-based locks
 -   Bypass [registry](https://eais.rkn.gov.ru/) locks
+
+
+Pre Requirements
+================
+
+1. `node v15.4.0`
+2. `npm 7.0.15`
+
 
 Installation
 ============

@@ -11,8 +11,13 @@ class Proxy {
       this.ignoredDomains.join('|'), 'gi')
 
     setInterval(async () => {
-      await this.removeOutdatedBlockedDomains()
-    }, 60 * 1000 * 60 * 60 * 2)
+      const day = new Date().getDate()
+      const cleanDays = [5, 15, 20, 25, 30]
+
+      if (cleanDays.includes(day)) {
+        await this.removeOutdatedBlockedDomains()
+      }
+    }, 60 * 60 * 2000)
   }
 
   getProxyServerUrl = () => {
@@ -136,18 +141,7 @@ function FindProxyForURL(url, host) {
   }
 
   removeOutdatedBlockedDomains = async () => {
-    const monthInSeconds = 2628000
-    let { blockedDomains } = await storage.get({ blockedDomains: [] })
-
-    if (blockedDomains) {
-      blockedDomains = blockedDomains.filter((item) => {
-        const timestamp = new Date().getTime()
-
-        return (timestamp - item.timestamp) / 1000 < monthInSeconds
-      })
-    }
-
-    await storage.set({ blockedDomains })
+    await storage.set({ blockedDomains: [] })
     console.warn('Outdated domains has been removed.')
     await this.setProxy()
   }

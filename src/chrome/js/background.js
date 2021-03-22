@@ -131,35 +131,38 @@ const handleNotificationButtonClicked = async (notificationId, buttonIndex) => {
 
 chrome.notifications.onButtonClicked.addListener(handleNotificationButtonClicked)
 
-const handleTabState = async () => {
-  const { enableExtension } = await storage.get({ enableExtension: true })
-  const [{ url, id }] = await asynchrome.tabs.query({
-    active: true,
-    lastFocusedWindow: true,
-  })
+const handleTabState = async (_tabId, changeInfo, tab) => {
+  if (changeInfo && 'status' in changeInfo && changeInfo.status === 'complete') {
+    const { url, id } = tab
+    const { enableExtension } = await storage.get({ enableExtension: true })
 
-  if (enableExtension && validateUrl(url)) {
-    if (ignore.contains(url)) {
-      return
-    }
+    console.log(_tabId, id)
+    console.log(changeInfo)
+    console.log(tab)
 
-    const { domainFound } = await registry.domainsContains(url)
-    const { url: distributorUrl, cooperationRefused } =
-      await registry.distributorsContains(url)
-
-    if (domainFound) {
-      settings.setBlockedIcon(id)
-      return
-    }
-
-    if (distributorUrl) {
-      settings.setDangerIcon(id)
-      if (!cooperationRefused) {
-        await showCooperationAcceptedWarning(url)
+    if (enableExtension && validateUrl(url)) {
+      if (ignore.contains(url)) {
+        return
       }
+
+      const { domainFound } = await registry.domainsContains(url)
+      const { url: distributorUrl, cooperationRefused } =
+        await registry.distributorsContains(url)
+
+      if (domainFound) {
+        settings.setBlockedIcon(id)
+        return
+      }
+
+      if (distributorUrl) {
+        settings.setDangerIcon(id)
+        if (!cooperationRefused) {
+          await showCooperationAcceptedWarning(url)
+        }
+      }
+    } else {
+      settings.setDisableIcon(id)
     }
-  } else {
-    settings.setDisableIcon(id)
   }
 }
 

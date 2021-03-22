@@ -4,11 +4,17 @@ import 'codemirror/addon/search/searchcursor'
 
 import CodeMirror from 'codemirror'
 
-(async () => {
-  let ignoredListEditor = ['app.slack.com', 'rutracker.org', 'api.telegram.org'].join('\n')
+import storage from '../storage'
 
+(async () => {
   const searchInput = document.getElementById('search')
   const ignoredList = document.getElementById('ignoreList')
+
+  const ignoredHosts = await storage.get({ ignoredHosts: [] })
+
+  console.log(ignoredHosts)
+
+  let ignoredListEditor = 'app.slack.com\napi.telegram.org\n'
 
   const editor = CodeMirror.fromTextArea(
     ignoredList, {
@@ -26,8 +32,10 @@ import CodeMirror from 'codemirror'
   editor.setValue(ignoredListEditor)
 
   // Fires every time the content of the editor is changed.
-  editor.on('change', (instance, _changeObj) => {
-    ignoredListEditor = instance.getValue(0)
+  editor.on('change', async (instance, _changeObj) => {
+    ignoredListEditor = instance.getValue()
+    console.log(_changeObj)
+    console.log(instance.getValue())
   })
 
   const search = (val) => {

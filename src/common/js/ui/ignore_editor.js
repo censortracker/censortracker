@@ -23,22 +23,22 @@ import storage from '../storage'
     },
   )
 
+  const getValidatedContent = (instance) => {
+    return instance
+      .getValue()
+      .split('\n')
+      .filter((e) => e !== '')
+  }
+
   // Set the editor content.
   editor.setValue(content)
   editor.setOption('extraKeys', {
     Enter: (instance) => {
-      const cnt = instance.getValue()
-
-      storage.set({ ignoredHosts: cnt.split('\n') })
-
+      storage.set({ ignoredHosts: getValidatedContent(instance) })
       return CodeMirror.Pass
     },
     Backspace: (instance) => {
-      const cnt = instance.getValue()
-
-      console.log(cnt)
-
-      storage.set({ ignoredHosts: cnt.split('\n') })
+      storage.set({ ignoredHosts: getValidatedContent(instance) })
       return CodeMirror.Pass
     },
   })

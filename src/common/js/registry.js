@@ -10,6 +10,14 @@ const REGISTRY_CUSTOM_RECORDS_API_URL = `${REGISTRY_BASE_URL}/registry-api/domai
 class Registry {
   constructor () {
     setInterval(async () => {
+      const day = new Date().getDate()
+      const cleanDays = [5, 15, 20, 25, 30]
+
+      if (cleanDays.includes(day)) {
+        await storage.set({ blockedDomains: [] })
+        console.warn('Outdated domains has been removed.')
+      }
+
       await this.sendReport()
       console.log('The scheduled report has been sent!')
     }, 60 * 60 * 3000)

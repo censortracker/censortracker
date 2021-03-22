@@ -39,9 +39,13 @@ Make sure you have required versions of `node` and `npm`, which are:
 - `node v15.4.0`
 - `npm 7.0.15`
 
+The build was tested only on the following operating systems:
+
+- `Ubuntu 19.10`
+- `macOS Catalina v10.15.7` (MacBook Pro 13″, 2017)
+
 We don't guarantee that CensorTracker will work on outdated versions of browsers,
 so make sure you're using the latest ones.
-
 
 Installation
 ------------

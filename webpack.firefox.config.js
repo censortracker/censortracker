@@ -28,6 +28,7 @@ const webpackConfig = {
     popup: './src/firefox/js/ui/popup.js',
     options: './src/firefox/js/ui/options.js',
     proxy_disabled: './src/firefox/js/ui/proxy_disabled.js',
+    ignored: './src/common/js/ui/ignored.js',
   },
 
   output: {
@@ -124,6 +125,14 @@ const webpackConfig = {
       template: 'src/common/pages/proxy_unavailable.html',
       inject: true,
       chunks: ['unavailable'],
+      meta: contentSecurityPolicy,
+    }),
+    new HTMLWebpackPlugin({
+      title: 'Игнорируемые сайты | Censor Tracker',
+      filename: 'ignored.html',
+      template: 'src/common/pages/ignored.html',
+      inject: true,
+      chunks: ['ignored'],
       meta: contentSecurityPolicy,
     }),
     new HTMLWebpackPlugin({

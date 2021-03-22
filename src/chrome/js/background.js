@@ -131,37 +131,32 @@ const handleNotificationButtonClicked = async (notificationId, buttonIndex) => {
 
 chrome.notifications.onButtonClicked.addListener(handleNotificationButtonClicked)
 
-const handleTabState = async (_tabId, changeInfo, tab) => {
+const handleTabState = async (tabId, changeInfo, tab) => {
   if (changeInfo && 'status' in changeInfo && changeInfo.status === 'complete') {
-    const { url, id } = tab
     const { enableExtension } = await storage.get({ enableExtension: true })
 
-    console.log(_tabId, id)
-    console.log(changeInfo)
-    console.log(tab)
-
-    if (enableExtension && validateUrl(url)) {
-      if (ignore.contains(url)) {
+    if (enableExtension && validateUrl(tab.url)) {
+      if (ignore.contains(tab.url)) {
         return
       }
 
-      const { domainFound } = await registry.domainsContains(url)
+      const { domainFound } = await registry.domainsContains(tab.url)
       const { url: distributorUrl, cooperationRefused } =
-        await registry.distributorsContains(url)
+        await registry.distributorsContains(tab.url)
 
       if (domainFound) {
-        settings.setBlockedIcon(id)
+        settings.setBlockedIcon(tabId)
         return
       }
 
       if (distributorUrl) {
-        settings.setDangerIcon(id)
+        settings.setDangerIcon(tabId)
         if (!cooperationRefused) {
-          await showCooperationAcceptedWarning(url)
+          await showCooperationAcceptedWarning(tab.url)
         }
       }
     } else {
-      settings.setDisableIcon(id)
+      settings.setDisableIcon(tabId)
     }
   }
 }

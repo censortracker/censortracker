@@ -27,11 +27,18 @@ import storage from '../storage'
   editor.setValue(content)
   editor.setOption('extraKeys', {
     Enter: (instance) => {
-      console.log('Save')
+      const cnt = instance.getValue()
+
+      storage.set({ ignoredHosts: cnt.split('\n') })
+
       return CodeMirror.Pass
     },
     Backspace: (instance) => {
-      console.log('Save')
+      const cnt = instance.getValue()
+
+      console.log(cnt)
+
+      storage.set({ ignoredHosts: cnt.split('\n') })
       return CodeMirror.Pass
     },
   })

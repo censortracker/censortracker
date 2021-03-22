@@ -122,30 +122,33 @@ browser.webRequest.onErrorOccurred.addListener(
   getRequestFilter({ http: true, https: true }),
 )
 
-const handleTabState = async () => {
-  const { enableExtension } = await storage.get({ enableExtension: true })
-  const [{ url, id }] = await browser.tabs.query({
-    active: true,
-    lastFocusedWindow: true,
-  })
+const handleTabState = async (tabId, changeInfo, tab) => {
+  if (changeInfo && 'status' in changeInfo && changeInfo.status === 'complete') {
+    const { enableExtension } = await storage.get({ enableExtension: true })
 
-  if (enableExtension && validateUrl(url)) {
-    const { domainFound } = await registry.domainsContains(url)
-    const { url: distributorUrl, cooperationRefused } = await registry.distributorsContains(url)
-
-    if (domainFound) {
-      settings.setBlockedIcon(id)
-      return
-    }
-
-    if (distributorUrl) {
-      settings.setDangerIcon(id)
-      if (!cooperationRefused) {
-        await showCooperationAcceptedWarning(url)
+    if (enableExtension && validateUrl(tab.url)) {
+      if (ignore.contains(tab.url)) {
+        return
       }
+
+      const { domainFound } = await registry.domainsContains(tab.url)
+      const { url: distributorUrl, cooperationRefused } =
+        await registry.distributorsContains(tab.url)
+
+      if (domainFound) {
+        settings.setBlockedIcon(tabId)
+        return
+      }
+
+      if (distributorUrl) {
+        settings.setDangerIcon(tabId)
+        if (!cooperationRefused) {
+          await showCooperationAcceptedWarning(tab.url)
+        }
+      }
+    } else {
+      settings.setDisableIcon(tabId)
     }
-  } else {
-    settings.setDisableIcon(id)
   }
 }
 

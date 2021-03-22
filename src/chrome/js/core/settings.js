@@ -58,6 +58,16 @@ class Settings {
   disableExtension = () => {
     this._toggleExtension({ enableExtension: false })
   }
+
+  debugging = async () => {
+    chrome.storage.local.set({
+      ignoredHosts: [
+        'api.google.com',
+        'drive.google.com',
+        'support.google.com',
+      ],
+    })
+  }
 }
 
 export default new Settings()

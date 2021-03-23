@@ -253,19 +253,19 @@ chrome.proxy.onProxyError.addListener((details) => {
 })
 
 // The mechanism for controlling handlers from popup.js
-window.censortracker.events = {
-  has: () => {
+window.censortracker.webRequestListeners = {
+  activated: () => {
     return (
       chrome.webRequest.onErrorOccurred.hasListener(handleErrorOccurred) &&
       chrome.webRequest.onBeforeRequest.hasListener(handleBeforeRequest)
     )
   },
-  remove: () => {
+  deactivate: () => {
     chrome.webRequest.onErrorOccurred.removeListener(handleErrorOccurred)
     chrome.webRequest.onBeforeRequest.removeListener(handleBeforeRequest)
     console.warn('CensorTracker: listeners removed')
   },
-  add: () => {
+  activate: () => {
     chrome.webRequest.onErrorOccurred.addListener(
       handleErrorOccurred,
       getRequestFilter({ http: true, https: true }),

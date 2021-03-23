@@ -20,10 +20,10 @@ import proxy from '../core/proxy'
     }
 
     if (event.target.matches('#doNotAskAnymore')) {
-      const { censortracker: { events } } = await asynchrome.runtime.getBackgroundPage()
+      const { censortracker: { webRequestListeners } } = await asynchrome.runtime.getBackgroundPage()
 
-      if (events.has()) {
-        events.remove()
+      if (webRequestListeners.activated()) {
+        webRequestListeners.deactivate()
       }
 
       chrome.tabs.update(tab.id, { url: targetUrl })

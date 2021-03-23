@@ -32,6 +32,7 @@ class Ignore {
   constructor () {
     this.ignoredHosts = new Set()
     setInterval(async () => {
+      console.warn('Syncing ignored hosts...')
       await this.save()
     }, IGNORE_SYNC_INTERVAL_MS)
   }

@@ -37,7 +37,7 @@ Prerequisites
 Make sure you have required versions of `node` and `npm`, which are:
 
 - `node v15.4.0`
-- `npm 7.0.15`
+- `npm 7.6.3`
 
 The build was tested only on the following operating systems:
 

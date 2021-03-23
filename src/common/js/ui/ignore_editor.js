@@ -34,11 +34,15 @@ import storage from '../storage'
   editor.setValue(content)
   editor.setOption('extraKeys', {
     Enter: (instance) => {
-      storage.set({ ignoredHosts: getValidatedContent(instance) })
+      storage.set({
+        ignoredHosts: getValidatedContent(instance),
+      })
       return CodeMirror.Pass
     },
     Backspace: (instance) => {
-      storage.set({ ignoredHosts: getValidatedContent(instance) })
+      storage.set({
+        ignoredHosts: getValidatedContent(instance),
+      })
       return CodeMirror.Pass
     },
   })

@@ -26,12 +26,14 @@ const SPECIAL_PURPOSE_IPS = [
   'ff00::/8',
 ]
 
+const IGNORE_SYNC_INTERVAL_MS = 60 * 3 * 1000
+
 class Ignore {
   constructor () {
     this.ignoredHosts = new Set()
     setInterval(async () => {
       await this.save()
-    }, 60 * 3 * 1000)
+    }, IGNORE_SYNC_INTERVAL_MS)
   }
 
   isSpecialPurposeIP = (ip) => {

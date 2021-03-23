@@ -27,7 +27,7 @@ import storage from '../storage'
     const domains = instance.getValue().split('\n')
     const uniqueDomains = new Set(domains)
 
-    return Array.from(uniqueDomains).filter((e) => e !== '')
+    return Array.from(uniqueDomains).filter((e) => e !== '' && e.indexOf('.') !== -1)
   }
 
   // Set the editor content.

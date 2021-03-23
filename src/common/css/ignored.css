@@ -71,6 +71,10 @@ a {
   color: #6d675f;
 }
 
+.main-page__about code {
+  font-weight: 500;
+}
+
 .input_search {
   border: 1px solid #c4c2bf;
   box-sizing: border-box;

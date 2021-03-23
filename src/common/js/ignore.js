@@ -70,7 +70,7 @@ class Ignore {
   }
 
   contains = (hostname) => {
-    const ignoreRegEx = /(google.com|localhost)/
+    const ignoreRegEx = /localhost/
 
     hostname = extractHostnameFromUrl(hostname)
 

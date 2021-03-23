@@ -26,9 +26,15 @@ const SPECIAL_PURPOSE_IPS = [
   'ff00::/8',
 ]
 
+const IGNORE_SYNC_INTERVAL_MS = 60 * 3 * 1000
+
 class Ignore {
   constructor () {
     this.ignoredHosts = new Set()
+    setInterval(async () => {
+      console.warn('Syncing ignored hosts...')
+      await this.save()
+    }, IGNORE_SYNC_INTERVAL_MS)
   }
 
   isSpecialPurposeIP = (ip) => {
@@ -40,29 +46,34 @@ class Ignore {
   }
 
   save = async () => {
-    const { ignoredHosts } =
-      await storage.get({ ignoredHosts: [] })
+    const { ignoredHosts } = await storage.get({ ignoredHosts: [] })
 
-    this.ignoredHosts.forEach((element) => {
-      if (!ignoredHosts.includes(element)) {
-        ignoredHosts.push(element)
-      }
-    })
+    for (const host of ignoredHosts) {
+      this.ignoredHosts.add(host)
+    }
+
+    for (const host of this.ignoredHosts) {
+      ignoredHosts.push(host)
+    }
 
     await storage.set({ ignoredHosts })
   }
 
   add = async (hostname) => {
-    if (this.ignoredHosts.size > 100) {
-      this.ignoredHosts.clear()
-    }
-    this.ignoredHosts.add(extractHostnameFromUrl(hostname))
+    hostname = extractHostnameFromUrl(hostname)
 
-    await this.save()
+    const { ignoredHosts } =
+      await storage.get({ ignoredHosts: [] })
+
+    if (!ignoredHosts.includes(hostname)) {
+      ignoredHosts.push(hostname)
+    }
+
+    await storage.set({ ignoredHosts })
   }
 
   contains = (hostname) => {
-    const ignoreRegEx = /(google.com|localhost)/
+    const ignoreRegEx = /localhost/
 
     hostname = extractHostnameFromUrl(hostname)
 

@@ -20,6 +20,7 @@
     "test:e2e": "jest tests/e2e/ && rm -f key.pem tests/e2e/selenium/extension/dist.crx"
   },
   "dependencies": {
+    "codemirror": "^5.60.0",
     "ip-range-check": "^0.2.0"
   },
   "devDependencies": {

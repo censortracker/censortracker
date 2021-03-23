@@ -29,6 +29,9 @@ const SPECIAL_PURPOSE_IPS = [
 class Ignore {
   constructor () {
     this.ignoredHosts = new Set()
+    setInterval(async () => {
+      await this.save()
+    }, 60 * 3 * 1000)
   }
 
   isSpecialPurposeIP = (ip) => {
@@ -40,25 +43,30 @@ class Ignore {
   }
 
   save = async () => {
-    const { ignoredHosts } =
-      await storage.get({ ignoredHosts: [] })
+    const { ignoredHosts } = await storage.get({ ignoredHosts: [] })
 
-    this.ignoredHosts.forEach((element) => {
-      if (!ignoredHosts.includes(element)) {
-        ignoredHosts.push(element)
-      }
-    })
+    for (const host of ignoredHosts) {
+      this.ignoredHosts.add(host)
+    }
+
+    for (const host of this.ignoredHosts) {
+      ignoredHosts.push(host)
+    }
 
     await storage.set({ ignoredHosts })
   }
 
   add = async (hostname) => {
-    if (this.ignoredHosts.size > 100) {
-      this.ignoredHosts.clear()
-    }
-    this.ignoredHosts.add(extractHostnameFromUrl(hostname))
+    hostname = extractHostnameFromUrl(hostname)
 
-    await this.save()
+    const { ignoredHosts } =
+      await storage.get({ ignoredHosts: [] })
+
+    if (!ignoredHosts.includes(hostname)) {
+      ignoredHosts.push(hostname)
+    }
+
+    await storage.set({ ignoredHosts })
   }
 
   contains = (hostname) => {

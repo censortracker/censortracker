@@ -6,7 +6,7 @@ const footerTrackerOff = getElementById('footerTrackerOff')
 const trackerOff = getElementById('trackerOff')
 const isOriBlock = getElementById('isOriBlock')
 const isNotOriBlock = getElementById('isNotOriBlock')
-const isForbidden = getElementById('isForbidden')
+const restrictionsApplied = getElementById('restrictionsApplied')
 const isNotForbidden = getElementById('isNotForbidden')
 const footerTrackerOn = getElementById('footerTrackerOn')
 const aboutOriButton = getElementById('aboutOriButton')
@@ -57,11 +57,11 @@ chrome.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
 
     if (domainFound) {
       changeStatusImage('blocked')
-      isForbidden.removeAttribute('hidden')
+      restrictionsApplied.removeAttribute('hidden')
       isNotForbidden.remove()
     } else {
       isNotForbidden.removeAttribute('hidden')
-      isForbidden.remove()
+      restrictionsApplied.remove()
       changeStatusImage('normal')
     }
 
@@ -173,7 +173,7 @@ const hideControlElements = () => {
   trackerOff.hidden = false
   footerTrackerOff.hidden = false
   isOriBlock.hidden = true
-  isForbidden.hidden = true
+  restrictionsApplied.hidden = true
   isNotOriBlock.hidden = true
   isNotForbidden.hidden = true
 }

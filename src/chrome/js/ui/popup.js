@@ -6,13 +6,13 @@ const footerTrackerOff = getElementById('footerTrackerOff')
 const trackerOff = getElementById('trackerOff')
 const isOriBlock = getElementById('isOriBlock')
 const isNotOriBlock = getElementById('isNotOriBlock')
-const isForbidden = getElementById('isForbidden')
-const isNotForbidden = getElementById('isNotForbidden')
+const restrictionsApplied = getElementById('restrictionsApplied')
+const restrictionsAreNotApplied = getElementById('restrictionsAreNotApplied')
 const footerTrackerOn = getElementById('footerTrackerOn')
 const aboutOriButton = getElementById('aboutOriButton')
 const textAboutOri = getElementById('textAboutOri')
 const closeTextAboutOri = getElementById('closeTextAboutOri')
-const btnAboutForbidden = getElementById('btnAboutForbidden')
+const btnRestrictionsInfo = getElementById('btnRestrictionsInfo')
 const textAboutForbidden = getElementById('textAboutForbidden')
 const closeTextAboutForbidden = getElementById('closeTextAboutForbidden')
 const btnAboutNotForbidden = getElementById('btnAboutNotForbidden')
@@ -57,11 +57,11 @@ chrome.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
 
     if (domainFound) {
       changeStatusImage('blocked')
-      isForbidden.removeAttribute('hidden')
-      isNotForbidden.remove()
+      restrictionsApplied.removeAttribute('hidden')
+      restrictionsAreNotApplied.remove()
     } else {
-      isNotForbidden.removeAttribute('hidden')
-      isForbidden.remove()
+      restrictionsAreNotApplied.removeAttribute('hidden')
+      restrictionsApplied.remove()
       changeStatusImage('normal')
     }
 
@@ -173,9 +173,9 @@ const hideControlElements = () => {
   trackerOff.hidden = false
   footerTrackerOff.hidden = false
   isOriBlock.hidden = true
-  isForbidden.hidden = true
+  restrictionsApplied.hidden = true
   isNotOriBlock.hidden = true
-  isNotForbidden.hidden = true
+  restrictionsAreNotApplied.hidden = true
 }
 
 aboutOriButton.addEventListener('click', () => {
@@ -202,9 +202,9 @@ closeTextAboutOri.addEventListener('click', () => {
 },
 )
 
-btnAboutForbidden.addEventListener('click', () => {
+btnRestrictionsInfo.addEventListener('click', () => {
   textAboutForbidden.style.display = 'block'
-  btnAboutForbidden.style.display = 'none'
+  btnRestrictionsInfo.style.display = 'none'
   hideOriDetails()
 },
 )
@@ -217,7 +217,7 @@ btnAboutNotForbidden.addEventListener('click', () => {
 
 closeTextAboutForbidden.addEventListener('click', () => {
   textAboutForbidden.style.display = 'none'
-  btnAboutForbidden.style.display = 'flex'
+  btnRestrictionsInfo.style.display = 'flex'
 },
 )
 
@@ -235,7 +235,7 @@ const hideOriDetails = () => {
 
 const hideForbiddenDetails = () => {
   textAboutForbidden.style.display = 'none'
-  btnAboutForbidden.style.display = 'flex'
+  btnRestrictionsInfo.style.display = 'flex'
   textAboutNotForbidden.style.display = 'none'
   btnAboutNotForbidden.style.display = 'flex'
 }

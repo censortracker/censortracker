@@ -70,18 +70,18 @@ describe('Testing popup of the extension', () => {
       'https://rutracker.org/',
     ]
 
-    it.each(urls)('popup contains isForbidden element and do not contain isNotForbidden', async (url) => {
+    it.each(urls)('popup contains restrictionsApplied element and do not contain restrictionsAreNotApplied', async (url) => {
       await getPopupFor({ driver, extensionId }, url)
 
-      const isNotForbidden =
-        await isElementExists(driver, { id: 'isNotForbidden' })
+      const restrictionsAreNotApplied =
+        await isElementExists(driver, { id: 'restrictionsAreNotApplied' })
 
-      expect(isNotForbidden).toBeFalsy()
+      expect(restrictionsAreNotApplied).toBeFalsy()
 
-      const isForbidden = await waitGetElement(driver, { id: 'isForbidden' })
+      const restrictionsApplied = await waitGetElement(driver, { id: 'restrictionsApplied' })
 
       const aboutForbiddenButton =
-        await waitGetElement(driver, { id: 'btnAboutForbidden' })
+        await waitGetElement(driver, { id: 'btnRestrictionsInfo' })
 
       await aboutForbiddenButton.click()
 
@@ -90,7 +90,7 @@ describe('Testing popup of the extension', () => {
 
       await closeAboutForbiddenButton.click()
 
-      expect(isForbidden).toBeTruthy()
+      expect(restrictionsApplied).toBeTruthy()
     }, timeout)
   })
 

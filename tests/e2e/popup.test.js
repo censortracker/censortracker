@@ -81,7 +81,7 @@ describe('Testing popup of the extension', () => {
       const restrictionsApplied = await waitGetElement(driver, { id: 'restrictionsApplied' })
 
       const aboutForbiddenButton =
-        await waitGetElement(driver, { id: 'btnAboutForbidden' })
+        await waitGetElement(driver, { id: 'btnRestrictionsInfo' })
 
       await aboutForbiddenButton.click()
 

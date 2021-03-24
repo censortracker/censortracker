@@ -5,7 +5,11 @@ const REGISTRY_BASE_URL = 'https://reestr.rublacklist.net'
 const REGISTRY_LOGGING_API_URL = 'https://ct.rublacklist.net/api/case/'
 const REGISTRY_DOMAINS_API_URL = `${REGISTRY_BASE_URL}/api/v3/domains/json`
 const REGISTRY_DISTRIBUTORS_API_URL = `${REGISTRY_BASE_URL}/api/v3/ori/refused/json`
-const REGISTRY_CUSTOM_RECORDS_API_URL = `${REGISTRY_BASE_URL}/registry-api/domains/`
+const REGISTRY_UNREGISTERED_RECORDS_API_URL = `${REGISTRY_BASE_URL}/registry-api/domains/`
+
+const REGISTRY_STORAGE_DOMAINS_KEY = 'domains'
+const REGISTRY_STORAGE_DISTRIBUTORS_KEY = 'distributors'
+const REGISTRY_STORAGE_UNREGISTERED_RECORDS_KEY = 'unregisteredRecords'
 
 class Registry {
   constructor () {
@@ -19,24 +23,26 @@ class Registry {
       }
 
       await this.sendReport()
-      console.log('The scheduled report has been sent!')
     }, 60 * 60 * 3000)
   }
 
+  /**
+   * Saves all the data from our registry in local storage.
+   */
   sync = async () => {
     console.warn('Synchronizing local database with registry...')
     const apis = [
       {
-        key: 'domains',
+        key: REGISTRY_STORAGE_DOMAINS_KEY,
         url: REGISTRY_DOMAINS_API_URL,
       },
       {
-        key: 'distributors',
+        key: REGISTRY_STORAGE_DISTRIBUTORS_KEY,
         url: REGISTRY_DISTRIBUTORS_API_URL,
       },
       {
-        key: 'unregisteredRecords',
-        url: REGISTRY_CUSTOM_RECORDS_API_URL,
+        key: REGISTRY_STORAGE_UNREGISTERED_RECORDS_KEY,
+        url: REGISTRY_UNREGISTERED_RECORDS_API_URL,
       },
     ]
     const timestamp = new Date().getTime()
@@ -61,9 +67,9 @@ class Registry {
    * Returns unregistered records from our custom registry.
    */
   getUnregisteredRecords = async () => {
-    const { customRecords } = await storage.get({ customRecords: [] })
+    const { unregisteredRecords } = await storage.get({ unregisteredRecords: [] })
 
-    return customRecords
+    return unregisteredRecords
   }
 
   /**

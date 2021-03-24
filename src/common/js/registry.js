@@ -35,7 +35,7 @@ class Registry {
         url: REGISTRY_DISTRIBUTORS_API_URL,
       },
       {
-        key: 'customRecords',
+        key: 'unregisteredRecords',
         url: REGISTRY_CUSTOM_RECORDS_API_URL,
       },
     ]
@@ -57,12 +57,34 @@ class Registry {
     return true
   }
 
-  getCustomRecords = async () => {
+  /**
+   * Returns unregistered records from our custom registry.
+   */
+  getUnregisteredRecords = async () => {
     const { customRecords } = await storage.get({ customRecords: [] })
 
     return customRecords
   }
 
+  /**
+   * Return details of unregistered record by URL.
+   * @param url URL.
+   */
+  getUnregisteredRecordByURL = async (url) => {
+    const domain = extractHostnameFromUrl(url)
+    const records = await this.getUnregisteredRecords()
+
+    for (const record of records) {
+      if (record.domains.includes(domain)) {
+        return record
+      }
+    }
+    return {}
+  }
+
+  /**
+   * Returns array of domains from the RKN's registry.
+   */
   getDomains = async () => {
     const { domains, blockedDomains } =
       await storage.get({ domains: [], blockedDomains: [] })
@@ -77,6 +99,11 @@ class Registry {
     return []
   }
 
+  /**
+   * Checks if URL is in the registry of restricted websites.
+   * @param url URL.
+   * @returns {Promise<{domainFound: boolean}>}
+   */
   domainsContains = async (url) => {
     const hostname = extractHostnameFromUrl(url)
     const { domains, blockedDomains } =
@@ -94,6 +121,11 @@ class Registry {
     return { domainFound: false }
   }
 
+  /**
+   * Checks if URL in registry of "ОРИ".
+   * @param url URL.
+   * @returns {Promise<{}|*>}
+   */
   distributorsContains = async (url) => {
     const hostname = extractHostnameFromUrl(url)
     const { distributors } =
@@ -107,6 +139,9 @@ class Registry {
     return {}
   }
 
+  /**
+   * Sends a report about sites that potentially can be restricted through by DPI-filters.
+   */
   sendReport = async () => {
     const { alreadyReported, blockedDomains } =
       await storage.get({
@@ -133,6 +168,10 @@ class Registry {
     }
   }
 
+  /**
+   * Adds passed hostname to the local storage of restricted domains.
+   * @param hostname Hostname.
+   */
   add = async (hostname) => {
     const { blockedDomains } = await storage.get({ blockedDomains: [] })
 

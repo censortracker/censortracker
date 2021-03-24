@@ -1,39 +1,33 @@
 const getElementById = (id) => document.getElementById(id)
 
 const statusImage = getElementById('statusImage')
-const currentDomainHeader = getElementById('currentDomainHeader')
-const footerTrackerOff = getElementById('footerTrackerOff')
-const trackerOff = getElementById('trackerOff')
-const isOriBlock = getElementById('isOriBlock')
-const isNotOriBlock = getElementById('isNotOriBlock')
-const restrictionsApplied = getElementById('restrictionsApplied')
-const restrictionsAreNotApplied = getElementById('restrictionsAreNotApplied')
-const footerTrackerOn = getElementById('footerTrackerOn')
-const aboutOriButton = getElementById('aboutOriButton')
-const textAboutOri = getElementById('textAboutOri')
-const closeTextAboutOri = getElementById('closeTextAboutOri')
-const btnRestrictionsInfo = getElementById('btnRestrictionsInfo')
-const textAboutForbidden = getElementById('textAboutForbidden')
-const closeTextAboutForbidden = getElementById('closeTextAboutForbidden')
-const btnAboutNotForbidden = getElementById('btnAboutNotForbidden')
-const textAboutNotForbidden = getElementById('textAboutNotForbidden')
-const closeTextAboutNotForbidden = getElementById('closeTextAboutNotForbidden')
-const btnAboutNotOri = getElementById('btnAboutNotOri')
-const textAboutNotOri = getElementById('textAboutNotOri')
-const closeTextAboutNotOri = getElementById('closeTextAboutNotOri')
-const oriSiteInfo = getElementById('oriSiteInfo')
-const currentDomainBlocks = document.querySelectorAll('.current-domain')
+const oriInfoTitle = getElementById('ori-info-title')
+const oriStatusIcon = getElementById('ori-status-icon')
+const oriDescription = getElementById('ori-description')
+
+const turnedOff = getElementById('turned-off')
+const turnedOn = getElementById('turned-on')
+
+const restrictionsInfoTitle = getElementById('restrictions-info-title')
+const restrictionsDescription = getElementById('restrictions-description')
+const restrictionsStatusIcon = getElementById('restrictions-status-icon')
+
+const currentDomainBlocks = document.querySelector('.current-domain')
 const popupShowTimeout = 60
 
 browser.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
   document.addEventListener('click', async (event) => {
     if (event.target.matches('#enableExtension')) {
       await bgModules.settings.enableExtension()
+      turnedOff.hidden = true
+      turnedOn.hidden = false
       window.location.reload()
     }
 
     if (event.target.matches('#disableExtension')) {
       await bgModules.settings.disableExtension()
+      turnedOff.hidden = false
+      turnedOn.hidden = true
       window.location.reload()
     }
 
@@ -58,39 +52,40 @@ browser.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
 
   if (enableExtension) {
     changeStatusImage('normal')
-    renderCurrentDomain(currentHostname)
-    footerTrackerOn.removeAttribute('hidden')
 
     const { domainFound } = await bgModules.registry.domainsContains(currentHostname)
 
     if (domainFound) {
+      restrictionsInfoTitle.innerText = restrictionsInfoTitle.getAttribute('data-restrictions')
+      restrictionsDescription.innerText = restrictionsDescription.getAttribute('data-restrictions-desc')
+      restrictionsStatusIcon.setAttribute('src', restrictionsStatusIcon.getAttribute('data-restrictions-icon'))
       changeStatusImage('blocked')
-      restrictionsApplied.removeAttribute('hidden')
-      restrictionsAreNotApplied.remove()
     } else {
-      restrictionsAreNotApplied.removeAttribute('hidden')
-      restrictionsApplied.remove()
       changeStatusImage('normal')
+      restrictionsDescription.innerText = restrictionsDescription.getAttribute('data-no-restrictions-desc')
+      restrictionsInfoTitle.innerText = restrictionsInfoTitle.getAttribute('data-no-restrictions')
+      restrictionsStatusIcon.setAttribute('src', restrictionsStatusIcon.getAttribute('data-no-restrictions-icon'))
     }
 
     const { url: distributorUrl, cooperationRefused } =
       await bgModules.registry.distributorsContains(currentHostname)
 
     if (distributorUrl) {
-      currentDomainHeader.classList.add('title-ori')
-      isOriBlock.removeAttribute('hidden')
-      isNotOriBlock.remove()
+      oriInfoTitle.innerText = oriInfoTitle.getAttribute('data-ori')
+      oriStatusIcon.setAttribute('src', oriStatusIcon.getAttribute('data-ori-icon'))
+      oriDescription.innerText = oriDescription.getAttribute('data-ori')
 
       if (cooperationRefused) {
-        showCooperationRefusedMessage()
+        oriDescription.innerText = oriDescription.getAttribute('data-ori-refused')
       } else {
         changeStatusImage('ori')
         console.warn('Cooperation accepted!')
       }
     } else {
-      isNotOriBlock.removeAttribute('hidden')
-      isOriBlock.remove()
       console.log('Match not found at all')
+      oriInfoTitle.innerText = oriInfoTitle.getAttribute('data-not-ori')
+      oriStatusIcon.setAttribute('src', oriStatusIcon.getAttribute('data-not-ori-icon'))
+      oriDescription.innerText = oriDescription.getAttribute('data-not-ori')
     }
 
     if (domainFound && distributorUrl) {
@@ -98,8 +93,6 @@ browser.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
         changeStatusImage('ori_blocked')
       }
     }
-  } else {
-    hideControlElements()
   }
 
   const show = () => {
@@ -126,95 +119,4 @@ const getAppropriateUrl = (currentUrl) => {
     return window.atob(encodedUrl)
   }
   return currentUrl
-}
-
-const renderCurrentDomain = ({ length }) => {
-  if (length >= 22 && length < 25) {
-    currentDomainHeader.style.fontSize = '17px'
-  } else if (length >= 25) {
-    currentDomainHeader.style.fontSize = '15px'
-  }
-  currentDomainHeader.classList.add('title-normal')
-  currentDomainHeader.removeAttribute('hidden')
-}
-
-const showCooperationRefusedMessage = () => {
-  oriSiteInfo.innerText = 'Сервис заявил, что они не передают трафик российским ' +
-    'государственным органам в автоматическом режиме.'
-  textAboutOri.classList.remove('text-warning')
-  textAboutOri.classList.add('text-normal')
-  currentDomainHeader.classList.remove('title-ori')
-  currentDomainHeader.classList.add('title-normal')
-}
-
-const hideControlElements = () => {
-  changeStatusImage('disabled')
-  trackerOff.hidden = false
-  footerTrackerOff.hidden = false
-  isOriBlock.hidden = true
-  restrictionsApplied.hidden = true
-  isNotOriBlock.hidden = true
-  restrictionsAreNotApplied.hidden = true
-}
-
-aboutOriButton.addEventListener('click', () => {
-  textAboutOri.style.display = 'block'
-  aboutOriButton.style.display = 'none'
-  hideForbiddenDetails()
-})
-
-btnAboutNotOri.addEventListener('click', () => {
-  textAboutNotOri.style.display = 'block'
-  btnAboutNotOri.style.display = 'none'
-  hideForbiddenDetails()
-})
-
-closeTextAboutNotOri.addEventListener('click', () => {
-  textAboutNotOri.style.display = 'none'
-  btnAboutNotOri.style.display = 'flex'
-},
-)
-
-closeTextAboutOri.addEventListener('click', () => {
-  textAboutOri.style.display = 'none'
-  aboutOriButton.style.display = 'flex'
-},
-)
-
-btnRestrictionsInfo.addEventListener('click', () => {
-  textAboutForbidden.style.display = 'block'
-  btnRestrictionsInfo.style.display = 'none'
-  hideOriDetails()
-},
-)
-
-btnAboutNotForbidden.addEventListener('click', () => {
-  textAboutNotForbidden.style.display = 'block'
-  btnAboutNotForbidden.style.display = 'none'
-  hideOriDetails()
-})
-
-closeTextAboutForbidden.addEventListener('click', () => {
-  textAboutForbidden.style.display = 'none'
-  btnRestrictionsInfo.style.display = 'flex'
-},
-)
-
-closeTextAboutNotForbidden.addEventListener('click', () => {
-  textAboutNotForbidden.style.display = 'none'
-  btnAboutNotForbidden.style.display = 'flex'
-})
-
-const hideOriDetails = () => {
-  textAboutOri.style.display = 'none'
-  aboutOriButton.style.display = 'flex'
-  textAboutNotOri.style.display = 'none'
-  btnAboutNotOri.style.display = 'flex'
-}
-
-const hideForbiddenDetails = () => {
-  textAboutForbidden.style.display = 'none'
-  btnRestrictionsInfo.style.display = 'flex'
-  textAboutNotForbidden.style.display = 'none'
-  btnAboutNotForbidden.style.display = 'flex'
 }

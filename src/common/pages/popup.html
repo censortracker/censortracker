@@ -15,83 +15,67 @@
       <a id="openOptionsPage" class="icon__settings" target="_blank"></a>
     </div>
     <div class="main-page__info">
-      <div class="main-page__title current-domain" id="currentDomainHeader" hidden>
+
+      <div class="main-page__title current-domain">
         Сайт недоступен
       </div>
 
-      <div class="main-page__block" id="isNotOriBlock" hidden>
+      <div class="main-page__block">
         <div class="block__title">
-          <span>Не является организатором распространения информации</span>
-          <svg class="icon__status" width="18" height="13" viewBox="0 0 18 13" fill="none"
-               xmlns="http://www.w3.org/2000/svg">
-            <path d="M17 1L6 12L1 7" stroke="#6C9E2C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
+          <span id="ori-info-title"
+                data-ori="Является организатором распространения информации"
+                data-not-ori="Не является организатором распространения информации">
+          </span>
+
+          <img class="icon__status" id="ori-status-icon"
+               data-ori-icon="images/icons/status/icon_danger.svg"
+               data-not-ori-icon="images/icons/status/mark.svg"
+               src="" width="24px" height="24px" alt=""/>
+
         </div>
-        <div class="block__btn btn-about" id="btnAboutNotOri">
+        <div class="block__btn btn-about" id="whatThisMean">
           <span>что это значит</span>
-          <svg class="block__btn icon" width="8" height="6" viewBox="0 0 8 6" fill="none"
-               xmlns="http://www.w3.org/2000/svg">
-            <path d="M0.546875 1.47339L4 5.5L7.48204 1.47339" stroke="#3B332B" stroke-linecap="round"
-                  stroke-linejoin="round"/>
+          <svg class="block__btn icon" width="8" height="6" viewBox="0 0 8 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0.546875 1.47339L4 5.5L7.48204 1.47339" stroke="#3B332B" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </div>
-        <div class="block__text text-normal" id="textAboutNotOri">
-          <span>
-            Сервисы из реестра ОРИ могут передавать ваши личные данные, в т.ч. сообщения и весь трафик,
-            государственным органам в автоматическом режиме. Этот сервис не находится в реестре ОРИ.
+        <div class="block__text text-normal">
+          <span id="ori-description" data-ori="Сервисы из реестра ОРИ могут передавать ваши личные данные, в т.ч. сообщения и весь трафик,
+            государственным органам в автоматическом режиме. Этот сервис не находится в реестре ОРИ."
+                data-not-ori="Сервис может передавать ваши личные данные, в том числе сообщения и весь трафик,
+            российским государственным органам в автоматическом режиме."
+                data-ori-refused="Сервис заявил, что они не передают трафик российским государственным органам в автоматическом режиме.">
           </span>
           <div class="block__footer">
-            <span class="block__btn btn-ok" id="closeTextAboutNotOri">Ясно</span>
+            <span class="block__btn btn-ok" id="okButton">Ясно</span>
             <span class="block__btn btn-text"><a href="https://reestr.rublacklist.net/distributors/" target="_blank">Подробнее <span
               class="footer__arrow">&rarr;</span></a></span>
           </div>
         </div>
       </div>
 
-      <div class="main-page__block" id="isOriBlock" hidden>
+      <div class="main-page__block" id="restrictions-info">
         <div class="block__title">
-          <span>Является организатором распространения информации</span>
-          <img class="icon__status" src="images/icons/status/icon_danger.svg" width="24px" height="24px" alt=""/>
-        </div>
-        <div class="block__btn btn-about" id="aboutOriButton">
-          <span>что это значит</span>
-          <svg class="block__btn icon" width="8" height="6" viewBox="0 0 8 6" fill="none"
-               xmlns="http://www.w3.org/2000/svg">
-            <path d="M0.546875 1.47339L4 5.5L7.48204 1.47339" stroke="#3B332B" stroke-linecap="round"
-                  stroke-linejoin="round"/>
-          </svg>
-        </div>
-        <div class="block__text text-warning" id="textAboutOri">
-          <span id="oriSiteInfo">
-            Сервис может передавать ваши личные данные, в том числе сообщения и весь трафик,
-            российским государственным органам в автоматическом режиме.
+          <span id="restrictions-info-title"
+                data-restrictions="Запрещён в России"
+                data-no-restrictions="Не запрещён в России">
           </span>
-          <div class="block__footer">
-            <span class="block__btn btn-ok" id="closeTextAboutOri">Ясно</span>
-            <span class="block__btn btn-text"><a href="https://reestr.rublacklist.net/distributors/" target="_blank">Подробнее <span
-              class="footer__arrow">&rarr;</span></a></span>
-          </div>
-        </div>
-      </div>
 
-      <div class="main-page__block" id="restrictionsAreNotApplied" hidden>
-        <div class="block__title">
-          <span>Не запрещён в России</span>
-          <svg class="icon__status" width="18" height="13" viewBox="0 0 18 13" fill="none"
-               xmlns="http://www.w3.org/2000/svg">
-            <path d="M17 1L6 12L1 7" stroke="#6C9E2C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
+          <img class="icon__status" id="restrictions-status-icon"
+               data-restrictions-icon="images/icons/status/icon_danger.svg"
+               data-no-restrictions-icon="images/icons/status/mark.svg"
+               src="" width="24px" height="24px" alt=""/>
         </div>
-        <div class="block__btn btn-about" id="btnAboutNotForbidden">
+        <div class="block__btn btn-about" id="restrictions-what-this-mean">
           <span>что это значит</span>
-          <svg class="block__btn icon" width="8" height="6" viewBox="0 0 8 6" fill="none"
-               xmlns="http://www.w3.org/2000/svg">
-            <path d="M0.546875 1.47339L4 5.5L7.48204 1.47339" stroke="#3B332B" stroke-linecap="round"
-                  stroke-linejoin="round"/>
+          <svg class="block__btn icon" width="8" height="6" viewBox="0 0 8 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0.546875 1.47339L4 5.5L7.48204 1.47339" stroke="#3B332B" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </div>
-        <div class="block__text text-normal" id="textAboutNotForbidden">
-          <span>Если доступ к сайту запретят, то Censor Tracker предложит открыть сайт через надёжный прокси.</span>
+        <div class="block__text text-normal">
+            <span id="restrictions-description"
+            data-restrictions-desc="Доступ к сайту запрещён, но Censor Tracker даёт к нему доступ через надёжный прокси."
+            data-no-restrictions-desc="Если доступ к сайту запретят, то Censor Tracker предложит открыть сайт через надёжный прокси."></span>
           <div class="block__footer">
             <span class="block__btn btn-ok" id="closeTextAboutNotForbidden">Ясно</span>
             <span class="block__btn btn-text"><a href="https://reestr.rublacklist.net/" target="_blank">Подробнее <span
@@ -100,30 +84,7 @@
         </div>
       </div>
 
-      <div class="main-page__block" id="restrictionsApplied" hidden>
-        <div class="block__title">
-          <span>Запрещён в России</span>
-          <img class="icon__status" src="images/icons/status/icon_info.svg" width="24px" height="24px" alt=""/>
-        </div>
-        <div class="block__btn btn-about" id="btnRestrictionsInfo">
-          <span>что это значит</span>
-          <svg class="block__btn icon" width="8" height="6" viewBox="0 0 8 6" fill="none"
-               xmlns="http://www.w3.org/2000/svg">
-            <path d="M0.546875 1.47339L4 5.5L7.48204 1.47339" stroke="#3B332B" stroke-linecap="round"
-                  stroke-linejoin="round"/>
-          </svg>
-        </div>
-        <div class="block__text text-normal" id="textAboutForbidden">
-          <span>Доступ к сайту запрещён, но Censor Tracker даёт к нему доступ через надёжный прокси.</span>
-          <div class="block__footer">
-            <span class="block__btn btn-ok" id="closeTextAboutForbidden">Ясно</span>
-            <span class="block__btn btn-text"><a href="https://reestr.rublacklist.net/" target="_blank">Подробнее <span
-              class="footer__arrow">&rarr;</span></a></span>
-          </div>
-        </div>
-      </div>
-
-      <div class="main-page__info" id="trackerOff" hidden>
+      <div class="main-page__info" id="turned-off" hidden>
         <div class="main-page__title title-disabled">Censor Tracker выключен</div>
         <div class="main-page__block">
           <div class="block__title text-about">
@@ -144,7 +105,7 @@
     <div>Другое расширение контролирует прокси. Подробнее &rarr;</div>
   </div>
 
-  <div class="footer" id="footerTrackerOn" hidden>
+  <div class="footer" id="turned-on">
     <div class="censor-tracker censor-tracker-">
       <div class="censor-tracker__column">
         <div class="censor-tracker__title">Censor Tracker</div>
@@ -156,14 +117,6 @@
                src="images/icons/512x512/btn_stop.svg" width="11px" height="16px" alt=""/>
         </div>
       </div>
-    </div>
-  </div>
-
-  <div class="footer footer-on" id="footerTrackerOff" hidden>
-    <div class="block__btn btn-text buy-vpn" style="display: none">
-      <a target="_blank" href="https://vpnlove.me/">
-        Купить VPN<span class="footer__arrow">&rarr;</span>
-      </a>
     </div>
   </div>
 

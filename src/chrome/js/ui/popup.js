@@ -23,6 +23,8 @@ const textAboutNotOri = getElementById('textAboutNotOri')
 const closeTextAboutNotOri = getElementById('closeTextAboutNotOri')
 const oriSiteInfo = getElementById('oriSiteInfo')
 const currentDomainBlocks = document.querySelectorAll('.current-domain')
+const restrictionDescription = getElementById('restriction-description')
+const restrictionType = getElementById('restriction-type')
 const controlledOtherExtensionsInfo = document.getElementById('controlledOtherExtensionsInfo')
 const popupShowTimeout = 60
 
@@ -47,6 +49,13 @@ chrome.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
   currentDomainBlocks.forEach((element) => {
     element.innerText = currentHostname
   })
+
+  const { restriction } = await bgModules.registry.getUnregisteredRecordByURL(currentHostname)
+
+  if (restriction && restriction.name) {
+    restrictionType.innerText = restriction.name
+    restrictionDescription.innerText = restriction.description
+  }
 
   if (enableExtension) {
     changeStatusImage('normal')

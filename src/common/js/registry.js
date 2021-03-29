@@ -45,14 +45,13 @@ class Registry {
         url: REGISTRY_UNREGISTERED_RECORDS_API_URL,
       },
     ]
-    const timestamp = new Date().getTime()
 
     for (const { key, url } of apis) {
       try {
         const response = await fetch(url)
         const data = await response.json()
 
-        await storage.set({ [key]: data, timestamp })
+        await storage.set({ [key]: data })
       } catch (error) {
         console.error(`Error on fetching data from the API endpoint: ${url}`)
       }
@@ -63,10 +62,12 @@ class Registry {
       [REGISTRY_STORAGE_DISTRIBUTORS_KEY]: [],
     })
 
-    if (!domains || !distributors) {
+    if (domains === [] || distributors === []) {
       console.log('Database is empty. Trying to sync...')
       await this.sync()
     }
+
+    await storage.set({ timestamp: new Date().getTime() })
     return true
   }
 

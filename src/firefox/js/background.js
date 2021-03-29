@@ -90,7 +90,7 @@ const handleErrorOccurred = async ({ error, url, tabId }) => {
 
   if (interruptedError) {
     browser.tabs.update(tabId, {
-      url: browser.runtime.getURL(`unavailable.html?url=${encodedUrl}&interrupted=true`),
+      url: browser.runtime.getURL(`unavailable.html?${encodedUrl}`),
     })
     return
   }
@@ -113,7 +113,7 @@ const handleErrorOccurred = async ({ error, url, tabId }) => {
     }
 
     browser.tabs.update(tabId, {
-      url: browser.runtime.getURL(`unavailable.html?url=${encodedUrl}`),
+      url: browser.runtime.getURL(`unavailable.html?${encodedUrl}`),
     })
     return
   }

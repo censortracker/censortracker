@@ -38,7 +38,7 @@ Make sure you have required versions of `node` and `npm`, which are:
 
 - `node v15.4.0`
 - `npm 7.6.3`
-- `fish 3.2.1` (or any other shell which supports environment variable exporting like this `NODE_ENV=production npm`)
+- `fish 3.2.1` (or any other shell which supports per-command environment variable exporting)
 
 The build was tested only on the following operating systems:
 
@@ -70,6 +70,11 @@ and for Firefox, like this:
 
     ~ npm run build:firefox
     ~ cd dist/firefox
+
+
+**Troubleshooting**: If you're getting error on building an extension using `npm`, please make sure that your
+shell supports per-command environment variables (i.e something like this `NODE_ENV=production npm run build:firefox:prod`)
+
 
 
 Going to production

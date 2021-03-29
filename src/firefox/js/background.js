@@ -86,7 +86,14 @@ const handleErrorOccurred = async ({ error, url, tabId }) => {
   const hostname = extractHostnameFromUrl(url)
 
   const { useProxy } = await storage.get({ useProxy: true })
-  const { proxyError, connectionError } = errors.determineError(error)
+  const { proxyError, connectionError, interruptedError } = errors.determineError(error)
+
+  if (interruptedError) {
+    browser.tabs.update(tabId, {
+      url: browser.runtime.getURL(`unavailable.html?url=${encodedUrl}&interrupted=true`),
+    })
+    return
+  }
 
   if (proxyError) {
     browser.tabs.update(tabId, {
@@ -106,7 +113,7 @@ const handleErrorOccurred = async ({ error, url, tabId }) => {
     }
 
     browser.tabs.update(tabId, {
-      url: browser.runtime.getURL(`unavailable.html?${encodedUrl}`),
+      url: browser.runtime.getURL(`unavailable.html?url=${encodedUrl}`),
     })
     return
   }

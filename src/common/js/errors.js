@@ -23,7 +23,11 @@ const PROXY_CONNECTION_ERRORS = [
 ]
 
 const REQUEST_INTERRUPTED_ERRORS = [
+  // Chromium
   'net::ERR_ABORTED',
+
+  // Firefox
+  'NS_ERROR_NET_INTERRUPT',
 ]
 
 class Errors {

@@ -93,6 +93,7 @@ and for Firefox like this:
 
     ~ npm run build:firefox:prod
     ~ cd dist/firefox
+    ~ web-ext build
 
 
 Testing

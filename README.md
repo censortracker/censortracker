@@ -38,6 +38,7 @@ Make sure you have required versions of `node` and `npm`, which are:
 
 - `node v15.4.0`
 - `npm 7.6.3`
+- `fish 3.2.1` (or any other shell which supports environment variable exporting like this `NODE_ENV=production npm`)
 
 The build was tested only on the following operating systems:
 

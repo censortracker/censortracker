@@ -48,15 +48,22 @@ class Registry {
     const timestamp = new Date().getTime()
 
     for (const { key, url } of apis) {
-      const response = await fetch(url)
-      const data = await response.json()
+      try {
+        const response = await fetch(url)
+        const data = await response.json()
 
-      await storage.set({ [key]: data, timestamp })
+        await storage.set({ [key]: data, timestamp })
+      } catch (error) {
+        console.error(`Error on fetching data from the API endpoint: ${url}`)
+      }
     }
 
-    const { domains } = await storage.get({ domains: [] })
+    const { domains, distributors } = await storage.get({
+      [REGISTRY_STORAGE_DOMAINS_KEY]: [],
+      [REGISTRY_STORAGE_DISTRIBUTORS_KEY]: [],
+    })
 
-    if (!domains) {
+    if (!domains || !distributors) {
       console.log('Database is empty. Trying to sync...')
       await this.sync()
     }

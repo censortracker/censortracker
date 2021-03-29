@@ -54,8 +54,8 @@ so make sure you're using the latest ones.
 
 We've tested CensorTracker on the following versions:
 
-- `Firefox 80 - 86`
-- `Chrome 80 - 89`
+- Firefox, 80 or higher
+- Chrome, 80 or higher
 
 Installation
 ------------

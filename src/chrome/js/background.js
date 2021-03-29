@@ -252,6 +252,59 @@ chrome.proxy.onProxyError.addListener((details) => {
   console.error(`Proxy error: ${JSON.stringify(details)}`)
 })
 
+/**
+ * Fired when one or more items change.
+ * @param changes Object describing the change. This contains one property for each key that changed.
+ * @param areaName The name of the storage area ("sync", "local") to which the changes were made.
+ */
+const handleStorageChanged = ({ enableExtension = undefined, ignoredHosts = undefined }, areaName) => {
+  // See: https://git.io/Jtw5D
+  const listenersActivated = (
+    chrome.webRequest.onErrorOccurred.hasListener(handleErrorOccurred) &&
+    chrome.webRequest.onBeforeRequest.hasListener(handleBeforeRequest)
+  )
+
+  // See src/common/ui/ignore_editor.js
+  if (ignoredHosts !== undefined) {
+    ignore.save()
+  }
+
+  if (enableExtension) {
+    if (enableExtension.newValue !== true) {
+      if (!listenersActivated) {
+        chrome.webRequest.onErrorOccurred.addListener(
+          handleErrorOccurred,
+          getRequestFilter({ http: true, https: true }),
+        )
+        chrome.webRequest.onBeforeRequest.addListener(
+          handleBeforeRequest,
+          getRequestFilter({ http: true, https: false }),
+          ['blocking'],
+        )
+        console.warn('Web request listeners enabled')
+      }
+    }
+
+    if (enableExtension.newValue === false) {
+      chrome.webRequest.onErrorOccurred.removeListener(handleErrorOccurred)
+      chrome.webRequest.onBeforeRequest.removeListener(handleBeforeRequest)
+      console.warn('Web request listeners disabled')
+    }
+  }
+}
+
+chrome.storage.onChanged.addListener(handleStorageChanged)
+
+window.censortracker.debugging = async () => {
+  const { domains } = await storage.get({ domains: [] })
+  const excluded = ['rutracker.org', 'lostfilm.tv', 'rezka.ag']
+
+  await storage.set({
+    domains: domains.filter((domain) => !excluded.includes(domain)),
+  })
+  await proxy.setProxy()
+}
+
 // The mechanism for controlling handlers from popup.js
 window.censortracker.webRequestListeners = {
   activated: () => {

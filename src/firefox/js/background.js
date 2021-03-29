@@ -234,12 +234,17 @@ browser.runtime.onStartup.addListener(async () => {
  * @param changes Object describing the change. This contains one property for each key that changed.
  * @param areaName The name of the storage area ("sync", "local") to which the changes were made.
  */
-const handleStorageChanged = ({ enableExtension: { newValue: extensionEnabled } = {} }, areaName) => {
+const handleStorageChanged = ({ enableExtension: { newValue: extensionEnabled } = {}, ignoredHosts = undefined }, areaName) => {
   // See: https://git.io/Jtw5D
   const listenersActivated = (
     browser.webRequest.onErrorOccurred.hasListener(handleErrorOccurred) &&
     browser.webRequest.onBeforeRequest.hasListener(handleBeforeRequest)
   )
+
+  // See src/common/ui/ignore_editor.js
+  if (ignoredHosts !== undefined) {
+    ignore.save()
+  }
 
   if (extensionEnabled === true) {
     if (!listenersActivated) {

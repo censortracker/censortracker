@@ -45,25 +45,19 @@ class Ignore {
     }
   }
 
-  save = async () => {
-    const { ignoredHosts } = await storage.get({ ignoredHosts: [] })
-
-    for (const host of ignoredHosts) {
-      this.ignoredHosts.add(host)
-    }
-
-    for (const host of this.ignoredHosts) {
-      ignoredHosts.push(host)
-    }
-
-    await storage.set({ ignoredHosts })
+  save = () => {
+    storage.get({ ignoredHosts: [] })
+      .then(({ ignoredHosts }) => {
+        for (const hostname of ignoredHosts) {
+          this.ignoredHosts.add(hostname)
+        }
+        console.log('All ignored domain saved!')
+      })
   }
 
-  add = async (hostname) => {
-    hostname = extractHostnameFromUrl(hostname)
-
-    const { ignoredHosts } =
-      await storage.get({ ignoredHosts: [] })
+  add = async (url) => {
+    const hostname = extractHostnameFromUrl(url)
+    const { ignoredHosts } = await storage.get({ ignoredHosts: [] })
 
     if (!ignoredHosts.includes(hostname)) {
       ignoredHosts.push(hostname)

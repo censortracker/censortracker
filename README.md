@@ -40,6 +40,10 @@ Make sure you have required versions of `node` and `npm`, which are:
 - `npm 7.6.3`
 - `fish 3.2.1` (or any other shell which supports per-command environment variable exporting)
 
+Optionally, you may like:
+
+[`nvm`](https://github.com/nvm-sh/nvm), which helps manage node versions.
+
 The build was tested only on the following operating systems:
 
 - `Ubuntu 19.10`

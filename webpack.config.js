@@ -192,6 +192,14 @@ const webpackConfig = {
   },
 }
 
+if (IS_FIREFOX) {
+  console.log('Is Firefox')
+}
+
+if (IS_CHROME) {
+  console.log('Is Chrome')
+}
+
 if (NODE_ENV === 'production') {
   // See: https://git.io/JmiaL
   webpackConfig.optimization.minimize = true

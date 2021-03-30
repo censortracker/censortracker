@@ -173,6 +173,7 @@ const webpackConfig = {
       files: [
         './src/common/manifest/base.json',
         './src/common/manifest/chrome.json',
+        `./src/common/manifest/environments/${process.env.NODE_ENV}.json`,
       ],
       output: {
         fileName: 'manifest.json',

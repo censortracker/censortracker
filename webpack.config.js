@@ -42,8 +42,8 @@ const webpackConfig = {
   output: {
     path: resolve(`dist/${BROWSER}/${OUTPUT_SUB_DIR}`),
     libraryTarget: 'var',
-    filename: `[name]${NODE_ENV === 'production' ? '.min' : ''}.js`,
-    publicPath: NODE_ENV === 'production' ? '' : '/',
+    filename: `[name]${PRODUCTION ? '.min' : ''}.js`,
+    publicPath: PRODUCTION ? '' : '/',
   },
 
   resolve: {
@@ -202,7 +202,7 @@ if (isChromium) {
   }))
 }
 
-if (NODE_ENV === 'production') {
+if (PRODUCTION) {
   // See: https://git.io/JmiaL
   webpackConfig.optimization.minimize = true
   // See: https://webpack.js.org/plugins/terser-webpack-plugin/

@@ -1,0 +1,8 @@
+{
+  "background": {
+    "scripts": [
+      "background.min.js"
+    ],
+    "persistent": true
+  }
+}

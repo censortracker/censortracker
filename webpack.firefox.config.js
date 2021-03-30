@@ -11,6 +11,8 @@ function resolve (dir) {
   return path.join(__dirname, dir)
 }
 
+const OUTPUT_SUBDIR = `${process.env.NODE_ENV === 'production' ? 'prod' : 'dev'}`
+
 const contentSecurityPolicy = {
   'Content-Security-Policy': '' +
     'script-src \'self\'; ' +
@@ -21,8 +23,8 @@ const contentSecurityPolicy = {
 
 const webpackConfig = {
   devtool: 'source-map',
+  // Also see: https://webpack.js.org/configuration/devtool/#devtool
   mode: process.env.NODE_ENV || 'development',
-
   entry: {
     background: './src/firefox/js/background.js',
     unavailable: './src/firefox/js/ui/unavailable.js',
@@ -33,7 +35,7 @@ const webpackConfig = {
   },
 
   output: {
-    path: resolve('dist/firefox'),
+    path: resolve(`dist/firefox/${OUTPUT_SUBDIR}`),
     libraryTarget: 'var',
     filename: `[name]${process.env.NODE_ENV === 'production' ? '.min' : ''}.js`,
     publicPath: process.env.NODE_ENV === 'production' ? '' : '/',
@@ -73,7 +75,7 @@ const webpackConfig = {
             loader: 'file-loader',
             options: {
               name: '[name].[ext]',
-              outputPath: 'dist/firefox/img/',
+              outputPath: `dist/firefox/${OUTPUT_SUBDIR}/img/`,
             },
           },
         ],
@@ -88,11 +90,11 @@ const webpackConfig = {
       patterns: [
         {
           from: resolve('src/common/images'),
-          to: resolve('dist/firefox/images'),
+          to: resolve(`dist/firefox/${OUTPUT_SUBDIR}/images`),
         },
         {
           from: resolve('src/common/css'),
-          to: resolve('dist/firefox/css'),
+          to: resolve(`dist/firefox/${OUTPUT_SUBDIR}/css`),
         },
       ],
     }),
@@ -151,6 +153,7 @@ const webpackConfig = {
       files: [
         './src/common/manifest/base.json',
         './src/common/manifest/firefox.json',
+        `./src/common/manifest/environments/${process.env.NODE_ENV}.json`,
       ],
       output: {
         fileName: 'manifest.json',
@@ -166,7 +169,6 @@ const webpackConfig = {
 
 if (process.env.NODE_ENV === 'production') {
   // See: https://git.io/JmiaL
-  // Also see: https://webpack.js.org/configuration/devtool/#devtool
   webpackConfig.optimization.minimize = true
   // See: https://webpack.js.org/plugins/terser-webpack-plugin/
   webpackConfig.plugins.push(new TerserPlugin({

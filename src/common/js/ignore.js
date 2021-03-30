@@ -63,6 +63,10 @@ class Ignore {
       ignoredHosts.push(hostname)
     }
 
+    for (const item of ignoredHosts) {
+      this.ignoredHosts.add(item)
+    }
+
     await storage.set({ ignoredHosts })
   }
 

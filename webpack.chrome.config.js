@@ -11,6 +11,8 @@ function resolve (dir) {
   return path.join(__dirname, dir)
 }
 
+const OUTPUT_SUBDIR = `${process.env.NODE_ENV === 'production' ? 'prod' : 'dev'}`
+
 const contentSecurityPolicy = {
   'Content-Security-Policy': '' +
     'script-src \'self\'; ' +
@@ -20,6 +22,7 @@ const contentSecurityPolicy = {
 }
 
 const webpackConfig = {
+  // Also see: https://webpack.js.org/configuration/devtool/#devtool
   devtool: 'source-map',
   mode: process.env.NODE_ENV || 'development',
 
@@ -34,7 +37,7 @@ const webpackConfig = {
   },
 
   output: {
-    path: resolve('dist/chrome'),
+    path: resolve(`dist/chrome/${OUTPUT_SUBDIR}`),
     libraryTarget: 'var',
     filename: `[name]${process.env.NODE_ENV === 'production' ? '.min' : ''}.js`,
     publicPath: process.env.NODE_ENV === 'production' ? '' : '/',
@@ -74,7 +77,7 @@ const webpackConfig = {
             loader: 'file-loader',
             options: {
               name: '[name].[ext]',
-              outputPath: 'dist/chrome/img/',
+              outputPath: `dist/chrome/${OUTPUT_SUBDIR}/img/`,
             },
           },
         ],
@@ -89,11 +92,11 @@ const webpackConfig = {
       patterns: [
         {
           from: resolve('src/common/images'),
-          to: resolve('dist/chrome/images'),
+          to: resolve(`dist/chrome/${OUTPUT_SUBDIR}/images`),
         },
         {
           from: resolve('src/common/css'),
-          to: resolve('dist/chrome/css'),
+          to: resolve(`dist/chrome/${OUTPUT_SUBDIR}/css`),
         },
       ],
     }),
@@ -184,7 +187,6 @@ const webpackConfig = {
 
 if (process.env.NODE_ENV === 'production') {
   // See: https://git.io/JmiaL
-  // Also see: https://webpack.js.org/configuration/devtool/#devtool
   webpackConfig.optimization.minimize = true
   // See: https://webpack.js.org/plugins/terser-webpack-plugin/
   webpackConfig.plugins.push(new TerserPlugin({

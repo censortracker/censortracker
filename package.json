@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "codemirror": "^5.60.0",
+    "crx": "^5.0.1",
     "ip-range-check": "^0.2.0"
   },
   "devDependencies": {

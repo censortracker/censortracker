@@ -8,7 +8,7 @@ const asyncExec = util.promisify(require('child_process').exec)
 const getExtension = async () => {
   const commands = [
     '2>/dev/null openssl genrsa 2048 | openssl pkcs8 -topk8 -nocrypt -out key.pem',
-    'crx pack dist/ --output tests/e2e/selenium/extension/dist.crx -p key.pem',
+    'crx pack dist/chrome/prod/ --output tests/e2e/selenium/extension/dist.crx -p key.pem',
     '2>/dev/null openssl rsa -in key.pem -pubout -outform DER | sha256sum | head -c32 | tr 0-9a-f a-p',
   ]
   const { stdout: extensionId } = await asyncExec(commands.join(' && '))

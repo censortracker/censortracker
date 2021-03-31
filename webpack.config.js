@@ -13,33 +13,28 @@ function resolve (dir) {
 
 const BROWSER = process.env.BROWSER
 const NODE_ENV = process.env.NODE_ENV || 'development'
-
-const IS_FIREFOX = BROWSER === 'firefox'
-const IS_CHROME = BROWSER === 'chrome'
-
 const PRODUCTION = NODE_ENV === 'production'
-
 const OUTPUT_SUB_DIR = PRODUCTION ? 'prod' : 'dev'
 
+const isFirefox = BROWSER === 'firefox'
+const isChromium = BROWSER === 'chrome'
+
 const contentSecurityPolicy = {
-  'Content-Security-Policy': '' +
-    'script-src \'self\'; ' +
-    'object-src \'self\'; ' +
+  'Content-Security-Policy': 'script-src \'self\'; object-src \'self\'; ' +
     'style-src \'self\' https://fonts.googleapis.com; ' +
     'font-src \'self\' https://fonts.gstatic.com ',
 }
 
 const webpackConfig = {
+  mode: NODE_ENV,
   // Also see: https://webpack.js.org/configuration/devtool/#devtool
   devtool: 'source-map',
-  mode: NODE_ENV,
 
   entry: {
     background: `./src/${BROWSER}/js/background.js`,
     unavailable: `./src/${BROWSER}/js/ui/unavailable.js`,
     popup: `./src/${BROWSER}/js/ui/popup.js`,
     options: `./src/${BROWSER}/js/ui/options.js`,
-    controlled: `./src/${BROWSER}/js/ui/controlled.js`,
     proxy_disabled: `./src/${BROWSER}/js/ui/proxy_disabled.js`,
     ignore_editor: './src/common/js/ui/ignore_editor.js',
   },
@@ -47,8 +42,8 @@ const webpackConfig = {
   output: {
     path: resolve(`dist/${BROWSER}/${OUTPUT_SUB_DIR}`),
     libraryTarget: 'var',
-    filename: `[name]${NODE_ENV === 'production' ? '.min' : ''}.js`,
-    publicPath: NODE_ENV === 'production' ? '' : '/',
+    filename: `[name]${PRODUCTION ? '.min' : ''}.js`,
+    publicPath: PRODUCTION ? '' : '/',
   },
 
   resolve: {
@@ -85,7 +80,7 @@ const webpackConfig = {
             loader: 'file-loader',
             options: {
               name: '[name].[ext]',
-              outputPath: `dist/${BROWSER}/${OUTPUT_SUB_DIR}/img/`,
+              outputPath: `dist/${BROWSER}/${OUTPUT_SUB_DIR}/images/`,
             },
           },
         ],
@@ -125,22 +120,6 @@ const webpackConfig = {
       meta: contentSecurityPolicy,
     }),
     new HTMLWebpackPlugin({
-      title: 'Controlled | Censor Tracker',
-      filename: 'controlled.html',
-      template: `src/${BROWSER}/pages/controlled.html`,
-      inject: true,
-      chunks: ['controlled'],
-      meta: contentSecurityPolicy,
-    }),
-    new HTMLWebpackPlugin({
-      title: 'Настройки | Censor Tracker',
-      filename: 'options.html',
-      template: 'src/common/pages/options.html',
-      inject: true,
-      chunks: ['options', 'controlled'],
-      meta: contentSecurityPolicy,
-    }),
-    new HTMLWebpackPlugin({
       title: 'Проксирование недоступно | Censor Tracker',
       filename: 'proxy_unavailable.html',
       template: 'src/common/pages/proxy_unavailable.html',
@@ -164,14 +143,6 @@ const webpackConfig = {
       chunks: ['proxy_disabled'],
       meta: contentSecurityPolicy,
     }),
-    new HTMLWebpackPlugin({
-      title: 'CensorTracker установлен',
-      filename: 'installed.html',
-      template: `src/${BROWSER}/pages/installed.html`,
-      inject: true,
-      chunks: [],
-      meta: contentSecurityPolicy,
-    }),
     new MergeJsonWebpackPlugin({
       globOptions: {
         nosort: false,
@@ -192,15 +163,46 @@ const webpackConfig = {
   },
 }
 
-if (IS_FIREFOX) {
-  console.log('Is Firefox')
+if (isFirefox) {
+  webpackConfig.plugins.push(new HTMLWebpackPlugin({
+    title: 'Настройки | Censor Tracker',
+    filename: 'options.html',
+    template: 'src/common/pages/options.html',
+    inject: true,
+    chunks: ['options'],
+    meta: contentSecurityPolicy,
+  }))
 }
 
-if (IS_CHROME) {
-  console.log('Is Chrome')
+if (isChromium) {
+  webpackConfig.entry.controlled = `./src/${BROWSER}/js/ui/controlled.js`
+  webpackConfig.plugins.push(new HTMLWebpackPlugin({
+    title: 'Настройки | Censor Tracker',
+    filename: 'options.html',
+    template: 'src/common/pages/options.html',
+    inject: true,
+    chunks: ['options', 'controlled'],
+    meta: contentSecurityPolicy,
+  }))
+  webpackConfig.plugins.push(new HTMLWebpackPlugin({
+    title: 'Controlled | Censor Tracker',
+    filename: 'controlled.html',
+    template: `src/${BROWSER}/pages/controlled.html`,
+    inject: true,
+    chunks: ['controlled'],
+    meta: contentSecurityPolicy,
+  }))
+  webpackConfig.plugins.push(new HTMLWebpackPlugin({
+    title: 'CensorTracker установлен',
+    filename: 'installed.html',
+    template: `src/${BROWSER}/pages/installed.html`,
+    inject: true,
+    chunks: [],
+    meta: contentSecurityPolicy,
+  }))
 }
 
-if (NODE_ENV === 'production') {
+if (PRODUCTION) {
   // See: https://git.io/JmiaL
   webpackConfig.optimization.minimize = true
   // See: https://webpack.js.org/plugins/terser-webpack-plugin/

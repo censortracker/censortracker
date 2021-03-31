@@ -1,0 +1,5 @@
+.DS_Store
+_docker-slim/
+_docker-slim.env
+node_modules/
+README.md

@@ -23,9 +23,9 @@ Features
 Censor Tracker provides a lot of useful features, here are most
 important:
 
--   Detects [DPI]-based locks
--   Bypass [DPI]-based locks
--   Bypass [registry](https://eais.rkn.gov.ru/) locks
+- Detects [DPI]-based restrictions
+- Bypass [DPI]-based restrictions
+- Bypass [registry](https://eais.rkn.gov.ru/) restrictions
 
 
 Development
@@ -38,16 +38,17 @@ Make sure you have required versions of `node` and `npm`, which are:
 
 - `node v15.4.0`
 - `npm 7.6.3`
-- `fish 3.2.1` (or any other shell which supports per-command environment variable exporting)
 
 Optionally, you may like:
 
-[`nvm`](https://github.com/nvm-sh/nvm), which helps manage node versions.
+- `docker`
+- [`nvm`](https://github.com/nvm-sh/nvm)
+
 
 The build was tested only on the following operating systems:
 
 - `Ubuntu 19.10`
-- `macOS Catalina v10.15.7` (MacBook Pro 13″, 2017)
+- `macOS Catalina v10.15.7`
 
 We don't guarantee that CensorTracker will work on outdated versions of browsers,
 so make sure you're using the latest ones.
@@ -56,6 +57,16 @@ We've tested CensorTracker on the following versions:
 
 - Firefox, 80 or higher
 - Chrome, 80 or higher
+
+Docker
+------
+
+You can use `docker` to avoid installation of all the requirements globally:
+
+```bash
+~ docker-compose build
+~ docker-compose run ct npm run build:firefox
+```
 
 Installation
 ------------

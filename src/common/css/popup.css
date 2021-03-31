@@ -185,10 +185,6 @@ a {
 }
 
 .block__btn:hover path {
-  stroke: #2b251f;
-}
-
-.block__btn:hover path {
   stroke: #625c55;
 }
 
@@ -308,10 +304,7 @@ a {
 }
 
 .btn-on {
-  margin-top: 30px;
-  margin-left: auto;
-  margin-right: auto;
-  margin-bottom: 70px;
+  margin: 30px auto 70px;
   width: 80px;
   height: 80px;
 }

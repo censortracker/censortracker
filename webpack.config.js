@@ -203,8 +203,14 @@ if (isChromium) {
 }
 
 if (PRODUCTION) {
-  // See: https://git.io/JmiaL
+  // See https://git.io/JmiaL
+
+  // See https://webpack.js.org/configuration/devtool/#production
+  webpackConfig.devtool = 'none'
+
+  // See https://webpack.js.org/configuration/optimization/#optimizationminimize
   webpackConfig.optimization.minimize = true
+
   // See: https://webpack.js.org/plugins/terser-webpack-plugin/
   webpackConfig.plugins.push(new TerserPlugin({
     terserOptions: {

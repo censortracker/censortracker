@@ -204,7 +204,6 @@ if (isChromium) {
 
 if (PRODUCTION) {
   // See https://git.io/JmiaL
-
   // See https://webpack.js.org/configuration/devtool/#production
   webpackConfig.devtool = 'none'
 

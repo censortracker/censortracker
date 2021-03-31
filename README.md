@@ -65,7 +65,7 @@ You can use `docker` to avoid installation of all the requirements globally:
 
 ```bash
 ~ docker-compose build
-~ docker-compose run ct npm run build:firefox
+~ docker-compose run ct npm run build:{BROWSER}
 ```
 
 Installation

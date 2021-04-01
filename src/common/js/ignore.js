@@ -26,7 +26,7 @@ const SPECIAL_PURPOSE_IPS = [
   'ff00::/8',
 ]
 
-const IGNORE_SYNC_INTERVAL_MS = 60 * 3 * 1000
+const IGNORE_SYNC_INTERVAL_MS = 60 * 30 * 1000
 
 class Ignore {
   constructor () {

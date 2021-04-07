@@ -54,10 +54,6 @@ const handleProxyRequest = async ({ url }) => {
   const { useProxy } = await storage.get({ useProxy: true })
   const { domainFound } = await registry.domainsContains(url)
 
-  if (ignore.contains(url)) {
-    return proxy.getDirectProxyInfo()
-  }
-
   if (useProxy && domainFound) {
     proxy.allowProxying()
     return proxy.getProxyInfo()
@@ -80,6 +76,8 @@ browser.proxy.onRequest.addListener(
 const handleErrorOccurred = async ({ error, url, tabId }) => {
   const encodedUrl = window.btoa(url)
   const hostname = extractHostnameFromUrl(url)
+
+  console.error(error)
 
   const { useProxy } = await storage.get({ useProxy: true })
   const { proxyError, connectionError } = errors.determineError(error)

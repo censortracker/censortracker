@@ -68,25 +68,24 @@ export const enforceHttpsConnection = (url) => {
  * @param https Include all HTTPS resource to "urls" array.
  * @param types This type is a string, which represents the context
  * in which a resource was fetched in a web request.
- * @returns {{urls: [], types: [string]}} Request filter.
+ * @returns {{urls: []}} Request filter.
  */
-export const getRequestFilter = ({ http = true, https = true, types = undefined } = {}) => {
-  // See: https://mzl.la/3tnkndy
-  const urls = []
+export const getRequestFilter = ({ http = true, https = true, types } = {}) => {
+  const requestFilter = { urls: [] }
 
-  if (types === undefined) {
-    types = ['main_frame']
+  if (types && Array.isArray(types)) {
+    requestFilter.types = types
   }
 
   if (http) {
-    urls.push('http://*/*')
+    requestFilter.urls.push('http://*/*')
   }
 
   if (https) {
-    urls.push('https://*/*')
+    requestFilter.urls.push('https://*/*')
   }
 
-  return { urls, types }
+  return requestFilter
 }
 
 /**

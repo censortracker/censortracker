@@ -44,7 +44,7 @@ const handleBeforeRequest = ({ url }) => {
 
 chrome.webRequest.onBeforeRequest.addListener(
   handleBeforeRequest,
-  getRequestFilter({ http: true, https: false }),
+  getRequestFilter({ http: true, https: false, types: ['main_frame'] }),
   ['blocking'],
 )
 
@@ -103,7 +103,7 @@ const handleErrorOccurred = async ({ url, error, tabId }) => {
 
 chrome.webRequest.onErrorOccurred.addListener(
   handleErrorOccurred,
-  getRequestFilter({ http: true, https: true }),
+  getRequestFilter({ http: true, https: true, types: ['main_frame'] }),
 )
 
 const handleNotificationButtonClicked = async (notificationId, buttonIndex) => {
@@ -274,11 +274,11 @@ const handleStorageChanged = ({ enableExtension = undefined, ignoredHosts = unde
       if (!listenersActivated) {
         chrome.webRequest.onErrorOccurred.addListener(
           handleErrorOccurred,
-          getRequestFilter({ http: true, https: true }),
+          getRequestFilter({ http: true, https: true, types: ['main_frame'] }),
         )
         chrome.webRequest.onBeforeRequest.addListener(
           handleBeforeRequest,
-          getRequestFilter({ http: true, https: false }),
+          getRequestFilter({ http: true, https: false, types: ['main_frame'] }),
           ['blocking'],
         )
         console.warn('Web request listeners enabled')
@@ -321,11 +321,11 @@ window.censortracker.webRequestListeners = {
   activate: () => {
     chrome.webRequest.onErrorOccurred.addListener(
       handleErrorOccurred,
-      getRequestFilter({ http: true, https: true }),
+      getRequestFilter({ http: true, https: true, types: ['main_frame'] }),
     )
     chrome.webRequest.onBeforeRequest.addListener(
       handleBeforeRequest,
-      getRequestFilter({ http: true, https: false }),
+      getRequestFilter({ http: true, https: false, types: ['main_frame'] }),
       ['blocking'],
     )
     console.warn('CensorTracker: listeners added')

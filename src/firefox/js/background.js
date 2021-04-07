@@ -41,7 +41,7 @@ const handleBeforeRequest = ({ url }) => {
 
 browser.webRequest.onBeforeRequest.addListener(
   handleBeforeRequest,
-  getRequestFilter({ http: true, https: false }),
+  getRequestFilter({ http: true, https: false, types: ['main_frame'] }),
   ['blocking'],
 )
 
@@ -67,11 +67,7 @@ const handleProxyRequest = async ({ url }) => {
 
 browser.proxy.onRequest.addListener(
   handleProxyRequest,
-  getRequestFilter({
-    http: false,
-    https: true,
-    types: ['main_frame', 'stylesheet'],
-  }),
+  getRequestFilter({ http: false, https: true }),
 )
 
 /**
@@ -119,7 +115,7 @@ const handleErrorOccurred = async ({ error, url, tabId }) => {
 
 browser.webRequest.onErrorOccurred.addListener(
   handleErrorOccurred,
-  getRequestFilter({ http: true, https: true }),
+  getRequestFilter({ http: true, https: true, types: ['main_frame'] }),
 )
 
 const handleTabState = async (tabId, changeInfo, tab) => {
@@ -250,11 +246,11 @@ const handleStorageChanged = ({ enableExtension: { newValue: extensionEnabled } 
     if (!listenersActivated) {
       browser.webRequest.onErrorOccurred.addListener(
         handleErrorOccurred,
-        getRequestFilter({ http: true, https: true }),
+        getRequestFilter({ http: true, https: true, types: ['main_frame'] }),
       )
       browser.webRequest.onBeforeRequest.addListener(
         handleBeforeRequest,
-        getRequestFilter({ http: true, https: false }),
+        getRequestFilter({ http: true, https: false, types: ['main_frame'] }),
         ['blocking'],
       )
       console.warn('Web request listeners enabled')

@@ -22,6 +22,27 @@ window.censortracker = {
   extractHostnameFromUrl,
 }
 
+/*
+The typical sequence of events is like this (see https://mzl.la/3mrPiCm for more details):
+
+            |-----------▷ onBeforeRequest
+            |                   |
+            |                   ▽
+            |           onBeforeSendHeaders ◁-------|
+            |                   |                   |
+            |                   ▽                   |
+            |              onSendHeaders            |
+            |                   |                   |
+            |                   ▽                   |
+            |            onHeadersReceived          |
+            |                   |                   |
+            |                   ▽                   |
+  onBeforeRedirected ◁-- onResponseStarted --▷ onAuthRequired
+                                |
+                                ▽
+                            onCompleted
+ */
+
 /**
  * Fires when a request is about to occur. This event is sent before any TCP
  * connection is made and can be used to cancel or redirect requests.
@@ -54,10 +75,6 @@ const handleProxyRequest = async ({ url }) => {
   const { useProxy } = await storage.get({ useProxy: true })
   const { domainFound } = await registry.domainsContains(url)
 
-  if (ignore.contains(url)) {
-    return proxy.getDirectProxyInfo()
-  }
-
   if (useProxy && domainFound) {
     proxy.allowProxying()
     return proxy.getProxyInfo()
@@ -72,12 +89,13 @@ browser.proxy.onRequest.addListener(
 
 /**
  * Fires when a request could not be processed successfully.
- * @param url Current URL address.
- * @param error The error description.
+ * @param url Target of the request.
+ * @param error The error description. Set to -1 if the request isn't related to a tab.
+ * @param type The type of resource being requested: for example, "image", "script", "stylesheet".
  * @param tabId The ID of the tab in which the request takes place.
  * @returns {undefined} Undefined.
  */
-const handleErrorOccurred = async ({ error, url, tabId }) => {
+const handleErrorOccurred = async ({ error, url, type, tabId }) => {
   const encodedUrl = window.btoa(url)
   const hostname = extractHostnameFromUrl(url)
 
@@ -104,7 +122,6 @@ const handleErrorOccurred = async ({ error, url, tabId }) => {
     browser.tabs.update(tabId, {
       url: browser.runtime.getURL(`unavailable.html?${encodedUrl}`),
     })
-    return
   }
 
   await ignore.add(hostname)

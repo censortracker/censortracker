@@ -208,14 +208,14 @@ if (PRODUCTION) {
   webpackConfig.devtool = 'none'
 
   // See https://webpack.js.org/configuration/optimization/#optimizationminimize
-  webpackConfig.optimization.minimize = true
+  // webpackConfig.optimization.minimize = true
 
   // See: https://webpack.js.org/plugins/terser-webpack-plugin/
-  webpackConfig.plugins.push(new TerserPlugin({
-    terserOptions: {
-      parallel: true,
-    },
-  }))
+  // webpackConfig.plugins.push(new TerserPlugin({
+  //   terserOptions: {
+  //     parallel: true,
+  //   },
+  // }))
 }
 
 module.exports = webpackConfig

@@ -140,11 +140,11 @@ const handleTabState = async (tabId, changeInfo, tab) => {
         return
       }
 
-      const domainFound = await registry.contains(tab.url)
+      const urlBlocked = await registry.contains(tab.url)
       const { url: distributorUrl, cooperationRefused } =
         await registry.distributorsContains(tab.url)
 
-      if (domainFound) {
+      if (urlBlocked) {
         settings.setBlockedIcon(tabId)
         return
       }

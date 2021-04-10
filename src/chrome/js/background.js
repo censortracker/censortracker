@@ -140,7 +140,7 @@ const handleTabState = async (tabId, changeInfo, tab) => {
         return
       }
 
-      const { domainFound } = await registry.domainsContains(tab.url)
+      const domainFound = await registry.contains(tab.url)
       const { url: distributorUrl, cooperationRefused } =
         await registry.distributorsContains(tab.url)
 

@@ -70,7 +70,7 @@ browser.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
     renderCurrentDomain(currentHostname)
     footerTrackerOn.removeAttribute('hidden')
 
-    const { domainFound } = await bgModules.registry.domainsContains(currentHostname)
+    const domainFound = await bgModules.registry.contains(currentHostname)
 
     if (domainFound) {
       changeStatusImage('blocked')

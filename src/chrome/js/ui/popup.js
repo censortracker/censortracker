@@ -62,9 +62,9 @@ chrome.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
     renderCurrentDomain(currentHostname)
     footerTrackerOn.removeAttribute('hidden')
 
-    const domainFound = await registry.contains(currentHostname)
+    const urlBlocked = await registry.contains(currentHostname)
 
-    if (domainFound) {
+    if (urlBlocked) {
       changeStatusImage('blocked')
       restrictionsApplied.removeAttribute('hidden')
       restrictionsAreNotApplied.remove()
@@ -94,7 +94,7 @@ chrome.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
       console.log('Match not found at all')
     }
 
-    if (domainFound && distributorUrl) {
+    if (urlBlocked && distributorUrl) {
       if (cooperationRefused === false) {
         changeStatusImage('ori_blocked')
       }

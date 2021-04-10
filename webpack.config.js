@@ -42,7 +42,8 @@ const webpackConfig = {
   output: {
     path: resolve(`dist/${BROWSER}/${OUTPUT_SUB_DIR}`),
     libraryTarget: 'var',
-    filename: `[name]${PRODUCTION ? '.min' : ''}.js`,
+    filename: '[name].js',
+    // filename: `[name]${PRODUCTION ? '.min' : ''}.js`,
     publicPath: PRODUCTION ? '' : '/',
   },
 
@@ -208,14 +209,14 @@ if (PRODUCTION) {
   webpackConfig.devtool = 'none'
 
   // See https://webpack.js.org/configuration/optimization/#optimizationminimize
-  // webpackConfig.optimization.minimize = true
+  webpackConfig.optimization.minimize = true
 
   // See: https://webpack.js.org/plugins/terser-webpack-plugin/
-  // webpackConfig.plugins.push(new TerserPlugin({
-  //   terserOptions: {
-  //     parallel: true,
-  //   },
-  // }))
+  webpackConfig.plugins.push(new TerserPlugin({
+    terserOptions: {
+      parallel: true,
+    },
+  }))
 }
 
 module.exports = webpackConfig

@@ -48,30 +48,26 @@ browser.webRequest.onBeforeRequest.addListener(
 /**
  * Fired when a web request is about to be made, to give the extension an opportunity to proxy it.
  * @param url Current URL address.
+ * @param type The type of resource being requested.
  * @returns {Promise<{port: number, host: string, type: string}|{type: string}>}
  */
 const handleProxyRequest = async ({ url }) => {
   const { useProxy } = await storage.get({ useProxy: true })
-  const { domainFound } = await registry.domainsContains(url)
 
-  if (ignore.contains(url)) {
-    return proxy.getDirectProxyInfo()
-  }
+  if (useProxy) {
+    const { domainFound } = await registry.domainsContains(url)
 
-  if (useProxy && domainFound) {
-    proxy.allowProxying()
-    return proxy.getProxyInfo()
+    if (domainFound) {
+      proxy.allowProxying()
+      return proxy.getProxyInfo()
+    }
   }
   return proxy.getDirectProxyInfo()
 }
 
 browser.proxy.onRequest.addListener(
   handleProxyRequest,
-  getRequestFilter({
-    http: false,
-    https: true,
-    types: ['main_frame', 'stylesheet'],
-  }),
+  { urls: ['https://*/*', 'http://*/*'] },
 )
 
 /**

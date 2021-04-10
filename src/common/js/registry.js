@@ -116,9 +116,9 @@ class Registry {
   /**
    * Checks if URL is in the registry of restricted websites.
    * @param url URL.
-   * @returns {Promise<{domainFound: boolean}>}
+   * @returns {Promise<{boolean}>}
    */
-  domainsContains = async (url) => {
+  contains = async (url) => {
     const hostname = extractHostnameFromUrl(url)
     const { domains, blockedDomains } =
       await storage.get({
@@ -130,9 +130,9 @@ class Registry {
 
     if (domainsArray.includes(hostname)) {
       console.log(`Registry match found: ${hostname}`)
-      return { domainFound: true }
+      return true
     }
-    return { domainFound: false }
+    return false
   }
 
   /**

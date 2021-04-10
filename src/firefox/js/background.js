@@ -55,7 +55,7 @@ const handleProxyRequest = async ({ url }) => {
   const { useProxy } = await storage.get({ useProxy: true })
 
   if (useProxy) {
-    const { domainFound } = await registry.domainsContains(url)
+    const domainFound = await registry.contains(url)
 
     if (domainFound) {
       proxy.allowProxying()
@@ -127,7 +127,7 @@ const handleTabState = async (tabId, changeInfo, tab) => {
         return
       }
 
-      const { domainFound } = await registry.domainsContains(tab.url)
+      const domainFound = await registry.contains(tab.url)
       const { url: distributorUrl, cooperationRefused } =
         await registry.distributorsContains(tab.url)
 

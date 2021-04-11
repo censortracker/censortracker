@@ -22,6 +22,12 @@ window.censortracker = {
   extractHostnameFromUrl,
 }
 
+const handleTabCreated = ({ id }) => {
+  browser.browserAction.disable(id)
+}
+
+browser.tabs.onCreated.addListener(handleTabCreated)
+
 /**
  * Fires when a request is about to occur. This event is sent before any TCP
  * connection is made and can be used to cancel or redirect requests.
@@ -56,10 +62,7 @@ const handleProxyRequest = async ({ tabId, url, type }) => {
   const requestedFromTab = tabId !== -1
   const { useProxy } = await storage.get({ useProxy: true })
 
-  console.log(url, type)
-
   if (useProxy && requestedFromTab) {
-    console.log(`[${tabId}]  ${url} -> ${type}`)
     const urlBlocked = await registry.contains(url)
 
     if (urlBlocked) {
@@ -124,7 +127,7 @@ browser.webRequest.onErrorOccurred.addListener(
 )
 
 const handleTabState = async (tabId, changeInfo, tab) => {
-  if (changeInfo && 'status' in changeInfo && changeInfo.status === 'complete') {
+  if (changeInfo && changeInfo.status === browser.tabs.TabStatus.COMPLETE) {
     const { enableExtension } = await storage.get({ enableExtension: true })
 
     if (enableExtension && validateUrl(tab.url)) {
@@ -196,11 +199,19 @@ browser.windows.onRemoved.addListener(handleWindowRemoved)
  * @returns {Promise<void>}
  */
 const handleInstalled = async ({ reason }) => {
-  if (reason === 'install') {
+  const reasonsForSync = [
+    browser.runtime.OnInstalledReason.UPDATE,
+    browser.runtime.OnInstalledReason.INSTALL,
+  ]
+
+  if (reasonsForSync.includes(reason)) {
     const synchronized = await registry.sync()
+    const extensionEnabled = await settings.extensionEnabled()
 
     if (synchronized) {
-      await settings.enableExtension()
+      if (extensionEnabled === undefined) {
+        await settings.enableExtension()
+      }
     }
   }
 }
@@ -227,7 +238,6 @@ browser.tabs.onCreated.addListener(handleTabCreate)
 
 browser.runtime.onStartup.addListener(async () => {
   await registry.sync()
-  await handleTabState()
 })
 
 /**

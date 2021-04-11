@@ -47,14 +47,19 @@ browser.webRequest.onBeforeRequest.addListener(
 
 /**
  * Fired when a web request is about to be made, to give the extension an opportunity to proxy it.
- * @param url Current URL address.
+ * @param tabId ID of the tab in which the request takes place. Set to -1 if the request is not related to a tab.
+ * @param url Target of the request.
  * @param type The type of resource being requested.
  * @returns {Promise<{port: number, host: string, type: string}|{type: string}>}
  */
-const handleProxyRequest = async ({ url }) => {
+const handleProxyRequest = async ({ tabId, url, type }) => {
+  const requestedFromTab = tabId !== -1
   const { useProxy } = await storage.get({ useProxy: true })
 
-  if (useProxy) {
+  console.log(url, type)
+
+  if (useProxy && requestedFromTab) {
+    console.log(`[${tabId}]  ${url} -> ${type}`)
     const urlBlocked = await registry.contains(url)
 
     if (urlBlocked) {
@@ -67,7 +72,7 @@ const handleProxyRequest = async ({ url }) => {
 
 browser.proxy.onRequest.addListener(
   handleProxyRequest,
-  { urls: ['https://*/*', 'http://*/*'] },
+  { urls: ['https://*/*'] },
 )
 
 /**

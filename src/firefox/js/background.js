@@ -239,7 +239,8 @@ const handleStorageChanged = ({ enableExtension: { newValue: extensionEnabled } 
   // See: https://git.io/Jtw5D
   const listenersActivated = (
     browser.webRequest.onErrorOccurred.hasListener(handleErrorOccurred) &&
-    browser.webRequest.onBeforeRequest.hasListener(handleBeforeRequest)
+    browser.webRequest.onBeforeRequest.hasListener(handleBeforeRequest) &&
+    browser.proxy.onRequest.hasListener(handleProxyRequest)
   )
 
   // See src/common/ui/ignore_editor.js
@@ -258,14 +259,12 @@ const handleStorageChanged = ({ enableExtension: { newValue: extensionEnabled } 
         getRequestFilter({ http: true, https: false }),
         ['blocking'],
       )
-      console.warn('Web request listeners enabled')
+      browser.proxy.onRequest.addListener(handleProxyRequest, { urls: ['https://*/*'] })
     }
-  }
-
-  if (extensionEnabled === false) {
+  } else {
+    browser.proxy.onRequest.removeListener(handleProxyRequest)
     browser.webRequest.onErrorOccurred.removeListener(handleErrorOccurred)
     browser.webRequest.onBeforeRequest.removeListener(handleBeforeRequest)
-    console.warn('Web request listeners disabled')
   }
 }
 

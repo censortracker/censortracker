@@ -122,9 +122,9 @@ browser.webRequest.onErrorOccurred.addListener(
 
 const handleTabState = async (tabId, changeInfo, tab) => {
   if (changeInfo && changeInfo.status === browser.tabs.TabStatus.COMPLETE) {
-    const { enableExtension } = await storage.get({ enableExtension: true })
+    const extensionEnabled = await settings.extensionEnabled()
 
-    if (enableExtension && isValidURL(tab.url)) {
+    if (extensionEnabled && isValidURL(tab.url)) {
       if (ignore.contains(tab.url)) {
         return
       }

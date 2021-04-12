@@ -1,7 +1,7 @@
 import {
   enforceHttpsConnection,
   extractHostnameFromUrl,
-  validateUrl,
+  isValidURL,
 } from '../../src/common/js/utilities'
 
 describe('Validate URL', () => {
@@ -20,9 +20,9 @@ describe('Validate URL', () => {
 
     for (const { url, valid } of urls) {
       if (valid) {
-        expect(validateUrl(url)).toBeTruthy()
+        expect(isValidURL(url)).toBeTruthy()
       } else {
-        expect(validateUrl(url)).toBeFalsy()
+        expect(isValidURL(url)).toBeFalsy()
       }
     }
   })
@@ -58,9 +58,9 @@ describe('Check if URL is chrome extension', () => {
 
     for (const { url, expected } of urls) {
       if (expected) {
-        expect(validateUrl(url)).toBeTruthy()
+        expect(isValidURL(url)).toBeTruthy()
       } else {
-        expect(validateUrl(url)).toBeFalsy()
+        expect(isValidURL(url)).toBeFalsy()
       }
     }
   })

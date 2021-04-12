@@ -5,11 +5,11 @@ import {
   extractHostnameFromUrl,
   getRequestFilter,
   ignore,
+  isValidURL,
   proxy,
   registry,
   settings,
   storage,
-  validateUrl,
 } from './core'
 
 window.censortracker = {
@@ -21,12 +21,6 @@ window.censortracker = {
   ignore,
   extractHostnameFromUrl,
 }
-
-const handleTabCreated = ({ id }) => {
-  browser.browserAction.disable(id)
-}
-
-browser.tabs.onCreated.addListener(handleTabCreated)
 
 /**
  * Fires when a request is about to occur. This event is sent before any TCP
@@ -130,7 +124,7 @@ const handleTabState = async (tabId, changeInfo, tab) => {
   if (changeInfo && changeInfo.status === browser.tabs.TabStatus.COMPLETE) {
     const { enableExtension } = await storage.get({ enableExtension: true })
 
-    if (enableExtension && validateUrl(tab.url)) {
+    if (enableExtension && isValidURL(tab.url)) {
       if (ignore.contains(tab.url)) {
         return
       }
@@ -224,13 +218,17 @@ const handleUninstalled = async (_info) => {
 
 browser.management.onUninstalled.addListener(handleUninstalled)
 
-const handleTabCreate = async ({ id }) => {
-  const { enableExtension } = await storage.get({ enableExtension: true })
+const handleTabCreate = async ({ id, url }) => {
+  const extensionEnabled = await settings.extensionEnabled()
 
-  if (enableExtension) {
+  if (extensionEnabled) {
     settings.setDefaultIcon(id)
   } else {
     settings.setDisableIcon(id)
+  }
+
+  if (isValidURL(url)) {
+    browser.browserAction.disable(id)
   }
 }
 

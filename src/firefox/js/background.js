@@ -54,7 +54,7 @@ browser.webRequest.onBeforeRequest.addListener(
  */
 const handleProxyRequest = async ({ tabId, url }) => {
   const isCurrentTab = tabId !== -1
-  const proxyingEnabled = await settings.proxyingEnabled()
+  const proxyingEnabled = await proxy.proxyingEnabled()
 
   if (proxyingEnabled && isCurrentTab) {
     const urlBlocked = await registry.contains(url)
@@ -72,11 +72,14 @@ browser.proxy.onRequest.addListener(
   {
     urls: ['https://*/*'],
     // See https://mzl.la/322Xa3Q for more details
-    types: [
-      browser.webRequest.ResourceType.MAIN_FRAME,
-      browser.webRequest.ResourceType.SUB_FRAME,
-      browser.webRequest.ResourceType.STYLESHEET,
-    ],
+    // types: [
+    //   browser.webRequest.ResourceType.MAIN_FRAME,
+    //   browser.webRequest.ResourceType.SUB_FRAME,
+    //   browser.webRequest.ResourceType.STYLESHEET,
+    //   browser.webRequest.ResourceType.SCRIPT,
+    //   browser.webRequest.ResourceType.FONT,
+    //   browser.webRequest.ResourceType.IMAGE,
+    // ],
   },
 )
 

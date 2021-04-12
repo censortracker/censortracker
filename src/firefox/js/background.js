@@ -222,13 +222,11 @@ const handleTabCreate = async ({ id, url }) => {
   const extensionEnabled = await settings.extensionEnabled()
 
   if (extensionEnabled) {
-    settings.setDefaultIcon(id)
+    if (url.startsWith('about:')) {
+      browser.browserAction.disable(id)
+    }
   } else {
     settings.setDisableIcon(id)
-  }
-
-  if (isValidURL(url)) {
-    browser.browserAction.disable(id)
   }
 }
 

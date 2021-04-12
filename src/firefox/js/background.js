@@ -53,10 +53,10 @@ browser.webRequest.onBeforeRequest.addListener(
  * @returns {Promise<{port: number, host: string, type: string}|{type: string}>}
  */
 const handleProxyRequest = async ({ tabId, url }) => {
-  const requestedFromTab = tabId !== -1
-  const { useProxy } = await storage.get({ useProxy: true })
+  const isCurrentTab = tabId !== -1
+  const proxyingEnabled = await settings.proxyingEnabled()
 
-  if (useProxy && requestedFromTab) {
+  if (proxyingEnabled && isCurrentTab) {
     const urlBlocked = await registry.contains(url)
 
     if (urlBlocked) {

@@ -3,7 +3,7 @@
  * @param url URL
  * @returns {boolean} true if valid otherwise false
  */
-export const validateUrl = (url) => {
+export const isValidURL = (url) => {
   const pattern = new RegExp(
     '^(https?:\\/\\/)?' +
     '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' +

@@ -9,6 +9,6 @@ export {
   enforceHttpsConnection,
   extractHostnameFromUrl,
   getRequestFilter,
-  validateUrl,
+  isValidURL,
   arrayContains,
 } from '../../../common/js/utilities'

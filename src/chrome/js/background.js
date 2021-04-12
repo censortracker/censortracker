@@ -6,11 +6,11 @@ import {
   extractHostnameFromUrl,
   getRequestFilter,
   ignore,
+  isValidURL,
   proxy,
   registry,
   settings,
   storage,
-  validateUrl,
 } from './core'
 
 window.censortracker = {
@@ -135,7 +135,7 @@ const handleTabState = async (tabId, changeInfo, tab) => {
   if (changeInfo && 'status' in changeInfo && changeInfo.status === 'complete') {
     const { enableExtension } = await storage.get({ enableExtension: true })
 
-    if (enableExtension && validateUrl(tab.url)) {
+    if (enableExtension && isValidURL(tab.url)) {
       if (ignore.contains(tab.url)) {
         return
       }

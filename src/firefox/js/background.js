@@ -52,7 +52,7 @@ browser.webRequest.onBeforeRequest.addListener(
  * @param type The type of resource being requested.
  * @returns {Promise<{port: number, host: string, type: string}|{type: string}>}
  */
-const handleProxyRequest = async ({ tabId, url, type }) => {
+const handleProxyRequest = async ({ tabId, url }) => {
   const requestedFromTab = tabId !== -1
   const { useProxy } = await storage.get({ useProxy: true })
 
@@ -69,7 +69,15 @@ const handleProxyRequest = async ({ tabId, url, type }) => {
 
 browser.proxy.onRequest.addListener(
   handleProxyRequest,
-  { urls: ['https://*/*'] },
+  {
+    urls: ['https://*/*'],
+    // See https://mzl.la/322Xa3Q for more details
+    types: [
+      browser.webRequest.ResourceType.MAIN_FRAME,
+      browser.webRequest.ResourceType.SUB_FRAME,
+      browser.webRequest.ResourceType.STYLESHEET,
+    ],
+  },
 )
 
 /**

@@ -151,7 +151,7 @@ const handleTabState = async (tabId, changeInfo, tab) => {
         }
       }
     } else {
-      settings.setDisableIcon(tabId)
+      browser.browserAction.disable(tabId)
     }
   }
 }
@@ -271,7 +271,9 @@ const handleStorageChanged = ({ enableExtension: { newValue: extensionEnabled } 
       )
       browser.proxy.onRequest.addListener(handleProxyRequest, { urls: ['https://*/*'] })
     }
-  } else {
+  }
+
+  if (extensionEnabled === false) {
     browser.proxy.onRequest.removeListener(handleProxyRequest)
     browser.webRequest.onErrorOccurred.removeListener(handleErrorOccurred)
     browser.webRequest.onBeforeRequest.removeListener(handleBeforeRequest)

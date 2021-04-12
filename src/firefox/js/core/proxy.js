@@ -19,6 +19,13 @@ class Proxy {
     return { type: 'direct' }
   }
 
+  proxyingEnabled = async () => {
+    const { useProxy } =
+      await storage.get({ useProxy: true })
+
+    return useProxy
+  }
+
   enableProxy = async () => {
     console.warn('Proxying enabled.')
     await storage.set({

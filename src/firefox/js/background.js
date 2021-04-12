@@ -52,11 +52,11 @@ browser.webRequest.onBeforeRequest.addListener(
  * @param type The type of resource being requested.
  * @returns {Promise<{port: number, host: string, type: string}|{type: string}>}
  */
-const handleProxyRequest = async ({ tabId, url, type }) => {
-  const requestedFromTab = tabId !== -1
-  const { useProxy } = await storage.get({ useProxy: true })
+const handleProxyRequest = async ({ tabId, url }) => {
+  const isCurrentTab = tabId !== -1
+  const proxyingEnabled = await proxy.proxyingEnabled()
 
-  if (useProxy && requestedFromTab) {
+  if (proxyingEnabled && isCurrentTab) {
     const urlBlocked = await registry.contains(url)
 
     if (urlBlocked) {
@@ -69,7 +69,18 @@ const handleProxyRequest = async ({ tabId, url, type }) => {
 
 browser.proxy.onRequest.addListener(
   handleProxyRequest,
-  { urls: ['https://*/*'] },
+  {
+    urls: ['https://*/*'],
+    // See https://mzl.la/322Xa3Q for more details
+    // types: [
+    //   browser.webRequest.ResourceType.MAIN_FRAME,
+    //   browser.webRequest.ResourceType.SUB_FRAME,
+    //   browser.webRequest.ResourceType.STYLESHEET,
+    //   browser.webRequest.ResourceType.SCRIPT,
+    //   browser.webRequest.ResourceType.FONT,
+    //   browser.webRequest.ResourceType.IMAGE,
+    // ],
+  },
 )
 
 /**
@@ -83,7 +94,7 @@ const handleErrorOccurred = async ({ error, url, tabId }) => {
   const encodedUrl = window.btoa(url)
   const hostname = extractHostnameFromUrl(url)
 
-  const { useProxy } = await storage.get({ useProxy: true })
+  const proxyingEnabled = await proxy.proxyingEnabled()
   const { proxyError, connectionError } = errors.determineError(error)
 
   if (proxyError) {
@@ -96,7 +107,7 @@ const handleErrorOccurred = async ({ error, url, tabId }) => {
   if (connectionError) {
     await registry.add(hostname)
 
-    if (!useProxy) {
+    if (!proxyingEnabled) {
       browser.tabs.update(tabId, {
         url: browser.runtime.getURL(`proxy_disabled.html?${encodedUrl}`),
       })
@@ -122,9 +133,9 @@ browser.webRequest.onErrorOccurred.addListener(
 
 const handleTabState = async (tabId, changeInfo, tab) => {
   if (changeInfo && changeInfo.status === browser.tabs.TabStatus.COMPLETE) {
-    const { enableExtension } = await storage.get({ enableExtension: true })
+    const extensionEnabled = await settings.extensionEnabled()
 
-    if (enableExtension && isValidURL(tab.url)) {
+    if (extensionEnabled && isValidURL(tab.url)) {
       if (ignore.contains(tab.url)) {
         return
       }

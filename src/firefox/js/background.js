@@ -91,7 +91,7 @@ const handleErrorOccurred = async ({ error, url, tabId }) => {
   const encodedUrl = window.btoa(url)
   const hostname = extractHostnameFromUrl(url)
 
-  const { useProxy } = await storage.get({ useProxy: true })
+  const proxyingEnabled = await proxy.proxyingEnabled()
   const { proxyError, connectionError } = errors.determineError(error)
 
   if (proxyError) {
@@ -104,7 +104,7 @@ const handleErrorOccurred = async ({ error, url, tabId }) => {
   if (connectionError) {
     await registry.add(hostname)
 
-    if (!useProxy) {
+    if (!proxyingEnabled) {
       browser.tabs.update(tabId, {
         url: browser.runtime.getURL(`proxy_disabled.html?${encodedUrl}`),
       })

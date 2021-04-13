@@ -90,7 +90,6 @@ const handleErrorOccurred = async ({ url, error, tabId }) => {
       url: chrome.runtime.getURL(`unavailable.html?${window.btoa(url)}`),
     })
     await registry.add(hostname)
-    await proxy.setProxy()
     return
   }
 
@@ -215,13 +214,7 @@ const handleInstalled = async ({ reason }) => {
   ]
 
   if (reasonsForSync.includes(reason)) {
-    const synchronized = await registry.sync()
-
-    if (synchronized) {
-      settings.enableExtension().then(async () => {
-        await proxy.setProxy()
-      })
-    }
+    await registry.sync()
   }
 
   if (reason === chrome.runtime.OnInstalledReason.INSTALL) {
@@ -258,61 +251,7 @@ chrome.proxy.onProxyError.addListener((details) => {
   console.error(`Proxy error: ${JSON.stringify(details)}`)
 })
 
-/**
- * Fired when one or more items change.
- * @param changes Object describing the change. This contains one property for each key that changed.
- * @param areaName The name of the storage area ("sync", "local") to which the changes were made.
- */
-const handleStorageChanged = ({ enableExtension = undefined, ignoredHosts = undefined }, areaName) => {
-  // See: https://git.io/Jtw5D
-  const listenersActivated = (
-    chrome.webRequest.onErrorOccurred.hasListener(handleErrorOccurred) &&
-    chrome.webRequest.onBeforeRequest.hasListener(handleBeforeRequest)
-  )
-
-  // See src/common/ui/ignore_editor.js
-  if (ignoredHosts !== undefined) {
-    ignore.save()
-  }
-
-  if (enableExtension) {
-    if (enableExtension.newValue !== true) {
-      if (!listenersActivated) {
-        chrome.webRequest.onErrorOccurred.addListener(
-          handleErrorOccurred,
-          getRequestFilter({ http: true, https: true }),
-        )
-        chrome.webRequest.onBeforeRequest.addListener(
-          handleBeforeRequest,
-          getRequestFilter({ http: true, https: false }),
-          ['blocking'],
-        )
-        console.warn('Web request listeners enabled')
-      }
-    }
-
-    if (enableExtension.newValue === false) {
-      chrome.webRequest.onErrorOccurred.removeListener(handleErrorOccurred)
-      chrome.webRequest.onBeforeRequest.removeListener(handleBeforeRequest)
-      console.warn('Web request listeners disabled')
-    }
-  }
-}
-
-chrome.storage.onChanged.addListener(handleStorageChanged)
-
-window.censortracker.debugging = async () => {
-  const { domains } = await storage.get({ domains: [] })
-  const excluded = ['rutracker.org', 'lostfilm.tv', 'rezka.ag']
-
-  await storage.set({
-    domains: domains.filter((domain) => !excluded.includes(domain)),
-  })
-  await proxy.setProxy()
-}
-
-// The mechanism for controlling handlers from popup.js
-window.censortracker.webRequestListeners = {
+const webRequestListeners = {
   activated: () => {
     return (
       chrome.webRequest.onErrorOccurred.hasListener(handleErrorOccurred) &&
@@ -322,7 +261,7 @@ window.censortracker.webRequestListeners = {
   deactivate: () => {
     chrome.webRequest.onErrorOccurred.removeListener(handleErrorOccurred)
     chrome.webRequest.onBeforeRequest.removeListener(handleBeforeRequest)
-    console.warn('CensorTracker: listeners removed')
+    console.warn('Web request listeners disabled')
   },
   activate: () => {
     chrome.webRequest.onErrorOccurred.addListener(
@@ -334,6 +273,56 @@ window.censortracker.webRequestListeners = {
       getRequestFilter({ http: true, https: false }),
       ['blocking'],
     )
-    console.warn('CensorTracker: listeners added')
+    console.warn('Web request listeners enabled')
   },
 }
+
+/**
+ * Fired when one or more items change.
+ * @param changes Object describing the change. This contains one property for each key that changed.
+ * @param areaName The name of the storage area ("sync", "local") to which the changes were made.
+ */
+const handleStorageChanged = async (changes, areaName) => {
+  const { enableExtension, ignoredHosts, domains, blockedDomains, useProxy } = changes
+
+  const domainsUpdated = domains && domains.newValue
+  const proxyingEnabled = useProxy && useProxy.newValue === true
+  const blockedDomainsUpdated = blockedDomains && blockedDomains.newValue
+  const ignoreHostsUpdated = ignoredHosts && ignoredHosts.newValue
+  const extensionEnabled = enableExtension && enableExtension.newValue === true
+
+  if (ignoreHostsUpdated) {
+    ignore.save()
+  }
+
+  if (extensionEnabled) {
+    await proxy.setProxy()
+  }
+
+  if (domainsUpdated && blockedDomainsUpdated) {
+    await proxy.setProxy()
+  }
+
+  if (proxyingEnabled) {
+    if (!webRequestListeners.activated()) {
+      webRequestListeners.activate()
+    }
+    await proxy.setProxy()
+  } else {
+    await proxy.removeProxy()
+  }
+
+  if (extensionEnabled) {
+    if (!webRequestListeners.activate()) {
+      webRequestListeners.activate()
+    }
+    await proxy.setProxy()
+  } else {
+    await proxy.removeProxy()
+    webRequestListeners.deactivate()
+  }
+}
+
+chrome.storage.onChanged.addListener(handleStorageChanged)
+
+window.censortracker.webRequestListeners = webRequestListeners

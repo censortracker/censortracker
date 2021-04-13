@@ -194,6 +194,15 @@ class Registry {
     }
     await storage.set({ blockedDomains })
   }
+
+  debugging = async () => {
+    const { domains } = await storage.get({ domains: [] })
+    const excluded = ['rutracker.org', 'lostfilm.tv', 'rezka.ag']
+
+    await storage.set({
+      domains: domains.filter((domain) => !excluded.includes(domain)),
+    })
+  }
 }
 
 export default new Registry()

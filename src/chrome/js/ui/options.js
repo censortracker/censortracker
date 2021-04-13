@@ -2,7 +2,7 @@ import asynchrome from '../core/asynchrome'
 import proxy from '../core/proxy'
 
 (async () => {
-  const { censortracker: { webRequestListeners, storage } } = await asynchrome.runtime.getBackgroundPage()
+  const { censortracker: { storage } } = await asynchrome.runtime.getBackgroundPage()
 
   const useProxyCheckbox = document.getElementById('useProxyCheckbox')
   const showNotificationsCheckbox = document.getElementById('showNotificationsCheckbox')
@@ -24,15 +24,9 @@ import proxy from '../core/proxy'
 
   useProxyCheckbox.addEventListener('change', async () => {
     if (useProxyCheckbox.checked) {
-      if (!webRequestListeners.activated()) {
-        webRequestListeners.activate()
-      }
-
-      await proxy.setProxy()
       useProxyCheckbox.checked = true
       console.log('Proxying enabled.')
     } else {
-      await proxy.removeProxy()
       useProxyCheckbox.checked = false
       console.warn('Proxying disabled.')
     }

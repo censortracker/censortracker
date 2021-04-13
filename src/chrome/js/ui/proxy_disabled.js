@@ -1,5 +1,4 @@
 import asynchrome from '../core/asynchrome'
-import proxy from '../core/proxy'
 
 (async () => {
   const unavailableWebsite = document.getElementById('unavailableWebsite')
@@ -12,8 +11,6 @@ import proxy from '../core/proxy'
 
   document.addEventListener('click', async (event) => {
     if (event.target.matches('#openThroughProxy')) {
-      await proxy.setProxy()
-
       chrome.tabs.create({ url: targetUrl, index: tab.index }, () => {
         chrome.tabs.remove(tab.id)
       })

@@ -33,11 +33,11 @@ controlledOtherExtensionsInfo.addEventListener('click', () => {
 })
 
 chrome.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
-  const { asynchrome, registry, proxy, settings } = bgModules
+  const { asynchrome, registry, proxy, storage } = bgModules
 
   await addExtensionControlListeners(bgModules)
 
-  const extensionEnabled = await settings.extensionEnabled()
+  const { enableExtension } = await storage.get({ enableExtension: true })
 
   const [{ url: currentURL }] = await asynchrome.tabs.query({
     active: true, lastFocusedWindow: true,
@@ -57,7 +57,7 @@ chrome.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
     restrictionDescription.innerText = restriction.description
   }
 
-  if (extensionEnabled) {
+  if (enableExtension) {
     changeStatusImage('normal')
     renderCurrentDomain(currentHostname)
     footerTrackerOn.removeAttribute('hidden')

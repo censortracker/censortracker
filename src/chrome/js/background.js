@@ -155,8 +155,6 @@ const handleTabState = async (tabId, changeInfo, tab) => {
           await showCooperationAcceptedWarning(tab.url)
         }
       }
-    } else {
-      settings.setDisableIcon(tabId)
     }
   }
 }
@@ -211,17 +209,24 @@ const handleInstalled = async ({ reason }) => {
     }])
   })
 
-  if (reason === chrome.runtime.OnInstalledReason.INSTALLL) {
-    chrome.tabs.create({
-      url: chrome.runtime.getURL('installed.html'),
-    })
+  const reasonsForSync = [
+    chrome.runtime.OnInstalledReason.INSTALL,
+    chrome.runtime.OnInstalledReason.UPDATE,
+  ]
 
+  if (reasonsForSync.includes(reason)) {
     const synchronized = await registry.sync()
 
     if (synchronized) {
-      await proxy.setProxy()
       await settings.enableExtension()
+      await proxy.setProxy()
     }
+  }
+
+  if (reason === chrome.runtime.OnInstalledReason.INSTALL) {
+    chrome.tabs.create({
+      url: chrome.runtime.getURL('installed.html'),
+    })
   }
 }
 
@@ -230,10 +235,10 @@ chrome.runtime.onInstalled.addListener(handleInstalled)
 const handleTabCreate = async ({ id }) => {
   const extensionEnabled = await settings.extensionEnabled()
 
-  if (extensionEnabled) {
-    settings.setDefaultIcon(id)
-  } else {
+  if (extensionEnabled === false) {
     settings.setDisableIcon(id)
+  } else if (extensionEnabled === true) {
+    settings.setDefaultIcon(id)
   }
 }
 

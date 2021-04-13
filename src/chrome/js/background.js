@@ -218,8 +218,8 @@ const handleInstalled = async ({ reason }) => {
     const synchronized = await registry.sync()
 
     if (synchronized) {
-      await settings.enableExtension()
       await proxy.setProxy()
+      await settings.enableExtension()
     }
   }
 

@@ -25,9 +25,11 @@ import proxy from '../core/proxy'
   useProxyCheckbox.addEventListener('change', async () => {
     if (useProxyCheckbox.checked) {
       useProxyCheckbox.checked = true
+      await storage.set({ useProxy: true })
       console.log('Proxying enabled.')
     } else {
       useProxyCheckbox.checked = false
+      await storage.set({ useProxy: false })
       console.warn('Proxying disabled.')
     }
   }, false)

@@ -214,7 +214,14 @@ const handleInstalled = async ({ reason }) => {
   ]
 
   if (reasonsForSync.includes(reason)) {
-    await registry.sync()
+    const synchronized = await registry.sync()
+    const extensionEnabled = await settings.extensionEnabled()
+
+    if (synchronized) {
+      if (extensionEnabled === undefined) {
+        await settings.enableExtension()
+      }
+    }
   }
 
   if (reason === chrome.runtime.OnInstalledReason.INSTALL) {
@@ -237,11 +244,6 @@ const handleTabCreate = async ({ id }) => {
 }
 
 chrome.tabs.onCreated.addListener(handleTabCreate)
-
-chrome.runtime.onStartup.addListener(async () => {
-  await registry.sync()
-  await handleTabState()
-})
 
 chrome.windows.onRemoved.addListener(async (_windowId) => {
   await storage.remove(['notifiedHosts'])
@@ -283,24 +285,29 @@ const webRequestListeners = {
  * @param areaName The name of the storage area ("sync", "local") to which the changes were made.
  */
 const handleStorageChanged = async (changes, areaName) => {
+  const extensionEnabled = settings.extensionEnabled()
+
   const { enableExtension, ignoredHosts, domains, blockedDomains, useProxy } = changes
 
   const domainsUpdated = domains && domains.newValue
   const proxyingEnabled = useProxy && useProxy.newValue === true
   const blockedDomainsUpdated = blockedDomains && blockedDomains.newValue
   const ignoreHostsUpdated = ignoredHosts && ignoredHosts.newValue
-  const extensionEnabled = enableExtension && enableExtension.newValue === true
+  const justInstalledAndEnabled = enableExtension && !Object.hasOwnProperty.call(enableExtension, 'oldValue')
 
   if (ignoreHostsUpdated) {
     ignore.save()
   }
 
-  if (extensionEnabled) {
+  if (domainsUpdated && blockedDomainsUpdated) {
     await proxy.setProxy()
   }
 
-  if (domainsUpdated && blockedDomainsUpdated) {
+  if (justInstalledAndEnabled) {
     await proxy.setProxy()
+    if (!webRequestListeners.activated()) {
+      webRequestListeners.activate()
+    }
   }
 
   if (proxyingEnabled) {

@@ -57,7 +57,7 @@ class Settings {
   }
 
   extensionEnabled = async () => {
-    const { enableExtension } = await storage.get({ enableExtension: undefined })
+    const { enableExtension } = await storage.get(['enableExtension'])
 
     return enableExtension
   }

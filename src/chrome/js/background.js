@@ -214,14 +214,8 @@ const handleInstalled = async ({ reason }) => {
   ]
 
   if (reasonsForSync.includes(reason)) {
-    const synchronized = await registry.sync()
-    const extensionEnabled = await settings.extensionEnabled()
-
-    if (synchronized) {
-      if (extensionEnabled === undefined) {
-        await settings.enableExtension()
-      }
-    }
+    await registry.sync()
+    await settings.enableExtension()
   }
 
   if (reason === chrome.runtime.OnInstalledReason.INSTALL) {
@@ -285,22 +279,18 @@ const webRequestListeners = {
  * @param areaName The name of the storage area ("sync", "local") to which the changes were made.
  */
 const handleStorageChanged = async (changes, areaName) => {
-  const extensionEnabled = settings.extensionEnabled()
+  // const { enableExtension, ignoredHosts, domains, blockedDomains, useProxy } = changes
+  const { enableExtension, ignoredHosts } = changes
 
-  const { enableExtension, ignoredHosts, domains, blockedDomains, useProxy } = changes
-
-  const domainsUpdated = domains && domains.newValue
-  const proxyingEnabled = useProxy && useProxy.newValue === true
-  const blockedDomainsUpdated = blockedDomains && blockedDomains.newValue
+  // const domainsUpdated = domains && domains.newValue
+  // const proxyingEnabled = useProxy && useProxy.newValue === true
+  // const blockedDomainsUpdated = blockedDomains && blockedDomains.newValue
   const ignoreHostsUpdated = ignoredHosts && ignoredHosts.newValue
+  // const extensionEnabled = enableExtension && enableExtension.newValue === true
   const justInstalledAndEnabled = enableExtension && !Object.hasOwnProperty.call(enableExtension, 'oldValue')
 
   if (ignoreHostsUpdated) {
     ignore.save()
-  }
-
-  if (domainsUpdated && blockedDomainsUpdated) {
-    await proxy.setProxy()
   }
 
   if (justInstalledAndEnabled) {
@@ -310,24 +300,36 @@ const handleStorageChanged = async (changes, areaName) => {
     }
   }
 
-  if (proxyingEnabled) {
-    if (!webRequestListeners.activated()) {
-      webRequestListeners.activate()
-    }
-    await proxy.setProxy()
-  } else {
-    await proxy.removeProxy()
-  }
-
-  if (extensionEnabled) {
-    if (!webRequestListeners.activate()) {
-      webRequestListeners.activate()
-    }
-    await proxy.setProxy()
-  } else {
-    await proxy.removeProxy()
-    webRequestListeners.deactivate()
-  }
+  // if (extensionEnabled) {
+  //   await proxy.setProxy()
+  //
+  //   if (!webRequestListeners.activated()) {
+  //     webRequestListeners.activate()
+  //   }
+  // }
+  //
+  // if (domainsUpdated && blockedDomainsUpdated) {
+  //   await proxy.setProxy()
+  // }
+  //
+  // if (proxyingEnabled) {
+  //   if (!webRequestListeners.activated()) {
+  //     webRequestListeners.activate()
+  //   }
+  //   await proxy.setProxy()
+  // } else {
+  //   await proxy.removeProxy()
+  // }
+  //
+  // if (extensionEnabled) {
+  //   if (!webRequestListeners.activate()) {
+  //     webRequestListeners.activate()
+  //   }
+  //   await proxy.setProxy()
+  // } else {
+  //   await proxy.removeProxy()
+  //   webRequestListeners.deactivate()
+  // }
 }
 
 chrome.storage.onChanged.addListener(handleStorageChanged)

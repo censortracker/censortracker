@@ -37,10 +37,10 @@ class Asynchrome {
     }
     this.storage = {
       local: {
-        get: (...args) => promisify({
+        get: (keys) => promisify({
           ns: this.chrome.storage.local,
           fn: 'get',
-        }, ...args),
+        }, keys),
         set: (...args) => promisify({
           ns: this.chrome.storage.local,
           fn: 'set',
@@ -49,10 +49,9 @@ class Asynchrome {
           ns: this.chrome.storage.local,
           fn: 'remove',
         }, ...args),
-        clear: (...args) => promisify({
-          ns: this.chrome.storage.local,
-          fn: 'clear',
-        }, ...args),
+        clear: () => promisify({
+          ns: this.chrome.storage.local, fn: 'clear',
+        }),
       },
     }
     this.notifications = {

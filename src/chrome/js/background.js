@@ -132,10 +132,10 @@ const handleNotificationButtonClicked = async (notificationId, buttonIndex) => {
 chrome.notifications.onButtonClicked.addListener(handleNotificationButtonClicked)
 
 const handleTabState = async (tabId, changeInfo, tab) => {
-  if (changeInfo && 'status' in changeInfo && changeInfo.status === 'complete') {
-    const { enableExtension } = await storage.get({ enableExtension: true })
+  if (changeInfo && changeInfo.status === chrome.tabs.TabStatus.COMPLETE) {
+    const extensionEnabled = await settings.extensionEnabled()
 
-    if (enableExtension && isValidURL(tab.url)) {
+    if (extensionEnabled && isValidURL(tab.url)) {
       if (ignore.contains(tab.url)) {
         return
       }
@@ -155,8 +155,6 @@ const handleTabState = async (tabId, changeInfo, tab) => {
           await showCooperationAcceptedWarning(tab.url)
         }
       }
-    } else {
-      settings.setDisableIcon(tabId)
     }
   }
 }
@@ -211,29 +209,37 @@ const handleInstalled = async ({ reason }) => {
     }])
   })
 
-  if (reason === 'install') {
-    chrome.tabs.create({
-      url: chrome.runtime.getURL('installed.html'),
-    })
+  const reasonsForSync = [
+    chrome.runtime.OnInstalledReason.INSTALL,
+    chrome.runtime.OnInstalledReason.UPDATE,
+  ]
 
+  if (reasonsForSync.includes(reason)) {
     const synchronized = await registry.sync()
 
     if (synchronized) {
-      settings.enableExtension()
-      await proxy.setProxy()
+      settings.enableExtension().then(async () => {
+        await proxy.setProxy()
+      })
     }
+  }
+
+  if (reason === chrome.runtime.OnInstalledReason.INSTALL) {
+    chrome.tabs.create({
+      url: chrome.runtime.getURL('installed.html'),
+    })
   }
 }
 
 chrome.runtime.onInstalled.addListener(handleInstalled)
 
 const handleTabCreate = async ({ id }) => {
-  const { enableExtension } = await storage.get({ enableExtension: true })
+  const extensionEnabled = await settings.extensionEnabled()
 
-  if (enableExtension) {
-    settings.setDefaultIcon(id)
-  } else {
+  if (extensionEnabled === false) {
     settings.setDisableIcon(id)
+  } else if (extensionEnabled === true) {
+    settings.setDefaultIcon(id)
   }
 }
 

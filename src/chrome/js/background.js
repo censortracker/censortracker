@@ -132,10 +132,10 @@ const handleNotificationButtonClicked = async (notificationId, buttonIndex) => {
 chrome.notifications.onButtonClicked.addListener(handleNotificationButtonClicked)
 
 const handleTabState = async (tabId, changeInfo, tab) => {
-  if (changeInfo && 'status' in changeInfo && changeInfo.status === 'complete') {
-    const { enableExtension } = await storage.get({ enableExtension: true })
+  if (changeInfo && changeInfo.status === chrome.tabs.TabStatus.COMPLETE) {
+    const extensionEnabled = await settings.extensionEnabled()
 
-    if (enableExtension && isValidURL(tab.url)) {
+    if (extensionEnabled && isValidURL(tab.url)) {
       if (ignore.contains(tab.url)) {
         return
       }
@@ -211,7 +211,7 @@ const handleInstalled = async ({ reason }) => {
     }])
   })
 
-  if (reason === 'install') {
+  if (reason === chrome.runtime.OnInstalledReason.INSTALLL) {
     chrome.tabs.create({
       url: chrome.runtime.getURL('installed.html'),
     })
@@ -219,8 +219,8 @@ const handleInstalled = async ({ reason }) => {
     const synchronized = await registry.sync()
 
     if (synchronized) {
-      settings.enableExtension()
       await proxy.setProxy()
+      await settings.enableExtension()
     }
   }
 }
@@ -228,9 +228,9 @@ const handleInstalled = async ({ reason }) => {
 chrome.runtime.onInstalled.addListener(handleInstalled)
 
 const handleTabCreate = async ({ id }) => {
-  const { enableExtension } = await storage.get({ enableExtension: true })
+  const extensionEnabled = await settings.extensionEnabled()
 
-  if (enableExtension) {
+  if (extensionEnabled) {
     settings.setDefaultIcon(id)
   } else {
     settings.setDisableIcon(id)

@@ -81,7 +81,7 @@ const handleErrorOccurred = async ({ url, error, tabId }) => {
 
     if (!isProxyControlledByOtherExtensions && !isProxyControlledByThisExtension) {
       chrome.tabs.update(tabId, {
-        url: chrome.runtime.getURL(`proxy_disabled.html?${window.btoa(url)}`),
+        url: chrome.runtime.getURL(`proxy_disabled.html?originUrl=${window.btoa(url)}`),
       })
       return
     }

@@ -87,6 +87,7 @@ const handleErrorOccurred = async ({ url, error, tabId }) => {
       return
     }
 
+    await proxy.setProxy()
     chrome.tabs.update(tabId, {
       url: chrome.runtime.getURL(`unavailable.html?originUrl=${window.btoa(url)}`),
     })
@@ -283,7 +284,7 @@ const webRequestListeners = {
  * @param _areaName The name of the storage area ("sync", "local") to which the changes were made.
  */
 const handleStorageChanged = async (changes, _areaName) => {
-  const { enableExtension, ignoredHosts, useProxy, blockedDomains, domains } = changes
+  const { enableExtension, ignoredHosts, useProxy } = changes
 
   if (ignoredHosts && ignoredHosts.newValue) {
     ignore.save()
@@ -323,16 +324,6 @@ const handleStorageChanged = async (changes, _areaName) => {
       if (newValue === false && oldValue === true) {
         await proxy.removeProxy()
       }
-    }
-  }
-
-  if (enableExtension === undefined) {
-    if (
-      (domains && domains.newValue && domains.oldValue) ||
-      (blockedDomains && blockedDomains.newValue && blockedDomains.oldValue)
-    ) {
-      console.log('Real changes found')
-      await proxy.setProxy()
     }
   }
 }

@@ -100,12 +100,14 @@ class Registry {
    * Returns array of domains from the RKN's registry.
    */
   getDomains = async () => {
-    const { domains, blockedDomains } =
-      await storage.get({ domains: [], blockedDomains: [] })
+    const { domains, blockedDomains } = await storage.get({ domains: [], blockedDomains: [] })
 
-    if (domains && domains.length > 0) {
+    const domainsFound = domains && domains.length > 0
+    const blockedDomainsFound = blockedDomains && blockedDomains.length > 0
+
+    if (domainsFound || blockedDomainsFound) {
       try {
-        return domains.concat(blockedDomains)
+        return [...domains, ...blockedDomains]
       } catch (error) {
         console.log(error)
       }
@@ -198,12 +200,8 @@ class Registry {
   }
 
   debugging = async () => {
-    const { domains } = await storage.get({ domains: [] })
-    const excluded = ['rutracker.org', 'lostfilm.tv', 'rezka.ag']
-
-    await storage.set({
-      domains: domains.filter((domain) => !excluded.includes(domain)),
-    })
+    await storage.set({ domains: [] })
+    console.warn('Debug mode enabled')
   }
 }
 

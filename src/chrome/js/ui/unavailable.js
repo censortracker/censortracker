@@ -36,7 +36,7 @@ import { extractDecodedOriginUrl } from '@/common/js/utilities';
           openThroughProxyButton.classList.remove('btn-disabled')
           openThroughProxyButton.disabled = false
         }
-      }, 3500)
+      }, 2000)
     }
   }
 

@@ -214,8 +214,12 @@ const handleInstalled = async ({ reason }) => {
   ]
 
   if (reasonsForSync.includes(reason)) {
-    await registry.sync()
-    await settings.enableExtension()
+    const synchronized = await registry.sync()
+
+    if (synchronized) {
+      await proxy.setProxy()
+      await settings.enableExtension()
+    }
   }
 
   if (reason === chrome.runtime.OnInstalledReason.INSTALL) {
@@ -276,60 +280,55 @@ const webRequestListeners = {
 /**
  * Fired when one or more items change.
  * @param changes Object describing the change. This contains one property for each key that changed.
- * @param areaName The name of the storage area ("sync", "local") to which the changes were made.
+ * @param _areaName The name of the storage area ("sync", "local") to which the changes were made.
  */
-const handleStorageChanged = async (changes, areaName) => {
-  // const { enableExtension, ignoredHosts, domains, blockedDomains, useProxy } = changes
-  const { enableExtension, ignoredHosts } = changes
+const handleStorageChanged = async (changes, _areaName) => {
+  const { enableExtension, ignoredHosts, useProxy, blockedDomains } = changes
 
-  // const domainsUpdated = domains && domains.newValue
-  // const proxyingEnabled = useProxy && useProxy.newValue === true
-  // const blockedDomainsUpdated = blockedDomains && blockedDomains.newValue
-  const ignoreHostsUpdated = ignoredHosts && ignoredHosts.newValue
-  // const extensionEnabled = enableExtension && enableExtension.newValue === true
-  const justInstalledAndEnabled = enableExtension && !Object.hasOwnProperty.call(enableExtension, 'oldValue')
-
-  if (ignoreHostsUpdated) {
+  if (ignoredHosts && ignoredHosts.newValue) {
     ignore.save()
   }
 
-  if (justInstalledAndEnabled) {
+  if (blockedDomains && blockedDomains.newValue) {
     await proxy.setProxy()
-    if (!webRequestListeners.activated()) {
-      webRequestListeners.activate()
+  }
+
+  if (enableExtension) {
+    const newValue = enableExtension.newValue
+    const oldValue = enableExtension.oldValue
+
+    if (newValue === true && oldValue === false) {
+      await proxy.setProxy()
+
+      if (!webRequestListeners.activated()) {
+        webRequestListeners.activate()
+      }
+    }
+
+    if (newValue === false && oldValue === true) {
+      await proxy.removeProxy()
+      if (webRequestListeners.activated()) {
+        webRequestListeners.deactivate()
+      }
     }
   }
 
-  // if (extensionEnabled) {
-  //   await proxy.setProxy()
-  //
-  //   if (!webRequestListeners.activated()) {
-  //     webRequestListeners.activate()
-  //   }
-  // }
-  //
-  // if (domainsUpdated && blockedDomainsUpdated) {
-  //   await proxy.setProxy()
-  // }
-  //
-  // if (proxyingEnabled) {
-  //   if (!webRequestListeners.activated()) {
-  //     webRequestListeners.activate()
-  //   }
-  //   await proxy.setProxy()
-  // } else {
-  //   await proxy.removeProxy()
-  // }
-  //
-  // if (extensionEnabled) {
-  //   if (!webRequestListeners.activate()) {
-  //     webRequestListeners.activate()
-  //   }
-  //   await proxy.setProxy()
-  // } else {
-  //   await proxy.removeProxy()
-  //   webRequestListeners.deactivate()
-  // }
+  if (useProxy && enableExtension === undefined) {
+    const newValue = useProxy.newValue
+    const oldValue = useProxy.oldValue
+
+    const extensionEnabled = settings.extensionEnabled()
+
+    if (extensionEnabled) {
+      if (newValue === true && oldValue === false) {
+        await proxy.setProxy()
+      }
+
+      if (newValue === false && oldValue === true) {
+        await proxy.removeProxy()
+      }
+    }
+  }
 }
 
 chrome.storage.onChanged.addListener(handleStorageChanged)

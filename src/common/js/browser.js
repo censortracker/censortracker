@@ -6,6 +6,7 @@ import asynchrome from '../../chrome/js/core/asynchrome'
  */
 export const getBrowser = () => {
   try {
+    browser.runtime.getBrowserInfo()
     return browser
   } catch (error) {
     return asynchrome

@@ -191,7 +191,9 @@ class Registry {
 
     if (!blockedDomains.includes(hostname)) {
       blockedDomains.push(hostname)
+      console.warn(`Domain ${hostname} added to local registry`)
     }
+
     await storage.set({ blockedDomains })
   }
 

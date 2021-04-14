@@ -76,6 +76,7 @@ const handleErrorOccurred = async ({ url, error, tabId }) => {
   }
 
   if (connectionError) {
+    await registry.add(hostname)
     const isProxyControlledByOtherExtensions = await proxy.controlledByOtherExtensions()
     const isProxyControlledByThisExtension = await proxy.controlledByThisExtension()
 
@@ -87,9 +88,8 @@ const handleErrorOccurred = async ({ url, error, tabId }) => {
     }
 
     chrome.tabs.update(tabId, {
-      url: chrome.runtime.getURL(`unavailable.html?${window.btoa(url)}`),
+      url: chrome.runtime.getURL(`unavailable.html?originUrl=${window.btoa(url)}`),
     })
-    await registry.add(hostname)
     return
   }
 
@@ -283,14 +283,10 @@ const webRequestListeners = {
  * @param _areaName The name of the storage area ("sync", "local") to which the changes were made.
  */
 const handleStorageChanged = async (changes, _areaName) => {
-  const { enableExtension, ignoredHosts, useProxy, blockedDomains } = changes
+  const { enableExtension, ignoredHosts, useProxy, blockedDomains, domains } = changes
 
   if (ignoredHosts && ignoredHosts.newValue) {
     ignore.save()
-  }
-
-  if (blockedDomains && blockedDomains.newValue) {
-    await proxy.setProxy()
   }
 
   if (enableExtension) {
@@ -327,6 +323,16 @@ const handleStorageChanged = async (changes, _areaName) => {
       if (newValue === false && oldValue === true) {
         await proxy.removeProxy()
       }
+    }
+  }
+
+  if (enableExtension === undefined) {
+    if (
+      (domains && domains.newValue && domains.oldValue) ||
+      (blockedDomains && blockedDomains.newValue && blockedDomains.oldValue)
+    ) {
+      console.log('Real changes found')
+      await proxy.setProxy()
     }
   }
 }

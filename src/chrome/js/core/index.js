@@ -12,4 +12,5 @@ export {
   getRequestFilter,
   isValidURL,
   arrayContains,
+  extractDecodedOriginUrl,
 } from '@/common/js/utilities'

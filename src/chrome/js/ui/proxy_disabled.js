@@ -1,20 +1,17 @@
+import { extractDecodedOriginUrl } from '@/common/js/utilities'
+
 import asynchrome from '../core/asynchrome'
 import proxy from '../core/proxy'
 
 (async () => {
-  const unavailableWebsite = document.getElementById('unavailableWebsite')
-
+  const originUrl = extractDecodedOriginUrl(window.location.href)
   const [tab] = await asynchrome.tabs.query({ active: true, lastFocusedWindow: true })
-  const [, encodedHostname] = tab.url.split('?')
-  const targetUrl = window.atob(encodedHostname)
 
-  unavailableWebsite.innerText = window.atob(encodedHostname)
-
+  document.getElementById('unavailableWebsite').innerText = originUrl
   document.addEventListener('click', async (event) => {
     if (event.target.matches('#openThroughProxy')) {
       await proxy.setProxy()
-
-      chrome.tabs.create({ url: targetUrl, index: tab.index }, () => {
+      chrome.tabs.create({ url: originUrl, index: tab.index }, () => {
         chrome.tabs.remove(tab.id)
       })
     }
@@ -26,7 +23,7 @@ import proxy from '../core/proxy'
         webRequestListeners.deactivate()
       }
 
-      chrome.tabs.update(tab.id, { url: targetUrl })
+      chrome.tabs.update(tab.id, { url: originUrl })
     }
 
     event.preventDefault()

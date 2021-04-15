@@ -1,5 +1,9 @@
 import { asynchrome, registry, storage } from '.'
 
+const PROXY_HOST = 'proxy-ssl.roskomsvoboda.org'
+const PROXY_PORT = 33333
+const PROXY_SERVER_URL = `${PROXY_HOST}:${PROXY_PORT}`
+
 class Proxy {
   constructor () {
     this.ignoredDomains = [
@@ -16,7 +20,7 @@ class Proxy {
   }
 
   getProxyServerUrl = () => {
-    return 'proxy-ssl.roskomsvoboda.org:33333'
+    return PROXY_SERVER_URL
   }
 
   excludeIgnoredDomains = (domains) => {

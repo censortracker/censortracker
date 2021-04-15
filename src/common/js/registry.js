@@ -100,12 +100,14 @@ class Registry {
    * Returns array of domains from the RKN's registry.
    */
   getDomains = async () => {
-    const { domains, blockedDomains } =
-      await storage.get({ domains: [], blockedDomains: [] })
+    const { domains, blockedDomains } = await storage.get({ domains: [], blockedDomains: [] })
 
-    if (domains && domains.length > 0) {
+    const domainsFound = domains && domains.length > 0
+    const blockedDomainsFound = blockedDomains && blockedDomains.length > 0
+
+    if (domainsFound || blockedDomainsFound) {
       try {
-        return domains.concat(blockedDomains)
+        return [...domains, ...blockedDomains]
       } catch (error) {
         console.log(error)
       }
@@ -191,8 +193,15 @@ class Registry {
 
     if (!blockedDomains.includes(hostname)) {
       blockedDomains.push(hostname)
+      console.warn(`Domain ${hostname} added to local registry`)
     }
+
     await storage.set({ blockedDomains })
+  }
+
+  debugging = async () => {
+    await storage.set({ domains: [] })
+    console.warn('Debug mode enabled')
   }
 }
 

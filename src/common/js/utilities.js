@@ -132,3 +132,21 @@ export const arrayContains = (array, target) => {
   }
   return false
 }
+
+/**
+ * Extracts origin decoded URl.
+ * @param url Chrome extension URl.
+ * @param key Key.
+ * @returns {string|*}
+ */
+export const extractDecodedOriginUrl = (url, key = 'originUrl') => {
+  try {
+    const [, params] = url.split('?')
+    const searchParams = new URLSearchParams(params)
+    const encodedHostname = searchParams.get(key)
+
+    return window.atob(encodedHostname)
+  } catch (error) {
+    return null
+  }
+}

@@ -1,9 +1,5 @@
 
 const promisify = ({ ns, fn }, ...args) => new Promise((resolve, reject) => {
-  if (!Object.hasOwnProperty.call(ns, fn)) {
-    throw new Error(`The namespace has not a method: ${fn}`)
-  }
-
   ns[fn](...args, (...result) => {
     if (chrome.runtime.lastError) {
       return reject(chrome.runtime.lastError)
@@ -37,20 +33,28 @@ class Asynchrome {
     }
     this.storage = {
       local: {
-        get: (keys) => promisify({
-          ns: this.chrome.storage.local,
-          fn: 'get',
-        }, keys),
-        set: (...args) => promisify({
-          ns: this.chrome.storage.local,
-          fn: 'set',
-        }, ...args),
+        set: (object) => new Promise((resolve, reject) => {
+          chrome.storage.local.set(object, () => {
+            if (chrome.runtime.lastError) {
+              return reject(chrome.runtime.lastError)
+            }
+            return resolve(true)
+          })
+        }),
         remove: (...args) => promisify({
           ns: this.chrome.storage.local,
           fn: 'remove',
         }, ...args),
         clear: () => promisify({
           ns: this.chrome.storage.local, fn: 'clear',
+        }),
+        get: (object) => new Promise((resolve, reject) => {
+          chrome.storage.local.get(object, (...result) => {
+            if (chrome.runtime.lastError) {
+              return reject(chrome.runtime.lastError)
+            }
+            return resolve(...result)
+          })
         }),
       },
     }

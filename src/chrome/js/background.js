@@ -57,6 +57,8 @@ chrome.webRequest.onBeforeRequest.addListener(
  */
 const handleErrorOccurred = async ({ url, error, tabId }) => {
   const hostname = extractHostnameFromUrl(url)
+  const encodedUrl = window.btoa(url)
+
   const { proxyError, connectionError, interruptedError } = errors.determineError(error)
 
   if (interruptedError) {
@@ -70,7 +72,7 @@ const handleErrorOccurred = async ({ url, error, tabId }) => {
 
   if (proxyError) {
     chrome.tabs.update(tabId, {
-      url: chrome.runtime.getURL('proxy_unavailable.html'),
+      url: chrome.runtime.getURL(`proxy_unavailable.html?originUrl=${encodedUrl}`),
     })
     return
   }
@@ -82,14 +84,14 @@ const handleErrorOccurred = async ({ url, error, tabId }) => {
 
     if (!isProxyControlledByOtherExtensions && !isProxyControlledByThisExtension) {
       chrome.tabs.update(tabId, {
-        url: chrome.runtime.getURL(`proxy_disabled.html?originUrl=${window.btoa(url)}`),
+        url: chrome.runtime.getURL(`proxy_disabled.html?originUrl=${encodedUrl}`),
       })
       return
     }
 
     await proxy.setProxy()
     chrome.tabs.update(tabId, {
-      url: chrome.runtime.getURL(`unavailable.html?originUrl=${window.btoa(url)}`),
+      url: chrome.runtime.getURL(`unavailable.html?originUrl=${encodedUrl}`),
     })
     return
   }

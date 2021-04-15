@@ -99,7 +99,7 @@ const handleErrorOccurred = async ({ error, url, tabId }) => {
 
   if (proxyError) {
     browser.tabs.update(tabId, {
-      url: browser.runtime.getURL(`proxy_unavailable.html?${encodedUrl}`),
+      url: browser.runtime.getURL(`proxy_unavailable.html?originUrl=${encodedUrl}`),
     })
     return
   }
@@ -109,13 +109,13 @@ const handleErrorOccurred = async ({ error, url, tabId }) => {
 
     if (!proxyingEnabled) {
       browser.tabs.update(tabId, {
-        url: browser.runtime.getURL(`proxy_disabled.html?${encodedUrl}`),
+        url: browser.runtime.getURL(`proxy_disabled.html?originUrl=${encodedUrl}`),
       })
       return
     }
 
     browser.tabs.update(tabId, {
-      url: browser.runtime.getURL(`unavailable.html?${encodedUrl}`),
+      url: browser.runtime.getURL(`unavailable.html?originUrl=${encodedUrl}`),
     })
     return
   }

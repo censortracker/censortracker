@@ -94,6 +94,7 @@ class Proxy {
   removeProxy = async () => {
     await storage.set({ useProxy: false })
     await this.browser.proxy.settings.clear({})
+    console.warn('Proxy auto-config data cleaned!')
   }
 
   allowProxying = () => {

@@ -142,6 +142,12 @@ class Proxy {
 
     return levelOfControl === 'controlled_by_this_extension'
   }
+
+  debugging = async () => {
+    await storage.set({ domains: [] })
+    await this.setProxy()
+    console.warn('Debug mode enabled')
+  }
 }
 
 export default new Proxy()

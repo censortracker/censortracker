@@ -198,11 +198,6 @@ class Registry {
 
     await storage.set({ blockedDomains })
   }
-
-  debugging = async () => {
-    await storage.set({ domains: [] })
-    console.warn('Debug mode enabled')
-  }
 }
 
 export default new Registry()

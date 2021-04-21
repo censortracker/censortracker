@@ -4,6 +4,5 @@
     "default_popup": "popup.html",
     "default_icon": "images/icons/128x128/default.png"
   },
-  "content_security_policy": "script-src 'self'; object-src 'self';",
-  "permissions": ["dns"]
+  "content_security_policy": "script-src 'self'; object-src 'self';"
 }

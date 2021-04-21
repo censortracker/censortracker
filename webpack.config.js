@@ -150,7 +150,7 @@ const webpackConfig = {
       },
       files: [
         './src/common/manifest/base.json',
-        `./src/common/manifest/${BROWSER}.json`,
+        `./src/${BROWSER}/manifest/${BROWSER}.json`,
         `./src/common/manifest/environments/${NODE_ENV}.json`,
       ],
       output: {

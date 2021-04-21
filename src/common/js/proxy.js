@@ -128,6 +128,20 @@ class Proxy {
       useProxy: false,
     })
   }
+
+  controlledByOtherExtensions = async () => {
+    const { levelOfControl } =
+      await this.browser.proxy.settings.get({})
+
+    return levelOfControl === 'controlled_by_other_extensions'
+  }
+
+  controlledByThisExtension = async () => {
+    const { levelOfControl } =
+      await this.browser.proxy.settings.get({})
+
+    return levelOfControl === 'controlled_by_this_extension'
+  }
 }
 
 export default new Proxy()

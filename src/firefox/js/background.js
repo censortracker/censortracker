@@ -10,7 +10,7 @@ import {
   registry,
   settings,
   storage,
-} from './core'
+} from '@/common/js'
 
 window.censortracker = {
   proxy,
@@ -197,7 +197,7 @@ const handleTabCreate = async ({ id, url }) => {
   const extensionEnabled = await settings.extensionEnabled()
 
   if (extensionEnabled) {
-    if (url.startsWith('about:')) {
+    if (isValidURL(url)) {
       browser.browserAction.disable(id)
     }
   } else {
@@ -236,6 +236,8 @@ const webRequestListeners = {
     console.warn('Web request listeners enabled')
   },
 }
+
+window.censortracker.webRequestListeners = webRequestListeners
 
 /**
  * Fired when one or more items change.
@@ -287,12 +289,3 @@ const handleStorageChanged = async ({ enableExtension, ignoredHosts, useProxy },
 }
 
 browser.storage.onChanged.addListener(handleStorageChanged)
-
-window.censortracker.debugging = async () => {
-  const { domains } = await storage.get({ domains: [] })
-  const excluded = ['rutracker.org', 'lostfilm.tv', 'rezka.ag']
-
-  await storage.set({
-    domains: domains.filter((domain) => !excluded.includes(domain)),
-  })
-}

@@ -1,9 +1,6 @@
-import asynchrome from '../core/asynchrome'
-import proxy from '../core/proxy'
+import { proxy, storage } from '@/common/js'
 
 (async () => {
-  const { censortracker: { storage } } = await asynchrome.runtime.getBackgroundPage()
-
   const useProxyCheckbox = document.getElementById('useProxyCheckbox')
   const showNotificationsCheckbox = document.getElementById('showNotificationsCheckbox')
   const isProxyControlledByThisExtension = await proxy.controlledByThisExtension()

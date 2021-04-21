@@ -88,24 +88,6 @@ export const getRequestFilter = ({ http = true, https = true, types = undefined 
 
   return { urls, types }
 }
-// TODO: Use this one
-// export const getRequestFilter = ({ http = true, https = true, types } = {}) => {
-//   const requestFilter = { urls: [] }
-//
-//   if (types && Array.isArray(types)) {
-//     requestFilter.types = types
-//   }
-//
-//   if (http) {
-//     requestFilter.urls.push('http://*/*')
-//   }
-//
-//   if (https) {
-//     requestFilter.urls.push('https://*/*')
-//   }
-//
-//   return requestFilter
-// }
 
 /**
  * Search for target in array
@@ -114,6 +96,10 @@ export const getRequestFilter = ({ http = true, https = true, types = undefined 
  * @returns {boolean} true or false
  */
 export const arrayContains = (array, target) => {
+  if (Array.isArray(array)) {
+    array.sort()
+  }
+
   let left = 0
   let right = array.length - 1
 

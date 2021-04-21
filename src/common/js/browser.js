@@ -1,4 +1,4 @@
-import asynchrome from '../../chrome/js/core/asynchrome'
+import asynchrome from '@/chrome/js/core/asynchrome'
 
 /**
  * Returns browser API object.

@@ -46,44 +46,6 @@ browser.webRequest.onBeforeRequest.addListener(
 )
 
 /**
- * Fired when a web request is about to be made, to give the extension an opportunity to proxy it.
- * @param tabId ID of the tab in which the request takes place. Set to -1 if the request is not related to a tab.
- * @param url Target of the request.
- * @param type The type of resource being requested.
- * @returns {Promise<{port: number, host: string, type: string}|{type: string}>}
- */
-const handleProxyRequest = async ({ tabId, url }) => {
-  const isCurrentTab = tabId !== -1
-  const proxyingEnabled = await proxy.proxyingEnabled()
-
-  if (proxyingEnabled && isCurrentTab) {
-    const urlBlocked = await registry.contains(url)
-
-    if (urlBlocked) {
-      proxy.allowProxying()
-      return proxy.getProxyInfo()
-    }
-  }
-  return proxy.getDirectProxyInfo()
-}
-
-browser.proxy.onRequest.addListener(
-  handleProxyRequest,
-  {
-    urls: ['https://*/*'],
-    // See https://mzl.la/322Xa3Q for more details
-    // types: [
-    //   browser.webRequest.ResourceType.MAIN_FRAME,
-    //   browser.webRequest.ResourceType.SUB_FRAME,
-    //   browser.webRequest.ResourceType.STYLESHEET,
-    //   browser.webRequest.ResourceType.SCRIPT,
-    //   browser.webRequest.ResourceType.FONT,
-    //   browser.webRequest.ResourceType.IMAGE,
-    // ],
-  },
-)
-
-/**
  * Fires when a request could not be processed successfully.
  * @param url Current URL address.
  * @param error The error description.
@@ -114,6 +76,7 @@ const handleErrorOccurred = async ({ error, url, tabId }) => {
       return
     }
 
+    await proxy.setProxy()
     browser.tabs.update(tabId, {
       url: browser.runtime.getURL(`unavailable.html?originUrl=${encodedUrl}`),
     })
@@ -215,6 +178,7 @@ const handleInstalled = async ({ reason }) => {
 
     if (synchronized) {
       if (extensionEnabled === undefined) {
+        await proxy.setProxy()
         await settings.enableExtension()
       }
     }
@@ -251,14 +215,12 @@ const webRequestListeners = {
   activated: () => {
     return (
       browser.webRequest.onErrorOccurred.hasListener(handleErrorOccurred) &&
-      browser.webRequest.onBeforeRequest.hasListener(handleBeforeRequest) &&
-      browser.proxy.onRequest.hasListener(handleProxyRequest)
+      browser.webRequest.onBeforeRequest.hasListener(handleBeforeRequest)
     )
   },
   deactivate: () => {
     browser.webRequest.onErrorOccurred.removeListener(handleErrorOccurred)
     browser.webRequest.onBeforeRequest.removeListener(handleBeforeRequest)
-    browser.proxy.onRequest.removeListener(handleProxyRequest)
     console.warn('Web request listeners disabled')
   },
   activate: () => {
@@ -271,7 +233,6 @@ const webRequestListeners = {
       getRequestFilter({ http: true, https: false }),
       ['blocking'],
     )
-    browser.proxy.onRequest.addListener(handleProxyRequest, { urls: ['https://*/*'] })
     console.warn('Web request listeners enabled')
   },
 }
@@ -281,7 +242,7 @@ const webRequestListeners = {
  * @param changes Object describing the change. This contains one property for each key that changed.
  * @param areaName The name of the storage area ("sync", "local") to which the changes were made.
  */
-const handleStorageChanged = async ({ enableExtension, ignoredHosts }, areaName) => {
+const handleStorageChanged = async ({ enableExtension, ignoredHosts, useProxy }, areaName) => {
   if (ignoredHosts && ignoredHosts.newValue) {
     ignore.save()
   }
@@ -291,14 +252,35 @@ const handleStorageChanged = async ({ enableExtension, ignoredHosts }, areaName)
     const oldValue = enableExtension.oldValue
 
     if (newValue === true && oldValue === false) {
+      await proxy.setProxy()
+
       if (!webRequestListeners.activated()) {
         webRequestListeners.activate()
       }
     }
 
     if (newValue === false && oldValue === true) {
+      await proxy.removeProxy()
+
       if (webRequestListeners.activated()) {
         webRequestListeners.deactivate()
+      }
+    }
+  }
+
+  if (useProxy && enableExtension === undefined) {
+    const newValue = useProxy.newValue
+    const oldValue = useProxy.oldValue
+
+    const extensionEnabled = settings.extensionEnabled()
+
+    if (extensionEnabled) {
+      if (newValue === true && oldValue === false) {
+        await proxy.setProxy()
+      }
+
+      if (newValue === false && oldValue === true) {
+        await proxy.removeProxy()
       }
     }
   }

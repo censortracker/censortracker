@@ -3,7 +3,7 @@ export { default as storage } from '@/common/js/storage'
 export { default as ignore } from '@/common/js/ignore'
 export { default as registry } from '@/common/js/registry'
 export { default as settings } from '@/common/js/settings'
-export { default as proxy } from './proxy'
+export { default as proxy } from '@/common/js/proxy'
 export {
   enforceHttpConnection,
   enforceHttpsConnection,

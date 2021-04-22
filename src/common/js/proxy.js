@@ -1,5 +1,5 @@
 import { registry, storage } from '.'
-import { getBrowser } from './browser'
+import { getBrowser, isFirefox } from './browser'
 
 const RESET_PROXY_TIMEOUT = 60 * 60 * 5000
 
@@ -9,6 +9,7 @@ class Proxy {
     this.proxyPort = 33333
     this.proxyHost = 'proxy-ssl.roskomsvoboda.org'
     this.proxyUrl = `${this.proxyHost}:${this.proxyPort}`
+    this.isFirefox = isFirefox()
 
     setInterval(async () => {
       await this.setProxy()
@@ -16,18 +17,26 @@ class Proxy {
   }
 
   setProxy = async () => {
+    const config = {}
     const domains = await registry.getDomains()
-    const pacData = this.generatePacScriptData(domains)
+    const pacData = this.generateProxyAutoConfig(domains)
 
-    const blob = new Blob([pacData], {
-      type: 'application/x-ns-proxy-autoconfig',
-    })
+    if (this.isFirefox) {
+      const blob = new Blob([pacData], { type: 'application/x-ns-proxy-autoconfig' })
 
-    const config = {
-      value: {
+      config.value = {
         proxyType: 'autoConfig',
         autoConfigUrl: URL.createObjectURL(blob),
-      },
+      }
+    } else {
+      config.scope = 'regular'
+      config.value = {
+        mode: 'pac_script',
+        pacScript: {
+          data: pacData,
+          mandatory: false,
+        },
+      }
     }
 
     await this.allowProxying()
@@ -41,7 +50,7 @@ class Proxy {
    * @param domains An array of domains.
    * @returns {string} The PAC data.
    */
-  generatePacScriptData = (domains = []) => {
+  generateProxyAutoConfig = (domains = []) => {
     domains.sort()
     return `
       function FindProxyForURL(url, host) {

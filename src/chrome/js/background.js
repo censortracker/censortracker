@@ -1,5 +1,4 @@
 import {
-  asynchrome,
   enforceHttpConnection,
   enforceHttpsConnection,
   errors,
@@ -11,7 +10,9 @@ import {
   registry,
   settings,
   storage,
-} from './core'
+} from '@/common/js'
+
+import { asynchrome } from './core'
 
 window.censortracker = {
   proxy,

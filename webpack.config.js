@@ -137,6 +137,13 @@ const webpackConfig = {
       meta: contentSecurityPolicy,
     }),
     new HTMLWebpackPlugin({
+      title: 'Настройки прокси | Censor Tracker',
+      filename: 'proxy_settings.html',
+      template: 'src/common/pages/proxy_settings.html',
+      inject: true,
+      meta: contentSecurityPolicy,
+    }),
+    new HTMLWebpackPlugin({
       title: 'Проксирование отключено | Censor Tracker',
       filename: 'proxy_disabled.html',
       template: 'src/common/pages/proxy_disabled.html',

@@ -269,7 +269,7 @@ a {
 }
 
 /* Proxy Options Page */
-.input_proxy {
+.input-proxy {
   border: 1px solid #c4c2bf;
   box-sizing: border-box;
   border-radius: 4px;
@@ -285,7 +285,12 @@ a {
   margin-left: 10px;
 }
 
-.input_proxy:active {
+#proxyPortInput {
+  width: 100px;
+  margin-left: 10px;
+}
+
+.input-proxy:active {
   outline: none;
   border: 1px solid #2a251f !important;
 }

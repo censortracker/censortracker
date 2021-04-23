@@ -16,11 +16,11 @@ class Proxy {
   }
 
   getProxyServerURL = async () => {
-    const { customProxyUrl } =
-        await storage.get(['customProxyUrl'])
+    const { customProxyHost, customProxyPort } =
+        await storage.get(['customProxyHost', 'customProxyPort'])
 
-    if (customProxyUrl) {
-      return customProxyUrl
+    if (customProxyHost && customProxyPort) {
+      return `${customProxyHost}:${customProxyPort}`
     }
 
     return this.proxyUrl

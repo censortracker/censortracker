@@ -51,8 +51,17 @@ a {
   margin-bottom: 20px;
 }
 
+.main-page__info {
+  max-width: 640px;
+  margin-top: 30px;
+}
+
 .main-container__after-install .main-page__info {
   margin-right: 44px;
+}
+
+.main-page__image {
+  margin-right: 70px;
 }
 
 .main-container__after-install .main-page__image {
@@ -77,8 +86,6 @@ a {
 }
 
 .instruction svg {
-  /* padding: 34px;
-  box-sizing: border-box; */
   width: 100%;
   height: auto;
 }
@@ -155,16 +162,16 @@ a {
   background: linear-gradient(319.24deg, #3ca55c 0%, #b5ac49 100%), #fff;
 }
 
+.use_proxy__link {
+  color: #5173d3;
+}
+
 .main-page__turn:hover,
 .toggle-text:hover,
 .main-page__link:hover > span,
 .use_proxy__link:hover {
   color: #625c55;
   cursor: pointer;
-}
-
-.use_proxy__link {
-  color: #5173d3;
 }
 
 .toggle-text:focus,
@@ -191,15 +198,6 @@ a {
 
 .extension__text {
   margin-bottom: 20px;
-}
-
-.main-page__image {
-  margin-right: 70px;
-}
-
-.main-page__info {
-  max-width: 640px;
-  margin-top: 30px;
 }
 
 .main-page__extension {
@@ -278,9 +276,15 @@ a {
   height: 30px;
   padding: 0 11px;
   color: #6d675f;
+  width: 100%;
+  margin: 0;
 }
 
-.input_proxy:active,
+#customProxyPort {
+  width: 100px;
+  margin-left: 10px;
+}
+
 .input_proxy:active {
   outline: none;
   border: 1px solid #2a251f !important;
@@ -342,12 +346,101 @@ a {
   margin: 0 45px 60px;
 }
 
-.input_proxy {
-  width: 100%;
-  margin: 0;
+/* Ignore Editor Page */
+
+.main-page__return {
+  width: 270px;
+  height: 30px;
+  text-align: left;
+  padding-top: 2px;
 }
 
-.input_proxy.port {
-  width: 100px;
-  margin-left: 10px;
+.main-page__return svg {
+  vertical-align: text-bottom;
+  fill: #3b332b;
+}
+
+.main-page__return:hover svg {
+  cursor: pointer;
+  fill: #625c55;
+}
+
+#ignoredSitesTitle {
+  margin-bottom: 10px;
+}
+
+.main-page__about code {
+  font-weight: 500;
+}
+
+.input_search {
+  border: 1px solid #c4c2bf;
+  box-sizing: border-box;
+  border-radius: 4px;
+  width: 100%;
+  margin: 30px 0 10px;
+  height: 30px;
+  padding: 0 11px;
+  color: #6d675f;
+}
+
+.input_search:focus,
+.input_search:active {
+  outline: none;
+  border: 1px solid #2a251f !important;
+}
+
+.highlight {
+  background-color: rgba(81, 115, 211, 0.3);
+}
+
+.return-link {
+  padding-right: 13px;
+}
+
+.mt-10 {
+  margin-top: 10px;
+}
+
+#proxyOptionsTitle {
+  margin-bottom: 28px;
+}
+
+/* CodeMirror */
+.CodeMirror {
+  width: 100%;
+  border: 1px solid #c4c2bf;
+  border-radius: 4px;
+  color: #3b332b !important;
+  font-family: 'IBM Plex Sans', Arial, sans-serif;
+  line-height: 24px;
+  font-size: 14px;
+  font-weight: 400;
+  height: calc(100vh - 300px) !important;
+  min-height: 500px;
+}
+
+.CodeMirror .CodeMirror-gutters {
+  background-color: transparent;
+  border-right: 1px solid #c4c2bf;
+  text-align: right;
+  box-sizing: border-box;
+  padding-right: 5px;
+  font-size: 11px;
+}
+
+.CodeMirror .CodeMirror-linenumber {
+  color: #3b332b;
+  font-family: 'IBM Plex Sans', Arial, sans-serif;
+  line-height: 24px;
+  font-size: 11px;
+}
+
+.CodeMirror-activeline-background,
+.CodeMirror-focused .CodeMirror-activeline-background {
+  background: rgba(237, 242, 247, 0.6);
+}
+
+.CodeMirror:not(.CodeMirror-focused) .CodeMirror-activeline-background {
+  background: unset;
 }

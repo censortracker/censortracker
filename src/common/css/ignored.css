@@ -76,24 +76,18 @@ a {
 }
 
 .input_search {
-  width: 100%;
-  margin: 30px 0 10px;
-}
-
-.input_search,
-.input_proxy {
   border: 1px solid #c4c2bf;
   box-sizing: border-box;
   border-radius: 4px;
+  width: 100%;
+  margin: 30px 0 10px;
   height: 30px;
   padding: 0 11px;
   color: #6d675f;
 }
 
 .input_search:focus,
-.input_proxy:active,
-.input_search:focus,
-.input_proxy:active {
+.input_search:active {
   outline: none;
   border: 1px solid #2a251f !important;
 }

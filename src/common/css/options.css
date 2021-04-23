@@ -269,3 +269,85 @@ a {
 .main-page__link:hover svg {
   fill: #625c55;
 }
+
+/* Proxy Options Page */
+.input_proxy {
+  border: 1px solid #c4c2bf;
+  box-sizing: border-box;
+  border-radius: 4px;
+  height: 30px;
+  padding: 0 11px;
+  color: #6d675f;
+}
+
+.input_proxy:active,
+.input_proxy:active {
+  outline: none;
+  border: 1px solid #2a251f !important;
+}
+
+.radiobtn__group {
+  display: flex;
+  margin: 5px 0;
+  flex-direction: column;
+}
+
+.radiobtn_el {
+  margin: 15px 0;
+  display: inline-block;
+}
+
+.radiobtn_el input[type=radio] {
+  display: none;
+}
+
+.radiobtn_el input[type=radio] + label::before {
+  content: "";
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border-radius: 15px;
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  background: #fff;
+  border: 1px solid #3b332b;
+}
+
+.radiobtn_el:hover label::after,
+.radiobtn_el input[type=radio]:checked + label::after {
+  content: "";
+  display: inline-block;
+  position: absolute;
+  left: 6px;
+  bottom: 2px;
+  background: #6c9e2c;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+}
+
+.radiobtn_el label {
+  cursor: pointer;
+  position: relative;
+  padding-left: 45px;
+  display: inline-block;
+  font-size: 16px;
+  line-height: 15px;
+  font-weight: normal;
+}
+
+.proxy_address {
+  display: flex;
+  margin: 0 45px 60px;
+}
+
+.input_proxy {
+  width: 100%;
+  margin: 0;
+}
+
+.input_proxy.port {
+  width: 100px;
+  margin-left: 10px;
+}

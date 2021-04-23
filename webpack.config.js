@@ -141,6 +141,7 @@ const webpackConfig = {
       filename: 'proxy_options.html',
       template: 'src/common/pages/proxy_options.html',
       inject: true,
+      chunks: [],
       meta: contentSecurityPolicy,
     }),
     new HTMLWebpackPlugin({

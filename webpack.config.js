@@ -34,7 +34,8 @@ const webpackConfig = {
     background: `./src/${BROWSER}/js/background.js`,
     unavailable: `./src/${BROWSER}/js/ui/unavailable.js`,
     popup: `./src/${BROWSER}/js/ui/popup.js`,
-    options: `./src/${BROWSER}/js/ui/options.js`,
+    options: './src/common/js/ui/options.js',
+    proxy_options: './src/common/js/ui/proxy_options.js',
     proxy_disabled: `./src/${BROWSER}/js/ui/proxy_disabled.js`,
     ignore_editor: './src/common/js/ui/ignore_editor.js',
   },
@@ -141,7 +142,7 @@ const webpackConfig = {
       filename: 'proxy_options.html',
       template: 'src/common/pages/proxy_options.html',
       inject: true,
-      chunks: [],
+      chunks: ['proxy_options'],
       meta: contentSecurityPolicy,
     }),
     new HTMLWebpackPlugin({

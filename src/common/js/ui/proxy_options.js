@@ -1,4 +1,4 @@
-import { proxy, storage } from '@/common/js'
+import { proxy } from '@/common/js'
 
 (async () => {
   const useProxyCheckbox = document.getElementById('useProxyCheckbox')
@@ -8,13 +8,13 @@ import { proxy, storage } from '@/common/js'
   if (isProxyControlledByOtherExtensions) {
     useProxyCheckbox.checked = false
     useProxyCheckbox.disabled = true
-    await storage.set({ useProxy: false })
+    await proxy.disableProxy()
   } else if (isProxyControlledByThisExtension) {
     useProxyCheckbox.checked = true
     useProxyCheckbox.disabled = false
-    await storage.set({ useProxy: true })
+    await proxy.enableProxy()
   } else {
-    await storage.set({ useProxy: false })
+    await proxy.disableProxy()
     useProxyCheckbox.disabled = false
   }
 

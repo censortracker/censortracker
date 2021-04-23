@@ -56,6 +56,8 @@
             }
             element.parentElement.hidden = true
           }
+          await proxy.setProxy()
+          window.location.reload()
         })
       })
     }

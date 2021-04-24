@@ -49,15 +49,23 @@ import { proxy, storage } from '@/common/js'
   }
 
   proxyCustomOptionsRadioGroup.addEventListener('change', async (event) => {
+    const oneMinute = 1000 * 60
     const value = event.target.value
 
     if (value !== 'default') {
-      await proxy.setProxy()
+      setTimeout(async () => {
+        const { customProxyHost: proxyHost, customProxyPort: proxyPort } =
+          await storage.get(['customProxyHost', 'customProxyPort'])
+
+        if (proxyHost && proxyPort) {
+          await proxy.setProxy()
+        }
+      }, oneMinute)
     } else {
-      await storage.set({
-        customProxyHost: undefined,
-        customProxyPort: undefined,
-      })
+      await storage.remove([
+        'customProxyHost',
+        'customProxyPort',
+      ])
     }
   })
 

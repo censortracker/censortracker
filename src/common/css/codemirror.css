@@ -18,7 +18,8 @@
   padding: 0 4px; /* Horizontal padding of content */
 }
 
-.CodeMirror-scrollbar-filler, .CodeMirror-gutter-filler {
+.CodeMirror-scrollbar-filler,
+.CodeMirror-gutter-filler {
   background-color: white; /* The little square between H and V scrollbars */
 }
 
@@ -84,9 +85,11 @@
 @-moz-keyframes blink {
   0% {
   }
+
   50% {
     background-color: transparent;
   }
+
   100% {
   }
 }
@@ -94,9 +97,11 @@
 @-webkit-keyframes blink {
   0% {
   }
+
   50% {
     background-color: transparent;
   }
+
   100% {
   }
 }
@@ -104,9 +109,11 @@
 @keyframes blink {
   0% {
   }
+
   50% {
     background-color: transparent;
   }
+
   100% {
   }
 }
@@ -154,7 +161,8 @@
   color: #292;
 }
 
-.cm-header, .cm-strong {
+.cm-header,
+.cm-strong {
   font-weight: bold;
 }
 
@@ -196,7 +204,8 @@
   color: #05a;
 }
 
-.cm-s-default .cm-variable-3, .cm-s-default .cm-type {
+.cm-s-default .cm-variable-3,
+.cm-s-default .cm-type {
   color: #085;
 }
 
@@ -267,7 +276,7 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
 }
 
 .CodeMirror-matchingtag {
-  background: rgba(255, 150, 0, .3);
+  background: rgba(255, 150, 0, 0.3);
 }
 
 .CodeMirror-activeline-background {
@@ -287,7 +296,9 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
 
 .CodeMirror-scroll {
   overflow: scroll !important; /* Things will break if this is overridden */
+
   /* 30px is the magic margin used to hide the element's real scrollbars */
+
   /* See overflow: hidden in .CodeMirror */
   margin-bottom: -30px;
   margin-right: -30px;
@@ -305,7 +316,10 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
 /* The fake, visible scrollbars. Used to force redraw during scrolling
    before actual scrolling happens, thus preventing shaking and
    flickering artifacts. */
-.CodeMirror-vscrollbar, .CodeMirror-hscrollbar, .CodeMirror-scrollbar-filler, .CodeMirror-gutter-filler {
+.CodeMirror-vscrollbar,
+.CodeMirror-hscrollbar,
+.CodeMirror-scrollbar-filler,
+.CodeMirror-gutter-filler {
   position: absolute;
   z-index: 6;
   display: none;
@@ -372,11 +386,11 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
 }
 
 .CodeMirror-gutter-wrapper ::selection {
-  background-color: transparent
+  background-color: transparent;
 }
 
 .CodeMirror-gutter-wrapper ::-moz-selection {
-  background-color: transparent
+  background-color: transparent;
 }
 
 .CodeMirror-lines {
@@ -491,22 +505,26 @@ div.CodeMirror-dragcursors {
   cursor: crosshair;
 }
 
-.CodeMirror-line::selection, .CodeMirror-line > span::selection, .CodeMirror-line > span > span::selection {
+.CodeMirror-line::selection,
+.CodeMirror-line > span::selection,
+.CodeMirror-line > span > span::selection {
   background: #d7d4f0;
 }
 
-.CodeMirror-line::-moz-selection, .CodeMirror-line > span::-moz-selection, .CodeMirror-line > span > span::-moz-selection {
+.CodeMirror-line::-moz-selection,
+.CodeMirror-line > span::-moz-selection,
+.CodeMirror-line > span > span::-moz-selection {
   background: #d7d4f0;
 }
 
 .cm-searching {
   background-color: #ffa;
-  background-color: rgba(255, 255, 0, .4);
+  background-color: rgba(255, 255, 0, 0.4);
 }
 
 /* Used to force a border model for a node */
 .cm-force-border {
-  padding-right: .1px;
+  padding-right: 0.1px;
 }
 
 @media print {
@@ -517,7 +535,7 @@ div.CodeMirror-dragcursors {
 }
 
 /* See issue #2901 */
-.cm-tab-wrap-hack:after {
+.cm-tab-wrap-hack::after {
   content: '';
 }
 

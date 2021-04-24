@@ -34,7 +34,8 @@ const webpackConfig = {
     background: `./src/${BROWSER}/js/background.js`,
     unavailable: `./src/${BROWSER}/js/ui/unavailable.js`,
     popup: `./src/${BROWSER}/js/ui/popup.js`,
-    options: `./src/${BROWSER}/js/ui/options.js`,
+    options: './src/common/js/ui/options.js',
+    proxy_options: './src/common/js/ui/proxy_options.js',
     proxy_disabled: `./src/${BROWSER}/js/ui/proxy_disabled.js`,
     ignore_editor: './src/common/js/ui/ignore_editor.js',
   },
@@ -166,6 +167,14 @@ const webpackConfig = {
 
 if (isFirefox) {
   webpackConfig.plugins.push(new HTMLWebpackPlugin({
+    title: 'Настройки прокси | Censor Tracker',
+    filename: 'proxy_options.html',
+    template: 'src/common/pages/proxy_options.html',
+    inject: true,
+    chunks: ['proxy_options'],
+    meta: contentSecurityPolicy,
+  }))
+  webpackConfig.plugins.push(new HTMLWebpackPlugin({
     title: 'Настройки | Censor Tracker',
     filename: 'options.html',
     template: 'src/common/pages/options.html',
@@ -182,7 +191,15 @@ if (isChromium) {
     filename: 'options.html',
     template: 'src/common/pages/options.html',
     inject: true,
-    chunks: ['options', 'controlled'],
+    chunks: ['options'],
+    meta: contentSecurityPolicy,
+  }))
+  webpackConfig.plugins.push(new HTMLWebpackPlugin({
+    title: 'Настройки прокси | Censor Tracker',
+    filename: 'proxy_options.html',
+    template: 'src/common/pages/proxy_options.html',
+    inject: true,
+    chunks: ['proxy_options', 'controlled'],
     meta: contentSecurityPolicy,
   }))
   webpackConfig.plugins.push(new HTMLWebpackPlugin({

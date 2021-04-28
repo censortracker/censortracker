@@ -27,16 +27,7 @@ export const isValidURL = (url) => {
  * @returns {string} Extracted hostname.
  */
 export const extractHostnameFromUrl = (url) => {
-  const regEx = /^(?:https?:\/\/)?(?:www\.)?/i
-
-  url = url.replace(regEx, '')
-
-  if (url.indexOf('/') !== -1) {
-    url = url.split('/')[0]
-  }
-
   url = url.trim()
-
   try {
     return new URL(url).hostname
   } catch (error) {

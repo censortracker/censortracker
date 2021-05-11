@@ -7,11 +7,16 @@ class Proxy {
     this.proxyPort = 33333
     this.proxyHost = 'proxy-ssl.roskomsvoboda.org'
     this.isFirefox = isFirefox()
-    this.resetProxyTimeout = 60 * 60 * 5000
+    this.resetProxyTimeout = (60 * 60) * 5000
+    this.allowProxyingTimeout = (60 * 5) * 1000
 
     setInterval(async () => {
       await this.setProxy()
     }, this.resetProxyTimeout)
+
+    setInterval(() => {
+      this.allowProxying()
+    }, this.allowProxyingTimeout)
   }
 
   getProxyServerURL = async () => {

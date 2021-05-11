@@ -9,6 +9,7 @@ import {
   proxy,
   registry,
   settings,
+  startsWithHttpHttps,
   storage,
 } from '@/common/js'
 
@@ -71,14 +72,14 @@ const handleErrorOccurred = async ({ url, error, tabId }) => {
     return
   }
 
-  if (proxyError) {
+  if (proxyError && startsWithHttpHttps(url)) {
     chrome.tabs.update(tabId, {
       url: chrome.runtime.getURL(`proxy_unavailable.html?originUrl=${encodedUrl}`),
     })
     return
   }
 
-  if (connectionError) {
+  if (connectionError && startsWithHttpHttps(url)) {
     await registry.add(hostname)
     const isProxyControlledByOtherExtensions = await proxy.controlledByOtherExtensions()
     const isProxyControlledByThisExtension = await proxy.controlledByThisExtension()

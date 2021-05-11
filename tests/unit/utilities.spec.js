@@ -1,4 +1,5 @@
 import {
+  enforceHttpConnection,
   enforceHttpsConnection,
   extractHostnameFromUrl,
   isValidURL,
@@ -77,6 +78,21 @@ describe('Enforce HTTPS', () => {
 
     for (const { url, expected } of urls) {
       expect(enforceHttpsConnection(url)).toEqual(expected)
+    }
+  })
+})
+
+describe('Enforce HTTP', () => {
+  test('replaces https: with http:', () => {
+    const urls = [
+      { url: 'https://telegram.org/', expected: 'http://telegram.org/' },
+      { url: 'https://google.com/', expected: 'http://google.com/' },
+      { url: 'https://2ch.hk/', expected: 'http://2ch.hk/' },
+      { url: 'https://2ch.hk/https/', expected: 'http://2ch.hk/https/' },
+    ]
+
+    for (const { url, expected } of urls) {
+      expect(enforceHttpConnection(url)).toEqual(expected)
     }
   })
 })

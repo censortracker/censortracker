@@ -1,24 +1,19 @@
+import validator from 'validator'
+
 /**
  * Validate passed URL using regex.
  * @param url URL
  * @returns {boolean} true if valid otherwise false
  */
 export const isValidURL = (url) => {
-  const pattern = new RegExp(
-    '^(https?:\\/\\/)?' +
-    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' +
-    '((\\d{1,3}\\.){3}\\d{1,3}))' +
-    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' +
-    '(\\?[;&a-z\\d%_.~+=-]*)?' +
-    '(\\#[-a-z\\d_]*)?$',
-    'i',
-  )
-
-  if (!url || url.startsWith('about:') || url.startsWith('chrome-extension:')) {
+  try {
+    if (url.startsWith('about:') || url.startsWith('chrome-extension:')) {
+      return false
+    }
+    return validator.isURL(url, { protocols: ['http', 'https'], validate_length: true })
+  } catch (error) {
     return false
   }
-
-  return !!pattern.test(url)
 }
 
 /**
@@ -81,7 +76,7 @@ export const getRequestFilter = ({ http = true, https = true, types = undefined 
 }
 
 /**
- * Search for target in array
+ * Search for target in array using binary search.
  * @param array Array for search.
  * @param target Target.
  * @returns {boolean} true or false
@@ -125,5 +120,21 @@ export const extractDecodedOriginUrl = (url, key = 'originUrl') => {
     return window.atob(encodedHostname)
   } catch (error) {
     return null
+  }
+}
+
+/**
+ * Checks if the string is URL starting with http(s).
+ * @param string URL.
+ * @returns {boolean} true or false.
+ */
+export const startsWithHttpHttps = (string) => {
+  try {
+    const url = new URL(string)
+    const allowedProtocols = ['http:', 'https:']
+
+    return allowedProtocols.includes(url.protocol)
+  } catch (error) {
+    return false
   }
 }

@@ -11,4 +11,5 @@ export {
   extractHostnameFromUrl,
   getRequestFilter,
   isValidURL,
+  startsWithHttpHttps,
 } from './utilities'

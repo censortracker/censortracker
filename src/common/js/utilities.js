@@ -22,7 +22,7 @@ export const isValidURL = (url) => {
  * @returns {string} Extracted hostname.
  */
 export const extractHostnameFromUrl = (url) => {
-  url = url.trim().replace(/^www\./, '')
+  url = url.trim().replace('www.', '')
   try {
     return new URL(url).hostname
   } catch (error) {

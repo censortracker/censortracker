@@ -5,7 +5,7 @@ class Proxy {
   constructor () {
     this.browser = getBrowser()
     this.proxyPort = 33333
-    this.proxyHost = 'proxy.cloud.roskomsvoboda.org'
+    this.proxyHost = 'proxy-ssl.roskomsvoboda.org'
     this.isFirefox = isFirefox()
     this.resetProxyTimeout = (60 * 60) * 5000
     this.allowProxyingTimeout = (60 * 5) * 1000
@@ -122,7 +122,7 @@ class Proxy {
 
   allowProxying = () => {
     const request = new XMLHttpRequest()
-    const proxyServerUrl = 'http://3.67.38.88:39263'
+    const proxyServerUrl = 'https://163.172.211.183:39263'
 
     request.open('GET', proxyServerUrl, true)
     request.addEventListener('error', (_error) => {

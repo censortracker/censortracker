@@ -68,9 +68,9 @@ const handleErrorOccurred = async ({ error, url, tabId }) => {
     return
   }
 
-  if (connectionError && startsWithHttpHttps(url)) {
-    await registry.add(hostname)
+  const foundInRegistry = await registry.contains(url)
 
+  if (connectionError && startsWithHttpHttps(url)) {
     if (!proxyingEnabled) {
       browser.tabs.update(tabId, {
         url: browser.runtime.getURL(`proxy_disabled.html?originUrl=${encodedUrl}`),
@@ -78,11 +78,15 @@ const handleErrorOccurred = async ({ error, url, tabId }) => {
       return
     }
 
-    await proxy.setProxy()
-    browser.tabs.update(tabId, {
-      url: browser.runtime.getURL(`unavailable.html?originUrl=${encodedUrl}`),
-    })
-    return
+    if (!foundInRegistry) {
+      await registry.add(hostname)
+      await proxy.setProxy()
+
+      browser.tabs.update(tabId, {
+        url: browser.runtime.getURL(`unavailable.html?originUrl=${encodedUrl}`),
+      })
+      return
+    }
   }
 
   await ignore.add(hostname)

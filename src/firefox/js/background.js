@@ -68,8 +68,6 @@ const handleErrorOccurred = async ({ error, url, tabId }) => {
     return
   }
 
-  const foundInRegistry = await registry.contains(url)
-
   if (connectionError && startsWithHttpHttps(url)) {
     if (!proxyingEnabled) {
       browser.tabs.update(tabId, {
@@ -77,6 +75,7 @@ const handleErrorOccurred = async ({ error, url, tabId }) => {
       })
       return
     }
+    const foundInRegistry = await registry.contains(url)
 
     if (!foundInRegistry) {
       await registry.add(hostname)

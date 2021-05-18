@@ -247,9 +247,9 @@ window.censortracker.webRequestListeners = webRequestListeners
 /**
  * Fired when one or more items change.
  * @param changes Object describing the change. This contains one property for each key that changed.
- * @param areaName The name of the storage area ("sync", "local") to which the changes were made.
+ * @param _areaName The name of the storage area ("sync", "local") to which the changes were made.
  */
-const handleStorageChanged = async ({ enableExtension, ignoredHosts, useProxy }, areaName) => {
+const handleStorageChanged = async ({ enableExtension, ignoredHosts, useProxy }, _areaName) => {
   if (ignoredHosts && ignoredHosts.newValue) {
     ignore.save()
   }

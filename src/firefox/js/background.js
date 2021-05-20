@@ -5,6 +5,7 @@ import {
   extractHostnameFromUrl,
   getRequestFilter,
   ignore,
+  ipfs,
   isValidURL,
   proxy,
   registry,
@@ -20,6 +21,7 @@ window.censortracker = {
   storage,
   errors,
   ignore,
+  ipfs,
   extractHostnameFromUrl,
 }
 

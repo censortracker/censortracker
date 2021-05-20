@@ -6,6 +6,7 @@ class Proxy {
     this.browser = getBrowser()
     this.proxyPort = 33333
     this.proxyHost = 'proxy-ssl.roskomsvoboda.org'
+    this.proxyGateUrl = 'https://163.172.211.183:39263'
     this.isFirefox = isFirefox()
     this.resetProxyTimeout = (60 * 60) * 5000
     this.allowProxyingTimeout = (60 * 5) * 1000
@@ -35,7 +36,9 @@ class Proxy {
     const pacData = await this.generateProxyAutoConfigData()
 
     if (this.isFirefox) {
-      const blob = new Blob([pacData], { type: 'application/x-ns-proxy-autoconfig' })
+      const blob = new Blob([pacData], {
+        type: 'application/x-ns-proxy-autoconfig',
+      })
 
       config.value = {
         proxyType: 'autoConfig',
@@ -122,9 +125,8 @@ class Proxy {
 
   allowProxying = () => {
     const request = new XMLHttpRequest()
-    const proxyServerUrl = 'https://163.172.211.183:39263'
 
-    request.open('GET', proxyServerUrl, true)
+    request.open('GET', this.proxyGateUrl, true)
     request.addEventListener('error', (_error) => {
       console.log('Error on opening port')
     })

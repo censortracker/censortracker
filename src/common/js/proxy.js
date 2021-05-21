@@ -5,11 +5,13 @@ class Proxy {
   constructor () {
     this.browser = getBrowser()
     this.proxyPort = 33333
-    this.proxyHost = 'proxy-ssl.roskomsvoboda.org'
-    this.proxyGateUrl = 'https://163.172.211.183:39263'
+    this.proxyHost = 'proxy.roskomsvoboda.org'
     this.isFirefox = isFirefox()
     this.resetProxyTimeout = (60 * 60) * 5000
     this.allowProxyingTimeout = (60 * 5) * 1000
+
+    // URL which must be pinged to allow proxying
+    this.proxyGateUrl = `${this.proxyHost}:39263`
 
     setInterval(async () => {
       await this.setProxy()

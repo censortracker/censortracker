@@ -232,7 +232,11 @@ if (PRODUCTION) {
   webpackConfig.plugins.push(new TerserPlugin({
     terserOptions: {
       parallel: true,
+      format: {
+        comments: false,
+      },
     },
+    extractComments: false,
   }))
 }
 

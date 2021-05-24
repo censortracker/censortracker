@@ -1,5 +1,5 @@
 import storage from './storage'
-import { extractHostnameFromUrl } from './utilities'
+import { extractHostnameFromUrl, startsWithHttpHttps } from './utilities'
 
 const ipRangeCheck = require('ip-range-check')
 
@@ -81,6 +81,10 @@ class Ignore {
       ...this.ignoredHosts,
       ...this.temporarilyIgnoredHosts,
     ])
+
+    if (!startsWithHttpHttps(url)) {
+      return true
+    }
 
     if (ignoredHosts.has(hostname) || hostname.match(ignoreRegEx)) {
       console.warn(`Ignoring host: ${hostname}`)

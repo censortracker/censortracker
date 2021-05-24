@@ -9,7 +9,6 @@ import {
   proxy,
   registry,
   settings,
-  startsWithHttpHttps,
   storage,
 } from '@/common/js'
 
@@ -59,23 +58,28 @@ browser.webRequest.onBeforeRequest.addListener(
 const handleErrorOccurred = async ({ error, url, tabId }) => {
   const encodedUrl = window.btoa(url)
   const foundInRegistry = await registry.contains(url)
+  const proxyingEnabled = await proxy.proxyingEnabled()
   const { proxyError, connectionError } = errors.determineError(error)
 
-  if (ignore.contains(url) || !startsWithHttpHttps(url)) {
+  if (ignore.contains(url)) {
     return
   }
 
   if (proxyError) {
     browser.tabs.update(tabId, {
-      url: browser.runtime.getURL(`proxy_unavailable.html?originUrl=${encodedUrl}`),
+      url: browser.runtime.getURL(
+        `proxy_unavailable.html?originUrl=${encodedUrl}`,
+      ),
     })
     return
   }
 
   if (connectionError) {
-    if (!await proxy.proxyingEnabled()) {
+    if (!proxyingEnabled) {
       browser.tabs.update(tabId, {
-        url: browser.runtime.getURL(`proxy_disabled.html?originUrl=${encodedUrl}`),
+        url: browser.runtime.getURL(
+          `proxy_disabled.html?originUrl=${encodedUrl}`,
+        ),
       })
       return
     }

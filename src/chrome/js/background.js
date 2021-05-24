@@ -60,9 +60,10 @@ chrome.webRequest.onBeforeRequest.addListener(
 const handleErrorOccurred = async ({ url, error, tabId }) => {
   const encodedUrl = window.btoa(url)
   const foundInRegistry = await registry.contains(url)
+  const proxyingEnabled = await proxy.proxyingEnabled()
   const { proxyError, connectionError, interruptedError } = errors.determineError(error)
 
-  if (interruptedError || ignore.contains(url) || !startsWithHttpHttps(url)) {
+  if (interruptedError || ignore.contains(url)) {
     return
   }
 
@@ -74,10 +75,7 @@ const handleErrorOccurred = async ({ url, error, tabId }) => {
   }
 
   if (connectionError) {
-    const isProxyControlledByOtherExtensions = await proxy.controlledByOtherExtensions()
-    const isProxyControlledByThisExtension = await proxy.controlledByThisExtension()
-
-    if (!isProxyControlledByOtherExtensions && !isProxyControlledByThisExtension) {
+    if (!proxyingEnabled) {
       chrome.tabs.update(tabId, {
         url: chrome.runtime.getURL(`proxy_disabled.html?originUrl=${encodedUrl}`),
       })

@@ -9,7 +9,6 @@ import {
   proxy,
   registry,
   settings,
-  startsWithHttpHttps,
   storage,
 } from '@/common/js'
 

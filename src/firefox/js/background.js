@@ -32,10 +32,12 @@ window.censortracker = {
 const handleBeforeRequest = ({ url }) => {
   const hostname = extractHostnameFromUrl(url)
 
+  proxy.allowProxying()
+
   if (ignore.contains(hostname)) {
     return undefined
   }
-  proxy.allowProxying()
+
   return {
     redirectUrl: enforceHttpsConnection(url),
   }
@@ -56,9 +58,8 @@ browser.webRequest.onBeforeRequest.addListener(
  */
 const handleErrorOccurred = async ({ error, url, tabId }) => {
   const encodedUrl = window.btoa(url)
-  const hostname = extractHostnameFromUrl(url)
+  const foundInRegistry = await registry.contains(url)
 
-  const proxyingEnabled = await proxy.proxyingEnabled()
   const { proxyError, connectionError } = errors.determineError(error)
 
   if (proxyError && startsWithHttpHttps(url)) {
@@ -69,16 +70,15 @@ const handleErrorOccurred = async ({ error, url, tabId }) => {
   }
 
   if (connectionError && startsWithHttpHttps(url)) {
-    if (!proxyingEnabled) {
+    if (!await proxy.proxyingEnabled()) {
       browser.tabs.update(tabId, {
         url: browser.runtime.getURL(`proxy_disabled.html?originUrl=${encodedUrl}`),
       })
       return
     }
-    const foundInRegistry = await registry.contains(url)
 
     if (!foundInRegistry) {
-      await registry.add(hostname)
+      await registry.add(url)
       await proxy.setProxy()
 
       browser.tabs.update(tabId, {
@@ -88,8 +88,8 @@ const handleErrorOccurred = async ({ error, url, tabId }) => {
     }
   }
 
-  await ignore.add(hostname)
-  browser.tabs.update(tabId, {
+  await ignore.add(url, { temporary: foundInRegistry })
+  await browser.tabs.update(tabId, {
     url: enforceHttpConnection(url),
   })
 }

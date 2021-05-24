@@ -58,17 +58,12 @@ chrome.webRequest.onBeforeRequest.addListener(
  * @returns {undefined} Undefined.
  */
 const handleErrorOccurred = async ({ url, error, tabId }) => {
-  const hostname = extractHostnameFromUrl(url)
   const encodedUrl = window.btoa(url)
+  const foundInRegistry = await registry.contains(url)
 
   const { proxyError, connectionError, interruptedError } = errors.determineError(error)
 
-  if (interruptedError) {
-    console.log(`Request interrupted for: ${hostname}`)
-    return
-  }
-
-  if (ignore.contains(hostname)) {
+  if (interruptedError || ignore.contains(url)) {
     return
   }
 
@@ -80,7 +75,6 @@ const handleErrorOccurred = async ({ url, error, tabId }) => {
   }
 
   if (connectionError && startsWithHttpHttps(url)) {
-    await registry.add(hostname)
     const isProxyControlledByOtherExtensions = await proxy.controlledByOtherExtensions()
     const isProxyControlledByThisExtension = await proxy.controlledByThisExtension()
 
@@ -91,14 +85,18 @@ const handleErrorOccurred = async ({ url, error, tabId }) => {
       return
     }
 
-    await proxy.setProxy()
-    chrome.tabs.update(tabId, {
-      url: chrome.runtime.getURL(`unavailable.html?originUrl=${encodedUrl}`),
-    })
-    return
+    if (!foundInRegistry) {
+      await registry.add(url)
+      await proxy.setProxy()
+
+      chrome.tabs.update(tabId, {
+        url: chrome.runtime.getURL(`unavailable.html?originUrl=${encodedUrl}`),
+      })
+      return
+    }
   }
 
-  await ignore.add(hostname)
+  await ignore.add(url, { temporary: foundInRegistry })
   chrome.tabs.remove(tabId)
   chrome.tabs.create({
     url: enforceHttpConnection(url),

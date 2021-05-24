@@ -186,9 +186,10 @@ class Registry {
 
   /**
    * Adds passed hostname to the local storage of restricted domains.
-   * @param hostname Hostname.
+   * @param url Hostname.
    */
-  add = async (hostname) => {
+  add = async (url) => {
+    const hostname = extractHostnameFromUrl(url)
     const { blockedDomains } = await storage.get({ blockedDomains: [] })
 
     if (!blockedDomains.includes(hostname)) {

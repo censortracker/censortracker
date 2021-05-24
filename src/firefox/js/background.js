@@ -62,6 +62,10 @@ const handleErrorOccurred = async ({ error, url, tabId }) => {
 
   const { proxyError, connectionError } = errors.determineError(error)
 
+  if (ignore.contains(url)) {
+    return
+  }
+
   if (proxyError && startsWithHttpHttps(url)) {
     browser.tabs.update(tabId, {
       url: browser.runtime.getURL(`proxy_unavailable.html?originUrl=${encodedUrl}`),

@@ -133,7 +133,6 @@ class Proxy {
 
     try {
       request.send(null)
-      console.warn('Proxying allowed.')
     } catch (error) {
       console.log(error)
     }

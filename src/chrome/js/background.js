@@ -9,7 +9,6 @@ import {
   proxy,
   registry,
   settings,
-  startsWithHttpHttps,
   storage,
 } from '@/common/js'
 
@@ -58,47 +57,42 @@ chrome.webRequest.onBeforeRequest.addListener(
  * @returns {undefined} Undefined.
  */
 const handleErrorOccurred = async ({ url, error, tabId }) => {
-  const hostname = extractHostnameFromUrl(url)
   const encodedUrl = window.btoa(url)
-
+  const foundInRegistry = await registry.contains(url)
+  const proxyingEnabled = await proxy.proxyingEnabled()
   const { proxyError, connectionError, interruptedError } = errors.determineError(error)
 
-  if (interruptedError) {
-    console.log(`Request interrupted for: ${hostname}`)
+  if (interruptedError || ignore.contains(url)) {
     return
   }
 
-  if (ignore.contains(hostname)) {
-    return
-  }
-
-  if (proxyError && startsWithHttpHttps(url)) {
+  if (proxyError) {
     chrome.tabs.update(tabId, {
       url: chrome.runtime.getURL(`proxy_unavailable.html?originUrl=${encodedUrl}`),
     })
     return
   }
 
-  if (connectionError && startsWithHttpHttps(url)) {
-    await registry.add(hostname)
-    const isProxyControlledByOtherExtensions = await proxy.controlledByOtherExtensions()
-    const isProxyControlledByThisExtension = await proxy.controlledByThisExtension()
-
-    if (!isProxyControlledByOtherExtensions && !isProxyControlledByThisExtension) {
+  if (connectionError) {
+    if (!proxyingEnabled) {
       chrome.tabs.update(tabId, {
         url: chrome.runtime.getURL(`proxy_disabled.html?originUrl=${encodedUrl}`),
       })
       return
     }
 
-    await proxy.setProxy()
-    chrome.tabs.update(tabId, {
-      url: chrome.runtime.getURL(`unavailable.html?originUrl=${encodedUrl}`),
-    })
-    return
+    if (!foundInRegistry) {
+      await registry.add(url)
+      await proxy.setProxy()
+
+      chrome.tabs.update(tabId, {
+        url: chrome.runtime.getURL(`unavailable.html?originUrl=${encodedUrl}`),
+      })
+      return
+    }
   }
 
-  await ignore.add(hostname)
+  await ignore.add(url, { temporary: foundInRegistry })
   chrome.tabs.remove(tabId)
   chrome.tabs.create({
     url: enforceHttpConnection(url),

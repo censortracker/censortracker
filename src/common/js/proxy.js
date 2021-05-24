@@ -4,14 +4,16 @@ import { getBrowser, isFirefox } from './browser'
 class Proxy {
   constructor () {
     this.browser = getBrowser()
-    this.proxyPort = 33333
-    this.proxyHost = 'proxy.roskomsvoboda.org'
     this.isFirefox = isFirefox()
     this.resetProxyTimeout = (60 * 60) * 5000
-    this.allowProxyingTimeout = (60 * 5) * 1000
-
-    // URL which must be pinged to allow proxying
-    this.proxyGateUrl = `${this.proxyHost}:39263`
+    this.proxyConfig = {
+      port: 33333,
+      host: 'proxy.roskomsvoboda.org',
+      ping: {
+        url: 'http://proxy.roskomsvoboda.org:39263',
+        timeout: (60 * 3) * 1000,
+      },
+    }
 
     setInterval(async () => {
       await this.setProxy()
@@ -19,18 +21,18 @@ class Proxy {
 
     setInterval(() => {
       this.allowProxying()
-    }, this.allowProxyingTimeout)
+    }, this.proxyConfig.ping.timeout)
   }
 
   getProxyServerURL = async () => {
     const { customProxyHost, customProxyPort } =
-        await storage.get(['customProxyHost', 'customProxyPort'])
+      await storage.get(['customProxyHost', 'customProxyPort'])
 
     if (customProxyHost && customProxyPort) {
       return `${customProxyHost}:${customProxyPort}`
     }
 
-    return `${this.proxyHost}:${this.proxyPort}`
+    return `${this.proxyConfig.host}:${this.proxyConfig.port}`
   }
 
   setProxy = async () => {
@@ -57,7 +59,6 @@ class Proxy {
       }
     }
 
-    await this.allowProxying()
     await this.browser.proxy.settings.set(config)
     await storage.set({ useProxy: true })
     console.warn('PAC has been set successfully!')
@@ -128,11 +129,14 @@ class Proxy {
   allowProxying = () => {
     const request = new XMLHttpRequest()
 
-    request.open('GET', this.proxyGateUrl, true)
-    request.addEventListener('error', (_error) => {
-      console.log('Error on opening port')
-    })
-    request.send(null)
+    request.open('GET', this.proxyConfig.ping.url, true)
+
+    try {
+      request.send(null)
+      console.warn('Proxying allowed.')
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   proxyingEnabled = async () => {

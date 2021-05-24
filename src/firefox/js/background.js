@@ -59,21 +59,20 @@ browser.webRequest.onBeforeRequest.addListener(
 const handleErrorOccurred = async ({ error, url, tabId }) => {
   const encodedUrl = window.btoa(url)
   const foundInRegistry = await registry.contains(url)
-
   const { proxyError, connectionError } = errors.determineError(error)
 
-  if (ignore.contains(url)) {
+  if (ignore.contains(url) || !startsWithHttpHttps(url)) {
     return
   }
 
-  if (proxyError && startsWithHttpHttps(url)) {
+  if (proxyError) {
     browser.tabs.update(tabId, {
       url: browser.runtime.getURL(`proxy_unavailable.html?originUrl=${encodedUrl}`),
     })
     return
   }
 
-  if (connectionError && startsWithHttpHttps(url)) {
+  if (connectionError) {
     if (!await proxy.proxyingEnabled()) {
       browser.tabs.update(tabId, {
         url: browser.runtime.getURL(`proxy_disabled.html?originUrl=${encodedUrl}`),

@@ -60,21 +60,20 @@ chrome.webRequest.onBeforeRequest.addListener(
 const handleErrorOccurred = async ({ url, error, tabId }) => {
   const encodedUrl = window.btoa(url)
   const foundInRegistry = await registry.contains(url)
-
   const { proxyError, connectionError, interruptedError } = errors.determineError(error)
 
-  if (interruptedError || ignore.contains(url)) {
+  if (interruptedError || ignore.contains(url) || !startsWithHttpHttps(url)) {
     return
   }
 
-  if (proxyError && startsWithHttpHttps(url)) {
+  if (proxyError) {
     chrome.tabs.update(tabId, {
       url: chrome.runtime.getURL(`proxy_unavailable.html?originUrl=${encodedUrl}`),
     })
     return
   }
 
-  if (connectionError && startsWithHttpHttps(url)) {
+  if (connectionError) {
     const isProxyControlledByOtherExtensions = await proxy.controlledByOtherExtensions()
     const isProxyControlledByThisExtension = await proxy.controlledByThisExtension()
 

@@ -44,7 +44,14 @@ browser.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
     }
   })
 
-  const { enableExtension } = await bgModules.storage.get({ enableExtension: true })
+  const { enableExtension, privateWindowPermissionRequired } = await bgModules.storage.get({
+    enableExtension: true,
+    privateWindowPermissionRequired: false,
+  })
+
+  if (privateWindowPermissionRequired) {
+    document.getElementById('privateWindowPermissionRequired').hidden = false
+  }
 
   const [{ url: currentUrl }] = await browser.tabs.query({
     active: true, lastFocusedWindow: true,

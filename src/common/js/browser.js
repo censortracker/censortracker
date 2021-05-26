@@ -25,3 +25,10 @@ export const isFirefox = () => {
     return false
   }
 }
+
+export class BrowserProxy {
+  constructor () {
+    this.browser = getBrowser()
+    this.isFirefox = isFirefox()
+  }
+}

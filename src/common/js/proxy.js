@@ -1,11 +1,9 @@
 import { registry, storage } from '.'
-import { getBrowser, isFirefox } from './browser'
+import { BrowserProxy } from './browser'
 
-class Proxy {
+class Proxy extends BrowserProxy {
   constructor () {
-    this.browser = getBrowser()
-    this.isFirefox = isFirefox()
-    this.resetProxyTimeout = (60 * 60) * 5000
+    super()
     this.proxyConfig = {
       port: 33333,
       host: 'proxy.roskomsvoboda.org',
@@ -13,11 +11,12 @@ class Proxy {
         url: 'http://proxy.roskomsvoboda.org:39263',
         timeout: (60 * 3) * 1000,
       },
+      resetTimeout: (60 * 60) * 5000,
     }
 
     setInterval(async () => {
       await this.setProxy()
-    }, this.resetProxyTimeout)
+    }, this.proxyConfig.resetTimeout)
 
     setInterval(() => {
       this.allowProxying()
@@ -37,7 +36,8 @@ class Proxy {
 
   setProxy = async () => {
     const config = {}
-    const pacData = await this.generateProxyAutoConfigData()
+    const domains = await registry.getDomains()
+    const pacData = await this.generateProxyAutoConfigData(domains)
 
     if (this.isFirefox) {
       const blob = new Blob([pacData], {
@@ -68,9 +68,7 @@ class Proxy {
    * ATTENTION: DO NOT MODIFY THIS FUNCTION!
    * @returns {string} The PAC data.
    */
-  generateProxyAutoConfigData = async () => {
-    const domains = await registry.getDomains()
-
+  generateProxyAutoConfigData = async (domains) => {
     domains.sort()
     return `
       function FindProxyForURL(url, host) {

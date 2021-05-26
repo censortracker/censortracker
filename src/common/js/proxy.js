@@ -62,7 +62,10 @@ class Proxy extends BrowserProxy {
 
     try {
       await this.browser.proxy.settings.set(config)
-      await storage.set({ useProxy: true })
+      await storage.set({
+        useProxy: true,
+        privateWindowPermissionRequired: true,
+      })
       console.log('PAC has been set successfully!')
     } catch (error) {
       await storage.set({ useProxy: false })

@@ -1,6 +1,8 @@
 import { registry, storage } from '.'
 import { BrowserProxy } from './browser'
 
+const PRIVATE_BROWSING_PERMISSION_REQUIRED_MSG = 'proxy.settings requires private browsing permission.'
+
 class Proxy extends BrowserProxy {
   constructor () {
     super()
@@ -36,8 +38,7 @@ class Proxy extends BrowserProxy {
 
   setProxy = async () => {
     const config = {}
-    const domains = await registry.getDomains()
-    const pacData = await this.generateProxyAutoConfigData(domains)
+    const pacData = await this.generateProxyAutoConfigData()
 
     if (this.isFirefox) {
       const blob = new Blob([pacData], {
@@ -59,16 +60,26 @@ class Proxy extends BrowserProxy {
       }
     }
 
-    await this.browser.proxy.settings.set(config)
-    await storage.set({ useProxy: true })
-    console.warn('PAC has been set successfully!')
+    try {
+      await this.browser.proxy.settings.set(config)
+      await storage.set({ useProxy: true })
+      console.log('PAC has been set successfully!')
+    } catch (error) {
+      await storage.set({ useProxy: false })
+      if (error.message === PRIVATE_BROWSING_PERMISSION_REQUIRED_MSG) {
+        await storage.set({ privateWindowPermissionRequired: true })
+        await this.browser.browserAction.setBadgeText({ text: '✕' })
+      }
+    }
   }
 
   /**
    * ATTENTION: DO NOT MODIFY THIS FUNCTION!
    * @returns {string} The PAC data.
    */
-  generateProxyAutoConfigData = async (domains) => {
+  generateProxyAutoConfigData = async () => {
+    const domains = await registry.getDomains()
+
     domains.sort()
     return `
       function FindProxyForURL(url, host) {

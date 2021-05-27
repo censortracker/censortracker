@@ -7,10 +7,10 @@
 </head>
 
 <body>
+
 <div class="container">
   <div class="main-page">
     <div class="main-page__info">
-
       <div class="main-page__another-extension">
         <div class="icon__back" id="backToPopup">
           <svg width="24" height="16" viewBox="0 0 24 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -21,22 +21,19 @@
 
         <div>
           <div class="title-extension title-disabled">
-            Для нормальной работы CensorTracker, необходимо разрешение на работу в приватных окнах.
+            Для корректной работы CensorTracker, необходимо разрешение на работу в приватных окнах.
           </div>
+
           <div class="text-extension">
-            <a target="_blank" href="https://support.mozilla.org/ru/kb/dopolneniya-v-rezhime-privatnogo-prosmotra">
+            Дайте доступ к приватным окнам и нажмите на кнопку «Готово!».
+
+            <a id="howToGrantPrivateWindowsPermission" target="_blank" href="https://support.mozilla.org/ru/kb/dopolneniya-v-rezhime-privatnogo-prosmotra">
               Как дать доступ к приватным окнам?
             </a>
           </div>
-          <div class="text-extension">
-            Если вы дали разрешение, то нажмите кнопку "Готово".
-          </div>
+
           <div id="grantPrivateWindowsPermissionButton" class="extension__btn">
-            <span>Готово</span>
-          </div>
-
-          <div hidden id="requiredPermissionStatus">
-
+            <span>Готово!</span>
           </div>
 
         </div>

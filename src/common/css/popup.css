@@ -351,3 +351,16 @@ a {
 .extensions__link {
   cursor: pointer;
 }
+
+#howToGrantPrivateWindowsPermission {
+  opacity: 0.8;
+  color: #625c55;
+  text-transform: none;
+  display: inline-block;
+  margin-top: 16px;
+}
+
+#howToGrantPrivateWindowsPermission:hover {
+  color: #625c55;
+  opacity: 1;
+}

@@ -62,14 +62,13 @@ class Proxy extends BrowserProxy {
 
     try {
       await this.browser.proxy.settings.set(config)
-      await storage.set({
-        useProxy: true,
-        privateWindowsPermissionRequired: true,
-      })
-      console.log('PAC has been set successfully!')
+      await this.enableProxy()
+      await this.browser.browserAction.setBadgeText({ text: '' })
+      await storage.set({ privateWindowsPermissionRequired: true })
+      console.log('PAC has been generated and set successfully!')
       return true
     } catch (error) {
-      await storage.set({ useProxy: false })
+      await this.disableProxy()
       if (error.message === PRIVATE_BROWSING_PERMISSION_REQUIRED_MSG) {
         await storage.set({ privateWindowsPermissionRequired: true })
         await this.browser.browserAction.setBadgeText({ text: '✕' })
@@ -137,7 +136,7 @@ class Proxy extends BrowserProxy {
   removeProxy = async () => {
     await storage.set({ useProxy: false })
     await this.browser.proxy.settings.clear({})
-    console.warn('Proxy auto-config data cleaned!')
+    console.warn('PAC data cleaned!')
   }
 
   allowProxying = () => {

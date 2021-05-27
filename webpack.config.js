@@ -166,6 +166,15 @@ const webpackConfig = {
 }
 
 if (isFirefox) {
+  webpackConfig.entry.permissions_required = `./src/${BROWSER}/js/ui/permissions_required.js`
+  webpackConfig.plugins.push(new HTMLWebpackPlugin({
+    title: 'Настройки | Censor Tracker',
+    filename: 'permissions_required.html',
+    template: 'src/firefox/pages/permissions_required.html',
+    inject: true,
+    chunks: ['permissions_required'],
+    meta: contentSecurityPolicy,
+  }))
   webpackConfig.plugins.push(new HTMLWebpackPlugin({
     title: 'Настройки прокси | Censor Tracker',
     filename: 'proxy_options.html',

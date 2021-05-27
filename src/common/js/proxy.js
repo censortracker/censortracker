@@ -64,15 +64,17 @@ class Proxy extends BrowserProxy {
       await this.browser.proxy.settings.set(config)
       await storage.set({
         useProxy: true,
-        privateWindowPermissionRequired: true,
+        privateWindowsPermissionRequired: true,
       })
       console.log('PAC has been set successfully!')
+      return true
     } catch (error) {
       await storage.set({ useProxy: false })
       if (error.message === PRIVATE_BROWSING_PERMISSION_REQUIRED_MSG) {
-        await storage.set({ privateWindowPermissionRequired: true })
+        await storage.set({ privateWindowsPermissionRequired: true })
         await this.browser.browserAction.setBadgeText({ text: '✕' })
       }
+      return false
     }
   }
 

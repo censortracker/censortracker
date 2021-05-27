@@ -231,7 +231,7 @@ a {
   line-height: 20px;
 }
 
-#privateWindowPermissionRequired {
+#privateWindowsPermissionRequiredButton {
   background: #f4f4f4;
   font-size: 13px;
   line-height: 20px;
@@ -239,13 +239,13 @@ a {
   padding: 15px 24px 15px 20px;
 }
 
-#privateWindowPermissionRequired > div:hover {
+#privateWindowsPermissionRequiredButton > div:hover {
   cursor: pointer;
   color: #625c55;
 }
 
-#privateWindowPermissionRequired > div:active,
-#privateWindowPermissionRequired > div:focus {
+#privateWindowsPermissionRequiredButton > div:active,
+#privateWindowsPermissionRequiredButton > div:focus {
   color: #2a251f;
 }
 

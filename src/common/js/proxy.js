@@ -1,9 +1,9 @@
 import { registry, storage } from '.'
-import { BrowserProxy } from './browser'
+import { BrowserAPI } from './browser'
 
 const PRIVATE_BROWSING_PERMISSION_REQUIRED_MSG = 'proxy.settings requires private browsing permission.'
 
-class Proxy extends BrowserProxy {
+class Proxy extends BrowserAPI {
   constructor () {
     super()
     this.proxyConfig = {

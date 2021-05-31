@@ -1,29 +1,31 @@
-import { getBrowser, isFirefox } from './browser'
+import { BrowserAPI } from './browser'
 import storage from './storage'
 
-const currentBrowser = getBrowser()
-const manifest = currentBrowser.runtime.getManifest()
+class Settings extends BrowserAPI {
+  constructor () {
+    super()
+    this.manifest = this.browser.runtime.getManifest()
+  }
 
-class Settings {
-  getName = () => manifest.name;
+  getName = () => this.manifest.name;
 
-  getDangerIcon = () => currentBrowser.runtime.getURL('images/icons/128x128/danger.png');
+  getDangerIcon = () => this.browser.runtime.getURL('images/icons/128x128/danger.png');
 
-  getDefaultIcon = () => currentBrowser.runtime.getURL('images/icons/128x128/default.png');
+  getDefaultIcon = () => this.browser.runtime.getURL('images/icons/128x128/default.png');
 
-  getDisabledIcon = () => currentBrowser.runtime.getURL('images/icons/128x128/disabled.png');
+  getDisabledIcon = () => this.browser.runtime.getURL('images/icons/128x128/disabled.png');
 
-  getBlockedIcon = () => currentBrowser.runtime.getURL('images/icons/128x128/blocked.png');
+  getBlockedIcon = () => this.browser.runtime.getURL('images/icons/128x128/blocked.png');
 
   changePageIcon = (tabId, path) => {
-    const title = `${manifest.name} v${manifest.version}`
+    const title = `${this.manifest.name} v${this.manifest.version}`
 
-    if (isFirefox()) {
-      currentBrowser.browserAction.setIcon({ tabId, path })
-      currentBrowser.browserAction.setTitle({ title, tabId })
+    if (this.isFirefox) {
+      this.browser.browserAction.setIcon({ tabId, path })
+      this.browser.browserAction.setTitle({ title, tabId })
     } else {
-      currentBrowser.pageAction.setIcon({ tabId, path })
-      currentBrowser.pageAction.setTitle({ title, tabId })
+      this.browser.pageAction.setIcon({ tabId, path })
+      this.browser.pageAction.setTitle({ title, tabId })
     }
   }
 
@@ -45,7 +47,7 @@ class Settings {
 
   changeExtensionState = async ({ useProxy, enableExtension, showNotifications }) => {
     await storage.set({ useProxy, enableExtension, showNotifications })
-    const tabs = await currentBrowser.tabs.query({})
+    const tabs = await this.browser.tabs.query({})
 
     for (const { id } of tabs) {
       if (enableExtension) {

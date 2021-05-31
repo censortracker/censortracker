@@ -2,9 +2,9 @@ import { proxy, settings, storage } from '@/common/js'
 
 (async () => {
   const showNotificationsCheckbox = document.getElementById('showNotificationsCheckbox')
-  const openBrowserSettings = document.getElementById('openBrowserSettings')
+  // const openBrowserSettings = document.getElementById('openBrowserSettings')
   const grantPrivateWindowsPermissionButton = document.getElementById('grantPrivateWindowsPermissionButton')
-  const privateWindowsPermissionRequiredMessage = document.getElementById('privateWindowsPermissionRequiredMessage')
+  // const privateWindowsPermissionRequiredMessage = document.getElementById('privateWindowsPermissionRequiredMessage')
   const howToGrantPrivateWindowsPermission = document.getElementById('howToGrantPrivateWindowsPermission')
 
   grantPrivateWindowsPermissionButton.addEventListener('click', async () => {

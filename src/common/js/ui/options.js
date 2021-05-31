@@ -11,6 +11,10 @@ import { proxy, settings, storage } from '@/common/js'
       privateWindowsPermissionRequired: false,
     })
 
+    howToGrantPrivateWindowsPermission.addEventListener('click', async () => {
+      await browser.tabs.create({ url: 'https://mzl.la/3yPAS4H' })
+    })
+
     if (privateWindowsPermissionRequired === true) {
       privateWindowsPermissionRequiredMessage.hidden = false
 
@@ -19,8 +23,6 @@ import { proxy, settings, storage } from '@/common/js'
 
         if (proxySet === true) {
           privateWindowsPermissionRequiredMessage.hidden = true
-        } else {
-          howToGrantPrivateWindowsPermission.style.color = 'hsl(348, 100%, 61%)'
         }
       })
     }

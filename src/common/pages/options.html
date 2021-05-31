@@ -36,6 +36,22 @@
         </div>
       </div>
 
+      <div id="privateWindowsPermissionRequiredMessage" class="main-page__extension" hidden>
+        <div class="extension__title">
+          Разрешите работу расширения в приватных окнах
+        </div>
+        <div class="extension__text">
+          Чтобы мы могли открывать для вас заблокриванные сайты через прокси. В Firefox без этого никак.
+        </div>
+
+        <a id="howToGrantPrivateWindowsPermission" class="extension__btn disable-other-extensions__btn">
+          Как это сделать
+        </a>
+        <a id="grantPrivateWindowsPermissionButton" class="extension__btn disable-other-extensions__btn">
+          Я разрешил, включите прокси
+        </a>
+      </div>
+
       <div class="checkbox__group">
         <a id="ignoreEditorButton" href="ignore_editor.html" class="main-page__link link-ignored">
           <span>Игнорируемые сайты</span>
@@ -66,20 +82,6 @@
         <span>О расширении</span>
         <span>&rarr;</span>
       </a>
-
-      <div id="privateWindowsPermissionRequiredMessage" class="main-page__extension" hidden>
-        <div class="extension__title">
-          Для корректной работы Censor Tracker необходимы права на работу в приватных окнах.
-        </div>
-        <div class="extension__text">
-          Дайте доступ к приватным окнам и нажмите на кнопку «Готово!».
-
-          <a id="howToGrantPrivateWindowsPermission" target="_blank" href="https://mzl.la/3yPAS4H">
-            Как дать доступ к приватным окнам?
-          </a>
-        </div>
-        <a id="grantPrivateWindowsPermissionButton" class="extension__btn disable-other-extensions__btn">Готово!</a>
-      </div>
     </div>
   </div>
 </div>

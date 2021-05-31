@@ -190,8 +190,8 @@ const handleInstalled = async ({ reason }) => {
 
     if (synchronized) {
       if (extensionEnabled === undefined) {
-        await proxy.setProxy()
         await settings.enableExtension()
+        await proxy.setProxy()
       }
     }
   }

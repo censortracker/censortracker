@@ -266,7 +266,7 @@ const handleStorageChanged = async ({ enableExtension, ignoredHosts, useProxy, p
 
     if (newValue === true) {
       webRequestListeners.deactivate()
-      await this.browser.browserAction.setBadgeText({ text: '✕' })
+      await browser.browserAction.setBadgeText({ text: '✕' })
     } else if (newValue === false) {
       webRequestListeners.activate()
       await browser.browserAction.setBadgeText({ text: '' })

@@ -256,9 +256,20 @@ window.censortracker.webRequestListeners = webRequestListeners
  * @param changes Object describing the change. This contains one property for each key that changed.
  * @param _areaName The name of the storage area ("sync", "local") to which the changes were made.
  */
-const handleStorageChanged = async ({ enableExtension, ignoredHosts, useProxy }, _areaName) => {
+const handleStorageChanged = async ({ enableExtension, ignoredHosts, useProxy, privateWindowsPermissionRequired }, _areaName) => {
   if (ignoredHosts && ignoredHosts.newValue) {
     ignore.save()
+  }
+
+  if (privateWindowsPermissionRequired) {
+    const newValue = privateWindowsPermissionRequired.newValue
+
+    if (newValue === true) {
+      webRequestListeners.deactivate()
+    } else if (newValue === false) {
+      webRequestListeners.activate()
+      await this.browser.browserAction.setBadgeText({ text: '' })
+    }
   }
 
   if (enableExtension) {

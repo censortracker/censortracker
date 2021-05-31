@@ -63,15 +63,14 @@ class Proxy extends BrowserAPI {
     try {
       await this.browser.proxy.settings.set(config)
       await this.enableProxy()
-      await this.browser.browserAction.setBadgeText({ text: '' })
       await storage.set({ privateWindowsPermissionRequired: false })
       console.log('PAC has been generated and set successfully!')
       return true
     } catch (error) {
       await this.disableProxy()
       if (error.message === PRIVATE_BROWSING_PERMISSION_REQUIRED_MSG) {
-        await storage.set({ privateWindowsPermissionRequired: true })
         await this.browser.browserAction.setBadgeText({ text: '✕' })
+        await storage.set({ privateWindowsPermissionRequired: true })
         console.error('Cannot generate PAC data. Private windows permission required.')
       }
       return false

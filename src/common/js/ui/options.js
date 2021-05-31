@@ -7,7 +7,9 @@ import { proxy, settings, storage } from '@/common/js'
   const howToGrantPrivateWindowsPermission = document.getElementById('howToGrantPrivateWindowsPermission')
 
   if (settings.isFirefox) {
-    const { privateWindowsPermissionRequired } = await storage.get({ privateWindowsPermissionRequired: false })
+    const { privateWindowsPermissionRequired } = await storage.get({
+      privateWindowsPermissionRequired: false,
+    })
 
     if (privateWindowsPermissionRequired === true) {
       privateWindowsPermissionRequiredMessage.hidden = false

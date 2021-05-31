@@ -2,11 +2,6 @@ import { BrowserAPI } from './browser'
 import storage from './storage'
 
 class Settings extends BrowserAPI {
-  constructor () {
-    super()
-    this.manifest = this.browser.runtime.getManifest()
-  }
-
   getName = () => this.manifest.name;
 
   getDangerIcon = () => this.browser.runtime.getURL('images/icons/128x128/danger.png');

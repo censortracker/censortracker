@@ -1,10 +1,6 @@
-import { getBrowser } from './browser'
+import { BrowserAPI } from './browser'
 
-class Storage {
-  constructor () {
-    this.browser = getBrowser()
-  }
-
+class Storage extends BrowserAPI {
   set = async (keys = {}) => {
     try {
       await this.browser.storage.local.set(keys)

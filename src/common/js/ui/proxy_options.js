@@ -1,6 +1,6 @@
 import validator from 'validator'
 
-import { proxy, storage } from '@/common/js'
+import { proxy, settings, storage } from '@/common/js'
 
 (async () => {
   const proxyEnabled = await proxy.proxyingEnabled()
@@ -82,8 +82,8 @@ import { proxy, storage } from '@/common/js'
     if (!proxyEnabled) {
       await proxy.enableProxy()
     }
-  } else {
-    useProxyCheckbox.checked = true
+  } else if (settings.isFirefox) {
+    useProxyCheckbox.checked = false
     useProxyCheckbox.disabled = true
   }
 

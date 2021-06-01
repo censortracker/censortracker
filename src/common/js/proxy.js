@@ -1,4 +1,4 @@
-import { registry, storage } from '.'
+import { proxy, registry, storage } from '.'
 import { BrowserAPI } from './browser'
 
 const PRIVATE_BROWSING_PERMISSION_REQUIRED_MSG = 'proxy.settings requires private browsing permission.'
@@ -23,6 +23,25 @@ class Proxy extends BrowserAPI {
     setInterval(() => {
       this.allowProxying()
     }, this.proxyConfig.ping.timeout)
+
+    // TODO: Refactoring
+    this._tryAgain = setInterval(async () => {
+      const controlledByThisExtension = await this.controlledByThisExtension()
+
+      if (!controlledByThisExtension) {
+        const success = await proxy.setProxy()
+
+        if (success) {
+          console.warn('Removing this job...')
+          clearInterval(this._tryAgain)
+        } else {
+          console.warn('Waiting for private browsing permissions...')
+        }
+      } else {
+        clearInterval(this._tryAgain)
+        console.warn('Removing this job...')
+      }
+    }, 5000)
   }
 
   getProxyServerURL = async () => {

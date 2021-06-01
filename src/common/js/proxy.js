@@ -14,15 +14,36 @@ class Proxy extends BrowserAPI {
         timeout: (60 * 3) * 1000,
       },
       resetTimeout: (60 * 60) * 5000,
+      autoCheckTimeout: 1000 * 10,
     }
 
     setInterval(async () => {
-      await this.setProxy()
+      const proxyingEnabled = await this.proxyingEnabled()
+
+      if (proxyingEnabled) {
+        await this.setProxy()
+      }
     }, this.proxyConfig.resetTimeout)
 
     setInterval(() => {
       this.allowProxying()
     }, this.proxyConfig.ping.timeout)
+
+    this.proxyAutoCheck = setInterval(async () => {
+      if (this.isFirefox) {
+        const proxySet = await this.isProxySet()
+        const proxyingEnabled = await this.proxyingEnabled()
+
+        if (proxyingEnabled) {
+          if (!proxySet) {
+            await this.setProxy()
+          }
+        }
+      } else {
+        // Do nothing on Chromium.
+        clearInterval(this.proxyAutoCheck)
+      }
+    }, this.proxyConfig.autoCheckTimeout)
   }
 
   getProxyServerURL = async () => {
@@ -34,6 +55,20 @@ class Proxy extends BrowserAPI {
     }
 
     return `${this.proxyConfig.host}:${this.proxyConfig.port}`
+  }
+
+  isProxySet = async () => {
+    const { value: { proxyType, pacScript } } = await this.browser.proxy.settings.get({})
+
+    if (this.isFirefox) {
+      return proxyType === 'autoConfig'
+    }
+
+    if (pacScript) {
+      return pacScript.data.length > 0
+    }
+
+    return false
   }
 
   setProxy = async () => {

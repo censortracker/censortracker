@@ -14,6 +14,7 @@ class Proxy extends BrowserAPI {
         timeout: (60 * 3) * 1000,
       },
       resetTimeout: (60 * 60) * 5000,
+      tryAgainTimeout: 5000,
     }
 
     setInterval(async () => {
@@ -41,7 +42,7 @@ class Proxy extends BrowserAPI {
         clearInterval(this._tryAgain)
         console.warn('Removing this job...')
       }
-    }, 5000)
+    }, this.proxyConfig.tryAgainTimeout)
   }
 
   getProxyServerURL = async () => {

@@ -313,7 +313,3 @@ const handleStorageChanged = async ({ enableExtension, ignoredHosts, useProxy, p
 }
 
 browser.storage.onChanged.addListener(handleStorageChanged)
-
-browser.proxy.onError.addListener(async (error) => {
-  console.log(error)
-})

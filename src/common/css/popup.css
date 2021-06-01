@@ -355,3 +355,11 @@ a {
 #howToGrantPrivateWindowsPermission {
   margin-bottom: 30px;
 }
+
+.center-text {
+  text-align: center;
+}
+
+div#grantPrivateWindowsPermissionButton {
+  cursor: pointer;
+}

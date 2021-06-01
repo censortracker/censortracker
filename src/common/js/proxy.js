@@ -25,24 +25,24 @@ class Proxy extends BrowserAPI {
       this.allowProxying()
     }, this.proxyConfig.ping.timeout)
 
-    if (this.isFirefox) {
-      this.tryAgain = setInterval(async () => {
-        const controlledByThisExtension = await this.controlledByThisExtension()
-
-        if (!controlledByThisExtension) {
-          const proxySet = await proxy.setProxy()
-
-          if (proxySet) {
-            clearInterval(this.tryAgain)
-          } else {
-            console.warn('Waiting for private browsing permissions...')
-          }
-        } else {
-          clearInterval(this.tryAgain)
-          console.warn('Extension is under control: removing job...')
-        }
-      }, this.proxyConfig.tryAgainTimeout)
-    }
+    // if (this.isFirefox) {
+    //   this.tryAgain = setInterval(async () => {
+    //     const controlledByThisExtension = await this.controlledByThisExtension()
+    //
+    //     if (!controlledByThisExtension) {
+    //       const proxySet = await proxy.setProxy()
+    //
+    //       if (proxySet) {
+    //         clearInterval(this.tryAgain)
+    //       } else {
+    //         console.warn('Waiting for private browsing permissions...')
+    //       }
+    //     } else {
+    //       clearInterval(this.tryAgain)
+    //       console.warn('Extension is under control: removing job...')
+    //     }
+    //   }, this.proxyConfig.tryAgainTimeout)
+    // }
   }
 
   getProxyServerURL = async () => {

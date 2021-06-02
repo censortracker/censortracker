@@ -138,6 +138,9 @@ const handleTabState = async (tabId, changeInfo, tab) => {
 
 browser.tabs.onActivated.addListener(handleTabState)
 browser.tabs.onUpdated.addListener(handleTabState)
+browser.tabs.onCreated.addListener(async (_tab) => {
+  await proxy.updatePrivateBrowsingPermissionsBadge()
+})
 
 const showCooperationAcceptedWarning = async (url) => {
   const hostname = extractHostnameFromUrl(url)

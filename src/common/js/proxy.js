@@ -74,6 +74,23 @@ class Proxy extends BrowserAPI {
     return false
   }
 
+  requiresPrivateBrowsingPermissions = async () => {
+    const { privateWindowsPermissionRequired } =
+      await storage.set({ privateWindowsPermissionRequired: false })
+
+    return privateWindowsPermissionRequired
+  }
+
+  updatePrivateBrowsingPermissionsBadge = async () => {
+    if (this.isFirefox) {
+      if (await this.requiresPrivateBrowsingPermissions()) {
+        await browser.browserAction.setBadgeText({ text: '✕' })
+      } else {
+        await browser.browserAction.setBadgeText({ text: '' })
+      }
+    }
+  }
+
   requestPrivateBrowsingPermissions = async () => {
     if (this.isFirefox) {
       await storage.set({ privateWindowsPermissionRequired: true })

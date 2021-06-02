@@ -192,7 +192,7 @@ const handleInstalled = async ({ reason }) => {
 
     if (synchronized) {
       await settings.enableExtension()
-      await proxy.requestPrivateBrowsingPermissions()
+      await proxy.setProxy()
     }
   }
 }
@@ -267,14 +267,6 @@ const handleStorageChanged = async ({
   }
 
   if (privateWindowsPermissionRequired) {
-    const newValue = privateWindowsPermissionRequired.newValue
-
-    if (newValue === true) {
-      webRequestListeners.deactivate()
-    } else if (newValue === false) {
-      webRequestListeners.activate()
-    }
-
     await proxy.updatePrivateBrowsingPermissionsBadge()
   }
 

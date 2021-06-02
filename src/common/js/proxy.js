@@ -14,6 +14,7 @@ class Proxy extends BrowserAPI {
         timeout: (60 * 3) * 1000,
       },
       resetTimeout: (60 * 60) * 5000,
+      permissionsCheckerTimeout: 1000 * 15,
     }
 
     setInterval(async () => {
@@ -27,6 +28,21 @@ class Proxy extends BrowserAPI {
     setInterval(() => {
       this.allowProxying()
     }, this.proxyConfig.ping.timeout)
+
+    this.permissionsChecker = setInterval(async () => {
+      const proxyingEnabled = await this.proxyingEnabled()
+
+      if (this.isFirefox && proxyingEnabled) {
+        const { value: { proxyType } } = await browser.proxy.settings.get({})
+
+        if (proxyType !== 'autoConfig') {
+          await this.requestPrivateBrowsingPermissions()
+        }
+      } else {
+        // Do nothing on Chromium.
+        clearInterval(this.permissionsChecker)
+      }
+    }, this.proxyConfig.permissionsCheckerTimeout)
   }
 
   getProxyServerURL = async () => {
@@ -50,9 +66,9 @@ class Proxy extends BrowserAPI {
   updatePrivateBrowsingPermissionsBadge = async () => {
     if (this.isFirefox) {
       if (await this.requiresPrivateBrowsingPermissions()) {
-        await browser.browserAction.setBadgeText({ text: '✕' })
+        await this.browser.browserAction.setBadgeText({ text: '✕' })
       } else {
-        await browser.browserAction.setBadgeText({ text: '' })
+        await this.browser.browserAction.setBadgeText({ text: '' })
       }
     }
   }

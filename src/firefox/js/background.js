@@ -192,7 +192,7 @@ const handleInstalled = async ({ reason }) => {
 
     if (synchronized) {
       await settings.enableExtension()
-      await proxy.setProxy()
+      await proxy.requestPrivateBrowsingPermissions()
     }
   }
 }
@@ -215,6 +215,7 @@ const handleTabCreate = async ({ id, url }) => {
   } else {
     settings.setDisableIcon(id)
   }
+  await proxy.updatePrivateBrowsingPermissionsBadge()
 }
 
 browser.tabs.onCreated.addListener(handleTabCreate)

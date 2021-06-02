@@ -14,7 +14,6 @@ class Proxy extends BrowserAPI {
         timeout: (60 * 3) * 1000,
       },
       resetTimeout: (60 * 60) * 5000,
-      autoCheckTimeout: 1000 * 10,
     }
 
     setInterval(async () => {
@@ -28,25 +27,6 @@ class Proxy extends BrowserAPI {
     setInterval(() => {
       this.allowProxying()
     }, this.proxyConfig.ping.timeout)
-
-    // Monitoring private windows permissions
-    // this.proxyAutoCheck = setInterval(async () => {
-    //   const controlledByThisExtension = await this.controlledByThisExtension()
-    //   const controlledByOtherExtensions = await this.controlledByOtherExtensions()
-    //
-    //   if (this.isFirefox) {
-    //     const proxySet = await this.isProxySet()
-    //
-    //     if (!controlledByThisExtension && !controlledByOtherExtensions) {
-    //       if (!proxySet) {
-    //         await this.setProxy()
-    //       }
-    //     }
-    //   } else {
-    //     // Do nothing on Chromium.
-    //     clearInterval(this.proxyAutoCheck)
-    //   }
-    // }, this.proxyConfig.autoCheckTimeout)
   }
 
   getProxyServerURL = async () => {
@@ -60,23 +40,9 @@ class Proxy extends BrowserAPI {
     return `${this.proxyConfig.host}:${this.proxyConfig.port}`
   }
 
-  isProxySet = async () => {
-    const { value: { proxyType, pacScript } } = await this.browser.proxy.settings.get({})
-
-    if (this.isFirefox) {
-      return proxyType === 'autoConfig'
-    }
-
-    if (pacScript) {
-      return pacScript.data.length > 0
-    }
-
-    return false
-  }
-
   requiresPrivateBrowsingPermissions = async () => {
     const { privateWindowsPermissionRequired } =
-      await storage.set({ privateWindowsPermissionRequired: false })
+      await storage.get({ privateWindowsPermissionRequired: false })
 
     return privateWindowsPermissionRequired
   }
@@ -94,6 +60,7 @@ class Proxy extends BrowserAPI {
   requestPrivateBrowsingPermissions = async () => {
     if (this.isFirefox) {
       await storage.set({ privateWindowsPermissionRequired: true })
+      await this.updatePrivateBrowsingPermissionsBadge()
       console.log('Requested private browsing permissions.')
     }
   }
@@ -101,6 +68,7 @@ class Proxy extends BrowserAPI {
   privateBrowsingPermissionsGranted = async () => {
     if (this.isFirefox) {
       await storage.set({ privateWindowsPermissionRequired: false })
+      await this.updatePrivateBrowsingPermissionsBadge()
       console.log('Private browsing permissions granted!')
     }
   }

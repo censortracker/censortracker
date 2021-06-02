@@ -166,13 +166,13 @@ const webpackConfig = {
 }
 
 if (isFirefox) {
-  webpackConfig.entry.permission_required = `./src/${BROWSER}/js/ui/permission_required.js`
+  webpackConfig.entry.additional_permissions_required = `./src/${BROWSER}/js/ui/additional_permissions_required.js`
   webpackConfig.plugins.push(new HTMLWebpackPlugin({
     title: 'Требуется доступ к приватным окнам | Censor Tracker',
-    filename: 'permission_required.html',
-    template: 'src/firefox/pages/permission_required.html',
+    filename: 'additional_permissions_required.html',
+    template: 'src/firefox/pages/additional_permissions_required.html',
     inject: true,
-    chunks: ['permission_required'],
+    chunks: ['additional_permissions_required'],
     meta: contentSecurityPolicy,
   }))
   webpackConfig.plugins.push(new HTMLWebpackPlugin({

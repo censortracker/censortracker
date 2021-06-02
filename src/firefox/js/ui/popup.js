@@ -29,7 +29,7 @@ const privateBrowsingPermissionsRequiredButton = getElementById('privateBrowsing
 const popupShowTimeout = 60
 
 privateBrowsingPermissionsRequiredButton.addEventListener('click', () => {
-  window.location.href = 'permission_required.html'
+  window.location.href = 'additional_permissions_required.html'
 })
 
 browser.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {

@@ -29,6 +29,7 @@ class Proxy extends BrowserAPI {
       this.allowProxying()
     }, this.proxyConfig.ping.timeout)
 
+    // Monitoring private windows permissions
     this.proxyAutoCheck = setInterval(async () => {
       if (this.isFirefox) {
         const proxySet = await this.isProxySet()

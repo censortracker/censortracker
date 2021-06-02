@@ -1,6 +1,7 @@
 import { registry, storage } from '.'
 import { BrowserAPI } from './browser'
 
+const FIREFOX_DEFAULT_PROXY_TYPE = 'autoConfig'
 const PRIVATE_BROWSING_PERMISSION_REQUIRED_MSG = 'proxy.settings requires private browsing permission.'
 
 class Proxy extends BrowserAPI {
@@ -14,7 +15,6 @@ class Proxy extends BrowserAPI {
         timeout: (60 * 3) * 1000,
       },
       resetTimeout: (60 * 60) * 5000,
-      permissionsCheckerTimeout: 1000 * 15,
     }
 
     setInterval(async () => {
@@ -29,20 +29,21 @@ class Proxy extends BrowserAPI {
       this.ping()
     }, this.proxyConfig.ping.timeout)
 
-    this.permissionsChecker = setInterval(async () => {
+    this._permissionsChecker = setInterval(async () => {
       const proxyingEnabled = await this.proxyingEnabled()
 
-      if (this.isFirefox && proxyingEnabled) {
-        const { value: { proxyType } } = await browser.proxy.settings.get({})
+      if (this.isFirefox) {
+        if (proxyingEnabled) {
+          const { value: { proxyType } } = await browser.proxy.settings.get({})
 
-        if (proxyType !== 'autoConfig') {
-          await this.requestPrivateBrowsingPermissions()
+          if (proxyType !== FIREFOX_DEFAULT_PROXY_TYPE) {
+            await this.requestPrivateBrowsingPermissions()
+          }
         }
       } else {
-        // Do nothing on Chromium.
-        clearInterval(this.permissionsChecker)
+        clearInterval(this._permissionsChecker)
       }
-    }, this.proxyConfig.permissionsCheckerTimeout)
+    }, 1000 * 15)
   }
 
   getProxyServerURL = async () => {

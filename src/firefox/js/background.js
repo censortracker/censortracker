@@ -271,11 +271,11 @@ const handleStorageChanged = async ({
 
     if (newValue === true) {
       webRequestListeners.deactivate()
-      await browser.browserAction.setBadgeText({ text: '✕' })
     } else if (newValue === false) {
       webRequestListeners.activate()
-      await browser.browserAction.setBadgeText({ text: '' })
     }
+
+    await proxy.updatePrivateBrowsingPermissionsBadge()
   }
 
   if (enableExtension) {

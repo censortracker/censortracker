@@ -2,27 +2,27 @@ import { proxy, settings, storage } from '@/common/js'
 
 (async () => {
   const showNotificationsCheckbox = document.getElementById('showNotificationsCheckbox')
-  const grantPrivateWindowsPermissionButton = document.getElementById('grantPrivateWindowsPermissionButton')
-  const privateWindowsPermissionRequiredMessage = document.getElementById('privateWindowsPermissionRequiredMessage')
-  const howToGrantPrivateWindowsPermission = document.getElementById('howToGrantPrivateWindowsPermission')
+  const grantPrivateBrowsingPermissionsButton = document.getElementById('grantPrivateBrowsingPermissionsButton')
+  const privateBrowsingPermissionsRequiredMessage = document.getElementById('privateBrowsingPermissionsRequiredMessage')
+  const howToGrantPrivateBrowsingPermissions = document.getElementById('howToGrantPrivateBrowsingPermissions')
 
   if (settings.isFirefox) {
-    const { privateWindowsPermissionRequired } = await storage.get({
-      privateWindowsPermissionRequired: false,
+    const { privateBrowsingPermissionsRequired } = await storage.get({
+      privateBrowsingPermissionsRequired: false,
     })
 
-    howToGrantPrivateWindowsPermission.addEventListener('click', async () => {
+    howToGrantPrivateBrowsingPermissions.addEventListener('click', async () => {
       await browser.tabs.create({ url: 'https://mzl.la/3yPAS4H' })
     })
 
-    if (privateWindowsPermissionRequired === true) {
-      privateWindowsPermissionRequiredMessage.hidden = false
+    if (privateBrowsingPermissionsRequired === true) {
+      privateBrowsingPermissionsRequiredMessage.hidden = false
 
-      grantPrivateWindowsPermissionButton.addEventListener('click', async () => {
+      grantPrivateBrowsingPermissionsButton.addEventListener('click', async () => {
         const proxySet = await proxy.setProxy()
 
         if (proxySet === true) {
-          privateWindowsPermissionRequiredMessage.hidden = true
+          privateBrowsingPermissionsRequiredMessage.hidden = true
         }
       })
     }

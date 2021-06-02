@@ -25,10 +25,10 @@ const oriSiteInfo = getElementById('oriSiteInfo')
 const restrictionDescription = getElementById('restriction-description')
 const restrictionType = getElementById('restriction-type')
 const currentDomainBlocks = document.querySelectorAll('.current-domain')
-const privateWindowsPermissionRequiredButton = getElementById('privateWindowsPermissionRequiredButton')
+const privateBrowsingPermissionsRequiredButton = getElementById('privateBrowsingPermissionsRequiredButton')
 const popupShowTimeout = 60
 
-privateWindowsPermissionRequiredButton.addEventListener('click', () => {
+privateBrowsingPermissionsRequiredButton.addEventListener('click', () => {
   window.location.href = 'permission_required.html'
 })
 
@@ -49,12 +49,12 @@ browser.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
     }
   })
 
-  const { enableExtension, privateWindowsPermissionRequired } = await bgModules.storage.get({
+  const { enableExtension, privateBrowsingPermissionsRequired } = await bgModules.storage.get({
     enableExtension: true,
-    privateWindowsPermissionRequired: false,
+    privateBrowsingPermissionsRequired: false,
   })
 
-  privateWindowsPermissionRequiredButton.hidden = !privateWindowsPermissionRequired
+  privateBrowsingPermissionsRequiredButton.hidden = !privateBrowsingPermissionsRequired
 
   const [{ url: currentUrl }] = await browser.tabs.query({
     active: true, lastFocusedWindow: true,

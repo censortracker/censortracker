@@ -2,18 +2,18 @@ import { proxy } from '@/common/js'
 
 (async () => {
   const backToPopup = document.getElementById('backToPopup')
-  const howToGrantPrivateWindowsPermission = document.getElementById('howToGrantPrivateWindowsPermission')
-  const grantPrivateWindowsPermissionButton = document.getElementById('grantPrivateWindowsPermissionButton')
+  const howToGrantPrivateBrowsingPermissions = document.getElementById('howToGrantPrivateBrowsingPermissions')
+  const grantPrivateBrowsingPermissionsButton = document.getElementById('grantPrivateBrowsingPermissionsButton')
 
   backToPopup.addEventListener('click', () => {
     window.location.href = browser.runtime.getURL('popup.html')
   })
 
-  howToGrantPrivateWindowsPermission.addEventListener('click', async () => {
+  howToGrantPrivateBrowsingPermissions.addEventListener('click', async () => {
     await browser.tabs.create({ url: 'https://mzl.la/3yPAS4H' })
   })
 
-  grantPrivateWindowsPermissionButton.addEventListener('click', async () => {
+  grantPrivateBrowsingPermissionsButton.addEventListener('click', async () => {
     const proxySet = await proxy.setProxy()
 
     if (proxySet === true) {

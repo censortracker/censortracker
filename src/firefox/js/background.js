@@ -261,13 +261,13 @@ const handleStorageChanged = async ({
   enableExtension,
   ignoredHosts,
   useProxy,
-  privateWindowsPermissionRequired,
+  privateBrowsingPermissionsRequired,
 }, _areaName) => {
   if (ignoredHosts && ignoredHosts.newValue) {
     ignore.save()
   }
 
-  if (privateWindowsPermissionRequired) {
+  if (privateBrowsingPermissionsRequired) {
     await proxy.updatePrivateBrowsingPermissionsBadge()
   }
 

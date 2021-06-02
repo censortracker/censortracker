@@ -74,6 +74,20 @@ class Proxy extends BrowserAPI {
     return false
   }
 
+  requestPrivateBrowsingPermissions = async () => {
+    if (this.isFirefox) {
+      await storage.set({ privateWindowsPermissionRequired: true })
+      console.log('Requested private browsing permissions.')
+    }
+  }
+
+  privateBrowsingPermissionsGranted = async () => {
+    if (this.isFirefox) {
+      await storage.set({ privateWindowsPermissionRequired: false })
+      console.log('Private browsing permissions granted!')
+    }
+  }
+
   setProxy = async () => {
     const config = {}
     const pacData = await this.generateProxyAutoConfigData()
@@ -101,14 +115,13 @@ class Proxy extends BrowserAPI {
     try {
       await this.browser.proxy.settings.set(config)
       await this.enableProxy()
-      await storage.set({ privateWindowsPermissionRequired: false })
+      await this.privateBrowsingPermissionsGranted()
       console.log('PAC has been generated and set successfully!')
       return true
     } catch (error) {
       await this.disableProxy()
       if (error.message === PRIVATE_BROWSING_PERMISSION_REQUIRED_MSG) {
-        await storage.set({ privateWindowsPermissionRequired: true })
-        console.error('Cannot generate PAC data. Private windows permission required.')
+        await this.requestPrivateBrowsingPermissions()
       }
       return false
     }
@@ -196,7 +209,7 @@ class Proxy extends BrowserAPI {
   }
 
   enableProxy = async () => {
-    console.warn('Proxying enabled.')
+    console.log('Proxying enabled.')
     await storage.set({
       useProxy: true,
     })

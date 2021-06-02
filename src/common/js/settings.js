@@ -65,7 +65,7 @@ class Settings extends BrowserAPI {
       enableExtension: true,
       showNotifications: true,
     })
-    console.warn('Extension enabled')
+    console.log('Extension enabled')
   }
 
   disableExtension = async () => {

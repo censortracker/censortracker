@@ -189,7 +189,7 @@ const handleInstalled = async ({ reason }) => {
 
     if (synchronized) {
       await settings.enableExtension()
-      await proxy.setProxy()
+      await proxy.requestPrivateBrowsingPermissions()
     }
   }
 }

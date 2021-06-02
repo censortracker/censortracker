@@ -37,7 +37,7 @@ const handleBeforeRequest = ({ url }) => {
   if (ignore.contains(hostname)) {
     return undefined
   }
-  proxy.allowProxying()
+  proxy.ping()
   return {
     redirectUrl: enforceHttpsConnection(url),
   }

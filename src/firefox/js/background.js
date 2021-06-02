@@ -31,7 +31,7 @@ window.censortracker = {
 const handleBeforeRequest = ({ url }) => {
   const hostname = extractHostnameFromUrl(url)
 
-  proxy.allowProxying()
+  proxy.ping()
 
   if (ignore.contains(hostname)) {
     return undefined

@@ -26,7 +26,7 @@ class Proxy extends BrowserAPI {
     }, this.proxyConfig.resetTimeout)
 
     setInterval(() => {
-      this.allowProxying()
+      this.ping()
     }, this.proxyConfig.ping.timeout)
 
     this.permissionsChecker = setInterval(async () => {
@@ -190,7 +190,7 @@ class Proxy extends BrowserAPI {
     console.warn('PAC data cleaned!')
   }
 
-  allowProxying = () => {
+  ping = () => {
     const request = new XMLHttpRequest()
 
     request.open('GET', this.proxyConfig.ping.url, true)

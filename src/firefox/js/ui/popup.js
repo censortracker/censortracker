@@ -104,12 +104,10 @@ browser.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
         showCooperationRefusedMessage()
       } else {
         changeStatusImage('ori')
-        console.warn('Cooperation accepted!')
       }
     } else {
       isNotOriBlock.removeAttribute('hidden')
       isOriBlock.remove()
-      console.log('Match not found at all')
     }
 
     if (urlBlocked && distributorUrl) {

@@ -17,7 +17,8 @@
     "lint:fix": "eslint --fix --ext=.js ./src/ tests/",
     "test": "jest && rm -f key.pem tests/e2e/selenium/extension/dist.crx",
     "test:unit": "jest tests/unit",
-    "test:e2e": "jest tests/e2e/ && rm -f key.pem tests/e2e/selenium/extension/dist.crx"
+    "test:e2e": "jest tests/e2e/ && rm -f key.pem tests/e2e/selenium/extension/dist.crx",
+    "clean": " rm -rf dist releases"
   },
   "dependencies": {
     "codemirror": "^5.60.0",

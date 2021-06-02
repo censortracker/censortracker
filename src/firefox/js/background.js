@@ -186,13 +186,10 @@ const handleInstalled = async ({ reason }) => {
 
   if (reasonsForSync.includes(reason)) {
     const synchronized = await registry.sync()
-    const extensionEnabled = await settings.extensionEnabled()
 
     if (synchronized) {
-      if (extensionEnabled === undefined) {
-        await settings.enableExtension()
-        await proxy.setProxy()
-      }
+      await settings.enableExtension()
+      await proxy.setProxy()
     }
   }
 }
@@ -256,7 +253,12 @@ window.censortracker.webRequestListeners = webRequestListeners
  * @param changes Object describing the change. This contains one property for each key that changed.
  * @param _areaName The name of the storage area ("sync", "local") to which the changes were made.
  */
-const handleStorageChanged = async ({ enableExtension, ignoredHosts, useProxy, privateWindowsPermissionRequired }, _areaName) => {
+const handleStorageChanged = async ({
+  enableExtension,
+  ignoredHosts,
+  useProxy,
+  privateWindowsPermissionRequired,
+}, _areaName) => {
   if (ignoredHosts && ignoredHosts.newValue) {
     ignore.save()
   }

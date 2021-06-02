@@ -30,21 +30,23 @@ class Proxy extends BrowserAPI {
     }, this.proxyConfig.ping.timeout)
 
     // Monitoring private windows permissions
-    this.proxyAutoCheck = setInterval(async () => {
-      if (this.isFirefox) {
-        const proxySet = await this.isProxySet()
-        const proxyingEnabled = await this.proxyingEnabled()
-
-        if (proxyingEnabled) {
-          if (!proxySet) {
-            await this.setProxy()
-          }
-        }
-      } else {
-        // Do nothing on Chromium.
-        clearInterval(this.proxyAutoCheck)
-      }
-    }, this.proxyConfig.autoCheckTimeout)
+    // this.proxyAutoCheck = setInterval(async () => {
+    //   const controlledByThisExtension = await this.controlledByThisExtension()
+    //   const controlledByOtherExtensions = await this.controlledByOtherExtensions()
+    //
+    //   if (this.isFirefox) {
+    //     const proxySet = await this.isProxySet()
+    //
+    //     if (!controlledByThisExtension && !controlledByOtherExtensions) {
+    //       if (!proxySet) {
+    //         await this.setProxy()
+    //       }
+    //     }
+    //   } else {
+    //     // Do nothing on Chromium.
+    //     clearInterval(this.proxyAutoCheck)
+    //   }
+    // }, this.proxyConfig.autoCheckTimeout)
   }
 
   getProxyServerURL = async () => {

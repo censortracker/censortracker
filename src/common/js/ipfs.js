@@ -7,14 +7,14 @@ class IPFSProxy {
     }, 0)
   }
 
-  get = async (cid) => {
-    // const { cid } = await this.node.add({
-    //   path: 'censortracker.config.json',
-    //   content: JSON.stringify({
-    //     proxy: true,
-    //     name: 'CensorTracker',
-    //   }),
-    // })
+  get = async () => {
+    const { cid } = await this.node.add({
+      path: 'censortracker.config.json',
+      content: JSON.stringify({
+        proxy: true,
+        name: 'CensorTracker',
+      }),
+    })
 
     const chunks = []
 

@@ -4,7 +4,7 @@ import asynchrome from '@/chrome/js/core/asynchrome'
  * Returns browser API object.
  * @returns {Asynchrome|*}
  */
-export const getBrowser = () => {
+const getBrowser = () => {
   try {
     browser.runtime.getBrowserInfo()
     return browser
@@ -17,11 +17,21 @@ export const getBrowser = () => {
  * Returns true if browser is Firefox.
  * @returns {boolean}
  */
-export const isFirefox = () => {
+const isFirefox = () => {
   try {
     browser.runtime.getBrowserInfo()
     return true
   } catch (error) {
     return false
+  }
+}
+
+export const IS_FIREFOX = isFirefox()
+
+export class BrowserAPI {
+  constructor () {
+    this.browser = getBrowser()
+    this.isFirefox = isFirefox()
+    this.manifest = this.browser.runtime.getManifest()
   }
 }

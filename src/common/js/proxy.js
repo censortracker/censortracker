@@ -1,33 +1,55 @@
 import { registry, storage } from '.'
-import { getBrowser, isFirefox } from './browser'
+import { BrowserAPI } from './browser'
 
-class Proxy {
+class Proxy extends BrowserAPI {
   constructor () {
-    this.browser = getBrowser()
-    this.proxyPort = 33333
-    this.proxyHost = 'proxy-ssl.roskomsvoboda.org'
-    this.isFirefox = isFirefox()
-    this.resetProxyTimeout = (60 * 60) * 5000
-    this.allowProxyingTimeout = (60 * 5) * 1000
+    super()
+    this.proxyConfig = {
+      port: 33333,
+      host: 'proxy.roskomsvoboda.org',
+      ping: {
+        url: 'http://proxy.roskomsvoboda.org:39263',
+        timeout: (60 * 3) * 1000,
+      },
+      resetTimeout: (60 * 60) * 5000,
+    }
 
     setInterval(async () => {
-      await this.setProxy()
-    }, this.resetProxyTimeout)
+      const proxyingEnabled = await this.proxyingEnabled()
+
+      if (proxyingEnabled) {
+        await this.setProxy()
+      }
+    }, this.proxyConfig.resetTimeout)
 
     setInterval(() => {
-      this.allowProxying()
-    }, this.allowProxyingTimeout)
+      this.ping()
+    }, this.proxyConfig.ping.timeout)
   }
 
   getProxyServerURL = async () => {
     const { customProxyHost, customProxyPort } =
-        await storage.get(['customProxyHost', 'customProxyPort'])
+      await storage.get(['customProxyHost', 'customProxyPort'])
 
     if (customProxyHost && customProxyPort) {
       return `${customProxyHost}:${customProxyPort}`
     }
 
-    return `${this.proxyHost}:${this.proxyPort}`
+    return `${this.proxyConfig.host}:${this.proxyConfig.port}`
+  }
+
+  requestPrivateBrowsingPermissions = async () => {
+    if (this.isFirefox) {
+      await storage.set({ privateBrowsingPermissionsRequired: true })
+      console.log('Private browsing permissions requested.')
+    }
+  }
+
+  privateBrowsingPermissionsGranted = async () => {
+    if (this.isFirefox) {
+      await storage.set({ privateBrowsingPermissionsRequired: false })
+      console.log('Private browsing permissions granted.')
+    }
   }
 
   setProxy = async () => {
@@ -35,7 +57,9 @@ class Proxy {
     const pacData = await this.generateProxyAutoConfigData()
 
     if (this.isFirefox) {
-      const blob = new Blob([pacData], { type: 'application/x-ns-proxy-autoconfig' })
+      const blob = new Blob([pacData], {
+        type: 'application/x-ns-proxy-autoconfig',
+      })
 
       config.value = {
         proxyType: 'autoConfig',
@@ -52,10 +76,17 @@ class Proxy {
       }
     }
 
-    await this.allowProxying()
-    await this.browser.proxy.settings.set(config)
-    await storage.set({ useProxy: true })
-    console.warn('PAC has been set successfully!')
+    try {
+      await this.browser.proxy.settings.set(config)
+      await this.enableProxy()
+      await this.privateBrowsingPermissionsGranted()
+      console.log('PAC has been generated and set successfully!')
+      return true
+    } catch (error) {
+      await this.disableProxy()
+      await this.requestPrivateBrowsingPermissions()
+      return false
+    }
   }
 
   /**
@@ -117,18 +148,19 @@ class Proxy {
   removeProxy = async () => {
     await storage.set({ useProxy: false })
     await this.browser.proxy.settings.clear({})
-    console.warn('Proxy auto-config data cleaned!')
+    console.warn('PAC data cleaned!')
   }
 
-  allowProxying = () => {
+  ping = () => {
     const request = new XMLHttpRequest()
-    const proxyServerUrl = 'https://163.172.211.183:39263'
 
-    request.open('GET', proxyServerUrl, true)
-    request.addEventListener('error', (_error) => {
-      console.log('Error on opening port')
-    })
-    request.send(null)
+    request.open('GET', this.proxyConfig.ping.url, true)
+
+    try {
+      request.send(null)
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   proxyingEnabled = async () => {
@@ -139,7 +171,7 @@ class Proxy {
   }
 
   enableProxy = async () => {
-    console.warn('Proxying enabled.')
+    console.log('Proxying enabled.')
     await storage.set({
       useProxy: true,
     })

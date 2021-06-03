@@ -166,6 +166,15 @@ const webpackConfig = {
 }
 
 if (isFirefox) {
+  webpackConfig.entry.additional_permissions_required = `./src/${BROWSER}/js/ui/additional_permissions_required.js`
+  webpackConfig.plugins.push(new HTMLWebpackPlugin({
+    title: 'Требуется доступ к приватным окнам | Censor Tracker',
+    filename: 'additional_permissions_required.html',
+    template: 'src/firefox/pages/additional_permissions_required.html',
+    inject: true,
+    chunks: ['additional_permissions_required'],
+    meta: contentSecurityPolicy,
+  }))
   webpackConfig.plugins.push(new HTMLWebpackPlugin({
     title: 'Настройки прокси | Censor Tracker',
     filename: 'proxy_options.html',
@@ -232,7 +241,11 @@ if (PRODUCTION) {
   webpackConfig.plugins.push(new TerserPlugin({
     terserOptions: {
       parallel: true,
+      format: {
+        comments: false,
+      },
     },
+    extractComments: false,
   }))
 }
 

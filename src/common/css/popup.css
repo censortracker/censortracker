@@ -231,6 +231,24 @@ a {
   line-height: 20px;
 }
 
+#privateBrowsingPermissionsRequiredButton {
+  background: #f4f4f4;
+  font-size: 13px;
+  line-height: 20px;
+  margin-bottom: 1px;
+  padding: 15px 24px 15px 20px;
+}
+
+#privateBrowsingPermissionsRequiredButton > div:hover {
+  cursor: pointer;
+  color: #625c55;
+}
+
+#privateBrowsingPermissionsRequiredButton > div:active,
+#privateBrowsingPermissionsRequiredButton > div:focus {
+  color: #2a251f;
+}
+
 .footer__arrow {
   font-weight: 600;
 }
@@ -331,5 +349,17 @@ a {
 }
 
 .extensions__link {
+  cursor: pointer;
+}
+
+#howToGrantPrivateBrowsingPermissions {
+  margin-bottom: 30px;
+}
+
+.center-text {
+  text-align: center;
+}
+
+div#grantPrivateBrowsingPermissionsButton {
   cursor: pointer;
 }

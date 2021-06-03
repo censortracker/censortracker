@@ -9,7 +9,6 @@ import {
   proxy,
   registry,
   settings,
-  startsWithHttpHttps,
   storage,
 } from '@/common/js'
 
@@ -32,10 +31,12 @@ window.censortracker = {
 const handleBeforeRequest = ({ url }) => {
   const hostname = extractHostnameFromUrl(url)
 
+  proxy.ping()
+
   if (ignore.contains(hostname)) {
     return undefined
   }
-  proxy.allowProxying()
+
   return {
     redirectUrl: enforceHttpsConnection(url),
   }
@@ -56,37 +57,46 @@ browser.webRequest.onBeforeRequest.addListener(
  */
 const handleErrorOccurred = async ({ error, url, tabId }) => {
   const encodedUrl = window.btoa(url)
-  const hostname = extractHostnameFromUrl(url)
-
+  const foundInRegistry = await registry.contains(url)
   const proxyingEnabled = await proxy.proxyingEnabled()
   const { proxyError, connectionError } = errors.determineError(error)
 
-  if (proxyError && startsWithHttpHttps(url)) {
+  if (ignore.contains(url)) {
+    return
+  }
+
+  if (proxyError) {
     browser.tabs.update(tabId, {
-      url: browser.runtime.getURL(`proxy_unavailable.html?originUrl=${encodedUrl}`),
+      url: browser.runtime.getURL(
+        `proxy_unavailable.html?originUrl=${encodedUrl}`,
+      ),
     })
     return
   }
 
-  if (connectionError && startsWithHttpHttps(url)) {
-    await registry.add(hostname)
-
+  if (connectionError) {
     if (!proxyingEnabled) {
       browser.tabs.update(tabId, {
-        url: browser.runtime.getURL(`proxy_disabled.html?originUrl=${encodedUrl}`),
+        url: browser.runtime.getURL(
+          `proxy_disabled.html?originUrl=${encodedUrl}`,
+        ),
       })
       return
     }
 
-    await proxy.setProxy()
-    browser.tabs.update(tabId, {
-      url: browser.runtime.getURL(`unavailable.html?originUrl=${encodedUrl}`),
-    })
-    return
+    if (!foundInRegistry) {
+      await registry.add(url)
+      await proxy.setProxy()
+
+      browser.tabs.update(tabId, {
+        url: browser.runtime.getURL(`unavailable.html?originUrl=${encodedUrl}`),
+      })
+      return
+    }
   }
 
-  await ignore.add(hostname)
-  browser.tabs.update(tabId, {
+  await ignore.add(url, { temporary: foundInRegistry })
+  await browser.tabs.update(tabId, {
     url: enforceHttpConnection(url),
   })
 }
@@ -128,6 +138,9 @@ const handleTabState = async (tabId, changeInfo, tab) => {
 
 browser.tabs.onActivated.addListener(handleTabState)
 browser.tabs.onUpdated.addListener(handleTabState)
+browser.tabs.onCreated.addListener(async (_tab) => {
+  await settings.updateIncognitoAccessDeniedBadge()
+})
 
 const showCooperationAcceptedWarning = async (url) => {
   const hostname = extractHostnameFromUrl(url)
@@ -176,12 +189,16 @@ const handleInstalled = async ({ reason }) => {
 
   if (reasonsForSync.includes(reason)) {
     const synchronized = await registry.sync()
-    const extensionEnabled = await settings.extensionEnabled()
 
     if (synchronized) {
-      if (extensionEnabled === undefined) {
+      await settings.enableExtension()
+      const allowedIncognitoAccess =
+        await browser.extension.isAllowedIncognitoAccess()
+
+      if (allowedIncognitoAccess) {
         await proxy.setProxy()
-        await settings.enableExtension()
+      } else {
+        await proxy.requestPrivateBrowsingPermissions()
       }
     }
   }
@@ -205,6 +222,7 @@ const handleTabCreate = async ({ id, url }) => {
   } else {
     settings.setDisableIcon(id)
   }
+  await settings.updateIncognitoAccessDeniedBadge()
 }
 
 browser.tabs.onCreated.addListener(handleTabCreate)
@@ -244,11 +262,20 @@ window.censortracker.webRequestListeners = webRequestListeners
 /**
  * Fired when one or more items change.
  * @param changes Object describing the change. This contains one property for each key that changed.
- * @param areaName The name of the storage area ("sync", "local") to which the changes were made.
+ * @param _areaName The name of the storage area ("sync", "local") to which the changes were made.
  */
-const handleStorageChanged = async ({ enableExtension, ignoredHosts, useProxy }, areaName) => {
+const handleStorageChanged = async ({
+  enableExtension,
+  ignoredHosts,
+  useProxy,
+  privateBrowsingPermissionsRequired,
+}, _areaName) => {
   if (ignoredHosts && ignoredHosts.newValue) {
     ignore.save()
+  }
+
+  if (privateBrowsingPermissionsRequired) {
+    await settings.updateIncognitoAccessDeniedBadge()
   }
 
   if (enableExtension) {
@@ -291,3 +318,7 @@ const handleStorageChanged = async ({ enableExtension, ignoredHosts, useProxy },
 }
 
 browser.storage.onChanged.addListener(handleStorageChanged)
+
+browser.proxy.onError.addListener(async (error) => {
+  console.log(error)
+})

@@ -1,7 +1,35 @@
-import { settings, storage } from '@/common/js'
+import { proxy, settings, storage } from '@/common/js'
 
 (async () => {
   const showNotificationsCheckbox = document.getElementById('showNotificationsCheckbox')
+  const grantPrivateBrowsingPermissionsButton = document.getElementById('grantPrivateBrowsingPermissionsButton')
+  const privateBrowsingPermissionsRequiredMessage = document.getElementById('privateBrowsingPermissionsRequiredMessage')
+  const howToGrantPrivateBrowsingPermissions = document.getElementById('howToGrantPrivateBrowsingPermissions')
+
+  if (settings.isFirefox) {
+    const allowedIncognitoAccess =
+      await browser.extension.isAllowedIncognitoAccess()
+
+    const { privateBrowsingPermissionsRequired } = await storage.get({
+      privateBrowsingPermissionsRequired: false,
+    })
+
+    howToGrantPrivateBrowsingPermissions.addEventListener('click', async () => {
+      await browser.tabs.create({ url: 'https://mzl.la/3yPAS4H' })
+    })
+
+    if (privateBrowsingPermissionsRequired || !allowedIncognitoAccess) {
+      privateBrowsingPermissionsRequiredMessage.hidden = false
+
+      grantPrivateBrowsingPermissionsButton.addEventListener('click', async () => {
+        const proxySet = await proxy.setProxy()
+
+        if (proxySet === true) {
+          privateBrowsingPermissionsRequiredMessage.hidden = true
+        }
+      })
+    }
+  }
 
   showNotificationsCheckbox.addEventListener(
     'change', async () => {

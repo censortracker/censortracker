@@ -202,6 +202,7 @@ a {
 
 .main-page__extension {
   margin-top: 25px;
+  margin-bottom: 25px;
   background-color: #f4f7fa;
   border-radius: 4px;
   padding: 20px 30px;
@@ -217,7 +218,7 @@ a {
   font-weight: 400;
   box-shadow: 0 2.01027px 11.8382px rgba(15, 13, 11, 0.055), 0 1.12694px 6.63642px rgba(15, 13, 11, 0.0655718), 0 0.598509px 3.52455px rgba(15, 13, 11, 0.079074);
   border-radius: 4px;
-  margin-right: auto;
+  margin-right: 15px;
 }
 
 .extension__btn:hover {
@@ -448,4 +449,11 @@ a {
 
 .CodeMirror:not(.CodeMirror-focused) .CodeMirror-activeline-background {
   background: unset;
+}
+
+#grantPrivateBrowsingPermissionsButton {
+  font-size: 14px;
+  line-height: 15px;
+  font-weight: 400;
+  cursor: pointer;
 }

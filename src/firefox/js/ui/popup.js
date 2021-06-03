@@ -25,7 +25,12 @@ const oriSiteInfo = getElementById('oriSiteInfo')
 const restrictionDescription = getElementById('restriction-description')
 const restrictionType = getElementById('restriction-type')
 const currentDomainBlocks = document.querySelectorAll('.current-domain')
+const privateBrowsingPermissionsRequiredButton = getElementById('privateBrowsingPermissionsRequiredButton')
 const popupShowTimeout = 60
+
+privateBrowsingPermissionsRequiredButton.addEventListener('click', () => {
+  window.location.href = 'additional_permissions_required.html'
+})
 
 browser.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
   document.addEventListener('click', async (event) => {
@@ -44,7 +49,15 @@ browser.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
     }
   })
 
-  const { enableExtension } = await bgModules.storage.get({ enableExtension: true })
+  const allowedIncognitoAccess = await browser.extension.isAllowedIncognitoAccess()
+  const { enableExtension, privateBrowsingPermissionsRequired } = await bgModules.storage.get({
+    enableExtension: true,
+    privateBrowsingPermissionsRequired: false,
+  })
+
+  if (!allowedIncognitoAccess || privateBrowsingPermissionsRequired) {
+    privateBrowsingPermissionsRequiredButton.hidden = false
+  }
 
   const [{ url: currentUrl }] = await browser.tabs.query({
     active: true, lastFocusedWindow: true,
@@ -94,12 +107,10 @@ browser.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
         showCooperationRefusedMessage()
       } else {
         changeStatusImage('ori')
-        console.warn('Cooperation accepted!')
       }
     } else {
       isNotOriBlock.removeAttribute('hidden')
       isOriBlock.remove()
-      console.log('Match not found at all')
     }
 
     if (urlBlocked && distributorUrl) {

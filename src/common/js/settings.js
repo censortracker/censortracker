@@ -59,9 +59,26 @@ class Settings extends BrowserAPI {
     return enableExtension
   }
 
+  updateIncognitoAccessDeniedBadge = async () => {
+    if (this.isFirefox) {
+      const allowedIncognitoAccess =
+        await this.browser.extension.isAllowedIncognitoAccess()
+      const { privateBrowsingPermissionsRequired } =
+        await storage.get({ privateBrowsingPermissionsRequired: false })
+
+      if (!allowedIncognitoAccess || privateBrowsingPermissionsRequired) {
+        await this.browser.browserAction.setBadgeText({ text: '✕' })
+      } else {
+        await this.browser.browserAction.setBadgeText({ text: '' })
+      }
+    }
+  }
+
   enableExtension = async () => {
+    const useProxy = await this.browser.extension.isAllowedIncognitoAccess()
+
     await this.changeExtensionState({
-      useProxy: true,
+      useProxy,
       enableExtension: true,
       showNotifications: true,
     })
@@ -74,6 +91,11 @@ class Settings extends BrowserAPI {
       enableExtension: false,
       showNotifications: false,
     })
+
+    if (this.isFirefox) {
+      await this.browser.browserAction.setBadgeText({ text: '' })
+    }
+
     console.warn('Extension disabled')
   }
 

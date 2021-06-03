@@ -139,7 +139,7 @@ const handleTabState = async (tabId, changeInfo, tab) => {
 browser.tabs.onActivated.addListener(handleTabState)
 browser.tabs.onUpdated.addListener(handleTabState)
 browser.tabs.onCreated.addListener(async (_tab) => {
-  await proxy.updatePrivateBrowsingPermissionsBadge()
+  await settings.updateIncognitoAccessDeniedBadge()
 })
 
 const showCooperationAcceptedWarning = async (url) => {
@@ -222,7 +222,7 @@ const handleTabCreate = async ({ id, url }) => {
   } else {
     settings.setDisableIcon(id)
   }
-  await proxy.updatePrivateBrowsingPermissionsBadge()
+  await settings.updateIncognitoAccessDeniedBadge()
 }
 
 browser.tabs.onCreated.addListener(handleTabCreate)
@@ -275,7 +275,7 @@ const handleStorageChanged = async ({
   }
 
   if (privateBrowsingPermissionsRequired) {
-    await proxy.updatePrivateBrowsingPermissionsBadge()
+    await settings.updateIncognitoAccessDeniedBadge()
   }
 
   if (enableExtension) {

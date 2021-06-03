@@ -38,41 +38,17 @@ class Proxy extends BrowserAPI {
     return `${this.proxyConfig.host}:${this.proxyConfig.port}`
   }
 
-  requiresPrivateBrowsingPermissions = async () => {
-    const { privateBrowsingPermissionsRequired } =
-      await storage.get({ privateBrowsingPermissionsRequired: false })
-
-    return privateBrowsingPermissionsRequired
-  }
-
-  updatePrivateBrowsingPermissionsBadge = async () => {
-    if (this.isFirefox) {
-      const allowedIncognitoAccess =
-        await browser.extension.isAllowedIncognitoAccess()
-      const { privateBrowsingPermissionsRequired } =
-        await storage.get({ privateBrowsingPermissionsRequired: false })
-
-      if (!allowedIncognitoAccess || privateBrowsingPermissionsRequired) {
-        await this.browser.browserAction.setBadgeText({ text: '✕' })
-      } else {
-        await this.browser.browserAction.setBadgeText({ text: '' })
-      }
-    }
-  }
-
   requestPrivateBrowsingPermissions = async () => {
     if (this.isFirefox) {
       await storage.set({ privateBrowsingPermissionsRequired: true })
-      await this.updatePrivateBrowsingPermissionsBadge()
-      console.log('Requested private browsing permissions.')
+      console.log('Private browsing permissions requested.')
     }
   }
 
   privateBrowsingPermissionsGranted = async () => {
     if (this.isFirefox) {
       await storage.set({ privateBrowsingPermissionsRequired: false })
-      await this.updatePrivateBrowsingPermissionsBadge()
-      console.log('Private browsing permissions granted!')
+      console.log('Private browsing permissions granted.')
     }
   }
 

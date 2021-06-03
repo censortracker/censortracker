@@ -1,5 +1,6 @@
 require('dotenv').config()
 
+const fs = require('fs')
 const path = require('path')
 const webpack = require('webpack')
 const TerserPlugin = require('terser-webpack-plugin')
@@ -24,6 +25,21 @@ const contentSecurityPolicy = {
     'style-src \'self\' https://fonts.googleapis.com; ' +
     'font-src \'self\' https://fonts.gstatic.com ',
 }
+
+const MANIFEST = `./src/${BROWSER}/manifest/${BROWSER}.json`
+
+const updateVersionInManifest = () => {
+  const manifestFile = `./src/${BROWSER}/manifest/${BROWSER}.json`
+  const file = fs.readFileSync(resolve(manifestFile))
+  const object = JSON.parse(file)
+
+  const [major, minor, patch] = object.version.split('.')
+
+  object['version'] = `${major}.${minor}.${parseInt(patch) + 1}`
+  fs.writeFileSync(manifestFile, JSON.stringify(object, null, '  '))
+}
+
+updateVersionInManifest(MANIFEST)
 
 const webpackConfig = {
   mode: NODE_ENV,

@@ -192,7 +192,14 @@ const handleInstalled = async ({ reason }) => {
 
     if (synchronized) {
       await settings.enableExtension()
-      await proxy.requestPrivateBrowsingPermissions()
+      const allowedIncognitoAccess =
+        await browser.extension.isAllowedIncognitoAccess()
+
+      if (allowedIncognitoAccess) {
+        await proxy.setProxy()
+      } else {
+        await proxy.requestPrivateBrowsingPermissions()
+      }
     }
   }
 }

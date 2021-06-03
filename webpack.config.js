@@ -26,8 +26,6 @@ const contentSecurityPolicy = {
     'font-src \'self\' https://fonts.gstatic.com ',
 }
 
-const MANIFEST = `./src/${BROWSER}/manifest/${BROWSER}.json`
-
 const updateVersionInManifest = () => {
   const manifestFile = `./src/${BROWSER}/manifest/${BROWSER}.json`
   const file = fs.readFileSync(resolve(manifestFile))
@@ -39,7 +37,7 @@ const updateVersionInManifest = () => {
   fs.writeFileSync(manifestFile, JSON.stringify(object, null, '  '))
 }
 
-updateVersionInManifest(MANIFEST)
+updateVersionInManifest()
 
 const webpackConfig = {
   mode: NODE_ENV,

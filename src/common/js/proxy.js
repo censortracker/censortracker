@@ -47,7 +47,12 @@ class Proxy extends BrowserAPI {
 
   updatePrivateBrowsingPermissionsBadge = async () => {
     if (this.isFirefox) {
-      if (await this.requiresPrivateBrowsingPermissions()) {
+      const allowedIncognitoAccess =
+        await browser.extension.isAllowedIncognitoAccess()
+      const { privateBrowsingPermissionsRequired } =
+        await storage.get({ privateBrowsingPermissionsRequired: false })
+
+      if (!allowedIncognitoAccess || privateBrowsingPermissionsRequired) {
         await this.browser.browserAction.setBadgeText({ text: '✕' })
       } else {
         await this.browser.browserAction.setBadgeText({ text: '' })

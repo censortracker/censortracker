@@ -7,6 +7,9 @@ import { proxy, settings, storage } from '@/common/js'
   const howToGrantPrivateBrowsingPermissions = document.getElementById('howToGrantPrivateBrowsingPermissions')
 
   if (settings.isFirefox) {
+    const allowedIncognitoAccess =
+      await browser.extension.isAllowedIncognitoAccess()
+
     const { privateBrowsingPermissionsRequired } = await storage.get({
       privateBrowsingPermissionsRequired: false,
     })
@@ -15,7 +18,7 @@ import { proxy, settings, storage } from '@/common/js'
       await browser.tabs.create({ url: 'https://mzl.la/3yPAS4H' })
     })
 
-    if (privateBrowsingPermissionsRequired === true) {
+    if (privateBrowsingPermissionsRequired || !allowedIncognitoAccess) {
       privateBrowsingPermissionsRequiredMessage.hidden = false
 
       grantPrivateBrowsingPermissionsButton.addEventListener('click', async () => {

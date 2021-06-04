@@ -2,6 +2,7 @@ import { extractHostnameFromUrl, registry, settings, storage } from '../../../co
 
 (async () => {
   const getElementById = (id) => document.getElementById(id)
+  const querySelectorAll = (selector) => document.querySelectorAll(selector)
 
   const statusImage = getElementById('statusImage')
   const currentDomainHeader = getElementById('currentDomainHeader')
@@ -155,11 +156,9 @@ import { extractHostnameFromUrl, registry, settings, storage } from '../../../co
 
     if (urlBlocked) {
       changeStatusImage('blocked')
+      const elements = querySelectorAll('#restrictions [data-render-var]')
 
-      // TODO: Refactor this code
-      const elementsToRender = document.querySelectorAll('#restrictions [data-render-var]')
-
-      for (const element of elementsToRender) {
+      for (const element of elements) {
         const renderVar = element.dataset.renderVar
         const value = uiConfig.restrictions.found[renderVar]
 

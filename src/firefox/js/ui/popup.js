@@ -50,13 +50,16 @@ browser.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
   })
 
   const allowedIncognitoAccess = await browser.extension.isAllowedIncognitoAccess()
-  const { enableExtension, privateBrowsingPermissionsRequired } = await bgModules.storage.get({
-    enableExtension: true,
+  const { privateBrowsingPermissionsRequired } = await bgModules.storage.get({
     privateBrowsingPermissionsRequired: false,
   })
 
-  if (!allowedIncognitoAccess || privateBrowsingPermissionsRequired) {
-    privateBrowsingPermissionsRequiredButton.hidden = false
+  const extensionEnabled = await bgModules.settings.extensionEnabled()
+
+  if (extensionEnabled) {
+    if (!allowedIncognitoAccess || privateBrowsingPermissionsRequired) {
+      privateBrowsingPermissionsRequiredButton.hidden = false
+    }
   }
 
   const [{ url: currentUrl }] = await browser.tabs.query({
@@ -78,7 +81,7 @@ browser.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
     restrictionDescription.innerText = restriction.description
   }
 
-  if (enableExtension) {
+  if (extensionEnabled) {
     changeStatusImage('normal')
     renderCurrentDomain(currentHostname)
     footerTrackerOn.removeAttribute('hidden')

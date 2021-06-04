@@ -1,5 +1,6 @@
 {
-  "version": "3.8.5",
+  "default_locale": "en",
+  "version": "3.8.8",
   "permissions": [
     "declarativeContent"
   ],

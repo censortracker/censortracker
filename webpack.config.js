@@ -209,14 +209,6 @@ if (isFirefox) {
     chunks: ['options'],
     meta: contentSecurityPolicy,
   }))
-  webpackConfig.plugins.push(new HTMLWebpackPlugin({
-    title: 'Censor Tracker',
-    filename: 'popup.html',
-    template: 'src/firefox/pages/popup.html',
-    inject: true,
-    chunks: ['popup'],
-    meta: contentSecurityPolicy,
-  }))
 }
 
 if (isChromium) {

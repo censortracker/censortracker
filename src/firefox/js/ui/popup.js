@@ -1,3 +1,7 @@
+import { translateDocument } from '../../../common/js/i18n'
+
+translateDocument(document)
+
 const getElementById = (id) => document.getElementById(id)
 
 const statusImage = getElementById('statusImage')

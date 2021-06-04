@@ -15,7 +15,8 @@
       <a id="openOptionsPage" class="icon__settings" target="_blank"></a>
     </div>
     <div class="main-page__info">
-      <div class="main-page__title current-domain" id="currentDomainHeader" hidden>
+      <div data-i18n-key="popupInvalidCurrentDomain" class="main-page__title current-domain" id="currentDomainHeader"
+           hidden>
         Сайт недоступен
       </div>
 
@@ -25,18 +26,19 @@
           <img class="icon__status" src="images/icons/status/icon_ok.svg" width="24px" height="24px" alt=""/>
         </div>
         <div class="block__btn btn-about" id="btnAboutNotOri">
-          <span>что это значит</span>
+          <span data-i18n-key="popupWhatThisMean">что это значит</span>
           <img class="block__btn icon" src="images/icons/status/arrow_down.svg" width="8px" height="6px" alt=""/>
         </div>
         <div class="block__text text-normal" id="textAboutNotOri">
-          <span>
+          <span data-i18n-key="popupWebsiteORIDescription">
             Сервисы из реестра ОРИ могут передавать ваши личные данные, в т.ч. сообщения и весь трафик,
             государственным органам в автоматическом режиме. Этот сервис не находится в реестре ОРИ.
           </span>
           <div class="block__footer">
-            <span class="block__btn btn-ok" id="closeTextAboutNotOri">Ясно</span>
-            <span class="block__btn btn-text"><a href="https://reestr.rublacklist.net/distributors/" target="_blank">Подробнее <span
-              class="footer__arrow">&rarr;</span></a></span>
+            <span class="block__btn btn-ok" id="closeTextAboutNotOri" data-i18n-key="popupGetIt">Ясно</span>
+            <span class="block__btn btn-text">
+              <a href="https://reestr.rublacklist.net/distributors/" target="_blank"
+                 data-i18n-key="popupMoreDetails">Подробнее <span class="footer__arrow">&rarr;</span></a></span>
           </div>
         </div>
       </div>
@@ -47,64 +49,71 @@
           <img class="icon__status" src="images/icons/status/icon_danger.svg" width="24px" height="24px" alt=""/>
         </div>
         <div class="block__btn btn-about" id="aboutOriButton">
-          <span>что это значит</span>
+          <span data-i18n-key="popupWhatThisMean">что это значит</span>
           <img class="block__btn icon" src="images/icons/status/arrow_down.svg" width="8px" height="6px" alt=""/>
         </div>
         <div class="block__text text-warning" id="textAboutOri">
-          <span id="oriSiteInfo">
+          <span id="oriSiteInfo" data-i18n-key="popupWebsiteIsORI">
             Сервис может передавать ваши личные данные, в том числе сообщения и весь трафик,
             российским государственным органам в автоматическом режиме.
           </span>
           <div class="block__footer">
-            <span class="block__btn btn-ok" id="closeTextAboutOri">Ясно</span>
-            <span class="block__btn btn-text"><a href="https://reestr.rublacklist.net/distributors/" target="_blank">Подробнее <span
-              class="footer__arrow">&rarr;</span></a></span>
+            <span class="block__btn btn-ok" id="closeTextAboutOri" data-i18n-key="popupGetIt">Ясно</span>
+            <span class="block__btn btn-text">
+              <a href="https://reestr.rublacklist.net/distributors/" target="_blank"
+                 data-i18n-key="popupMoreDetails">Подробнее <span class="footer__arrow">&rarr;</span></a></span>
           </div>
         </div>
       </div>
 
       <div class="main-page__block" id="restrictionsAreNotApplied" hidden>
         <div class="block__title">
-          <span>Не запрещён в России</span>
+          <span data-i18n-key="popupNoRestrictions">Не запрещён в России</span>
           <img class="icon__status" src="images/icons/status/icon_ok.svg" width="24px" height="24px" alt=""/>
         </div>
         <div class="block__btn btn-about" id="btnAboutNotForbidden">
-          <span>что это значит</span>
+          <span data-i18n-key="popupWhatThisMean">что это значит</span>
           <img class="block__btn icon" src="images/icons/status/arrow_down.svg" width="8px" height="6px" alt=""/>
         </div>
         <div class="block__text text-normal" id="textAboutNotForbidden">
-          <span>Если доступ к сайту запретят, то Censor Tracker предложит открыть сайт через надёжный прокси.</span>
+          <span data-i18n-key="popupWebsiteBlockedDescription">
+            Если доступ к сайту запретят, то Censor Tracker предложит открыть сайт через надёжный прокси.
+          </span>
           <div class="block__footer">
-            <span class="block__btn btn-ok" id="closeTextAboutNotForbidden">Ясно</span>
-            <span class="block__btn btn-text"><a href="https://reestr.rublacklist.net/" target="_blank">Подробнее <span
-              class="footer__arrow">&rarr;</span></a></span>
+            <span class="block__btn btn-ok" id="closeTextAboutNotForbidden" data-i18n-key="popupGetIt">Ясно</span>
+            <span class="block__btn btn-text">
+              <a href="https://reestr.rublacklist.net/" target="_blank" data-i18n-key="popupMoreDetails">Подробнее <span
+                class="footer__arrow">&rarr;</span></a></span>
           </div>
         </div>
       </div>
 
       <div class="main-page__block" id="restrictionsApplied" hidden>
         <div class="block__title">
-          <span id="restriction-type">Запрещён в России</span>
+          <span id="restriction-type" data-i18n-key="popupRestrictionsType">Запрещён в России</span>
           <img class="icon__status" src="images/icons/status/icon_info.svg" width="24px" height="24px" alt=""/>
         </div>
         <div class="block__btn btn-about" id="btnRestrictionsInfo">
-          <span>что это значит</span>
+          <span data-i18n-key="popupWhatThisMean">что это значит</span>
           <img class="block__btn icon" src="images/icons/status/arrow_down.svg" width="8px" height="6px" alt=""/>
         </div>
         <div class="block__text text-normal" id="textAboutForbidden">
-          <span id="restriction-description">Доступ к сайту запрещён, но Censor Tracker даёт к нему доступ через надёжный прокси.</span>
+          <span id="restriction-description" data-i18n-key="popupRestrictionsFoundDescription">
+            Доступ к сайту запрещён, но Censor Tracker даёт к нему доступ через надёжный прокси.
+          </span>
           <div class="block__footer">
-            <span class="block__btn btn-ok" id="closeTextAboutForbidden">Ясно</span>
-            <span class="block__btn btn-text"><a href="https://reestr.rublacklist.net/" target="_blank">Подробнее <span
+            <span class="block__btn btn-ok" id="closeTextAboutForbidden" data-i18n-key="popupGetIt">Ясно</span>
+            <span class="block__btn btn-text">
+              <a href="https://reestr.rublacklist.net/" target="_blank" data-i18n-key="popupMoreDetails">Подробнее <span
               class="footer__arrow">&rarr;</span></a></span>
           </div>
         </div>
       </div>
 
       <div class="main-page__info" id="trackerOff" hidden>
-        <div class="main-page__title title-disabled">Censor Tracker выключен</div>
+        <div class="main-page__title title-disabled" data-i18n-key="popupExtensionsIsTurnedOff">Censor Tracker выключен</div>
         <div class="main-page__block">
-          <div class="block__title text-about">
+          <div class="block__title text-about" data-i18n-key="popupExtensionsIsTurnedOffDescription">
             Включите, чтобы проверить сайт <span class="current-domain"></span>
           </div>
           <div class="censor-tracker__btn btn-on" id="enableExtension">
@@ -118,11 +127,12 @@
     </div>
   </div>
 
-  <div class="another_extension" id="controlledOtherExtensionsInfo" hidden>
+  <div class="another_extension" id="controlledOtherExtensionsInfo"
+       data-i18n-key="popupAnotherExtensionControlsProxy" hidden>
     <div>Другое расширение контролирует прокси. Подробнее &rarr;</div>
   </div>
 
-  <div id="privateBrowsingPermissionsRequiredButton" hidden>
+  <div id="privateBrowsingPermissionsRequiredButton" data-i18n-key="popupPrivateBrowsingPermissionsRequire" hidden>
     <div>Прокси отключён. Требуется разрешение на работу в приватных окнах &rarr;</div>
   </div>
 
@@ -130,7 +140,7 @@
     <div class="censor-tracker censor-tracker-">
       <div class="censor-tracker__column">
         <div class="censor-tracker__title">Censor Tracker</div>
-        <div class="censor-tracker__turn">включен</div>
+        <div class="censor-tracker__turn" data-i18n-key="popupExtensionIsTurnedOn">включен</div>
       </div>
       <div class="censor-tracker__column">
         <div class="censor-tracker__btn" id="disableExtension">
@@ -138,14 +148,6 @@
                src="images/icons/512x512/btn_stop.svg" width="11px" height="16px" alt=""/>
         </div>
       </div>
-    </div>
-  </div>
-
-  <div class="footer footer-on" id="footerTrackerOff" hidden>
-    <div class="block__btn btn-text buy-vpn" style="display: none">
-      <a target="_blank" href="https://vpnlove.me/">
-        Купить VPN<span class="footer__arrow">&rarr;</span>
-      </a>
     </div>
   </div>
 

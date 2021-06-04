@@ -1,6 +1,53 @@
 {
-  "testTitle": {
-    "message": "Works great!",
-    "description": "Test"
+  "popupNoRestrictions": {
+    "message": "No restrictions found."
+  },
+  "popupNoRestrictionsDescription": {
+    "message": "No restrictions found desc."
+  },
+  "popupRestrictionsType": {
+    "message": "Blocked"
+  },
+  "popupRestrictionsFoundDescription": {
+    "message": "Blocked desc"
+  },
+  "popupWhatThisMean": {
+    "message": "what this mean"
+  },
+  "popupGetIt": {
+    "message": "OK"
+  },
+  "popupMoreDetails": {
+    "message": "More details"
+  },
+  "popupExtensionIsTurnedOn": {
+    "message": "turned on"
+  },
+  "popupWebsiteBlockedDescription": {
+    "message": "If the website is blocked, then Censor Tracker will open the site through a secure proxy."
+  },
+  "popupWebsiteIsBlocked": {
+    "message": "Access to this site is denied in your country, but Censor Tracker gives access to it through a secure proxy."
+  },
+  "popupWebsiteORIDescription": {
+    "message": "Websites from the ORI register may transfer your personal data, incl. messages and all traffic to government agencies in automatic mode. This website is not in the ORI registry."
+  },
+  "popupWebsiteIsORI": {
+    "message": "This website can automatically transfer your personal data, including messages and all traffic, to government agencies."
+  },
+  "popupInvalidCurrentDomain" : {
+    "message": "Invalid URL"
+  },
+  "popupExtensionsIsTurnedOff": {
+    "message": "CensorTracker is turned off"
+  },
+  "popupExtensionsIsTurnedOffDescription": {
+    "message": "Turn on CensorTracker to check"
+  },
+  "popupAnotherExtensionControlsProxy": {
+    "message": "Another extension controls proxy. More details →"
+  },
+  "popupPrivateBrowsingPermissionsRequire": {
+    "message": "Proxying is turned off. Required permission to run in private windows &rarr;"
   }
 }

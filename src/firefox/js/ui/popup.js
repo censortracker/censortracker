@@ -17,6 +17,9 @@ import { extractHostnameFromUrl, registry, settings, storage } from '../../../co
   const restrictionDescription = getElementById('restriction-description')
   const restrictionType = getElementById('restriction-type')
   const currentDomainBlocks = document.querySelectorAll('.current-domain')
+  const detailBlocks = document.querySelectorAll('.details-block')
+  const closeDetailsButtons = document.querySelectorAll('.btn-hide-details')
+  const whatThisMeanButtons = document.querySelectorAll('.btn-what-this-mean')
   const privateBrowsingPermissionsRequiredButton = getElementById('privateBrowsingPermissionsRequiredButton')
 
   const popupShowTimeout = 60
@@ -171,29 +174,25 @@ import { extractHostnameFromUrl, registry, settings, storage } from '../../../co
 
   setTimeout(show, popupShowTimeout)
 
-  const detailBlocks = document.querySelectorAll('.details-block')
-  const closeDetailsButtons = document.querySelectorAll('.btn-hide-details')
-  const whatThisMeanButtons = document.querySelectorAll('.btn-what-this-mean')
-
-  whatThisMeanButtons.forEach((btn) => {
-    btn.addEventListener('click', () => {
-      detailBlocks.forEach((element) => {
-        element.style.display = 'none'
-      })
-
-      btn.style.display = 'none'
-      btn.nextSibling.style.display = 'block'
-    })
-  })
-
-  closeDetailsButtons.forEach((button) =>
+  whatThisMeanButtons.forEach((button) => {
     button.addEventListener('click', () => {
       detailBlocks.forEach((element) => {
         element.style.display = 'none'
       })
 
-      whatThisMeanButtons.forEach((btn) => {
-        btn.style.display = 'flex'
+      button.style.display = 'none'
+      button.nextSibling.style.display = 'block'
+    })
+  })
+
+  closeDetailsButtons.forEach((closeButton) =>
+    closeButton.addEventListener('click', () => {
+      detailBlocks.forEach((block) => {
+        block.style.display = 'none'
+      })
+
+      whatThisMeanButtons.forEach((button) => {
+        button.style.display = 'flex'
       })
     }),
   )

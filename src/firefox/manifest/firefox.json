@@ -1,6 +1,6 @@
 {
   "default_locale": "en",
-  "version": "3.8.8",
+  "version": "3.8.14",
   "browser_action": {
     "default_popup": "popup.html",
     "default_icon": "images/icons/128x128/default.png"

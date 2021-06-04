@@ -1,46 +1,96 @@
-const getElementById = (id) => document.getElementById(id)
+import { extractHostnameFromUrl, registry, settings, storage } from '../../../common/js'
 
-const statusImage = getElementById('statusImage')
-const currentDomainHeader = getElementById('currentDomainHeader')
-const footerTrackerOff = getElementById('footerTrackerOff')
-const trackerOff = getElementById('trackerOff')
-const isOriBlock = getElementById('isOriBlock')
-const isNotOriBlock = getElementById('isNotOriBlock')
-const restrictionsApplied = getElementById('restrictionsApplied')
-const restrictionsAreNotApplied = getElementById('restrictionsAreNotApplied')
-const footerTrackerOn = getElementById('footerTrackerOn')
-const aboutOriButton = getElementById('aboutOriButton')
-const textAboutOri = getElementById('textAboutOri')
-const closeTextAboutOri = getElementById('closeTextAboutOri')
-const btnRestrictionsInfo = getElementById('btnRestrictionsInfo')
-const textAboutForbidden = getElementById('textAboutForbidden')
-const closeTextAboutForbidden = getElementById('closeTextAboutForbidden')
-const btnAboutNotForbidden = getElementById('btnAboutNotForbidden')
-const textAboutNotForbidden = getElementById('textAboutNotForbidden')
-const closeTextAboutNotForbidden = getElementById('closeTextAboutNotForbidden')
-const btnAboutNotOri = getElementById('btnAboutNotOri')
-const textAboutNotOri = getElementById('textAboutNotOri')
-const closeTextAboutNotOri = getElementById('closeTextAboutNotOri')
-const oriSiteInfo = getElementById('oriSiteInfo')
-const restrictionDescription = getElementById('restriction-description')
-const restrictionType = getElementById('restriction-type')
-const currentDomainBlocks = document.querySelectorAll('.current-domain')
-const privateBrowsingPermissionsRequiredButton = getElementById('privateBrowsingPermissionsRequiredButton')
-const popupShowTimeout = 60
+(async () => {
+  const getElementById = (id) => document.getElementById(id)
 
-privateBrowsingPermissionsRequiredButton.addEventListener('click', () => {
-  window.location.href = 'additional_permissions_required.html'
-})
+  const statusImage = getElementById('statusImage')
+  const currentDomainHeader = getElementById('currentDomainHeader')
+  const footerTrackerOff = getElementById('footerTrackerOff')
+  const trackerOff = getElementById('trackerOff')
+  const isOriBlock = getElementById('isOriBlock')
+  const isNotOriBlock = getElementById('isNotOriBlock')
+  const restrictionsApplied = getElementById('restrictionsApplied')
+  const restrictionsAreNotApplied = getElementById('restrictionsAreNotApplied')
+  const footerTrackerOn = getElementById('footerTrackerOn')
+  const aboutOriButton = getElementById('aboutOriButton')
+  const textAboutOri = getElementById('textAboutOri')
+  const closeTextAboutOri = getElementById('closeTextAboutOri')
+  const btnRestrictionsInfo = getElementById('btnRestrictionsInfo')
+  const textAboutForbidden = getElementById('textAboutForbidden')
+  const closeTextAboutForbidden = getElementById('closeTextAboutForbidden')
+  const btnAboutNotForbidden = getElementById('btnAboutNotForbidden')
+  const textAboutNotForbidden = getElementById('textAboutNotForbidden')
+  const closeTextAboutNotForbidden = getElementById('closeTextAboutNotForbidden')
+  const btnAboutNotOri = getElementById('btnAboutNotOri')
+  const textAboutNotOri = getElementById('textAboutNotOri')
+  const closeTextAboutNotOri = getElementById('closeTextAboutNotOri')
+  const oriSiteInfo = getElementById('oriSiteInfo')
+  const restrictionDescription = getElementById('restriction-description')
+  const restrictionType = getElementById('restriction-type')
+  const currentDomainBlocks = document.querySelectorAll('.current-domain')
+  const privateBrowsingPermissionsRequiredButton = getElementById('privateBrowsingPermissionsRequiredButton')
+  const popupShowTimeout = 60
 
-browser.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
+  privateBrowsingPermissionsRequiredButton.addEventListener('click', () => {
+    window.location.href = 'additional_permissions_required.html'
+  })
+
+  const changeStatusImage = (imageName) => {
+    const imageSrc = browser.runtime.getURL(`images/icons/512x512/${imageName}.png`)
+
+    statusImage.setAttribute('src', imageSrc)
+  }
+
+  const getAppropriateUrl = (currentUrl) => {
+    const popupUrl = browser.runtime.getURL('popup.html')
+
+    if (currentUrl.startsWith(popupUrl)) {
+      const currentURLParams = currentUrl.split('?')[1]
+      const searchParams = new URLSearchParams(currentURLParams)
+      const encodedUrl = searchParams.get('loadFor')
+
+      return window.atob(encodedUrl)
+    }
+    return currentUrl
+  }
+
+  const renderCurrentDomain = ({ length }) => {
+    if (length >= 22 && length < 25) {
+      currentDomainHeader.style.fontSize = '17px'
+    } else if (length >= 25) {
+      currentDomainHeader.style.fontSize = '15px'
+    }
+    currentDomainHeader.classList.add('title-normal')
+    currentDomainHeader.removeAttribute('hidden')
+  }
+
+  const showCooperationRefusedMessage = () => {
+    oriSiteInfo.innerText = 'Сервис заявил, что они не передают трафик российским ' +
+      'государственным органам в автоматическом режиме.'
+    textAboutOri.classList.remove('text-warning')
+    textAboutOri.classList.add('text-normal')
+    currentDomainHeader.classList.remove('title-ori')
+    currentDomainHeader.classList.add('title-normal')
+  }
+
+  const hideControlElements = () => {
+    changeStatusImage('disabled')
+    trackerOff.hidden = false
+    footerTrackerOff.hidden = false
+    isOriBlock.hidden = true
+    restrictionsApplied.hidden = true
+    isNotOriBlock.hidden = true
+    restrictionsAreNotApplied.hidden = true
+  }
+
   document.addEventListener('click', async (event) => {
     if (event.target.matches('#enableExtension')) {
-      await bgModules.settings.enableExtension()
+      await settings.enableExtension()
       window.location.reload()
     }
 
     if (event.target.matches('#disableExtension')) {
-      await bgModules.settings.disableExtension()
+      await settings.disableExtension()
       window.location.reload()
     }
 
@@ -50,11 +100,11 @@ browser.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
   })
 
   const allowedIncognitoAccess = await browser.extension.isAllowedIncognitoAccess()
-  const { privateBrowsingPermissionsRequired } = await bgModules.storage.get({
+  const { privateBrowsingPermissionsRequired } = await storage.get({
     privateBrowsingPermissionsRequired: false,
   })
 
-  const extensionEnabled = await bgModules.settings.extensionEnabled()
+  const extensionEnabled = await settings.extensionEnabled()
 
   if (extensionEnabled) {
     if (!allowedIncognitoAccess || privateBrowsingPermissionsRequired) {
@@ -66,7 +116,7 @@ browser.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
     active: true, lastFocusedWindow: true,
   })
 
-  const currentHostname = bgModules.extractHostnameFromUrl(
+  const currentHostname = extractHostnameFromUrl(
     getAppropriateUrl(currentUrl),
   )
 
@@ -74,7 +124,7 @@ browser.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
     element.innerText = currentHostname
   })
 
-  const { restriction } = await bgModules.registry.getUnregisteredRecordByURL(currentHostname)
+  const { restriction } = await registry.getUnregisteredRecordByURL(currentHostname)
 
   if (restriction && restriction.name) {
     restrictionType.innerText = restriction.name
@@ -86,7 +136,7 @@ browser.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
     renderCurrentDomain(currentHostname)
     footerTrackerOn.removeAttribute('hidden')
 
-    const urlBlocked = await bgModules.registry.contains(currentHostname)
+    const urlBlocked = await registry.contains(currentHostname)
 
     if (urlBlocked) {
       changeStatusImage('blocked')
@@ -99,7 +149,7 @@ browser.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
     }
 
     const { url: distributorUrl, cooperationRefused } =
-      await bgModules.registry.distributorsContains(currentHostname)
+      await registry.distributorsContains(currentHostname)
 
     if (distributorUrl) {
       currentDomainHeader.classList.add('title-ori')
@@ -130,114 +180,66 @@ browser.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
   }
 
   setTimeout(show, popupShowTimeout)
-})
 
-const changeStatusImage = (imageName) => {
-  const imageSrc = browser.runtime.getURL(`images/icons/512x512/${imageName}.png`)
+  aboutOriButton.addEventListener('click', () => {
+    textAboutOri.style.display = 'block'
+    aboutOriButton.style.display = 'none'
+    hideForbiddenDetails()
+  })
 
-  statusImage.setAttribute('src', imageSrc)
-}
+  btnAboutNotOri.addEventListener('click', () => {
+    textAboutNotOri.style.display = 'block'
+    btnAboutNotOri.style.display = 'none'
+    hideForbiddenDetails()
+  })
 
-const getAppropriateUrl = (currentUrl) => {
-  const popupUrl = browser.runtime.getURL('popup.html')
+  closeTextAboutNotOri.addEventListener('click', () => {
+    textAboutNotOri.style.display = 'none'
+    btnAboutNotOri.style.display = 'flex'
+  },
+  )
 
-  if (currentUrl.startsWith(popupUrl)) {
-    const currentURLParams = currentUrl.split('?')[1]
-    const searchParams = new URLSearchParams(currentURLParams)
-    const encodedUrl = searchParams.get('loadFor')
+  closeTextAboutOri.addEventListener('click', () => {
+    textAboutOri.style.display = 'none'
+    aboutOriButton.style.display = 'flex'
+  },
+  )
 
-    return window.atob(encodedUrl)
+  btnRestrictionsInfo.addEventListener('click', () => {
+    textAboutForbidden.style.display = 'block'
+    btnRestrictionsInfo.style.display = 'none'
+    hideOriDetails()
+  },
+  )
+
+  btnAboutNotForbidden.addEventListener('click', () => {
+    textAboutNotForbidden.style.display = 'block'
+    btnAboutNotForbidden.style.display = 'none'
+    hideOriDetails()
+  })
+
+  closeTextAboutForbidden.addEventListener('click', () => {
+    textAboutForbidden.style.display = 'none'
+    btnRestrictionsInfo.style.display = 'flex'
+  },
+  )
+
+  closeTextAboutNotForbidden.addEventListener('click', () => {
+    textAboutNotForbidden.style.display = 'none'
+    btnAboutNotForbidden.style.display = 'flex'
+  })
+
+  const hideOriDetails = () => {
+    textAboutOri.style.display = 'none'
+    aboutOriButton.style.display = 'flex'
+    textAboutNotOri.style.display = 'none'
+    btnAboutNotOri.style.display = 'flex'
   }
-  return currentUrl
-}
 
-const renderCurrentDomain = ({ length }) => {
-  if (length >= 22 && length < 25) {
-    currentDomainHeader.style.fontSize = '17px'
-  } else if (length >= 25) {
-    currentDomainHeader.style.fontSize = '15px'
+  const hideForbiddenDetails = () => {
+    textAboutForbidden.style.display = 'none'
+    btnRestrictionsInfo.style.display = 'flex'
+    textAboutNotForbidden.style.display = 'none'
+    btnAboutNotForbidden.style.display = 'flex'
   }
-  currentDomainHeader.classList.add('title-normal')
-  currentDomainHeader.removeAttribute('hidden')
-}
-
-const showCooperationRefusedMessage = () => {
-  oriSiteInfo.innerText = 'Сервис заявил, что они не передают трафик российским ' +
-    'государственным органам в автоматическом режиме.'
-  textAboutOri.classList.remove('text-warning')
-  textAboutOri.classList.add('text-normal')
-  currentDomainHeader.classList.remove('title-ori')
-  currentDomainHeader.classList.add('title-normal')
-}
-
-const hideControlElements = () => {
-  changeStatusImage('disabled')
-  trackerOff.hidden = false
-  footerTrackerOff.hidden = false
-  isOriBlock.hidden = true
-  restrictionsApplied.hidden = true
-  isNotOriBlock.hidden = true
-  restrictionsAreNotApplied.hidden = true
-}
-
-aboutOriButton.addEventListener('click', () => {
-  textAboutOri.style.display = 'block'
-  aboutOriButton.style.display = 'none'
-  hideForbiddenDetails()
-})
-
-btnAboutNotOri.addEventListener('click', () => {
-  textAboutNotOri.style.display = 'block'
-  btnAboutNotOri.style.display = 'none'
-  hideForbiddenDetails()
-})
-
-closeTextAboutNotOri.addEventListener('click', () => {
-  textAboutNotOri.style.display = 'none'
-  btnAboutNotOri.style.display = 'flex'
-},
-)
-
-closeTextAboutOri.addEventListener('click', () => {
-  textAboutOri.style.display = 'none'
-  aboutOriButton.style.display = 'flex'
-},
-)
-
-btnRestrictionsInfo.addEventListener('click', () => {
-  textAboutForbidden.style.display = 'block'
-  btnRestrictionsInfo.style.display = 'none'
-  hideOriDetails()
-},
-)
-
-btnAboutNotForbidden.addEventListener('click', () => {
-  textAboutNotForbidden.style.display = 'block'
-  btnAboutNotForbidden.style.display = 'none'
-  hideOriDetails()
-})
-
-closeTextAboutForbidden.addEventListener('click', () => {
-  textAboutForbidden.style.display = 'none'
-  btnRestrictionsInfo.style.display = 'flex'
-},
-)
-
-closeTextAboutNotForbidden.addEventListener('click', () => {
-  textAboutNotForbidden.style.display = 'none'
-  btnAboutNotForbidden.style.display = 'flex'
-})
-
-const hideOriDetails = () => {
-  textAboutOri.style.display = 'none'
-  aboutOriButton.style.display = 'flex'
-  textAboutNotOri.style.display = 'none'
-  btnAboutNotOri.style.display = 'flex'
-}
-
-const hideForbiddenDetails = () => {
-  textAboutForbidden.style.display = 'none'
-  btnRestrictionsInfo.style.display = 'flex'
-  textAboutNotForbidden.style.display = 'none'
-  btnAboutNotForbidden.style.display = 'flex'
-}
+})()

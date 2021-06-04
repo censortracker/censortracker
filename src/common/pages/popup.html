@@ -19,17 +19,19 @@
         Сайт недоступен
       </div>
 
-      <div class="main-page__block" id="isNotOriBlock" hidden>
+      <div class="main-page__block" id="ori">
         <div class="block__title">
-          <span>Не является организатором распространения информации</span>
-          <img class="icon__status" src="images/icons/status/icon_ok.svg" width="24px" height="24px" alt=""/>
+          <span data-render-var="title">Не является организатором распространения информации</span>
+          <img class="icon__status"
+               data-render-var="statusIcon"
+               src="images/icons/status/icon_ok.svg" width="24px" height="24px" alt=""/>
         </div>
         <div class="block__btn btn-about btn-what-this-mean">
           <span>что это значит</span>
           <img class="block__btn icon" src="images/icons/status/arrow_down.svg" width="8px" height="6px" alt=""/>
         </div>
-        <div class="block__text text-normal details-block">
-          <span>
+        <div class="block__text text-normal details-block" data-render-var="detailsClasses">
+          <span data-render-var="detailsText">
             Сервисы из реестра ОРИ могут передавать ваши личные данные, в т.ч. сообщения и весь трафик,
             государственным органам в автоматическом режиме. Этот сервис не находится в реестре ОРИ.
           </span>
@@ -41,58 +43,19 @@
         </div>
       </div>
 
-      <div class="main-page__block" id="isOriBlock" hidden>
+      <div class="main-page__block" id="restrictions">
         <div class="block__title">
-          <span>Является организатором распространения информации</span>
-          <img class="icon__status" src="images/icons/status/icon_danger.svg" width="24px" height="24px" alt=""/>
-        </div>
-        <div class="block__btn btn-about btn-what-this-mean">
-          <span>что это значит</span>
-          <img class="block__btn icon" src="images/icons/status/arrow_down.svg" width="8px" height="6px" alt=""/>
-        </div>
-        <div class="block__text text-warning details-block">
-          <span id="oriSiteInfo">
-            Сервис может передавать ваши личные данные, в том числе сообщения и весь трафик,
-            российским государственным органам в автоматическом режиме.
-          </span>
-          <div class="block__footer">
-            <span class="block__btn btn-ok btn-hide-details">Ясно</span>
-            <span class="block__btn btn-text"><a href="https://reestr.rublacklist.net/distributors/" target="_blank">Подробнее <span
-              class="footer__arrow">&rarr;</span></a></span>
-          </div>
-        </div>
-      </div>
-
-      <div class="main-page__block" id="restrictionsAreNotApplied" hidden>
-        <div class="block__title">
-          <span>Не запрещён в России</span>
-          <img class="icon__status" src="images/icons/status/icon_ok.svg" width="24px" height="24px" alt=""/>
+          <span data-render-var="title">Не запрещён в России</span>
+          <img class="icon__status"
+               data-render-var="statusIcon"
+               src="images/icons/status/icon_ok.svg" width="24px" height="24px" alt=""/>
         </div>
         <div class="block__btn btn-about btn-what-this-mean">
           <span>что это значит</span>
           <img class="block__btn icon" src="images/icons/status/arrow_down.svg" width="8px" height="6px" alt=""/>
         </div>
         <div class="block__text text-normal details-block">
-          <span>Если доступ к сайту запретят, то Censor Tracker предложит открыть сайт через надёжный прокси.</span>
-          <div class="block__footer">
-            <span class="block__btn btn-ok btn-hide-details">Ясно</span>
-            <span class="block__btn btn-text"><a href="https://reestr.rublacklist.net/" target="_blank">Подробнее <span
-              class="footer__arrow">&rarr;</span></a></span>
-          </div>
-        </div>
-      </div>
-
-      <div class="main-page__block" id="restrictionsApplied" hidden>
-        <div class="block__title">
-          <span id="restriction-type">Запрещён в России</span>
-          <img class="icon__status" src="images/icons/status/icon_info.svg" width="24px" height="24px" alt=""/>
-        </div>
-        <div class="block__btn btn-about btn-what-this-mean">
-          <span>что это значит</span>
-          <img class="block__btn icon" src="images/icons/status/arrow_down.svg" width="8px" height="6px" alt=""/>
-        </div>
-        <div class="block__text text-normal details-block">
-          <span id="restriction-description">Доступ к сайту запрещён, но Censor Tracker даёт к нему доступ через надёжный прокси.</span>
+          <span data-render-var="detailsText">Если доступ к сайту запретят, то Censor Tracker предложит открыть сайт через надёжный прокси.</span>
           <div class="block__footer">
             <span class="block__btn btn-ok btn-hide-details">Ясно</span>
             <span class="block__btn btn-text"><a href="https://reestr.rublacklist.net/" target="_blank">Подробнее <span

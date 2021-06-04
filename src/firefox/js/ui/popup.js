@@ -7,10 +7,6 @@ import { extractHostnameFromUrl, registry, settings, storage } from '../../../co
   const currentDomainHeader = getElementById('currentDomainHeader')
   const footerTrackerOff = getElementById('footerTrackerOff')
   const trackerOff = getElementById('trackerOff')
-  const isOriBlock = getElementById('isOriBlock')
-  const isNotOriBlock = getElementById('isNotOriBlock')
-  const restrictionsApplied = getElementById('restrictionsApplied')
-  const restrictionsAreNotApplied = getElementById('restrictionsAreNotApplied')
   const footerTrackerOn = getElementById('footerTrackerOn')
   const textAboutOri = getElementById('textAboutOri')
   const oriSiteInfo = getElementById('oriSiteInfo')
@@ -28,13 +24,14 @@ import { extractHostnameFromUrl, registry, settings, storage } from '../../../co
     ori: {
       found: {
         title: 'Является организатором распространения информации',
-        titleStatusIcon: 'images/icons/status/icon_danger.svg',
+        statusIcon: 'images/icons/status/icon_danger.svg',
         detailsText: 'Сервис может передавать ваши личные данные, в том числе сообщения и весь трафик, ' +
           'российским государственным органам в автоматическом режиме.',
+        detailsClasses: ['text-warning'],
       },
       notFound: {
         title: 'Не является организатором распространения информации',
-        titleStatusIcon: 'images/icons/status/icon_ok.svg',
+        statusIcon: 'images/icons/status/icon_ok.svg',
         detailsText: 'Сервисы из реестра ОРИ могут передавать ваши личные данные, в т.ч. сообщения и весь трафик, ' +
           'государственным органам в автоматическом режиме. Этот сервис не находится в реестре ОРИ.',
       },
@@ -42,12 +39,12 @@ import { extractHostnameFromUrl, registry, settings, storage } from '../../../co
     restrictions: {
       found: {
         title: 'Запрещён в России',
-        titleStatusIcon: 'images/icons/status/icon_info.svg',
+        statusIcon: 'images/icons/status/icon_info.svg',
         detailsText: 'Доступ к сайту запрещён, но Censor Tracker даёт к нему доступ через надёжный прокси.',
       },
       notFound: {
         title: 'Не запрещён в России',
-        titleStatusIcon: 'images/icons/status/icon_ok.svg',
+        statusIcon: 'images/icons/status/icon_ok.svg',
         detailsText: 'Если доступ к сайту запретят, то Censor Tracker предложит открыть сайт через надёжный прокси.',
       },
     },
@@ -99,10 +96,6 @@ import { extractHostnameFromUrl, registry, settings, storage } from '../../../co
     changeStatusImage('disabled')
     trackerOff.hidden = false
     footerTrackerOff.hidden = false
-    isOriBlock.hidden = true
-    restrictionsApplied.hidden = true
-    isNotOriBlock.hidden = true
-    restrictionsAreNotApplied.hidden = true
   }
 
   document.addEventListener('click', async (event) => {
@@ -162,12 +155,20 @@ import { extractHostnameFromUrl, registry, settings, storage } from '../../../co
 
     if (urlBlocked) {
       changeStatusImage('blocked')
-      restrictionsApplied.removeAttribute('hidden')
-      restrictionsAreNotApplied.remove()
-    } else {
-      restrictionsAreNotApplied.removeAttribute('hidden')
-      restrictionsApplied.remove()
-      changeStatusImage('normal')
+
+      // TODO: Refactor this code
+      const elementsToRender = document.querySelectorAll('#restrictions [data-render-var]')
+
+      for (const element of elementsToRender) {
+        const renderVar = element.dataset.renderVar
+        const value = uiConfig.restrictions.found[renderVar]
+
+        if (renderVar === 'statusIcon') {
+          element.setAttribute('src', value)
+        } else {
+          element.innerText = value
+        }
+      }
     }
 
     const { url: distributorUrl, cooperationRefused } =
@@ -175,17 +176,12 @@ import { extractHostnameFromUrl, registry, settings, storage } from '../../../co
 
     if (distributorUrl) {
       currentDomainHeader.classList.add('title-ori')
-      isOriBlock.removeAttribute('hidden')
-      isNotOriBlock.remove()
 
       if (cooperationRefused) {
         showCooperationRefusedMessage()
       } else {
         changeStatusImage('ori')
       }
-    } else {
-      isNotOriBlock.removeAttribute('hidden')
-      isOriBlock.remove()
     }
 
     if (urlBlocked && distributorUrl) {

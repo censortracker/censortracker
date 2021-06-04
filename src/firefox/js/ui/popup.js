@@ -12,23 +12,13 @@ import { extractHostnameFromUrl, registry, settings, storage } from '../../../co
   const restrictionsApplied = getElementById('restrictionsApplied')
   const restrictionsAreNotApplied = getElementById('restrictionsAreNotApplied')
   const footerTrackerOn = getElementById('footerTrackerOn')
-  const aboutOriButton = getElementById('aboutOriButton')
   const textAboutOri = getElementById('textAboutOri')
-  const closeTextAboutOri = getElementById('closeTextAboutOri')
-  const btnRestrictionsInfo = getElementById('btnRestrictionsInfo')
-  const textAboutForbidden = getElementById('textAboutForbidden')
-  const closeTextAboutForbidden = getElementById('closeTextAboutForbidden')
-  const btnAboutNotForbidden = getElementById('btnAboutNotForbidden')
-  const textAboutNotForbidden = getElementById('textAboutNotForbidden')
-  const closeTextAboutNotForbidden = getElementById('closeTextAboutNotForbidden')
-  const btnAboutNotOri = getElementById('btnAboutNotOri')
-  const textAboutNotOri = getElementById('textAboutNotOri')
-  const closeTextAboutNotOri = getElementById('closeTextAboutNotOri')
   const oriSiteInfo = getElementById('oriSiteInfo')
   const restrictionDescription = getElementById('restriction-description')
   const restrictionType = getElementById('restriction-type')
   const currentDomainBlocks = document.querySelectorAll('.current-domain')
   const privateBrowsingPermissionsRequiredButton = getElementById('privateBrowsingPermissionsRequiredButton')
+
   const popupShowTimeout = 60
 
   privateBrowsingPermissionsRequiredButton.addEventListener('click', () => {
@@ -181,65 +171,30 @@ import { extractHostnameFromUrl, registry, settings, storage } from '../../../co
 
   setTimeout(show, popupShowTimeout)
 
-  aboutOriButton.addEventListener('click', () => {
-    textAboutOri.style.display = 'block'
-    aboutOriButton.style.display = 'none'
-    hideForbiddenDetails()
+  const detailBlocks = document.querySelectorAll('.details-block')
+  const closeDetailsButtons = document.querySelectorAll('.btn-hide-details')
+  const whatThisMeanButtons = document.querySelectorAll('.btn-what-this-mean')
+
+  whatThisMeanButtons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      detailBlocks.forEach((element) => {
+        element.style.display = 'none'
+      })
+
+      btn.style.display = 'none'
+      btn.nextSibling.style.display = 'block'
+    })
   })
 
-  btnAboutNotOri.addEventListener('click', () => {
-    textAboutNotOri.style.display = 'block'
-    btnAboutNotOri.style.display = 'none'
-    hideForbiddenDetails()
-  })
+  closeDetailsButtons.forEach((button) =>
+    button.addEventListener('click', () => {
+      detailBlocks.forEach((element) => {
+        element.style.display = 'none'
+      })
 
-  closeTextAboutNotOri.addEventListener('click', () => {
-    textAboutNotOri.style.display = 'none'
-    btnAboutNotOri.style.display = 'flex'
-  },
+      whatThisMeanButtons.forEach((btn) => {
+        btn.style.display = 'flex'
+      })
+    }),
   )
-
-  closeTextAboutOri.addEventListener('click', () => {
-    textAboutOri.style.display = 'none'
-    aboutOriButton.style.display = 'flex'
-  },
-  )
-
-  btnRestrictionsInfo.addEventListener('click', () => {
-    textAboutForbidden.style.display = 'block'
-    btnRestrictionsInfo.style.display = 'none'
-    hideOriDetails()
-  },
-  )
-
-  btnAboutNotForbidden.addEventListener('click', () => {
-    textAboutNotForbidden.style.display = 'block'
-    btnAboutNotForbidden.style.display = 'none'
-    hideOriDetails()
-  })
-
-  closeTextAboutForbidden.addEventListener('click', () => {
-    textAboutForbidden.style.display = 'none'
-    btnRestrictionsInfo.style.display = 'flex'
-  },
-  )
-
-  closeTextAboutNotForbidden.addEventListener('click', () => {
-    textAboutNotForbidden.style.display = 'none'
-    btnAboutNotForbidden.style.display = 'flex'
-  })
-
-  const hideOriDetails = () => {
-    textAboutOri.style.display = 'none'
-    aboutOriButton.style.display = 'flex'
-    textAboutNotOri.style.display = 'none'
-    btnAboutNotOri.style.display = 'flex'
-  }
-
-  const hideForbiddenDetails = () => {
-    textAboutForbidden.style.display = 'none'
-    btnRestrictionsInfo.style.display = 'flex'
-    textAboutNotForbidden.style.display = 'none'
-    btnAboutNotForbidden.style.display = 'flex'
-  }
 })()

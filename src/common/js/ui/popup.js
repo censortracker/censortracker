@@ -3,6 +3,7 @@ import { getUIText, select } from './ui'
 
 (async () => {
   const showTimeout = 50
+  const uiText = getUIText()
   const thisIsFirefox = settings.isFirefox
   const currentBrowser = settings.getBrowser()
   const statusImage = select({ id: 'statusImage' })
@@ -41,7 +42,7 @@ import { getUIText, select } from './ui'
     statusImage.setAttribute('src', imageSrc)
   }
 
-  const getAppropriateUrl = (currentUrl) => {
+  const extractURLFromQueryParams = (currentUrl) => {
     const popupUrl = currentBrowser.runtime.getURL('popup.html')
 
     if (currentUrl.startsWith(popupUrl)) {
@@ -52,23 +53,6 @@ import { getUIText, select } from './ui'
       return window.atob(encodedUrl)
     }
     return currentUrl
-  }
-
-  const showCooperationRefusedMessage = () => {
-    oriSiteInfo.innerText = 'Сервис заявил, что они не передают трафик российским ' +
-      'государственным органам в автоматическом режиме.'
-    textAboutOri.classList.remove('text-warning')
-    textAboutOri.classList.add('text-normal')
-    currentDomainHeader.classList.remove('title-ori')
-    currentDomainHeader.classList.add('title-normal')
-  }
-
-  const hideControlElements = () => {
-    changeStatusImage('disabled')
-    extensionIsOff.hidden = false
-    mainPageInfoBlocks.forEach((element) => {
-      element.hidden = true
-    })
   }
 
   document.addEventListener('click', async (event) => {
@@ -108,7 +92,7 @@ import { getUIText, select } from './ui'
   })
 
   const currentHostname = extractHostnameFromUrl(
-    getAppropriateUrl(currentUrl),
+    extractURLFromQueryParams(currentUrl),
   )
 
   currentDomainBlocks.forEach((element) => {
@@ -127,9 +111,9 @@ import { getUIText, select } from './ui'
     currentDomainHeader.removeAttribute('hidden')
     footerExtensionIsOn.removeAttribute('hidden')
 
-    const urlBlocked = await registry.contains(currentHostname)
+    const restrictionsFound = await registry.contains(currentHostname)
 
-    if (urlBlocked) {
+    if (restrictionsFound) {
       changeStatusImage('blocked')
       const elements = select({ query: '#restrictions [data-render-var]' })
 
@@ -152,19 +136,23 @@ import { getUIText, select } from './ui'
       currentDomainHeader.classList.add('title-ori')
 
       if (cooperationRefused) {
-        showCooperationRefusedMessage()
+        oriSiteInfo.innerText = uiText.ori.found.cooperationRefused.message
+        textAboutOri.classList.remove('text-warning')
+        textAboutOri.classList.add('text-normal')
+        currentDomainHeader.classList.remove('title-ori')
+        currentDomainHeader.classList.add('title-normal')
       } else {
         changeStatusImage('ori')
         const elements = select({ query: '#ori [data-render-var]' })
 
         for (const element of elements) {
           const renderVar = element.dataset.renderVar
-          const value = getUIText().ori.found[renderVar]
+          const value = uiText.ori.found[renderVar]
 
           if (renderVar === 'statusIcon') {
             element.setAttribute('src', value)
           } else if (renderVar === 'detailsClasses') {
-            element.classList.add(getUIText().ori.found.detailsClasses)
+            element.classList.add(uiText.ori.found.detailsClasses)
           } else {
             element.innerText = value
           }
@@ -172,7 +160,7 @@ import { getUIText, select } from './ui'
       }
     }
 
-    if (urlBlocked && distributorUrl) {
+    if (restrictionsFound && distributorUrl) {
       if (cooperationRefused === false) {
         changeStatusImage('ori_blocked')
       }
@@ -185,7 +173,11 @@ import { getUIText, select } from './ui'
       restrictionDescription.innerText = restriction.description
     }
   } else {
-    hideControlElements()
+    changeStatusImage('disabled')
+    extensionIsOff.hidden = false
+    mainPageInfoBlocks.forEach((element) => {
+      element.hidden = true
+    })
   }
 
   const show = () => {

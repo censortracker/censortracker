@@ -15,8 +15,8 @@ import { getUIText, select } from './ui'
   const oriSiteInfo = select({ id: 'oriSiteInfo' })
 
   // TODO: Add these elements back to popup.html
-  const restrictionType = select({ id: 'restriction-type' })
-  const restrictionDescription = select({ id: 'restriction-description' })
+  const restrictionType = select({ id: 'restrictionType' })
+  const restrictionDescription = select({ id: 'restrictionDescription' })
 
   // Using only in Chromium
   const controlledOtherExtensionsInfo = select({ id: 'controlledOtherExtensionsInfo' })
@@ -136,13 +136,6 @@ import { getUIText, select } from './ui'
     element.innerText = currentHostname
   })
 
-  const { restriction } = await registry.getUnregisteredRecordByURL(currentHostname)
-
-  if (restriction && restriction.name) {
-    restrictionType.innerText = restriction.name
-    restrictionDescription.innerText = restriction.description
-  }
-
   if (extensionEnabled) {
     changeStatusImage('normal')
     renderCurrentDomain(currentHostname)
@@ -197,6 +190,13 @@ import { getUIText, select } from './ui'
       if (cooperationRefused === false) {
         changeStatusImage('ori_blocked')
       }
+    }
+
+    const { restriction } = await registry.getUnregisteredRecordByURL(currentHostname)
+
+    if (restriction && restriction.name) {
+      restrictionType.innerText = restriction.name
+      restrictionDescription.innerText = restriction.description
     }
   } else {
     hideControlElements()

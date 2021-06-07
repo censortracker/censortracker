@@ -45,7 +45,7 @@
 
       <div class="main-page__block main-page-info" id="restrictions">
         <div class="block__title">
-          <span data-render-var="title">Не запрещён в России</span>
+          <span data-render-var="title" id="restrictionType">Не запрещён в России</span>
           <img class="icon__status"
                data-render-var="statusIcon"
                src="images/icons/status/icon_ok.svg" width="24px" height="24px" alt=""/>
@@ -55,7 +55,9 @@
           <img class="block__btn icon" src="images/icons/status/arrow_down.svg" width="8px" height="6px" alt=""/>
         </div>
         <div class="block__text text-normal details-block">
-          <span data-render-var="detailsText">Если доступ к сайту запретят, то Censor Tracker предложит открыть сайт через надёжный прокси.</span>
+          <span data-render-var="detailsText" id="restrictionDescription">
+            Если доступ к сайту запретят, то Censor Tracker предложит открыть сайт через надёжный прокси.
+          </span>
           <div class="block__footer">
             <span class="block__btn btn-ok btn-hide-details">Ясно</span>
             <span class="block__btn btn-text"><a href="https://reestr.rublacklist.net/" target="_blank">Подробнее <span

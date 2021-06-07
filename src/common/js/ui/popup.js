@@ -5,15 +5,15 @@ import { getUIText, select } from './ui'
   const showTimeout = 50
   const thisIsFirefox = settings.isFirefox
   const currentBrowser = settings.getBrowser()
-  const extensionIsOff = select({ id: 'extensionIsOff' })
   const statusImage = select({ id: 'statusImage' })
   const oriSiteInfo = select({ id: 'oriSiteInfo' })
   const textAboutOri = select({ id: 'textAboutOri' })
+  const extensionIsOff = select({ id: 'extensionIsOff' })
   const restrictionType = select({ id: 'restrictionType' })
   const footerExtensionIsOn = select({ id: 'footerExtensionIsOn' })
   const currentDomainHeader = select({ id: 'currentDomainHeader' })
   const restrictionDescription = select({ id: 'restrictionDescription' })
-  const detailBlocks = select({ query: '.details-block' })
+  const detailsText = select({ query: '.details-text' })
   const mainPageInfoBlocks = select({ query: '.main-page-info' })
   const currentDomainBlocks = select({ query: '.current-domain' })
   const closeDetailsButtons = select({ query: '.btn-hide-details' })
@@ -196,7 +196,7 @@ import { getUIText, select } from './ui'
 
   whatThisMeanButtons.forEach((button) => {
     button.addEventListener('click', () => {
-      detailBlocks.forEach((element) => {
+      detailsText.forEach((element) => {
         element.style.display = 'none'
       })
 
@@ -207,7 +207,7 @@ import { getUIText, select } from './ui'
 
   closeDetailsButtons.forEach((closeButton) =>
     closeButton.addEventListener('click', () => {
-      detailBlocks.forEach((block) => {
+      detailsText.forEach((block) => {
         block.style.display = 'none'
       })
 

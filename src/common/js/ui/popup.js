@@ -1,69 +1,58 @@
-import { extractHostnameFromUrl, registry, settings, storage } from '../../../common/js'
+import { extractHostnameFromUrl, proxy, registry, settings, storage } from '..'
+import { getUIText, select } from './ui'
 
 (async () => {
-  const getElementById = (id) => document.getElementById(id)
-  const querySelectorAll = (selector) => document.querySelectorAll(selector)
+  const showTimeout = 50
+  const thisIsFirefox = settings.isFirefox
+  const currentBrowser = settings.getBrowser()
 
-  const statusImage = getElementById('statusImage')
-  const currentDomainHeader = getElementById('currentDomainHeader')
-  const footerTrackerOff = getElementById('footerTrackerOff')
-  const trackerOff = getElementById('trackerOff')
-  const footerTrackerOn = getElementById('footerTrackerOn')
-  const textAboutOri = getElementById('textAboutOri')
-  const oriSiteInfo = getElementById('oriSiteInfo')
-  const restrictionDescription = getElementById('restriction-description')
-  const restrictionType = getElementById('restriction-type')
-  const currentDomainBlocks = document.querySelectorAll('.current-domain')
-  const detailBlocks = document.querySelectorAll('.details-block')
-  const closeDetailsButtons = document.querySelectorAll('.btn-hide-details')
-  const whatThisMeanButtons = document.querySelectorAll('.btn-what-this-mean')
-  const mainPageInfoBlocks = querySelectorAll('.main-page-info')
-  const privateBrowsingPermissionsRequiredButton = getElementById('privateBrowsingPermissionsRequiredButton')
+  const statusImage = select({ id: 'statusImage' })
+  const currentDomainHeader = select({ id: 'currentDomainHeader' })
+  const footerTrackerOff = select({ id: 'footerTrackerOff' })
+  const trackerOff = select({ id: 'trackerOff' })
+  const footerTrackerOn = select({ id: 'footerTrackerOn' })
+  const textAboutOri = select({ id: 'textAboutOri' })
+  const oriSiteInfo = select({ id: 'oriSiteInfo' })
 
-  const popupShowTimeout = 60
+  // TODO: Add these elements back to popup.html
+  const restrictionType = select({ id: 'restriction-type' })
+  const restrictionDescription = select({ id: 'restriction-description' })
 
-  const uiConfig = {
-    ori: {
-      found: {
-        title: 'Является организатором распространения информации',
-        statusIcon: 'images/icons/status/icon_danger.svg',
-        detailsText: 'Сервис может передавать ваши личные данные, в том числе сообщения и весь трафик, ' +
-          'российским государственным органам в автоматическом режиме.',
-        detailsClasses: ['text-warning'],
-      },
-      notFound: {
-        title: 'Не является организатором распространения информации',
-        statusIcon: 'images/icons/status/icon_ok.svg',
-        detailsText: 'Сервисы из реестра ОРИ могут передавать ваши личные данные, в т.ч. сообщения и весь трафик, ' +
-          'государственным органам в автоматическом режиме. Этот сервис не находится в реестре ОРИ.',
-      },
-    },
-    restrictions: {
-      found: {
-        title: 'Запрещён в России',
-        statusIcon: 'images/icons/status/icon_info.svg',
-        detailsText: 'Доступ к сайту запрещён, но Censor Tracker даёт к нему доступ через надёжный прокси.',
-      },
-      notFound: {
-        title: 'Не запрещён в России',
-        statusIcon: 'images/icons/status/icon_ok.svg',
-        detailsText: 'Если доступ к сайту запретят, то Censor Tracker предложит открыть сайт через надёжный прокси.',
-      },
-    },
-  }
+  // Using only in Chromium
+  const controlledOtherExtensionsInfo = select({ id: 'controlledOtherExtensionsInfo' })
+  // Using only in Firefox
+  const privateBrowsingPermissionsRequiredButton = select({ id: 'privateBrowsingPermissionsRequiredButton' })
 
+  const detailBlocks = select({ query: '.details-block' })
+  const mainPageInfoBlocks = select({ query: '.main-page-info' })
+  const currentDomainBlocks = select({ query: '.current-domain' })
+  const closeDetailsButtons = select({ query: '.btn-hide-details' })
+  const whatThisMeanButtons = select({ query: '.btn-what-this-mean' })
+
+  // Firefox Only
   privateBrowsingPermissionsRequiredButton.addEventListener('click', () => {
     window.location.href = 'additional_permissions_required.html'
   })
 
+  // Chromium Only
+  controlledOtherExtensionsInfo.addEventListener('click', () => {
+    window.location.href = 'controlled.html'
+  })
+
+  const proxyControlledByOtherExtensions = await proxy.controlledByOtherExtensions()
+
+  if (!thisIsFirefox && proxyControlledByOtherExtensions) {
+    controlledOtherExtensionsInfo.hidden = false
+  }
+
   const changeStatusImage = (imageName) => {
-    const imageSrc = browser.runtime.getURL(`images/icons/512x512/${imageName}.png`)
+    const imageSrc = currentBrowser.runtime.getURL(`images/icons/512x512/${imageName}.png`)
 
     statusImage.setAttribute('src', imageSrc)
   }
 
   const getAppropriateUrl = (currentUrl) => {
-    const popupUrl = browser.runtime.getURL('popup.html')
+    const popupUrl = currentBrowser.runtime.getURL('popup.html')
 
     if (currentUrl.startsWith(popupUrl)) {
       const currentURLParams = currentUrl.split('?')[1]
@@ -118,24 +107,24 @@ import { extractHostnameFromUrl, registry, settings, storage } from '../../../co
     }
 
     if (event.target.matches('#openOptionsPage')) {
-      await browser.runtime.openOptionsPage()
+      await currentBrowser.runtime.openOptionsPage()
     }
-  })
-
-  const allowedIncognitoAccess = await browser.extension.isAllowedIncognitoAccess()
-  const { privateBrowsingPermissionsRequired } = await storage.get({
-    privateBrowsingPermissionsRequired: false,
   })
 
   const extensionEnabled = await settings.extensionEnabled()
 
-  if (extensionEnabled) {
+  if (extensionEnabled && thisIsFirefox) {
+    const allowedIncognitoAccess = await currentBrowser.extension.isAllowedIncognitoAccess()
+    const { privateBrowsingPermissionsRequired } = await storage.get({
+      privateBrowsingPermissionsRequired: false,
+    })
+
     if (!allowedIncognitoAccess || privateBrowsingPermissionsRequired) {
       privateBrowsingPermissionsRequiredButton.hidden = false
     }
   }
 
-  const [{ url: currentUrl }] = await browser.tabs.query({
+  const [{ url: currentUrl }] = await currentBrowser.tabs.query({
     active: true, lastFocusedWindow: true,
   })
 
@@ -163,11 +152,11 @@ import { extractHostnameFromUrl, registry, settings, storage } from '../../../co
 
     if (urlBlocked) {
       changeStatusImage('blocked')
-      const elements = querySelectorAll('#restrictions [data-render-var]')
+      const elements = select({ query: '#restrictions [data-render-var]' })
 
       for (const element of elements) {
         const renderVar = element.dataset.renderVar
-        const value = uiConfig.restrictions.found[renderVar]
+        const value = getUIText().restrictions.found[renderVar]
 
         if (renderVar === 'statusIcon') {
           element.setAttribute('src', value)
@@ -187,6 +176,20 @@ import { extractHostnameFromUrl, registry, settings, storage } from '../../../co
         showCooperationRefusedMessage()
       } else {
         changeStatusImage('ori')
+        const elements = select({ query: '#ori [data-render-var]' })
+
+        for (const element of elements) {
+          const renderVar = element.dataset.renderVar
+          const value = getUIText().ori.found[renderVar]
+
+          if (renderVar === 'statusIcon') {
+            element.setAttribute('src', value)
+          } else if (renderVar === 'detailsClasses') {
+            element.classList.add(getUIText().ori.found.detailsClasses)
+          } else {
+            element.innerText = value
+          }
+        }
       }
     }
 
@@ -203,7 +206,7 @@ import { extractHostnameFromUrl, registry, settings, storage } from '../../../co
     document.documentElement.style.visibility = 'initial'
   }
 
-  setTimeout(show, popupShowTimeout)
+  setTimeout(show, showTimeout)
 
   whatThisMeanButtons.forEach((button) => {
     button.addEventListener('click', () => {

@@ -5,44 +5,34 @@ import { getUIText, select } from './ui'
   const showTimeout = 50
   const thisIsFirefox = settings.isFirefox
   const currentBrowser = settings.getBrowser()
-
+  const extensionIsOff = select({ id: 'extensionIsOff' })
   const statusImage = select({ id: 'statusImage' })
-  const currentDomainHeader = select({ id: 'currentDomainHeader' })
-  const footerTrackerOff = select({ id: 'footerTrackerOff' })
-  const trackerOff = select({ id: 'trackerOff' })
-  const footerTrackerOn = select({ id: 'footerTrackerOn' })
-  const textAboutOri = select({ id: 'textAboutOri' })
   const oriSiteInfo = select({ id: 'oriSiteInfo' })
-
-  // TODO: Add these elements back to popup.html
+  const textAboutOri = select({ id: 'textAboutOri' })
   const restrictionType = select({ id: 'restrictionType' })
+  const footerExtensionIsOn = select({ id: 'footerExtensionIsOn' })
+  const currentDomainHeader = select({ id: 'currentDomainHeader' })
   const restrictionDescription = select({ id: 'restrictionDescription' })
-
-  // Using only in Chromium
-  const controlledOtherExtensionsInfo = select({ id: 'controlledOtherExtensionsInfo' })
-  // Using only in Firefox
-  const privateBrowsingPermissionsRequiredButton = select({ id: 'privateBrowsingPermissionsRequiredButton' })
-
   const detailBlocks = select({ query: '.details-block' })
   const mainPageInfoBlocks = select({ query: '.main-page-info' })
   const currentDomainBlocks = select({ query: '.current-domain' })
   const closeDetailsButtons = select({ query: '.btn-hide-details' })
   const whatThisMeanButtons = select({ query: '.btn-what-this-mean' })
+  const controlledByOtherExtensionsButton = select({ id: 'controlledByOtherExtensionsButton' })
+  const privateBrowsingPermissionsRequiredButton = select({ id: 'privateBrowsingPermissionsRequiredButton' })
 
-  // Firefox Only
   privateBrowsingPermissionsRequiredButton.addEventListener('click', () => {
     window.location.href = 'additional_permissions_required.html'
   })
 
-  // Chromium Only
-  controlledOtherExtensionsInfo.addEventListener('click', () => {
+  controlledByOtherExtensionsButton.addEventListener('click', () => {
     window.location.href = 'controlled.html'
   })
 
   const proxyControlledByOtherExtensions = await proxy.controlledByOtherExtensions()
 
   if (!thisIsFirefox && proxyControlledByOtherExtensions) {
-    controlledOtherExtensionsInfo.hidden = false
+    controlledByOtherExtensionsButton.hidden = false
   }
 
   const changeStatusImage = (imageName) => {
@@ -64,16 +54,6 @@ import { getUIText, select } from './ui'
     return currentUrl
   }
 
-  const renderCurrentDomain = ({ length }) => {
-    if (length >= 22 && length < 25) {
-      currentDomainHeader.style.fontSize = '17px'
-    } else if (length >= 25) {
-      currentDomainHeader.style.fontSize = '15px'
-    }
-    currentDomainHeader.classList.add('title-normal')
-    currentDomainHeader.removeAttribute('hidden')
-  }
-
   const showCooperationRefusedMessage = () => {
     oriSiteInfo.innerText = 'Сервис заявил, что они не передают трафик российским ' +
       'государственным органам в автоматическом режиме.'
@@ -85,8 +65,7 @@ import { getUIText, select } from './ui'
 
   const hideControlElements = () => {
     changeStatusImage('disabled')
-    trackerOff.hidden = false
-    footerTrackerOff.hidden = false
+    extensionIsOff.hidden = false
     mainPageInfoBlocks.forEach((element) => {
       element.hidden = true
     })
@@ -138,8 +117,15 @@ import { getUIText, select } from './ui'
 
   if (extensionEnabled) {
     changeStatusImage('normal')
-    renderCurrentDomain(currentHostname)
-    footerTrackerOn.removeAttribute('hidden')
+
+    if (currentHostname.length >= 22 && currentHostname.length < 25) {
+      currentDomainHeader.style.fontSize = '17px'
+    } else if (currentHostname.length >= 25) {
+      currentDomainHeader.style.fontSize = '15px'
+    }
+    currentDomainHeader.classList.add('title-normal')
+    currentDomainHeader.removeAttribute('hidden')
+    footerExtensionIsOn.removeAttribute('hidden')
 
     const urlBlocked = await registry.contains(currentHostname)
 

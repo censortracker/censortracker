@@ -77,6 +77,10 @@ class Asynchrome {
         ns: this.chrome.runtime,
         fn: 'getBackgroundPage',
       }, ...args),
+      openOptionsPage: (...args) => promisify({
+        ns: this.chrome.runtime,
+        fn: 'openOptionsPage',
+      }, ...args),
     }
     this.tabs = {
       create: (...args) => promisify({

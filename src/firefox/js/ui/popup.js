@@ -17,6 +17,7 @@ import { extractHostnameFromUrl, registry, settings, storage } from '../../../co
   const detailBlocks = document.querySelectorAll('.details-block')
   const closeDetailsButtons = document.querySelectorAll('.btn-hide-details')
   const whatThisMeanButtons = document.querySelectorAll('.btn-what-this-mean')
+  const mainPageInfoBlocks = querySelectorAll('.main-page-info')
   const privateBrowsingPermissionsRequiredButton = getElementById('privateBrowsingPermissionsRequiredButton')
 
   const popupShowTimeout = 60
@@ -97,6 +98,9 @@ import { extractHostnameFromUrl, registry, settings, storage } from '../../../co
     changeStatusImage('disabled')
     trackerOff.hidden = false
     footerTrackerOff.hidden = false
+    mainPageInfoBlocks.forEach((element) => {
+      element.hidden = true
+    })
   }
 
   document.addEventListener('click', async (event) => {
@@ -107,6 +111,9 @@ import { extractHostnameFromUrl, registry, settings, storage } from '../../../co
 
     if (event.target.matches('#disableExtension')) {
       await settings.disableExtension()
+      mainPageInfoBlocks.forEach((element) => {
+        element.hidden = true
+      })
       window.location.reload()
     }
 

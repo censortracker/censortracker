@@ -1,22 +1,20 @@
 const getElementById = (id) => document.getElementById(id)
+const querySelectorAll = (selector) => document.querySelectorAll(selector)
 
 const statusImage = getElementById('statusImage')
 const currentDomainHeader = getElementById('currentDomainHeader')
 const footerTrackerOff = getElementById('footerTrackerOff')
 const trackerOff = getElementById('trackerOff')
-const isOriBlock = getElementById('isOriBlock')
-const isNotOriBlock = getElementById('isNotOriBlock')
-const restrictionsApplied = getElementById('restrictionsApplied')
-const restrictionsAreNotApplied = getElementById('restrictionsAreNotApplied')
 const footerTrackerOn = getElementById('footerTrackerOn')
 const textAboutOri = getElementById('textAboutOri')
 const oriSiteInfo = getElementById('oriSiteInfo')
-const currentDomainBlocks = document.querySelectorAll('.current-domain')
 const restrictionDescription = getElementById('restriction-description')
 const restrictionType = getElementById('restriction-type')
+const currentDomainBlocks = document.querySelectorAll('.current-domain')
 const detailBlocks = document.querySelectorAll('.details-block')
 const closeDetailsButtons = document.querySelectorAll('.btn-hide-details')
 const whatThisMeanButtons = document.querySelectorAll('.btn-what-this-mean')
+const mainPageInfoBlocks = querySelectorAll('.main-page-info')
 const controlledOtherExtensionsInfo = document.getElementById('controlledOtherExtensionsInfo')
 const popupShowTimeout = 60
 
@@ -25,6 +23,36 @@ controlledOtherExtensionsInfo.addEventListener('click', () => {
 })
 
 chrome.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
+  const uiConfig = {
+    ori: {
+      found: {
+        title: 'Является организатором распространения информации',
+        statusIcon: 'images/icons/status/icon_danger.svg',
+        detailsText: 'Сервис может передавать ваши личные данные, в том числе сообщения и весь трафик, ' +
+          'российским государственным органам в автоматическом режиме.',
+        detailsClasses: ['text-warning'],
+      },
+      notFound: {
+        title: 'Не является организатором распространения информации',
+        statusIcon: 'images/icons/status/icon_ok.svg',
+        detailsText: 'Сервисы из реестра ОРИ могут передавать ваши личные данные, в т.ч. сообщения и весь трафик, ' +
+          'государственным органам в автоматическом режиме. Этот сервис не находится в реестре ОРИ.',
+      },
+    },
+    restrictions: {
+      found: {
+        title: 'Запрещён в России',
+        statusIcon: 'images/icons/status/icon_info.svg',
+        detailsText: 'Доступ к сайту запрещён, но Censor Tracker даёт к нему доступ через надёжный прокси.',
+      },
+      notFound: {
+        title: 'Не запрещён в России',
+        statusIcon: 'images/icons/status/icon_ok.svg',
+        detailsText: 'Если доступ к сайту запретят, то Censor Tracker предложит открыть сайт через надёжный прокси.',
+      },
+    },
+  }
+
   const { asynchrome, registry, proxy, storage } = bgModules
 
   await addExtensionControlListeners(bgModules)
@@ -51,19 +79,33 @@ chrome.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
 
   if (enableExtension) {
     changeStatusImage('normal')
-    renderCurrentDomain(currentHostname)
+
+    if (currentHostname.length >= 22 && currentHostname.length < 25) {
+      currentDomainHeader.style.fontSize = '17px'
+    } else if (currentHostname.length >= 25) {
+      currentDomainHeader.style.fontSize = '15px'
+    }
+    currentDomainHeader.classList.add('title-normal')
+    currentDomainHeader.removeAttribute('hidden')
+
     footerTrackerOn.removeAttribute('hidden')
 
     const urlBlocked = await registry.contains(currentHostname)
 
     if (urlBlocked) {
       changeStatusImage('blocked')
-      restrictionsApplied.removeAttribute('hidden')
-      restrictionsAreNotApplied.remove()
-    } else {
-      restrictionsAreNotApplied.removeAttribute('hidden')
-      restrictionsApplied.remove()
-      changeStatusImage('normal')
+      const elements = querySelectorAll('#restrictions [data-render-var]')
+
+      for (const element of elements) {
+        const renderVar = element.dataset.renderVar
+        const value = uiConfig.restrictions.found[renderVar]
+
+        if (renderVar === 'statusIcon') {
+          element.setAttribute('src', value)
+        } else {
+          element.innerText = value
+        }
+      }
     }
 
     const { url: distributorUrl, cooperationRefused } =
@@ -71,8 +113,6 @@ chrome.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
 
     if (distributorUrl) {
       currentDomainHeader.classList.add('title-ori')
-      isOriBlock.removeAttribute('hidden')
-      isNotOriBlock.remove()
 
       if (cooperationRefused) {
         showCooperationRefusedMessage()
@@ -81,8 +121,6 @@ chrome.runtime.getBackgroundPage(async ({ censortracker: bgModules }) => {
         console.warn('Cooperation accepted!')
       }
     } else {
-      isNotOriBlock.removeAttribute('hidden')
-      isOriBlock.remove()
       console.log('Match not found at all')
     }
 
@@ -117,6 +155,9 @@ const addExtensionControlListeners = async ({ settings }) => {
 
     if (event.target.matches('#disableExtension')) {
       settings.disableExtension()
+      mainPageInfoBlocks.forEach((element) => {
+        element.hidden = true
+      })
       window.location.reload()
     }
 
@@ -146,16 +187,6 @@ const getAppropriateURL = (currentURL) => {
   return new URL(currentURL)
 }
 
-const renderCurrentDomain = ({ length }) => {
-  if (length >= 22 && length < 25) {
-    currentDomainHeader.style.fontSize = '17px'
-  } else if (length >= 25) {
-    currentDomainHeader.style.fontSize = '15px'
-  }
-  currentDomainHeader.classList.add('title-normal')
-  currentDomainHeader.removeAttribute('hidden')
-}
-
 const showCooperationRefusedMessage = () => {
   oriSiteInfo.innerText = 'Сервис заявил, что они не передают трафик российским ' +
     'государственным органам в автоматическом режиме.'
@@ -169,10 +200,9 @@ const hideControlElements = () => {
   changeStatusImage('disabled')
   trackerOff.hidden = false
   footerTrackerOff.hidden = false
-  isOriBlock.hidden = true
-  restrictionsApplied.hidden = true
-  isNotOriBlock.hidden = true
-  restrictionsAreNotApplied.hidden = true
+  mainPageInfoBlocks.forEach((element) => {
+    element.hidden = true
+  })
 }
 
 whatThisMeanButtons.forEach((button) => {

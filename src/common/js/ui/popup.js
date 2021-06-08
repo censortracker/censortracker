@@ -42,19 +42,6 @@ import { getUIText, select } from './ui'
     statusImage.setAttribute('src', imageSrc)
   }
 
-  const extractURLFromQueryParams = (currentUrl) => {
-    const popupUrl = currentBrowser.runtime.getURL('popup.html')
-
-    if (currentUrl.startsWith(popupUrl)) {
-      const currentURLParams = currentUrl.split('?')[1]
-      const searchParams = new URLSearchParams(currentURLParams)
-      const encodedUrl = searchParams.get('loadFor')
-
-      return window.atob(encodedUrl)
-    }
-    return currentUrl
-  }
-
   document.addEventListener('click', async (event) => {
     if (event.target.matches('#enableExtension')) {
       await settings.enableExtension()
@@ -91,9 +78,7 @@ import { getUIText, select } from './ui'
     active: true, lastFocusedWindow: true,
   })
 
-  const currentHostname = extractHostnameFromUrl(
-    extractURLFromQueryParams(currentUrl),
-  )
+  const currentHostname = extractHostnameFromUrl(currentUrl)
 
   currentDomainBlocks.forEach((element) => {
     element.innerText = currentHostname

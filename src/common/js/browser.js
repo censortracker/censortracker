@@ -26,12 +26,13 @@ const isFirefox = () => {
   }
 }
 
-export const IS_FIREFOX = isFirefox()
-
 export class BrowserAPI {
   constructor () {
     this.browser = getBrowser()
     this.isFirefox = isFirefox()
+    this.isChromium = !this.isFirefox
     this.manifest = this.browser.runtime.getManifest()
   }
+
+  getBrowser = () => this.browser
 }

@@ -75,7 +75,11 @@ class Settings extends BrowserAPI {
   }
 
   enableExtension = async () => {
-    const useProxy = await this.browser.extension.isAllowedIncognitoAccess()
+    let useProxy = true
+
+    if (this.isFirefox) {
+      useProxy = await this.browser.extension.isAllowedIncognitoAccess()
+    }
 
     await this.changeExtensionState({
       useProxy,

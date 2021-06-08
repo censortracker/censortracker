@@ -223,16 +223,16 @@
   "installedPageDesc": {
     "message": "Закрепите расширение в&nbsp;панели браузера в&nbsp;два клика, чтобы всегда быть в&nbsp;курсе, какие сайты могут передавать ваши сообщения, личные данные и&nbsp;весь трафик третьим лицам."
   },
-  "additionalPermissionsRequiredPageHeadTitle": {
+  "permissionsPageHeadTitle": {
     "message": "Разрешите работу расширения в приватных окнах"
   },
-  "additionalPermissionsRequiredPageDesc": {
+  "permissionsPageDesc": {
     "message": "Чтобы мы могли открывать для вас заблокриванные сайты через прокси. В Firefox без этого никак."
   },
-  "additionalPermissionsRequiredPageHowToGrant": {
+  "permissionsPageHowToGrant": {
     "message": "Как это сделать"
   },
-  "additionalPermissionsRequiredPageGranted": {
+  "permissionsPageGranted": {
     "message": "Я разрешил, включите прокси"
   }
 }

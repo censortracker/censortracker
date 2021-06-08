@@ -165,13 +165,7 @@ import { getUIText, select } from './ui'
     })
   }
 
-  const show = () => {
-    document.documentElement.style.visibility = 'initial'
-  }
-
-  setTimeout(show, showTimeout)
-
-  whatThisMeanButtons.forEach((button) => {
+  for (const button of whatThisMeanButtons) {
     button.addEventListener('click', () => {
       detailsText.forEach((element) => {
         element.style.display = 'none'
@@ -180,9 +174,9 @@ import { getUIText, select } from './ui'
       button.style.display = 'none'
       button.nextSibling.style.display = 'block'
     })
-  })
+  }
 
-  closeDetailsButtons.forEach((closeButton) =>
+  for (const closeButton of closeDetailsButtons) {
     closeButton.addEventListener('click', () => {
       detailsText.forEach((block) => {
         block.style.display = 'none'
@@ -191,6 +185,12 @@ import { getUIText, select } from './ui'
       whatThisMeanButtons.forEach((button) => {
         button.style.display = 'flex'
       })
-    }),
-  )
+    })
+  }
+
+  const show = () => {
+    document.documentElement.style.visibility = 'initial'
+  }
+
+  setTimeout(show, showTimeout)
 })()

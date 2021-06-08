@@ -117,10 +117,10 @@ const webpackConfig = {
           from: resolve('src/common/css'),
           to: resolve(`dist/${BROWSER}/${OUTPUT_SUB_DIR}/css`),
         },
-        {
-          from: resolve('src/common/_locales/'),
-          to: resolve(`dist/${BROWSER}/${OUTPUT_SUB_DIR}/_locales`),
-        },
+        // {
+        //   from: resolve('src/common/_locales/'),
+        //   to: resolve(`dist/${BROWSER}/${OUTPUT_SUB_DIR}/_locales`),
+        // },
       ],
     }),
     new HTMLWebpackPlugin({

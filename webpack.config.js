@@ -33,7 +33,7 @@ const updateVersionInManifest = () => {
 
   const [major, minor, patch] = object.version.split('.')
 
-  object['version'] = `${major}.${minor}.${parseInt(patch) + 1}`
+  object.version = `${major}.${minor}.${parseInt(patch) + 1}`
   fs.writeFileSync(manifestFile, JSON.stringify(object, null, '  '))
 }
 
@@ -47,7 +47,7 @@ const webpackConfig = {
   entry: {
     background: `./src/${BROWSER}/js/background.js`,
     unavailable: `./src/${BROWSER}/js/ui/unavailable.js`,
-    popup: `./src/${BROWSER}/js/ui/popup.js`,
+    popup: `./src/common/js/ui/popup.js`,
     options: './src/common/js/ui/options.js',
     proxy_options: './src/common/js/ui/proxy_options.js',
     proxy_disabled: `./src/${BROWSER}/js/ui/proxy_disabled.js`,

@@ -225,7 +225,7 @@ a {
 }
 
 .footer,
-.another_extension {
+.footer-btn {
   background: #f4f4f4;
   font-size: 13px;
   line-height: 20px;
@@ -261,18 +261,18 @@ a {
   margin: 0 auto;
 }
 
-.another_extension {
+.footer-btn {
   margin-bottom: 1px;
   padding: 15px 24px 15px 20px;
 }
 
-.another_extension > div:hover {
+.footer-btn > div:hover {
   cursor: pointer;
   color: #625c55;
 }
 
-.another_extension > div:active,
-.another_extension > div:focus {
+.footer-btn > div:active,
+.footer-btn > div:focus {
   color: #2a251f;
 }
 

@@ -17,11 +17,29 @@ export const isValidURL = (url) => {
 }
 
 /**
+ * Extract URL from params.
+ * @param url URL.
+ * @returns {string|*}
+ */
+const extractURLFromQueryParams = (url) => {
+  if (url.startsWith('moz-extension:') || url.startsWith('chrome-extension:')) {
+    const urlParams = url.split('?')[1]
+    const searchParams = new URLSearchParams(urlParams)
+    const encodedUrl = searchParams.get('loadFor')
+
+    return window.atob(encodedUrl)
+  }
+  return url
+}
+
+/**
  * Extract hostname from the URL address.
  * @param url URL string.
  * @returns {string} Extracted hostname.
  */
 export const extractHostnameFromUrl = (url) => {
+  url = extractURLFromQueryParams(url)
+
   url = url.trim().replace('www.', '')
   try {
     return new URL(url).hostname

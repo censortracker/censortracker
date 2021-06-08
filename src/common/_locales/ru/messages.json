@@ -1,6 +1,238 @@
 {
-  "testTitle": {
-    "message": "Works great!",
-    "description": "Test"
+  "popupORITitle": {
+    "message": "Является организатором распространения информации"
+  },
+  "popupNotORITitle": {
+    "message": "Не является организатором распространения информации"
+  },
+  "popupNotOriDesc": {
+    "message": "Сервисы из реестра ОРИ могут передавать ваши личные данные, в т.ч. сообщения и весь трафик, государственным органам в автоматическом режиме. Этот сервис не находится в реестре ОРИ."
+  },
+  "popupORIDesc": {
+    "message": "Сервис может передавать ваши личные данные, в том числе сообщения и весь трафик российским государственным органам в автоматическом режиме"
+  },
+  "popupCooperationRefused": {
+    "message": "Сервис заявил, что они не передают трафик российским государственным органам в автоматическом режиме."
+  },
+  "popupRestrictedTitle": {
+    "message": "Запрещён в России"
+  },
+  "popupNoRestrictionsTitle": {
+    "message": "Не запрещён в России"
+  },
+  "popupNoRestrictionsDesc": {
+    "message": "Доступ к сайту запрещён, но Censor Tracker даёт к нему доступ через надёжный прокси."
+  },
+  "popupNoRestrictedDesc": {
+    "message": "Если доступ к сайту запретят, то Censor Tracker предложит открыть сайт через надёжный прокси."
+  },
+  "popupSiteIsUnavailable": {
+    "message": "Сайт недоступен"
+  },
+  "popupControlledByOtherExtensions": {
+    "message": "Другое расширение контролирует прокси. Подробнее &rarr;"
+  },
+  "popupPrivateBrowsingPermissionsRequired": {
+    "message": "Прокси отключён. Требуется разрешение на работу в приватных окнах &rarr;"
+  },
+  "popupWhatThisMean": {
+    "message": "что это значит"
+  },
+  "popupExtensionIsOff": {
+    "message": "Censor Tracker выключен"
+  },
+  "popupIsTurnedOn": {
+    "message": "включен"
+  },
+  "popupOkay": {
+    "message": "Ясно"
+  },
+  "popupReadMore": {
+    "message": "Подробнее"
+  },
+  "ignoreHeadTitle": {
+    "message": "Игнорируемые сайты"
+  },
+  "ignoreDesc": {
+    "message": "Адреса, которые всегда будут игнорироваться Censor Tracker. Может помочь, если есть проблемы с открытием сайта. Каждый адрес с новой строки."
+  },
+  "ignoreAutosaveTip": {
+    "message": "Изменения автоматически сохраняются при нажатии <code>Enter</code> или <code>Backspace</code>."
+  },
+  "optionsHeadTitle": {
+    "message": "Настройки расширения Censor Tracker"
+  },
+  "optionsProxySettings": {
+    "message": "Настройки прокси"
+  },
+  "optionsProxySettingsDesc": {
+    "message": "Если сайт заблокирован, то Censor Tracker предоставит к нему доступ. Отключитье эту настройку, если вы пользуетесь другим сервисом для обхода блокировок (например, VPN), чтобы увеличить скорость соединения."
+  },
+  "optionsPrivateBrowsingRequiredTitle": {
+    "message": "Разрешите работу расширения в приватных окнах"
+  },
+  "optionsPrivateBrowsingRequiredDesc": {
+    "message": "Чтобы мы могли открывать для вас заблокриванные сайты через прокси. В Firefox без этого никак."
+  },
+  "optionsHowToGrantPrivateBrowsingPermissions": {
+    "message": "Как это сделать"
+  },
+  "optionsPrivateBrowsingPermissionsGranted": {
+    "message": "Я разрешил, включите прокси"
+  },
+  "optionsIgnoredWebsites": {
+    "message": "Игнорируемые сайты"
+  },
+  "optionsIgnoredWebsitesDesc": {
+    "message": "Адреса, для которых прокси всегда будет отключён. Может помочь, если есть проблемы с открытием сайта."
+  },
+  "optionsShowNotifications": {
+    "message": "Показывать системные уведомления"
+  },
+  "optionsShowNotificationsDesc": {
+    "message": "Предупредим, когда какой-то сайт передаёт ваши сообщения, личные данные и весь трафик третьим лицам в автоматическом режиме."
+  },
+  "optionsAbout": {
+    "message": "О расширении"
+  },
+  "proxyDisabledHeadTitle": {
+    "message": "Сайт недоступен или заблокирован"
+  },
+  "proxyDisabledDesc": {
+    "message": "Вы отключили обход блокировок сайтов с помощью Censor Tracker, но <b id=\"unavailableWebsite\">$details$</b> недоступен. Попробовать открыть его через прокси Censor Tracker?",
+    "placeholders": {
+      "details": {
+        "content": "$1"
+      }
+    }
+  },
+  "proxyDisabledOpenThroughProxy": {
+    "message": "Окрыть через прокси"
+  },
+  "proxyDisabledDoNotAskAnymore": {
+    "message": "Больше не предлагать"
+  },
+  "proxyOptionsHeadTitle": {
+    "message": "Настройки прокси"
+  },
+  "proxyOptionsUseProxy": {
+    "message": "Использовать прокси"
+  },
+  "proxyOptionsUseProxyDesc": {
+    "message": "Если сайт заблокирован, то Censor Tracker предоставит к нему доступ. Отключите эту настройку, если вы пользуетесь другим сервисом для обхода блокировок (например, VPN), чтобы увеличить скорость соединения."
+  },
+  "proxyOptionsUseDefaultProxy": {
+    "message": "Прокси CensorTracker"
+  },
+  "proxyOptionsHostname": {
+    "message": "Адрес прокси-сервера"
+  },
+  "proxyOptionsPort": {
+    "message": "Порт"
+  },
+  "proxyOptionsControlledByOtherExtensionTitle": {
+    "message": "Сейчас другое расширение &laquo;<div class=\"extension__name\">$details$</div>&raquo; контролирует ваши настройки прокси",
+    "placeholders": {
+      "details": {
+        "content": "$1"
+      }
+    }
+  },
+  "proxyOptionsControlledByOtherExtensionDesc": {
+    "message": "Для нормальной работы CensorTracker, отключите &laquo;<div class=\"extension__name\">$details$</div>&raquo; в настройках браузера.",
+    "placeholders": {
+      "details": {
+        "content": "$1"
+      }
+    }
+  },
+  "proxyOptionsControlledByOtherExtensionsTitle": {
+    "message": "Другие расширения контролируют ваши настройки прокси в браузере"
+  },
+  "proxyOptionsControlledByOtherExtensionsDesc": {
+    "message": "Для нормальной работы CensorTracker, отключите следующие расширения в настройках браузера:"
+  },
+  "proxyOptionsDisableAll": {
+    "message": "Отключить все"
+  },
+  "proxyUnavailableHeadTitle": {
+    "message": "Не удалось открыть сайт через прокси Censor Tracker"
+  },
+  "proxyUnavailableDesc": {
+    "message": "Не удалось открыть сайт <b id=\"unavailableWebsite\">$details$</b>. Мы работаем над исправлением проблемы, попробуйте открыть сайт позже.",
+    "placeholders": {
+      "details": {
+        "content": "$1"
+      }
+    }
+  },
+  "proxyUnavailableCloseTab": {
+    "message": "Закрыть вкладку"
+  },
+  "proxyUnavailableTryAgain": {
+    "message": "Попробовать еще раз"
+  },
+  "unavailablePageHeadTitle": {
+    "message": "Сайт недоступен или заблокирован в России"
+  },
+  "unavailablePageDesc": {
+    "message": "Не удалось открыть сайт <b id=\"unavailableWebsite\">$details$</b>. Попробовать открыть его через прокси Censor Tracker?",
+    "placeholders": {
+      "details": {
+        "content": "$1"
+      }
+    }
+  },
+  "unavailablePageOpenThroughProxy": {
+    "message": "Открыть через прокси"
+  },
+  "unavailablePageCloseTab": {
+    "message": "Закрыть вкладку"
+  },
+  "controlledPageControlledByOtherExtensionHeadTitle": {
+    "message": "Расширение &laquo;<div class=\"extension__name\">$details$</div>&raquo; контролирует ваши настройки прокси в браузере",
+    "placeholders": {
+      "details": {
+        "content": "$1"
+      }
+    }
+  },
+  "controlledPageControlledByOtherExtensionDesc": {
+    "message": "Для нормальной работы CensorTracker, отключите &laquo;<div class=\"extension__name\">$details$</div>&raquo; в настройках браузера.",
+    "placeholders": {
+      "details": {
+        "content": "$1"
+      }
+    }
+  },
+  "controlledPageControlledByOtherExtensionDisable": {
+    "message": "Отключить"
+  },
+  "controlledPageControlledByOtherExtensions": {
+    "message": "Другие расширения контролируют ваши настройки прокси в браузере"
+  },
+  "controlledPageControlledByOtherExtensionsDesc": {
+    "message": "Для нормальной работы CensorTracker, отключите следующие расширения в настройках браузера:"
+  },
+  "controlledPageDisableAll": {
+    "message": "Отключить все"
+  },
+  "installedPageHeadTitle": {
+    "message": "Спасибо!"
+  },
+  "installedPageDesc": {
+    "message": "Закрепите расширение в&nbsp;панели браузера в&nbsp;два клика, чтобы всегда быть в&nbsp;курсе, какие сайты могут передавать ваши сообщения, личные данные и&nbsp;весь трафик третьим лицам."
+  },
+  "additionalPermissionsRequiredPageHeadTitle": {
+    "message": "Разрешите работу расширения в приватных окнах"
+  },
+  "additionalPermissionsRequiredPageDesc": {
+    "message": "Чтобы мы могли открывать для вас заблокриванные сайты через прокси. В Firefox без этого никак."
+  },
+  "additionalPermissionsRequiredPageHowToGrant": {
+    "message": "Как это сделать"
+  },
+  "additionalPermissionsRequiredPageGranted": {
+    "message": "Я разрешил, включите прокси"
   }
 }

@@ -1,9 +1,9 @@
 import { extractHostnameFromUrl, proxy, registry, settings, storage } from '..'
-import { getUIText, select } from './ui'
+import { getTranslatedPopupText, select } from './ui'
 
 (async () => {
   const showTimeout = 50
-  const uiText = getUIText()
+  const uiText = getTranslatedPopupText()
   const thisIsFirefox = settings.isFirefox
   const currentBrowser = settings.getBrowser()
   const statusImage = select({ id: 'statusImage' })
@@ -81,7 +81,11 @@ import { getUIText, select } from './ui'
   const currentHostname = extractHostnameFromUrl(currentUrl)
 
   currentDomainBlocks.forEach((element) => {
-    element.innerText = currentHostname
+    if (currentHostname) {
+      element.innerText = currentHostname
+    } else {
+      element.innerText = uiText.siteIsUnavailable
+    }
   })
 
   if (extensionEnabled) {
@@ -104,7 +108,7 @@ import { getUIText, select } from './ui'
 
       for (const element of elements) {
         const renderVar = element.dataset.renderVar
-        const value = getUIText().restrictions.found[renderVar]
+        const value = uiText.restrictions.found[renderVar]
 
         if (renderVar === 'statusIcon') {
           element.setAttribute('src', value)

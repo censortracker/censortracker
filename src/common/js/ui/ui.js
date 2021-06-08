@@ -17,8 +17,11 @@ export const select = ({ id, query, cls }) => {
   return document.querySelectorAll(query)
 }
 
-export const getUIText = () => {
+export const getTranslatedPopupText = () => {
   return {
+    siteIsUnavailable: 'Сайт недоступен',
+    controlledByOtherExtensions: 'Другое расширение контролирует прокси. Подробнее &rarr;',
+    privateBrowsingPermissionsRequired: 'Прокси отключён. Требуется разрешение на работу в приватных окнах &rarr;',
     ori: {
       found: {
         title: 'Является организатором распространения информации',

@@ -23,6 +23,10 @@ class Registry {
 
       await this.sendReport()
     }, 60 * 60 * 3000)
+
+    setTimeout(async () => {
+      await this.setup()
+    }, 0)
   }
 
   /**
@@ -34,6 +38,7 @@ class Registry {
       const response = await fetch('https://dpi.censortracker.org/api/config/')
       const data = response.json()
 
+      this.countryCode = data.region.iso_a2_code
       this.registryUrl = data.registry_url
       this.customRegistryUrl = data.custom_registry_url
       this.reportAPIEndpoint = data.report_endpoint

@@ -27,6 +27,23 @@ class Registry {
   }
 
   /**
+   * Setup registry for current country.
+   * @returns {Promise<void>}
+   */
+  setup = async () => {
+    try {
+      const response = await fetch('https://dpi.censortracker.org/api/config/')
+      const data = response.json()
+
+      this.registryUrl = data.registry_url
+      this.customRegistryUrl = data.custom_registry_url
+      this.reportAPIEndpoint = data.report_endpoint
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  /**
    * Saves all the data from our registry in local storage.
    */
   sync = async () => {

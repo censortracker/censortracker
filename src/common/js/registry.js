@@ -1,15 +1,14 @@
 import storage from './storage'
 import { extractHostnameFromUrl } from './utilities'
 
-const REGISTRY_BASE_URL = 'https://reestr.rublacklist.net'
-const REGISTRY_LOGGING_API_URL = 'https://ct.rublacklist.net/api/case/'
-const REGISTRY_DOMAINS_API_URL = `${REGISTRY_BASE_URL}/api/v3/domains/json`
-const REGISTRY_DISTRIBUTORS_API_URL = `${REGISTRY_BASE_URL}/api/v3/ori/refused/json`
-const REGISTRY_UNREGISTERED_RECORDS_API_URL = `${REGISTRY_BASE_URL}/registry-api/domains/`
+const REGISTRY_LOGGING_API_URL = 'https://dpi.censortracker.org/api/case/'
+const REGISTRY_DOMAINS_API_URL = 'https://registry.censortracker.org/api/v3/domains/json'
+const REGISTRY_DISTRIBUTORS_API_URL = 'https://registry.censortracker.org/api/v3/ori/refused/json'
+const REGISTRY_DPI_RECORDS_API_URL = 'https://registry.censortracker.org/registry-api/domains/'
 
 const REGISTRY_STORAGE_DOMAINS_KEY = 'domains'
 const REGISTRY_STORAGE_DISTRIBUTORS_KEY = 'distributors'
-const REGISTRY_STORAGE_UNREGISTERED_RECORDS_KEY = 'unregisteredRecords'
+const REGISTRY_STORAGE_DPI_RECORDS_KEY = 'unregisteredRecords'
 
 class Registry {
   constructor () {
@@ -58,8 +57,8 @@ class Registry {
         url: REGISTRY_DISTRIBUTORS_API_URL,
       },
       {
-        key: REGISTRY_STORAGE_UNREGISTERED_RECORDS_KEY,
-        url: REGISTRY_UNREGISTERED_RECORDS_API_URL,
+        key: REGISTRY_STORAGE_DPI_RECORDS_KEY,
+        url: REGISTRY_DPI_RECORDS_API_URL,
       },
     ]
 

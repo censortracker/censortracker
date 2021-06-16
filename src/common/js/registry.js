@@ -91,22 +91,11 @@ class Registry {
         const jsonData = await response.json()
 
         await storage.set({ [storageKey]: jsonData })
+        console.log(await storage.get({ [storageKey]: null }))
       } catch (error) {
         console.error(`Error on fetching data from the API endpoint: ${url}`)
       }
     }
-
-    const { domains, distributors } = await storage.get({
-      domains: [],
-      distributors: [],
-    })
-
-    if (domains.length === 0 || distributors.length === 0) {
-      console.log('Database is empty. Trying to sync...')
-      await this.sync()
-    }
-
-    await storage.set({ timestamp: new Date().getTime() })
     return true
   }
 

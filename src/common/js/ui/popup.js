@@ -192,6 +192,12 @@ import { getTranslatedPopupText, select } from './ui'
     })
   }
 
+  const { countryDetails: { isoA2Code } } = await registry.getConfig()
+
+  if (isoA2Code !== 'RU') {
+    // TODO: Fix me
+  }
+
   const show = () => {
     document.documentElement.style.visibility = 'initial'
   }

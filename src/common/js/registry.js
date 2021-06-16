@@ -16,6 +16,14 @@ class Registry {
     }, 60 * 60 * 1000)
 
     setInterval(async () => {
+      const { domains } = await storage.get({ domains: [] })
+
+      if (domains.length === 0) {
+        await this.sync()
+      }
+    }, 60 * 60 * 400)
+
+    setInterval(async () => {
       this.cachedConfig = undefined
       console.log('Registry: cached config removed!')
     }, 60 * 60 * 500)

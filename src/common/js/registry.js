@@ -1,28 +1,17 @@
 import storage from './storage'
 import { extractHostnameFromUrl } from './utilities'
 
-const REGISTRY_LOGGING_API_URL = 'https://dpi.censortracker.org/api/case/'
-const REGISTRY_DOMAINS_API_URL = 'https://registry.censortracker.org/api/v3/domains/json'
-const REGISTRY_DISTRIBUTORS_API_URL = 'https://registry.censortracker.org/api/v3/ori/refused/json'
-const REGISTRY_DPI_RECORDS_API_URL = 'https://registry.censortracker.org/registry-api/domains/'
-
-const REGISTRY_STORAGE_DOMAINS_KEY = 'domains'
-const REGISTRY_STORAGE_DISTRIBUTORS_KEY = 'distributors'
-const REGISTRY_STORAGE_DPI_RECORDS_KEY = 'unregisteredRecords'
+const BACKEND_CONFIG_API_URL = 'https://dpi.censortracker.org/api/config/'
 
 class Registry {
   constructor () {
     setInterval(async () => {
-      const day = new Date().getDate()
-      const cleaningDays = [5, 15, 20, 25, 30]
-
-      if (cleaningDays.includes(day)) {
-        await storage.set({ blockedDomains: [] })
-        console.warn('Outdated domains has been removed.')
-      }
-
       await this.sendReport()
     }, 60 * 60 * 3000)
+
+    setInterval(async () => {
+      await this.cleanLocalRegistry()
+    }, 60 * 60 * 1000)
 
     setTimeout(async () => {
       await this.setup()
@@ -30,18 +19,44 @@ class Registry {
   }
 
   /**
-   * Setup registry for current country.
+   * Clean local registry by schedule.
+   * @returns {Promise<void>}
+   */
+  cleanLocalRegistry = async () => {
+    const day = new Date().getDate()
+    const cleaningDays = [5, 15, 20, 25, 30]
+
+    if (cleaningDays.includes(day)) {
+      await storage.set({ blockedDomains: [] })
+      console.warn('Outdated domains has been removed.')
+    }
+  }
+
+  /**
+   * Fetch config for the user's country from the server (GeoIP).
+   * If the config for the country is not present then local registry
+   * of restricted websites will be empty.
    * @returns {Promise<void>}
    */
   setup = async () => {
     try {
-      const response = await fetch('https://dpi.censortracker.org/api/config/')
-      const data = response.json()
+      const response = await fetch(BACKEND_CONFIG_API_URL)
 
-      this.countryCode = data.region.iso_a2_code
-      this.registryUrl = data.registry_url
-      this.customRegistryUrl = data.custom_registry_url
-      this.reportAPIEndpoint = data.report_endpoint
+      if (response.status === 200) {
+        const { registryUrl, customRegistryUrl, reportEndpoint, specifics } = response.json()
+
+        this.registryUrl = registryUrl
+        this.customRegistryUrl = customRegistryUrl
+        this.reportEndpoint = reportEndpoint
+
+        if (specifics) {
+          const { cooperationRefusedORIUrl } = specifics
+
+          this.cooperationRefusedORIUrl = cooperationRefusedORIUrl
+        }
+      } else {
+        console.log('CensorTracker do not supports your country')
+      }
     } catch (error) {
       console.error(error)
     }
@@ -54,16 +69,16 @@ class Registry {
     console.warn('Synchronizing local database with registry...')
     const apis = [
       {
-        key: REGISTRY_STORAGE_DOMAINS_KEY,
-        url: REGISTRY_DOMAINS_API_URL,
+        key: 'domains',
+        url: this.registryUrl,
       },
       {
-        key: REGISTRY_STORAGE_DISTRIBUTORS_KEY,
-        url: REGISTRY_DISTRIBUTORS_API_URL,
+        key: 'distributors',
+        url: this.cooperationRefusedORIUrl,
       },
       {
-        key: REGISTRY_STORAGE_DPI_RECORDS_KEY,
-        url: REGISTRY_DPI_RECORDS_API_URL,
+        key: 'unregisteredRecords',
+        url: this.customRegistryUrl,
       },
     ]
 
@@ -79,8 +94,8 @@ class Registry {
     }
 
     const { domains, distributors } = await storage.get({
-      [REGISTRY_STORAGE_DOMAINS_KEY]: [],
-      [REGISTRY_STORAGE_DISTRIBUTORS_KEY]: [],
+      domains: [],
+      distributors: [],
     })
 
     if (domains === [] || distributors === []) {
@@ -189,7 +204,7 @@ class Registry {
     for (const hostname of blockedDomains) {
       if (!alreadyReported.includes(hostname)) {
         await fetch(
-          REGISTRY_LOGGING_API_URL, {
+          this.reportEndpoint, {
             method: 'POST',
             headers: {
               'Censortracker-D': new Date().getTime(),

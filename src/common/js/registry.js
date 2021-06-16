@@ -1,10 +1,12 @@
 import storage from './storage'
 import { extractHostnameFromUrl } from './utilities'
 
-const BACKEND_CONFIG_API_URL = 'https://dpi.censortracker.org/api/config/'
+const CENSORTRACKER_CONFIG_API_URL = 'https://app.censortracker.org/api/config/'
 
 class Registry {
   constructor () {
+    this.cachedConfig = undefined
+
     setInterval(async () => {
       await this.sendReport()
     }, 60 * 60 * 3000)
@@ -13,81 +15,82 @@ class Registry {
       await this.cleanLocalRegistry()
     }, 60 * 60 * 1000)
 
-    setTimeout(async () => {
-      await this.setup()
-    }, 0)
-  }
-
-  /**
-   * Clean local registry by schedule.
-   * @returns {Promise<void>}
-   */
-  cleanLocalRegistry = async () => {
-    const day = new Date().getDate()
-    const cleaningDays = [5, 15, 20, 25, 30]
-
-    if (cleaningDays.includes(day)) {
-      await storage.set({ blockedDomains: [] })
-      console.warn('Outdated domains has been removed.')
-    }
+    setInterval(async () => {
+      this.cachedConfig = undefined
+      console.log('Registry: cached config removed!')
+    }, 60 * 60 * 500)
   }
 
   /**
    * Fetch config for the user's country from the server (GeoIP).
    * If the config for the country is not present then local registry
    * of restricted websites will be empty.
-   * @returns {Promise<void>}
+   * @returns {Promise<Object>}
    */
-  setup = async () => {
+  getConfig = async () => {
+    if (this.cachedConfig !== undefined) {
+      return this.cachedConfig
+    }
+
     try {
-      const response = await fetch(BACKEND_CONFIG_API_URL)
+      const response = await fetch(CENSORTRACKER_CONFIG_API_URL)
 
       if (response.status === 200) {
-        const { registryUrl, customRegistryUrl, reportEndpoint, specifics } = response.json()
+        const {
+          registryUrl,
+          countryDetails,
+          reportEndpoint,
+          customRegistryUrl,
+          specifics,
+        } = await response.json()
 
-        this.registryUrl = registryUrl
-        this.customRegistryUrl = customRegistryUrl
-        this.reportEndpoint = reportEndpoint
+        const apis = [
+          {
+            url: registryUrl,
+            storageKey: 'domains',
+          },
+          {
+            url: customRegistryUrl,
+            storageKey: 'unregisteredRecords',
+          },
+        ]
 
         if (specifics) {
-          const { cooperationRefusedORIUrl } = specifics
+          apis.push({
+            url: specifics.cooperationRefusedORIUrl,
+            storageKey: 'distributors',
 
-          this.cooperationRefusedORIUrl = cooperationRefusedORIUrl
+          })
         }
-      } else {
-        console.log('CensorTracker do not supports your country')
+
+        this.cachedConfig = {
+          apis,
+          reportEndpoint,
+          countryDetails,
+        }
+
+        return this.cachedConfig
       }
+      console.warn('CensorTracker do not support your country.')
     } catch (error) {
       console.error(error)
     }
+    return {}
   }
 
   /**
-   * Saves all the data from our registry in local storage.
+   * Save JSON data from the remote resource in local storage.
+   * @returns {Promise<boolean>} Returns true when succeed.
    */
   sync = async () => {
-    console.warn('Synchronizing local database with registry...')
-    const apis = [
-      {
-        key: 'domains',
-        url: this.registryUrl,
-      },
-      {
-        key: 'distributors',
-        url: this.cooperationRefusedORIUrl,
-      },
-      {
-        key: 'unregisteredRecords',
-        url: this.customRegistryUrl,
-      },
-    ]
+    const { apis } = await this.getConfig()
 
-    for (const { key, url } of apis) {
+    for (const { storageKey, url } of apis) {
       try {
         const response = await fetch(url)
-        const data = await response.json()
+        const jsonData = await response.json()
 
-        await storage.set({ [key]: data })
+        await storage.set({ [storageKey]: jsonData })
       } catch (error) {
         console.error(`Error on fetching data from the API endpoint: ${url}`)
       }
@@ -98,7 +101,7 @@ class Registry {
       distributors: [],
     })
 
-    if (domains === [] || distributors === []) {
+    if (domains.length === 0 || distributors.length === 0) {
       console.log('Database is empty. Trying to sync...')
       await this.sync()
     }
@@ -201,22 +204,39 @@ class Registry {
         blockedDomains: [],
       })
 
+    const { reportEndpoint } = await this.getConfig()
+
     for (const hostname of blockedDomains) {
       if (!alreadyReported.includes(hostname)) {
-        await fetch(
-          this.reportEndpoint, {
-            method: 'POST',
-            headers: {
-              'Censortracker-D': new Date().getTime(),
-              'Censortracker-V': '^3.0.0',
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ hostname }),
-          })
+        const timestamp = new Date().getTime()
+
+        await fetch(reportEndpoint, {
+          method: 'POST',
+          headers: {
+            'Censortracker-D': timestamp,
+            'Censortracker-V': '^3.0.0',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ hostname }),
+        })
         alreadyReported.push(hostname)
         await storage.set({ alreadyReported })
         console.warn(`Reported new lock: ${hostname}`)
       }
+    }
+  }
+
+  /**
+   * Clean local registry by schedule.
+   * @returns {Promise<void>}
+   */
+  cleanLocalRegistry = async () => {
+    const day = new Date().getDate()
+    const cleaningDays = [5, 15, 20, 25, 30]
+
+    if (cleaningDays.includes(day)) {
+      await storage.set({ blockedDomains: [] })
+      console.warn('Outdated domains has been removed.')
     }
   }
 

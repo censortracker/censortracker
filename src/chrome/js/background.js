@@ -34,10 +34,12 @@ window.censortracker = {
 const handleBeforeRequest = ({ url }) => {
   const hostname = extractHostnameFromUrl(url)
 
+  proxy.ping()
+
   if (ignore.contains(hostname)) {
     return undefined
   }
-  proxy.ping()
+
   return {
     redirectUrl: enforceHttpsConnection(url),
   }
@@ -226,6 +228,8 @@ const handleInstalled = async ({ reason }) => {
       url: chrome.runtime.getURL('installed.html'),
     })
   }
+
+  proxy.ping()
 }
 
 chrome.runtime.onInstalled.addListener(handleInstalled)

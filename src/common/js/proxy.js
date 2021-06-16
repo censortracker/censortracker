@@ -56,6 +56,11 @@ class Proxy extends BrowserAPI {
     const config = {}
     const pacData = await this.generateProxyAutoConfigData()
 
+    if (!pacData) {
+      console.warn('Local registry is empty: cannot set PAC')
+      return undefined
+    }
+
     if (this.isFirefox) {
       const blob = new Blob([pacData], {
         type: 'application/x-ns-proxy-autoconfig',
@@ -95,6 +100,10 @@ class Proxy extends BrowserAPI {
    */
   generateProxyAutoConfigData = async () => {
     const domains = await registry.getDomains()
+
+    if (domains.length === 0) {
+      return undefined
+    }
 
     domains.sort()
     return `

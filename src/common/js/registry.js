@@ -214,22 +214,18 @@ class Registry {
 
     const { reportEndpoint } = await this.getConfig()
 
-    for (const hostname of blockedDomains) {
-      if (!alreadyReported.includes(hostname)) {
-        const timestamp = new Date().getTime()
-
+    for (const domain of blockedDomains) {
+      if (!alreadyReported.includes(domain)) {
         await fetch(reportEndpoint, {
           method: 'POST',
           headers: {
-            'Censortracker-D': timestamp,
-            'Censortracker-V': '^3.0.0',
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ hostname }),
+          body: JSON.stringify({ domain }),
         })
-        alreadyReported.push(hostname)
+        alreadyReported.push(domain)
         await storage.set({ alreadyReported })
-        console.warn(`Reported new lock: ${hostname}`)
+        console.warn(`Reported new lock: ${domain}`)
       }
     }
   }

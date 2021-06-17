@@ -36,7 +36,7 @@ class Registry {
    * @returns {Promise<Object>}
    */
   getConfig = async () => {
-    if (this._cachedConfig !== undefined) {
+    if (this._cachedConfig) {
       return this._cachedConfig
     }
 
@@ -44,6 +44,7 @@ class Registry {
       const response = await fetch(CENSORTRACKER_CONFIG_API_URL)
 
       if (response.status === 200) {
+        const apis = []
         const {
           registryUrl,
           countryDetails,
@@ -52,16 +53,19 @@ class Registry {
           specifics,
         } = await response.json()
 
-        const apis = [
-          {
+        if (registryUrl) {
+          apis.push({
             url: registryUrl,
             storageKey: 'domains',
-          },
-          {
+          })
+        }
+
+        if (customRegistryUrl) {
+          apis.push({
             url: customRegistryUrl,
             storageKey: 'unregisteredRecords',
-          },
-        ]
+          })
+        }
 
         if (specifics) {
           if (countryDetails.isoA2Code === 'RU') {
@@ -93,7 +97,12 @@ class Registry {
    * @returns {Promise<boolean>} Returns true when succeed.
    */
   sync = async () => {
-    const { apis } = await this.getConfig()
+    const { apis, countryDetails: { name: countryName } } = await this.getConfig()
+
+    if (apis.length === 0) {
+      console.warn(`Unsynchronized: API endpoints not provided for: ${countryName}.`)
+      return false
+    }
 
     for (const { storageKey, url } of apis) {
       try {

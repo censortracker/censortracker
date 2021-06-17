@@ -64,11 +64,13 @@ class Registry {
         ]
 
         if (specifics) {
-          apis.push({
-            url: specifics.cooperationRefusedORIUrl,
-            storageKey: 'distributors',
+          if (countryDetails.isoA2Code === 'RU') {
+            apis.push({
+              url: specifics.cooperationRefusedORIUrl,
+              storageKey: 'distributors',
 
-          })
+            })
+          }
         }
 
         this.cachedConfig = {

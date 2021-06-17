@@ -5,7 +5,7 @@ const CENSORTRACKER_CONFIG_API_URL = 'https://app.censortracker.org/api/config/'
 
 class Registry {
   constructor () {
-    this.cachedConfig = undefined
+    this._cachedConfig = undefined
 
     setInterval(async () => {
       await this.sendReport()
@@ -24,7 +24,7 @@ class Registry {
     }, 60 * 60 * 400)
 
     setInterval(async () => {
-      this.cachedConfig = undefined
+      this._cachedConfig = undefined
       console.log('Registry: cached config removed!')
     }, 60 * 60 * 500)
   }
@@ -36,8 +36,8 @@ class Registry {
    * @returns {Promise<Object>}
    */
   getConfig = async () => {
-    if (this.cachedConfig !== undefined) {
-      return this.cachedConfig
+    if (this._cachedConfig !== undefined) {
+      return this._cachedConfig
     }
 
     try {
@@ -73,13 +73,13 @@ class Registry {
           }
         }
 
-        this.cachedConfig = {
+        this._cachedConfig = {
           apis,
           reportEndpoint,
           countryDetails,
         }
 
-        return this.cachedConfig
+        return this._cachedConfig
       }
       console.warn('CensorTracker do not support your country.')
     } catch (error) {

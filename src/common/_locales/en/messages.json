@@ -1,6 +1,192 @@
 {
-  "testTitle": {
-    "message": "Works great!",
-    "description": "Test"
+  "distrTitle": {
+    "message": "Is the information distribution organizer"
+  },
+  "notDistrTitle": {
+    "message": "Is not the information distribution organizer "
+  },
+  "notDistrDesc": {
+    "message": "Services from the IDO registry may automatically transmit your personal data, including messages and all traffic, to government authorities. This service is not in the IDO registry."
+  },
+  "distrDesc": {
+    "message": "The Service may transfer your personal data, including messages and all traffic to Russian government authorities automatically."
+  },
+  "distrCoopRefused": {
+    "message": "The service claimed that they do not transmit traffic to Russian government agencies automatically."
+  },
+  "blockedTitle": {
+    "message": "Is prohibited in Russia."
+  },
+  "notBlockedTitle": {
+    "message": "Is  not prohibited in Russia."
+  },
+  "blockedDesc": {
+    "message": "Access to the site is prohibited, but Censor Tracker gives you access to it through a reliable proxy."
+  },
+  "notBlockedDesc": {
+    "message": "If access to the site is banned, then Censor Tracker will offer to open the site through a reliable proxy."
+  },
+  "siteIsUnavailable": {
+    "message": "The site is unavailable "
+  },
+  "controlledByOtherExtensionsMessage": {
+    "message": "Another extension controls the proxy. More detailed &rarr;"
+  },
+  "privateBrowsingPermissionsRequiredMessage": {
+    "message": "Proxy disabled. Permission to work in private windows is required &rarr;"
+  },
+  "whatThisMean": {
+    "message": "what does it mean"
+  },
+  "extensionIsOff": {
+    "message": "Censor Tracker disabled"
+  },
+  "extensionIsOn": {
+    "message": "enabled"
+  },
+  "okayButton": {
+    "message": "OK"
+  },
+  "readMoreButton": {
+    "message": "Read More"
+  },
+  "ignoredSitesTitle": {
+    "message": "Ignored Sites"
+  },
+  "ignoredSitesDesc": {
+    "message": "Addresses that will always be ignored by the Censor Tracker. It can help if there are problems with opening the site. Each address starts with a new line."
+  },
+  "ignoreAutosaveTip": {
+    "message": "Changes are automatically saved when clicked <code>Enter</code> or <code>Backspace</code>."
+  },
+  "optionsTitle": {
+    "message": "Censor Tracker extension settings"
+  },
+  "proxySettings": {
+    "message": "proxy settings"
+  },
+  "optionsProxyDesc": {
+    "message": "If the site is blocked, the Censor Tracker will grant access to it. Disable this setting if you use another service to bypass blocking (for example, a VPN) to increase the connection speed."
+  },
+  "privateBrowsingRequired": {
+    "message": "Allow the extension to work in private windows."
+  },
+  "privateBrowsingRequiredDesc": {
+    "message": "So that we can open blocked sites for you through a proxy. In Firefox, there is no way without it."
+  },
+  "howToGrantPrivateBrowsingPermissions": {
+    "message": "How to do it"
+  },
+  "privateBrowsingPermissionsGranted": {
+    "message": "I allowed, enable proxy. "
+  },
+  "optionsIgnoredWebsitesDesc": {
+    "message": "Addresses for which the proxy will always be disabled. It can help if there are problems with opening the site."
+  },
+  "showNotificationsTitle": {
+    "message": "Show system notifications"
+  },
+  "showNotificationsDesc": {
+    "message": "We will warn you when a site transmits your messages, personal data and all traffic to third parties automatically."
+  },
+  "aboutExtension": {
+    "message": "About extension"
+  },
+  "unavailableOrBlocked": {
+    "message": "The site is unavailable or blocked"
+  },
+  "proxyDisabledDesc": {
+    "message": "You have disabled site block crawling with Censor Tracker, but <b id=\"unavailableWebsite\">$details$</b> is unavailable. Try opening it through the Censor Tracker?",
+    "placeholders": {
+      "details": {
+        "content": "$1"
+      }
+    }
+  },
+  "openThroughProxyButton": {
+    "message": "Open through proxy"
+  },
+  "doNotAskAnymoreButton": {
+    "message": "Do not offer any more"
+  },
+  "useProxy": {
+    "message": "Use proxy"
+  },
+  "useProxyDesc": {
+    "message": "If the site is blocked, the Censor Tracker will grant access to it. Disable this setting if you use another service to bypass blocking (for example, a VPN) to increase the connection speed."
+  },
+  "useDefaultProxy": {
+    "message": "Proxy Censor Tracker"
+  },
+  "proxyHost": {
+    "message": "Proxy server address"
+  },
+  "proxyPort": {
+    "message": "Port"
+  },
+  "controlledByOtherExtension": {
+    "message": "Now another extension &laquo;<div class=\"extension__name\">$NAME$</div>&raquo; is controlling your proxy settings",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "controlledByOtherExtensionDesc": {
+    "message": "for normal use of CensorTracker, disable &laquo;<div class=\"extension__name\">$NAME$</div>&raquo; in browser settings.",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "controlledByOtherExtensions": {
+    "message": "Other extensions control your proxy settings in browser."
+  },
+  "controlledByOtherExtensionsDesc": {
+    "message": "Для for normal use of CensorTracker, disable the following extensions in browser settings:"
+  },
+  "disableAll": {
+    "message": "Disable all"
+  },
+  "proxyUnavailable": {
+    "message": "Unable to open the site through the Censor Tracker proxy. "
+  },
+  "proxyUnavailableDesc": {
+    "message": "Unable to open the site <b id=\"unavailableWebsite\">$URL$</b>. We are working on fixing the problem, please try to open the site later.",
+    "placeholders": {
+      "url": {
+        "content": "$1"
+      }
+    }
+  },
+  "closeTab": {
+    "message": "Close tab"
+  },
+  "tryAgain": {
+    "message": "Try again"
+  },
+  "siteUnavailableTitle": {
+    "message": "The site is unavailable or blocked in Russian Federation"
+  },
+  "siteUnavailableDesc": {
+    "message": "Unable to open the site <b id=\"unavailableWebsite\">$URL$</b>. try opening it through the Censor Tracker proxy?",
+    "placeholders": {
+      "url": {
+        "content": "$1"
+      }
+    }
+  },
+  "openThroughProxy": {
+    "message": "Open through proxy"
+  },
+  "controlledPageDisableExtension": {
+    "message": "Disable"
+  },
+  "installedGratitude": {
+    "message": "Thank you!"
+  },
+  "installedDesc": {
+    "message": "Pin the extension in&nbsp;browser panel in&nbsp;two clicks to always be &nbsp;aware which sites can transfer your messages, personal data and &nbsp;all traffic to third parties."
   }
 }

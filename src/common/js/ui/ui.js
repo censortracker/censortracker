@@ -1,3 +1,7 @@
+import settings from '../settings'
+
+const currentBrowser = settings.getBrowser()
+
 /**
  * Simple element selector.
  * @param id Select by given ID.
@@ -19,39 +23,36 @@ export const select = ({ id, query, cls }) => {
 
 export const getTranslatedPopupText = () => {
   return {
-    siteIsUnavailable: 'Сайт недоступен',
-    controlledByOtherExtensions: 'Другое расширение контролирует прокси. Подробнее &rarr;',
-    privateBrowsingPermissionsRequired: 'Прокси отключён. Требуется разрешение на работу в приватных окнах &rarr;',
+    siteIsUnavailable: currentBrowser.i18n.getMessage('siteIsUnavailable'),
+    controlledByOtherExtensions: currentBrowser.i18n.getMessage('controlledByOtherExtensionsMessage'),
+    privateBrowsingPermissionsRequired: currentBrowser.i18n.getMessage('privateBrowsingPermissionsRequiredMessage'),
     ori: {
       found: {
-        title: 'Является организатором распространения информации',
+        title: currentBrowser.i18n.getMessage('distrTitle'),
         statusIcon: 'images/icons/status/icon_danger.svg',
-        detailsText: 'Сервис может передавать ваши личные данные, в том числе сообщения и весь трафик, ' +
-            'российским государственным органам в автоматическом режиме.',
+        detailsText: currentBrowser.i18n.getMessage('distrDesc'),
         detailsClasses: ['text-warning'],
         cooperationRefused: {
-          message: 'Сервис заявил, что они не передают трафик российским ' +
-            'государственным органам в автоматическом режиме.',
+          message: currentBrowser.i18n.getMessage('distrCoopRefused'),
 
         },
       },
       notFound: {
-        title: 'Не является организатором распространения информации',
         statusIcon: 'images/icons/status/icon_ok.svg',
-        detailsText: 'Сервисы из реестра ОРИ могут передавать ваши личные данные, в т.ч. сообщения и весь трафик, ' +
-            'государственным органам в автоматическом режиме. Этот сервис не находится в реестре ОРИ.',
+        title: currentBrowser.i18n.getMessage('notDistrTitle'),
+        detailsText: currentBrowser.i18n.getMessage('notDistrDesc'),
       },
     },
     restrictions: {
       found: {
-        title: 'Запрещён в России',
         statusIcon: 'images/icons/status/icon_info.svg',
-        detailsText: 'Доступ к сайту запрещён, но Censor Tracker даёт к нему доступ через надёжный прокси.',
+        title: currentBrowser.i18n.getMessage('blockedTitle'),
+        detailsText: currentBrowser.i18n.getMessage('blockedDesc'),
       },
       notFound: {
-        title: 'Не запрещён в России',
         statusIcon: 'images/icons/status/icon_ok.svg',
-        detailsText: 'Если доступ к сайту запретят, то Censor Tracker предложит открыть сайт через надёжный прокси.',
+        title: currentBrowser.i18n.getMessage('notBlockedTitle'),
+        detailsText: currentBrowser.i18n.getMessage('notBlockedDesc'),
       },
     },
   }

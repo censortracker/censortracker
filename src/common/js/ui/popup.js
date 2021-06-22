@@ -90,11 +90,7 @@ import {
   const currentHostname = extractHostnameFromUrl(currentUrl)
 
   currentDomainBlocks.forEach((element) => {
-    if (currentHostname) {
-      element.innerText = currentHostname
-    } else {
-      element.innerText = uiText.siteIsUnavailable
-    }
+    element.innerText = currentHostname || currentBrowser.i18n.getMessage('siteIsUnavailable')
   })
 
   if (extensionEnabled) {
@@ -126,8 +122,7 @@ import {
       }
     }
 
-    const { url: distributorUrl, cooperationRefused } =
-      await registry.distributorsContains(currentHostname)
+    const { url: distributorUrl, cooperationRefused } = await registry.distributorsContains(currentHostname)
 
     if (distributorUrl) {
       currentDomainHeader.classList.add('title-ori')

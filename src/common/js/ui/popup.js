@@ -1,6 +1,5 @@
 import {
   extractHostnameFromUrl,
-  getTranslatedPopupText,
   proxy,
   registry,
   select,
@@ -12,9 +11,39 @@ import {
 (async () => {
   translateDocument(document)
   const showTimeout = 160
-  const uiText = getTranslatedPopupText()
   const thisIsFirefox = settings.isFirefox
   const currentBrowser = settings.getBrowser()
+  const uiText = {
+    ori: {
+      found: {
+        title: currentBrowser.i18n.getMessage('distrTitle'),
+        statusIcon: 'images/icons/status/icon_danger.svg',
+        detailsText: currentBrowser.i18n.getMessage('distrDesc'),
+        detailsClasses: ['text-warning'],
+        cooperationRefused: {
+          message: currentBrowser.i18n.getMessage('distrCoopRefused'),
+
+        },
+      },
+      notFound: {
+        statusIcon: 'images/icons/status/icon_ok.svg',
+        title: currentBrowser.i18n.getMessage('notDistrTitle'),
+        detailsText: currentBrowser.i18n.getMessage('notDistrDesc'),
+      },
+    },
+    restrictions: {
+      true: {
+        statusIcon: 'images/icons/status/icon_info.svg',
+        title: currentBrowser.i18n.getMessage('blockedTitle'),
+        detailsText: currentBrowser.i18n.getMessage('blockedDesc'),
+      },
+      false: {
+        statusIcon: 'images/icons/status/icon_ok.svg',
+        title: currentBrowser.i18n.getMessage('notBlockedTitle'),
+        detailsText: currentBrowser.i18n.getMessage('notBlockedDesc'),
+      },
+    },
+  }
   const statusImage = select({ id: 'statusImage' })
   const oriSiteInfo = select({ id: 'oriSiteInfo' })
   const textAboutOri = select({ id: 'textAboutOri' })

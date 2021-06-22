@@ -36,37 +36,3 @@ export const translateDocument = (doc) => {
     }
   }
 }
-
-export const getTranslatedPopupText = () => {
-  return {
-    ori: {
-      found: {
-        title: currentBrowser.i18n.getMessage('distrTitle'),
-        statusIcon: 'images/icons/status/icon_danger.svg',
-        detailsText: currentBrowser.i18n.getMessage('distrDesc'),
-        detailsClasses: ['text-warning'],
-        cooperationRefused: {
-          message: currentBrowser.i18n.getMessage('distrCoopRefused'),
-
-        },
-      },
-      notFound: {
-        statusIcon: 'images/icons/status/icon_ok.svg',
-        title: currentBrowser.i18n.getMessage('notDistrTitle'),
-        detailsText: currentBrowser.i18n.getMessage('notDistrDesc'),
-      },
-    },
-    restrictions: {
-      true: {
-        statusIcon: 'images/icons/status/icon_info.svg',
-        title: currentBrowser.i18n.getMessage('blockedTitle'),
-        detailsText: currentBrowser.i18n.getMessage('blockedDesc'),
-      },
-      false: {
-        statusIcon: 'images/icons/status/icon_ok.svg',
-        title: currentBrowser.i18n.getMessage('notBlockedTitle'),
-        detailsText: currentBrowser.i18n.getMessage('notBlockedDesc'),
-      },
-    },
-  }
-}

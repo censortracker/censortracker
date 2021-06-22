@@ -31,5 +31,6 @@
     "page": "options.html",
     "open_in_tab": true
   },
-  "manifest_version": 2
+  "manifest_version": 2,
+  "default_locale": "en"
 }

@@ -30,10 +30,10 @@
     "message": "Сайт недоступен"
   },
   "controlledByOtherExtensionsMessage": {
-    "message": "Другое расширение контролирует прокси. Подробнее &rarr;"
+    "message": "Другое расширение контролирует прокси. Подробнее →"
   },
   "privateBrowsingPermissionsRequiredMessage": {
-    "message": "Прокси отключён. Требуется разрешение на работу в приватных окнах &rarr;"
+    "message": "Прокси отключён. Требуется разрешение на работу в приватных окнах →"
   },
   "whatThisMean": {
     "message": "что это значит"

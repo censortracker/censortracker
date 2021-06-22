@@ -20,22 +20,24 @@
 
       <div class="main-page__block main-page-info" id="ori">
         <div class="block__title">
-          <span data-render-var="title">Не является организатором распространения информации</span>
+          <span data-render-var="title" data-i18n-key="notDistrTitle">
+            Не является организатором распространения информации
+          </span>
           <img class="icon__status"
                data-render-var="statusIcon"
                src="images/icons/status/icon_ok.svg" width="24px" height="24px" alt=""/>
         </div>
         <div class="block__btn btn-about btn-what-this-mean">
-          <span>что это значит</span>
+          <span data-i18n-key="whatThisMean">что это значит</span>
           <img class="block__btn icon" src="images/icons/status/arrow_down.svg" width="8px" height="6px" alt=""/>
         </div>
         <div class="block__text text-normal details-text" data-render-var="detailsClasses">
-          <span data-render-var="detailsText">
+          <span data-render-var="detailsText" data-i18n-key="notDistrDesc">
             Сервисы из реестра ОРИ могут передавать ваши личные данные, в т.ч. сообщения и весь трафик,
             государственным органам в автоматическом режиме. Этот сервис не находится в реестре ОРИ.
           </span>
           <div class="block__footer">
-            <span class="block__btn btn-ok btn-hide-details">Ясно</span>
+            <span class="block__btn btn-ok btn-hide-details" data-i18n-key="okayButton">Ясно</span>
             <span class="block__btn btn-text"><a href="https://reestr.rublacklist.net/distributors/" target="_blank">Подробнее <span
               class="footer__arrow">&rarr;</span></a></span>
           </div>
@@ -44,17 +46,19 @@
 
       <div class="main-page__block main-page-info" id="restrictions">
         <div class="block__title">
-          <span data-render-var="title" id="restrictionType">Не запрещён в России</span>
+          <span data-render-var="title" id="restrictionType" data-i18n-key="notBlockedTitle">
+            Не запрещён в России
+          </span>
           <img class="icon__status"
                data-render-var="statusIcon"
                src="images/icons/status/icon_ok.svg" width="24px" height="24px" alt=""/>
         </div>
         <div class="block__btn btn-about btn-what-this-mean">
-          <span>что это значит</span>
+          <span data-i18n-key="whatThisMean">что это значит</span>
           <img class="block__btn icon" src="images/icons/status/arrow_down.svg" width="8px" height="6px" alt=""/>
         </div>
         <div class="block__text text-normal details-text">
-          <span data-render-var="detailsText" id="restrictionDescription">
+          <span data-render-var="detailsText" id="restrictionDescription" data-i18n-key="">
             Если доступ к сайту запретят, то Censor Tracker предложит открыть сайт через надёжный прокси.
           </span>
           <div class="block__footer">
@@ -66,7 +70,9 @@
       </div>
 
       <div class="main-page__info" id="extensionIsOff" hidden>
-        <div class="main-page__title title-disabled">Censor Tracker выключен</div>
+        <div class="main-page__title title-disabled" data-i18n-key="extensionIsOff">
+          Censor Tracker выключен
+        </div>
         <div class="main-page__block">
           <div class="block__title text-about">
             Включите, чтобы проверить сайт <span class="current-domain"></span>
@@ -83,18 +89,22 @@
   </div>
 
   <div class="footer-btn" id="controlledByOtherExtensionsButton" hidden>
-    <div>Другое расширение контролирует прокси. Подробнее &rarr;</div>
+    <div data-i18n-key="controlledByOtherExtensionsMessage">
+      Другое расширение контролирует прокси. Подробнее →
+    </div>
   </div>
 
   <div id="privateBrowsingPermissionsRequiredButton" hidden>
-    <div>Прокси отключён. Требуется разрешение на работу в приватных окнах &rarr;</div>
+    <div data-i18n-key="privateBrowsingPermissionsRequiredMessage">
+      Прокси отключён. Требуется разрешение на работу в приватных окнах →
+    </div>
   </div>
 
   <div class="footer" id="footerExtensionIsOn" hidden>
     <div class="censor-tracker censor-tracker-">
       <div class="censor-tracker__column">
         <div class="censor-tracker__title">Censor Tracker</div>
-        <div class="censor-tracker__turn">включен</div>
+        <div class="censor-tracker__turn" data-i18n-key="extensionIsOn">включен</div>
       </div>
       <div class="censor-tracker__column">
         <div class="censor-tracker__btn" id="disableExtension">

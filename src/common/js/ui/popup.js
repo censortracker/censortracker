@@ -107,7 +107,7 @@ import {
 
     const restrictionsFound = await registry.contains(currentHostname)
 
-    for (const el of select({ query: '#restrictions [data-render-var]' })) {
+    select({ query: '#restrictions [data-render-var]' }).forEach((el) => {
       const renderVar = el.dataset.renderVar
       const value = uiText.restrictions[restrictionsFound][renderVar]
 
@@ -120,7 +120,7 @@ import {
       } else {
         el.innerText = value
       }
-    }
+    })
 
     const { url: distributorUrl, cooperationRefused } = await registry.distributorsContains(currentHostname)
 
@@ -135,9 +135,7 @@ import {
         currentDomainHeader.classList.add('title-normal')
       } else {
         changeStatusImage('ori')
-        const elements = select({ query: '#ori [data-render-var]' })
-
-        for (const element of elements) {
+        select({ query: '#ori [data-render-var]' }).forEach((element) => {
           const renderVar = element.dataset.renderVar
           const value = uiText.ori.found[renderVar]
 
@@ -148,7 +146,7 @@ import {
           } else {
             element.innerText = value
           }
-        }
+        })
       }
     }
 

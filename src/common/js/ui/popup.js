@@ -192,18 +192,6 @@ import { getTranslatedPopupText, select } from './ui'
     })
   }
 
-  const translateDocument = () => {
-    for (const element of select({ query: '[data-i18n-key]' })) {
-      const { value: transKey } = element.attributes.item('data-i18n-key')
-
-      const message = browser.i18n.getMessage(transKey)
-
-      if (message) {
-        element.innerText = message
-      }
-    }
-  }
-
   const { countryDetails: { isoA2Code } } = await registry.getConfig()
 
   if (isoA2Code !== 'RU') {
@@ -214,6 +202,5 @@ import { getTranslatedPopupText, select } from './ui'
     document.documentElement.style.visibility = 'initial'
   }
 
-  translateDocument()
   setTimeout(show, showTimeout)
 })()

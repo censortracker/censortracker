@@ -1,7 +1,8 @@
-import { proxy } from '@/common/js'
+import { proxy, translateDocument } from '@/common/js'
 import { extractDecodedOriginUrl } from '@/common/js/utilities'
 
 (async () => {
+  translateDocument(document)
   const [tab] = await browser.tabs.query({ active: true, lastFocusedWindow: true })
   const originUrl = extractDecodedOriginUrl(tab.url)
   const unavailableWebsite = document.getElementById('unavailableWebsite')

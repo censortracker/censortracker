@@ -1,6 +1,7 @@
-import { extractDecodedOriginUrl } from '@/common/js/utilities';
+import { extractDecodedOriginUrl, translateDocument } from '@/common/js'
 
 (async () => {
+  translateDocument(document)
   const unavailableWebsite = document.getElementById('unavailableWebsite')
   const openThroughProxyButton = document.getElementById('openThroughProxy')
 

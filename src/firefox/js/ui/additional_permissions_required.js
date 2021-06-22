@@ -1,6 +1,8 @@
-import { proxy } from '@/common/js'
+import { proxy, translateDocument } from '@/common/js'
 
 (async () => {
+  translateDocument(document)
+
   const backToPopup = document.getElementById('backToPopup')
   const howToGrantPrivateBrowsingPermissions = document.getElementById('howToGrantPrivateBrowsingPermissions')
   const grantPrivateBrowsingPermissionsButton = document.getElementById('grantPrivateBrowsingPermissionsButton')

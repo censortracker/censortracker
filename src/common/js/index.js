@@ -12,4 +12,5 @@ export {
   getRequestFilter,
   isValidURL,
   startsWithHttpHttps,
+  extractDecodedOriginUrl,
 } from './utilities'

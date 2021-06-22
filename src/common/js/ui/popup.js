@@ -1,5 +1,13 @@
-import { extractHostnameFromUrl, proxy, registry, settings, storage, translateDocument } from '..'
-import { getTranslatedPopupText, select } from './ui'
+import {
+  extractHostnameFromUrl,
+  getTranslatedPopupText,
+  proxy,
+  registry,
+  select,
+  settings,
+  storage,
+  translateDocument,
+} from '..'
 
 (async () => {
   translateDocument(document)

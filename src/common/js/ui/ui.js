@@ -39,9 +39,6 @@ export const translateDocument = (doc) => {
 
 export const getTranslatedPopupText = () => {
   return {
-    siteIsUnavailable: currentBrowser.i18n.getMessage('siteIsUnavailable'),
-    controlledByOtherExtensions: currentBrowser.i18n.getMessage('controlledByOtherExtensionsMessage'),
-    privateBrowsingPermissionsRequired: currentBrowser.i18n.getMessage('privateBrowsingPermissionsRequiredMessage'),
     ori: {
       found: {
         title: currentBrowser.i18n.getMessage('distrTitle'),
@@ -60,12 +57,12 @@ export const getTranslatedPopupText = () => {
       },
     },
     restrictions: {
-      found: {
+      true: {
         statusIcon: 'images/icons/status/icon_info.svg',
         title: currentBrowser.i18n.getMessage('blockedTitle'),
         detailsText: currentBrowser.i18n.getMessage('blockedDesc'),
       },
-      notFound: {
+      false: {
         statusIcon: 'images/icons/status/icon_ok.svg',
         title: currentBrowser.i18n.getMessage('notBlockedTitle'),
         detailsText: currentBrowser.i18n.getMessage('notBlockedDesc'),

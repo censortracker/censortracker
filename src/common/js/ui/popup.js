@@ -111,19 +111,18 @@ import {
 
     const restrictionsFound = await registry.contains(currentHostname)
 
-    if (restrictionsFound) {
-      changeStatusImage('blocked')
-      const elements = select({ query: '#restrictions [data-render-var]' })
+    for (const el of select({ query: '#restrictions [data-render-var]' })) {
+      const renderVar = el.dataset.renderVar
+      const value = uiText.restrictions[restrictionsFound][renderVar]
 
-      for (const element of elements) {
-        const renderVar = element.dataset.renderVar
-        const value = uiText.restrictions.found[renderVar]
+      if (restrictionsFound) {
+        changeStatusImage('blocked')
+      }
 
-        if (renderVar === 'statusIcon') {
-          element.setAttribute('src', value)
-        } else {
-          element.innerText = value
-        }
+      if (renderVar === 'statusIcon') {
+        el.setAttribute('src', value)
+      } else {
+        el.innerText = value
       }
     }
 

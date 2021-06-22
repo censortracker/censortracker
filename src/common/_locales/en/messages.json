@@ -112,6 +112,9 @@
   "useProxy": {
     "message": "Use proxy"
   },
+  "useOwnProxy": {
+    "message": "Use own proxy"
+  },
   "useProxyDesc": {
     "message": "If the site is blocked, the Censor Tracker will grant access to it. Disable this setting if you use another service to bypass blocking (for example, a VPN) to increase the connection speed."
   },

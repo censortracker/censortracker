@@ -1,8 +1,9 @@
 import validator from 'validator'
 
-import { proxy, storage } from '@/common/js'
+import { proxy, storage, translateDocument } from '@/common/js'
 
 (async () => {
+  translateDocument(document)
   const proxyEnabled = await proxy.proxyingEnabled()
   const useProxyCheckbox = document.getElementById('useProxyCheckbox')
   const proxyCustomOptions = document.getElementById('proxyCustomOptions')

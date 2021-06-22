@@ -10,7 +10,6 @@ import {
 
 (async () => {
   translateDocument(document)
-  const showTimeout = 160
   const thisIsFirefox = settings.isFirefox
   const currentBrowser = settings.getBrowser()
   const uiText = {
@@ -232,5 +231,5 @@ import {
     document.documentElement.style.visibility = 'initial'
   }
 
-  setTimeout(show, showTimeout)
+  setTimeout(show, 160)
 })()

@@ -22,6 +22,10 @@ export const select = ({ id, query, cls, doc = document }) => {
   return doc.querySelectorAll(query)
 }
 
+/**
+ * Translate document
+ * @param doc Document to translate.
+ */
 export const translateDocument = (doc) => {
   for (const element of select({ query: '[data-i18n-key]', doc })) {
     const value = element.getAttribute('data-i18n-key')

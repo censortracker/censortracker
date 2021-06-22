@@ -77,7 +77,7 @@
   "howToGrantPrivateBrowsingPermissions": {
     "message": "Как это сделать"
   },
-  "privateBrowsingPermissionsGranted": {
+  "grantPrivateBrowsingPermissions": {
     "message": "Я разрешил, включите прокси"
   },
   "optionsIgnoredWebsitesDesc": {

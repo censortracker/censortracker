@@ -16,13 +16,13 @@
            width="200px" height="200px" alt="<%= htmlWebpackPlugin.options.title %>"/>
     </div>
     <div class="main-page__info">
-      <div class="main-page__title">
+      <div class="main-page__title" data-i18n-key="optionsTitle">
         Настройки расширения Censor Tracker
       </div>
 
       <div class="checkbox__group">
         <a id="proxyOptionsButton" href="proxy_options.html" class="main-page__link link-ignored">
-          <span>Настройки прокси</span>
+          <span data-i18n-key="proxySettings">Настройки прокси</span>
           <span class="arrow arrow-right">
             <svg width="8" height="14" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
@@ -30,31 +30,31 @@
             </svg>
           </span>
         </a>
-        <div class="main-page__about">
+        <div class="main-page__about" data-i18n-key="optionsProxyDesc">
           Если сайт заблокирован, то Censor Tracker предоставит к нему доступ. Отключитье эту настройку, если вы
           пользуетесь другим сервисом для обхода блокировок (например, VPN), чтобы увеличить скорость соединения.
         </div>
       </div>
 
       <div id="privateBrowsingPermissionsRequiredMessage" class="main-page__extension" hidden>
-        <div class="extension__title">
+        <div class="extension__title" data-i18n-key="privateBrowsingRequired">
           Разрешите работу расширения в приватных окнах
         </div>
-        <div class="extension__text">
+        <div class="extension__text" data-i18n-key="privateBrowsingRequiredDesc">
           Чтобы мы могли открывать для вас заблокриванные сайты через прокси. В Firefox без этого никак.
         </div>
 
-        <a id="howToGrantPrivateBrowsingPermissions" class="extension__btn">
+        <a id="howToGrantPrivateBrowsingPermissions" class="extension__btn" data-i18n-key="howToGrantPrivateBrowsingPermissions">
           Как это сделать
         </a>
-        <a id="grantPrivateBrowsingPermissionsButton" class="">
+        <a id="grantPrivateBrowsingPermissionsButton" data-i18n-key="grantPrivateBrowsingPermissions">
           Я разрешил, включите прокси
         </a>
       </div>
 
       <div class="checkbox__group">
         <a id="ignoreEditorButton" href="ignore_editor.html" class="main-page__link link-ignored">
-          <span>Игнорируемые сайты</span>
+          <span data-i18n-key="ignoredSitesTitle">Игнорируемые сайты</span>
           <span class="arrow arrow-right">
             <svg width="8" height="14" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
@@ -62,24 +62,26 @@
             </svg>
           </span>
         </a>
-        <div class="main-page__about">
+        <div class="main-page__about" data-i18n-key="optionsIgnoredWebsitesDesc">
           Адреса, для которых прокси всегда будет отключён. Может помочь, если есть проблемы с открытием сайта.
         </div>
       </div>
 
       <div class="checkbox__group">
         <div class="main-page__turn">
-          <label for="showNotificationsCheckbox" class="toggle-text">Показывать системные уведомления</label>
+          <label for="showNotificationsCheckbox" class="toggle-text" data-i18n-key="showNotificationsTitle">
+            Показывать системные уведомления
+          </label>
           <input id="showNotificationsCheckbox" type="checkbox" class="toggle-button">
         </div>
-        <div class="main-page__about">
+        <div class="main-page__about" data-i18n-key="showNotificationsDesc">
           Предупредим, когда какой-то сайт передаёт ваши сообщения, личные данные и весь трафик третьим лицам в
           автоматическом режиме.
         </div>
       </div>
 
       <a href="https://censortracker.org/" target="_blank" class="main-page__link">
-        <span>О расширении</span>
+        <span data-i18n-key="aboutExtension">О расширении</span>
         <span>&rarr;</span>
       </a>
     </div>

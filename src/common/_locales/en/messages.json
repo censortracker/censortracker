@@ -63,7 +63,7 @@
     "message": "Censor Tracker extension settings"
   },
   "proxySettings": {
-    "message": "proxy settings"
+    "message": "Proxy settings"
   },
   "optionsProxyDesc": {
     "message": "If the site is blocked, the Censor Tracker will grant access to it. Disable this setting if you use another service to bypass blocking (for example, a VPN) to increase the connection speed."
@@ -77,7 +77,7 @@
   "howToGrantPrivateBrowsingPermissions": {
     "message": "How to do it"
   },
-  "privateBrowsingPermissionsGranted": {
+  "grantPrivateBrowsingPermissions": {
     "message": "I allowed, enable proxy. "
   },
   "optionsIgnoredWebsitesDesc": {

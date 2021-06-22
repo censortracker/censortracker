@@ -7,18 +7,30 @@ const currentBrowser = settings.getBrowser()
  * @param id Select by given ID.
  * @param query Select by given query.
  * @param cls Select by given class.
+ * @param doc Document.
  * @returns {NodeListOf<*>|HTMLElement|HTMLCollectionOf<Element>}
  */
-export const select = ({ id, query, cls }) => {
+export const select = ({ id, query, cls, doc = document }) => {
   if (id) {
-    return document.getElementById(id)
+    return doc.getElementById(id)
   }
 
   if (cls) {
-    return document.getElementsByClassName(cls)
+    return doc.getElementsByClassName(cls)
   }
 
-  return document.querySelectorAll(query)
+  return doc.querySelectorAll(query)
+}
+
+export const translateDocument = (doc) => {
+  for (const element of doc.querySelectorAll('[data-i18n-key]')) {
+    const value = element.getAttribute('data-i18n-key')
+    const message = currentBrowser.i18n.getMessage(value)
+
+    if (message) {
+      element.innerHTML = message
+    }
+  }
 }
 
 export const getTranslatedPopupText = () => {

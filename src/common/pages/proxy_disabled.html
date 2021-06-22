@@ -19,18 +19,20 @@
            width="128px" height="128px" alt="<%= htmlWebpackPlugin.options.title %>"/>
     </div>
     <div class="main-page__info">
-      <div class="main-page__title">Сайт недоступен или заблокирован</div>
-      <div class="main-page__text">
+      <div class="main-page__title" data-i18n-key="unavailableOrBlocked">
+        Сайт недоступен или заблокирован
+      </div>
+      <div class="main-page__text" data-i18n-key="proxyDisabledDesc">
         Вы отключили обход блокировок сайтов с помощью
         Censor Tracker, но <b id="unavailableWebsite"></b> недоступен. Попробовать открыть его через прокси Censor Tracker?
       </div>
       <div class="main-page__btn">
         <button id="openThroughProxy" class="btn btn-dark" aria-label="Окрыть через прокси">
-          <span class="btn__text">Окрыть через прокси</span>
+          <span class="btn__text" data-i18n-key="openThroughProxyButton">Окрыть через прокси</span>
         </button>
 
-        <button id="doNotAskAnymore" class="btn btn-light"  aria-label="Больше не предлагать">
-          <span class="btn__text">Больше не предлагать</span>
+        <button id="doNotAskAnymore" class="btn btn-light">
+          <span class="btn__text" data-i18n-key="doNotAskAnymoreButton">Больше не предлагать</span>
         </button>
       </div>
     </div>

@@ -19,18 +19,20 @@
            width="128px" height="128px" alt="<%= htmlWebpackPlugin.options.title %>"/>
     </div>
     <div class="main-page__info">
-      <div class="main-page__title">Не удалось открыть сайт через прокси Censor Tracker</div>
+      <div class="main-page__title" data-i18n-key="proxyUnavailable">
+        Не удалось открыть сайт через прокси Censor Tracker
+      </div>
       <div class="main-page__text">
         Не удалось открыть сайт <b id="unavailableWebsite"></b>.
         Мы работаем над исправлением проблемы, попробуйте открыть сайт позже.
       </div>
       <div class="main-page__btn">
         <button id="closeTab" class="btn btn-dark" aria-label="Закрыть вкладку">
-          <span class="btn__text">Закрыть вкладку</span>
+          <span class="btn__text" data-i18n-key="closeTab">Закрыть вкладку</span>
         </button>
 
-        <button id="tryAgain" class="btn btn-light" aria-label="Попробовать еще раз">
-          <span class="btn__text">Попробовать еще раз</span>
+        <button id="tryAgain" class="btn btn-light">
+          <span class="btn__text" data-i18n-key="tryAgain">Попробовать еще раз</span>
         </button>
       </div>
     </div>

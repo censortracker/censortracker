@@ -23,14 +23,14 @@
           </svg>
         </a>
       </div>
-      <div id="proxyOptionsTitle" class="main-page__title">Настройки прокси</div>
+      <div id="proxyOptionsTitle" class="main-page__title" data-i18n-key="proxySettings">Настройки прокси</div>
       <div class="checkbox__group">
         <div class="main-page__turn">
-          <label for="useProxyCheckbox" class="toggle-text">Использовать прокси</label>
+          <label for="useProxyCheckbox" class="toggle-text" data-i18n-key="useProxy">Использовать прокси</label>
           <input id="useProxyCheckbox" type="checkbox" class="toggle-button">
         </div>
         <div class="main-page__about">
-          <div class="use_proxy__text">
+          <div class="use_proxy__text" data-i18n-key="optionsProxyDesc">
             Если сайт заблокирован, то Censor Tracker предоставит к нему доступ. Отключите эту настройку, если вы
             пользуетесь другим сервисом для обхода блокировок (например, VPN), чтобы увеличить скорость соединения.
           </div>
@@ -40,7 +40,9 @@
           <div id="proxyCustomOptionsRadioGroup" class="proxy-radio-btn__group">
             <div class="proxy-radio-btn_el">
               <input id="useDefaultProxy" class="proxy-radio-btn_input" type="radio" name="proxy-radio" value="default" checked>
-              <label class="proxy-radio-btn_label" for="useDefaultProxy">Прокси CensorTracker</label>
+              <label class="proxy-radio-btn_label" for="useDefaultProxy" data-i18n-key="useDefaultProxy">
+                Прокси CensorTracker
+              </label>
             </div>
             <div class="proxy-radio-btn_el">
               <input class="proxy-radio-btn_input" type="radio" name="proxy-radio" id="useCustomProxy" value="custom">
@@ -63,11 +65,11 @@
             Для нормальной работы CensorTracker, отключите &laquo;<div class="extension__name"></div>&raquo;
             в настройках браузера.
           </div>
-          <a class="extension__btn disable-other-extensions__btn">Отключить</a>
+          <a class="extension__btn disable-other-extensions__btn" data-i18n-key="disableAll">Отключить</a>
         </div>
 
         <div id="controlledByOtherExtensions" class="main-page__extension" hidden>
-          <div class="extension__title">
+          <div class="extension__title" data-i18n-key="controlledByOtherExtensions">
             Другие расширения контролируют ваши настройки прокси в браузере
           </div>
           <div class="extension__text">
@@ -75,7 +77,9 @@
             <ol id="extensionsWhichControlsProxy">
             </ol>
           </div>
-          <a class="extension__btn disable-other-extensions__btn">Отключить все</a>
+          <a class="extension__btn disable-other-extensions__btn" data-i18n-key="disableAll">
+            Отключить все
+          </a>
         </div>
 
       </div>

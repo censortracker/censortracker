@@ -9,16 +9,16 @@
     "message": "Services from the IDO registry may automatically transmit your personal data, including messages and all traffic, to government authorities. This service is not in the IDO registry."
   },
   "distrDesc": {
-    "message": "The Service may transfer your personal data, including messages and all traffic to Russian government authorities automatically."
+    "message": "The Service may transfer your personal data, including messages and all traffic to government authorities automatically."
   },
   "distrCoopRefused": {
-    "message": "The service claimed that they do not transmit traffic to Russian government agencies automatically."
+    "message": "The service claimed that they do not transmit traffic to government agencies automatically."
   },
   "blockedTitle": {
-    "message": "Is prohibited in Russia."
+    "message": "Is prohibited."
   },
   "notBlockedTitle": {
-    "message": "Is  not prohibited in Russia."
+    "message": "Is  not prohibited."
   },
   "blockedDesc": {
     "message": "Access to the site is prohibited, but Censor Tracker gives you access to it through a reliable proxy."
@@ -167,7 +167,7 @@
     "message": "Try again"
   },
   "siteUnavailableTitle": {
-    "message": "The site is unavailable or blocked in Russian Federation"
+    "message": "The site is unavailable or blocked"
   },
   "siteUnavailableDesc": {
     "message": "Unable to open the site <b id=\"unavailableWebsite\">$URL$</b>. try opening it through the Censor Tracker proxy?",

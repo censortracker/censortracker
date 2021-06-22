@@ -189,7 +189,10 @@
   "installedGratitude": {
     "message": "Thank you!"
   },
-  "installedDesc": {
-    "message": "Pin the extension in&nbsp;browser panel in&nbsp;two clicks to always be &nbsp;aware which sites can transfer your messages, personal data and &nbsp;all traffic to third parties."
+  "extensionInstalledDesc": {
+    "message": "Pin the extension in browser panel in two clicks to always be aware which sites can transfer your messages, personal data and all traffic to third parties."
+  },
+  "thankYou": {
+    "message": "Thank you!"
   }
 }

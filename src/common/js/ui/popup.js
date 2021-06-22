@@ -1,8 +1,9 @@
-import { extractHostnameFromUrl, proxy, registry, settings, storage } from '..'
+import { extractHostnameFromUrl, proxy, registry, settings, storage, translateDocument } from '..'
 import { getTranslatedPopupText, select } from './ui'
 
 (async () => {
-  const showTimeout = 50
+  translateDocument(document)
+  const showTimeout = 160
   const uiText = getTranslatedPopupText()
   const thisIsFirefox = settings.isFirefox
   const currentBrowser = settings.getBrowser()

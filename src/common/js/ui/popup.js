@@ -196,12 +196,10 @@ import { getTranslatedPopupText, select } from './ui'
     for (const element of select({ query: '[data-i18n-key]' })) {
       const { value: transKey } = element.attributes.item('data-i18n-key')
 
-      console.log(`Your key is: ${transKey}`)
-
       const message = browser.i18n.getMessage(transKey)
 
       if (message) {
-        element.innerHTML = message
+        element.innerText = message
       }
     }
   }

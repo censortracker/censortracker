@@ -110,6 +110,9 @@ class Asynchrome {
         fn: 'setTitle',
       }, ...args),
     }
+    this.i18n = {
+      getMessage: (...args) => this.chrome.i18n.getMessage(...args),
+    }
     this.management = {
       getAll: (...args) => promisify({
         ns: this.chrome.management,

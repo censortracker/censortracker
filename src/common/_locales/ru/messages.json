@@ -38,10 +38,10 @@
   "whatThisMean": {
     "message": "что это значит"
   },
-  "extensionIsOff": {
+  "extensionDisabledTitle": {
     "message": "Censor Tracker выключен"
   },
-  "extensionIsOn": {
+  "extensionEnabledTitle": {
     "message": "включен"
   },
   "okayButton": {
@@ -208,5 +208,8 @@
   },
   "muteNotificationsForThis": {
     "message": "Не показывать для этого сайта."
+  },
+  "turnOnExtensionToCheckWebsite": {
+    "message": "Включите, чтобы получить доступ заблокированным сайтам."
   }
 }

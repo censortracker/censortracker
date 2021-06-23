@@ -231,5 +231,5 @@ import {
     document.documentElement.style.visibility = 'initial'
   }
 
-  setTimeout(show, 160)
+  setTimeout(show, 100)
 })()

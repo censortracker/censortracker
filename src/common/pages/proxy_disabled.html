@@ -20,19 +20,22 @@
     </div>
     <div class="main-page__info">
       <div class="main-page__title" data-i18n-key="unavailableOrBlocked">
-        Сайт недоступен или заблокирован
+        <!-- Сайт недоступен или заблокирован-->
       </div>
-      <div class="main-page__text" data-i18n-key="proxyDisabledDesc">
-        Вы отключили обход блокировок сайтов с помощью
-        Censor Tracker, но <b id="unavailableWebsite"></b> недоступен. Попробовать открыть его через прокси Censor Tracker?
+      <div class="main-page__text" data-i18n-key="proxyDisabledDesc" data-i18n-render-prop="url">
+        <!-- Вы отключили обход блокировок сайтов с помощью Censor Tracker. -->
       </div>
       <div class="main-page__btn">
         <button id="openThroughProxy" class="btn btn-dark" aria-label="Окрыть через прокси">
-          <span class="btn__text" data-i18n-key="openThroughProxyButton">Окрыть через прокси</span>
+          <span class="btn__text" data-i18n-key="openThroughProxyButton">
+            <!-- Окрыть через прокси -->
+          </span>
         </button>
 
         <button id="doNotAskAnymore" class="btn btn-light">
-          <span class="btn__text" data-i18n-key="doNotAskAnymoreButton">Больше не предлагать</span>
+          <span class="btn__text" data-i18n-key="doNotAskAnymoreButton">
+            <!-- Больше не предлагать -->
+          </span>
         </button>
       </div>
     </div>

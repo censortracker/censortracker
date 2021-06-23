@@ -96,9 +96,9 @@
     "message": "Сайт недоступен или заблокирован"
   },
   "proxyDisabledDesc": {
-    "message": "Вы отключили обход блокировок сайтов с помощью Censor Tracker, но <b id=\"unavailableWebsite\">$details$</b> недоступен. Попробовать открыть его через прокси Censor Tracker?",
+    "message": "Вы отключили обход блокировок сайтов с помощью Censor Tracker, но <b id=\"unavailableWebsite\">$url$</b> недоступен. Попробовать открыть его через прокси Censor Tracker?",
     "placeholders": {
-      "details": {
+      "url": {
         "content": "$1"
       }
     }

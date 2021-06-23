@@ -2,18 +2,17 @@ import { proxy, translateDocument } from '@/common/js'
 import { extractDecodedOriginUrl } from '@/common/js/utilities'
 
 (async () => {
-  translateDocument(document)
   const [tab] = await browser.tabs.query({ active: true, lastFocusedWindow: true })
   const originUrl = extractDecodedOriginUrl(tab.url)
-  const unavailableWebsite = document.getElementById('unavailableWebsite')
 
-  unavailableWebsite.innerText = originUrl
+  translateDocument(document, { url: originUrl })
 
   document.addEventListener('click', async (event) => {
     if (event.target.matches('#openThroughProxy')) {
-      await proxy.setProxy()
-      browser.tabs.create({ url: originUrl, index: tab.index }, () => {
-        browser.tabs.remove(tab.id)
+      proxy.setProxy().then(() => {
+        browser.tabs.create({ url: originUrl, index: tab.index }, () => {
+          browser.tabs.remove(tab.id)
+        })
       })
     }
 

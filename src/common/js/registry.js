@@ -148,12 +148,15 @@ class Registry {
   getDomains = async () => {
     const { domains, blockedDomains } = await storage.get({ domains: [], blockedDomains: [] })
 
+    const excludedDomains = ['youtube.com', 'youtu.be']
     const domainsFound = domains && domains.length > 0
     const blockedDomainsFound = blockedDomains && blockedDomains.length > 0
 
     if (domainsFound || blockedDomainsFound) {
       try {
-        return [...domains, ...blockedDomains]
+        return [...domains, ...blockedDomains].filter((element) => {
+          return !excludedDomains.includes(element)
+        })
       } catch (error) {
         console.log(error)
       }

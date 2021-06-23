@@ -197,5 +197,16 @@
   },
   "thankYou": {
     "message": "Спасибо!"
+  },
+  "cooperationAcceptedMessage": {
+    "message": "$hostname$ может передавать информацию третьим лицам.",
+    "placeholders": {
+      "hostname": {
+        "content": "$1"
+      }
+    }
+  },
+  "muteNotificationsForThis": {
+    "message": "Не показывать для этого сайта."
   }
 }

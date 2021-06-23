@@ -194,5 +194,16 @@
   },
   "thankYou": {
     "message": "Thank you!"
+  },
+  "cooperationAcceptedMessage": {
+    "message": "$hostname$ may share your data with third parties.",
+    "placeholders": {
+      "hostname": {
+        "content": "$1"
+      }
+    }
+  },
+  "muteNotificationsForThis": {
+    "message": "Не показывать для этого сайта."
   }
 }

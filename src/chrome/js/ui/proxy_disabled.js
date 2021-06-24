@@ -1,6 +1,5 @@
 import { asynchrome } from '@/chrome/js/core'
-import { proxy, translateDocument } from '@/common/js'
-import { extractDecodedOriginUrl } from '@/common/js/utilities'
+import { extractDecodedOriginUrl, proxy, translateDocument } from '@/common/js'
 
 (async () => {
   const originUrl = extractDecodedOriginUrl(window.location.href)

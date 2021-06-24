@@ -20,19 +20,22 @@
     </div>
     <div class="main-page__info">
       <div class="main-page__title" data-i18n-key="proxyUnavailable">
-        Не удалось открыть сайт через прокси Censor Tracker
+        <!-- Не удалось открыть сайт через прокси Censor Tracker -->
       </div>
-      <div class="main-page__text">
-        Не удалось открыть сайт <b id="unavailableWebsite"></b>.
-        Мы работаем над исправлением проблемы, попробуйте открыть сайт позже.
+      <div class="main-page__text" data-i18n-key="proxyUnavailableDesc" data-i18n-render-prop="url">
+        <!-- Не удалось открыть сайт <b id="unavailableWebsite"></b> -->
       </div>
       <div class="main-page__btn">
         <button id="closeTab" class="btn btn-dark" aria-label="Закрыть вкладку">
-          <span class="btn__text" data-i18n-key="closeTab">Закрыть вкладку</span>
+          <span class="btn__text" data-i18n-key="closeTab">
+            <!-- Закрыть вкладку -->
+          </span>
         </button>
 
         <button id="tryAgain" class="btn btn-light">
-          <span class="btn__text" data-i18n-key="tryAgain">Попробовать еще раз</span>
+          <span class="btn__text" data-i18n-key="tryAgain">
+            <!-- Попробовать еще раз -->
+          </span>
         </button>
       </div>
     </div>

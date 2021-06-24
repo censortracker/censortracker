@@ -156,7 +156,7 @@
     "message": "Не удалось открыть сайт через прокси Censor Tracker"
   },
   "proxyUnavailableDesc": {
-    "message": "Не удалось открыть сайт <b id=\"unavailableWebsite\">$URL$</b>. Мы работаем над исправлением проблемы, попробуйте открыть сайт позже.",
+    "message": "Не удалось открыть сайт <b id=\"unavailableWebsite\">$url$</b>. Мы работаем над исправлением проблемы, попробуйте открыть сайт позже.",
     "placeholders": {
       "url": {
         "content": "$1"

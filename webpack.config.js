@@ -213,6 +213,7 @@ if (isFirefox) {
 
 if (isChromium) {
   webpackConfig.entry.controlled = `./src/${BROWSER}/js/ui/controlled.js`
+  webpackConfig.entry.translator = `./src/common/js/ui/translator.js`
   webpackConfig.plugins.push(new HTMLWebpackPlugin({
     title: 'Настройки | Censor Tracker',
     filename: 'options.html',
@@ -242,7 +243,7 @@ if (isChromium) {
     filename: 'installed.html',
     template: `src/${BROWSER}/pages/installed.html`,
     inject: true,
-    chunks: [],
+    chunks: ['translator'],
     meta: contentSecurityPolicy,
   }))
 }

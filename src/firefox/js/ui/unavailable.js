@@ -1,15 +1,13 @@
 import { extractDecodedOriginUrl, translateDocument } from '@/common/js'
 
 (async () => {
-  translateDocument(document)
-  const unavailableWebsite = document.getElementById('unavailableWebsite')
   const openThroughProxyButton = document.getElementById('openThroughProxy')
 
   const [tab] = await browser.tabs.query({ active: true, lastFocusedWindow: true })
 
   const originUrl = extractDecodedOriginUrl(tab.url)
 
-  unavailableWebsite.innerText = originUrl
+  translateDocument(document, { url: originUrl })
 
   if (originUrl && openThroughProxyButton) {
     openThroughProxyButton.disabled = false

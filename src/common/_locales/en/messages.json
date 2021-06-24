@@ -1,9 +1,9 @@
 {
   "distrTitle": {
-    "message": "Is the information distribution organizer"
+    "message": "Is the information spreading organizer"
   },
   "notDistrTitle": {
-    "message": "Is not the information distribution organizer "
+    "message": "Is not the information spreading organizer"
   },
   "notDistrDesc": {
     "message": "Services from the IDO registry may automatically transmit your personal data, including messages and all traffic, to government authorities. This service is not in the IDO registry."
@@ -15,13 +15,13 @@
     "message": "The service claimed that they do not transmit traffic to government agencies automatically."
   },
   "blockedTitle": {
-    "message": "Is prohibited."
+    "message": "Is banned."
   },
   "notBlockedTitle": {
-    "message": "Is  not prohibited."
+    "message": "Is not banned."
   },
   "blockedDesc": {
-    "message": "Access to the site is prohibited, but Censor Tracker gives you access to it through a reliable proxy."
+    "message": "Access to the site is banned, but Censor Tracker gives you access to it through a reliable proxy."
   },
   "notBlockedDesc": {
     "message": "If access to the site is banned, then Censor Tracker will offer to open the site through a reliable proxy."

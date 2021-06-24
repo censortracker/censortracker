@@ -127,8 +127,8 @@
   "proxyPort": {
     "message": "Порт"
   },
-  "controlledByOtherExtension": {
-    "message": "Сейчас другое расширение &laquo;<div class=\"extension__name\">$NAME$</div>&raquo; контролирует ваши настройки прокси",
+  "controlledByOtherExtensionTitle": {
+    "message": "Сейчас другое расширение &laquo;<div class=\"extension__name\">$name$</div>&raquo; контролирует ваши настройки прокси",
     "placeholders": {
       "name": {
         "content": "$1"

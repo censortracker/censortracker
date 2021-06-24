@@ -136,7 +136,7 @@
     }
   },
   "controlledByOtherExtensionDesc": {
-    "message": "for normal use of CensorTracker, disable &laquo;<div class=\"extension__name\">$NAME$</div>&raquo; in browser settings.",
+    "message": "For normal use of CensorTracker, disable &laquo;<div class=\"extension__name\">$name$</div>&raquo; in browser settings.",
     "placeholders": {
       "name": {
         "content": "$1"
@@ -147,7 +147,7 @@
     "message": "Other extensions control your proxy settings in browser."
   },
   "controlledByOtherExtensionsDesc": {
-    "message": "Для for normal use of CensorTracker, disable the following extensions in browser settings:"
+    "message": "For normal use of CensorTracker, disable the following extensions in browser settings:"
   },
   "disableAll": {
     "message": "Disable all"

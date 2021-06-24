@@ -27,7 +27,7 @@
     "message": "If access to the site is banned, then Censor Tracker will offer to open the site through a reliable proxy."
   },
   "siteIsUnavailable": {
-    "message": "The site is unavailable"
+    "message": "The site is unavailable "
   },
   "controlledByOtherExtensionsMessage": {
     "message": "Another extension controls the proxy. More detailed →"
@@ -147,7 +147,7 @@
     "message": "Other extensions control your proxy settings in browser."
   },
   "controlledByOtherExtensionsDesc": {
-    "message": "Для for normal use of CensorTracker, disable the following extensions in browser settings:"
+    "message": "For normal use of CensorTracker, disable the following extensions in browser settings:"
   },
   "disableAll": {
     "message": "Disable all"
@@ -170,10 +170,10 @@
     "message": "Try again"
   },
   "siteUnavailableTitle": {
-    "message": "The site is unavailable or blocked."
+    "message": "The site is unavailable or blocked"
   },
   "siteUnavailableDesc": {
-    "message": "Unable to open the site <b id=\"unavailableWebsite\">$URL$</b>. try opening it through the Censor Tracker proxy?",
+    "message": "Unable to open the site <b id=\"unavailableWebsite\">$url$</b>. try opening it through the Censor Tracker proxy?",
     "placeholders": {
       "url": {
         "content": "$1"

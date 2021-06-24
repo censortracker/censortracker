@@ -177,10 +177,10 @@ const showCooperationAcceptedWarning = async (url) => {
         type: 'basic',
         title: settings.getName(),
         priority: 2,
-        message: `${hostname} может передавать информацию третьим лицам.`,
+        message: chrome.i18n.getMessage('cooperationAcceptedMessage', hostname),
         buttons: [
-          { title: '\u2715 Не показывать для этого сайта' },
-          { title: '\u2192 Подробнее' },
+          { title: chrome.i18n.getMessage('muteNotificationsForThis') },
+          { title: chrome.i18n.getMessage('readMoreButton') },
         ],
         iconUrl: settings.getDangerIcon(),
       })

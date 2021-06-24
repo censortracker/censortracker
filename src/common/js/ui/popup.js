@@ -1,24 +1,61 @@
-import { extractHostnameFromUrl, proxy, registry, settings, storage } from '..'
-import { getTranslatedPopupText, select } from './ui'
+import {
+  extractHostnameFromUrl,
+  proxy,
+  registry,
+  select,
+  settings,
+  storage,
+  translateDocument,
+} from '..'
 
 (async () => {
-  const showTimeout = 50
-  const uiText = getTranslatedPopupText()
+  translateDocument(document)
   const thisIsFirefox = settings.isFirefox
   const currentBrowser = settings.getBrowser()
+  const uiText = {
+    ori: {
+      found: {
+        title: currentBrowser.i18n.getMessage('distrTitle'),
+        statusIcon: 'images/icons/status/icon_danger.svg',
+        detailsText: currentBrowser.i18n.getMessage('distrDesc'),
+        detailsClasses: ['text-warning'],
+        cooperationRefused: {
+          message: currentBrowser.i18n.getMessage('distrCoopRefused'),
+
+        },
+      },
+      notFound: {
+        statusIcon: 'images/icons/status/icon_ok.svg',
+        title: currentBrowser.i18n.getMessage('notDistrTitle'),
+        detailsText: currentBrowser.i18n.getMessage('notDistrDesc'),
+      },
+    },
+    restrictions: {
+      true: {
+        statusIcon: 'images/icons/status/icon_info.svg',
+        title: currentBrowser.i18n.getMessage('blockedTitle'),
+        detailsText: currentBrowser.i18n.getMessage('blockedDesc'),
+      },
+      false: {
+        statusIcon: 'images/icons/status/icon_ok.svg',
+        title: currentBrowser.i18n.getMessage('notBlockedTitle'),
+        detailsText: currentBrowser.i18n.getMessage('notBlockedDesc'),
+      },
+    },
+  }
   const statusImage = select({ id: 'statusImage' })
   const oriSiteInfo = select({ id: 'oriSiteInfo' })
   const textAboutOri = select({ id: 'textAboutOri' })
+  const detailsText = select({ query: '.details-text' })
   const extensionIsOff = select({ id: 'extensionIsOff' })
   const restrictionType = select({ id: 'restrictionType' })
-  const footerExtensionIsOn = select({ id: 'footerExtensionIsOn' })
-  const currentDomainHeader = select({ id: 'currentDomainHeader' })
-  const restrictionDescription = select({ id: 'restrictionDescription' })
-  const detailsText = select({ query: '.details-text' })
   const mainPageInfoBlocks = select({ query: '.main-page-info' })
   const currentDomainBlocks = select({ query: '.current-domain' })
+  const footerExtensionIsOn = select({ id: 'footerExtensionIsOn' })
+  const currentDomainHeader = select({ id: 'currentDomainHeader' })
   const closeDetailsButtons = select({ query: '.btn-hide-details' })
   const whatThisMeanButtons = select({ query: '.btn-what-this-mean' })
+  const restrictionDescription = select({ id: 'restrictionDescription' })
   const controlledByOtherExtensionsButton = select({ id: 'controlledByOtherExtensionsButton' })
   const privateBrowsingPermissionsRequiredButton = select({ id: 'privateBrowsingPermissionsRequiredButton' })
 
@@ -81,11 +118,7 @@ import { getTranslatedPopupText, select } from './ui'
   const currentHostname = extractHostnameFromUrl(currentUrl)
 
   currentDomainBlocks.forEach((element) => {
-    if (currentHostname) {
-      element.innerText = currentHostname
-    } else {
-      element.innerText = uiText.siteIsUnavailable
-    }
+    element.innerText = currentHostname || currentBrowser.i18n.getMessage('siteIsUnavailable')
   })
 
   if (extensionEnabled) {
@@ -102,24 +135,22 @@ import { getTranslatedPopupText, select } from './ui'
 
     const restrictionsFound = await registry.contains(currentHostname)
 
-    if (restrictionsFound) {
-      changeStatusImage('blocked')
-      const elements = select({ query: '#restrictions [data-render-var]' })
+    select({ query: '#restrictions [data-render-var]' }).forEach((el) => {
+      const renderVar = el.dataset.renderVar
+      const value = uiText.restrictions[restrictionsFound][renderVar]
 
-      for (const element of elements) {
-        const renderVar = element.dataset.renderVar
-        const value = uiText.restrictions.found[renderVar]
-
-        if (renderVar === 'statusIcon') {
-          element.setAttribute('src', value)
-        } else {
-          element.innerText = value
-        }
+      if (restrictionsFound) {
+        changeStatusImage('blocked')
       }
-    }
 
-    const { url: distributorUrl, cooperationRefused } =
-      await registry.distributorsContains(currentHostname)
+      if (renderVar === 'statusIcon') {
+        el.setAttribute('src', value)
+      } else {
+        el.innerText = value
+      }
+    })
+
+    const { url: distributorUrl, cooperationRefused } = await registry.distributorsContains(currentHostname)
 
     if (distributorUrl) {
       currentDomainHeader.classList.add('title-ori')
@@ -132,9 +163,7 @@ import { getTranslatedPopupText, select } from './ui'
         currentDomainHeader.classList.add('title-normal')
       } else {
         changeStatusImage('ori')
-        const elements = select({ query: '#ori [data-render-var]' })
-
-        for (const element of elements) {
+        select({ query: '#ori [data-render-var]' }).forEach((element) => {
           const renderVar = element.dataset.renderVar
           const value = uiText.ori.found[renderVar]
 
@@ -145,7 +174,7 @@ import { getTranslatedPopupText, select } from './ui'
           } else {
             element.innerText = value
           }
-        }
+        })
       }
     }
 
@@ -202,5 +231,5 @@ import { getTranslatedPopupText, select } from './ui'
     document.documentElement.style.visibility = 'initial'
   }
 
-  setTimeout(show, showTimeout)
+  setTimeout(show, 100)
 })()

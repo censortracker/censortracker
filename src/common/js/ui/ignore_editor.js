@@ -5,8 +5,10 @@ import 'codemirror/addon/search/searchcursor'
 import CodeMirror from 'codemirror'
 
 import storage from '../storage'
+import { translateDocument } from './ui'
 
 (async () => {
+  translateDocument(document)
   const searchInput = document.getElementById('search')
   const ignoredList = document.getElementById('ignoreList')
   const { ignoredHosts } = await storage.get({ ignoredHosts: [] })

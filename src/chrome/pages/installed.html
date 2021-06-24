@@ -3,7 +3,9 @@
 
 <head>
   <meta charset="UTF-8"/>
-  <title><%= htmlWebpackPlugin.options.title %></title>
+  <title data-i18n-key="installedPageTitle">
+    <%= htmlWebpackPlugin.options.title %>
+  </title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <link rel="stylesheet" href="css/options.css"/>
 </head>
@@ -12,9 +14,11 @@
   <div class="main-container main-container__after-install">
     <div class="main-page">
       <div class="main-page__info">
-        <div class="main-page__title">Спасибо!</div>
-        <div class="main-page__content">
-          Закрепите расширение в&nbsp;панели браузера в&nbsp;два клика, чтобы всегда быть в&nbsp;курсе, какие сайты могут передавать ваши сообщения, личные данные и&nbsp;весь трафик третьим лицам.
+        <div class="main-page__title" data-i18n-key="thankYou">
+          <!-- Спасибо! -->
+        </div>
+        <div class="main-page__content" data-i18n-key="extensionInstalledDesc">
+          <!-- Закрепите расширение в панели браузера в два клика. -->
         </div>
       </div>
       <div class="main-page__image">

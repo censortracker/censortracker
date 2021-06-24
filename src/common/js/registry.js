@@ -110,7 +110,6 @@ class Registry {
         const jsonData = await response.json()
 
         await storage.set({ [storageKey]: jsonData })
-        console.log(await storage.get({ [storageKey]: null }))
       } catch (error) {
         console.error(`Error on fetching data from the API endpoint: ${url}`)
       }
@@ -149,12 +148,15 @@ class Registry {
   getDomains = async () => {
     const { domains, blockedDomains } = await storage.get({ domains: [], blockedDomains: [] })
 
+    const excludedDomains = ['youtube.com', 'youtu.be']
     const domainsFound = domains && domains.length > 0
     const blockedDomainsFound = blockedDomains && blockedDomains.length > 0
 
     if (domainsFound || blockedDomainsFound) {
       try {
-        return [...domains, ...blockedDomains]
+        return [...domains, ...blockedDomains].filter((element) => {
+          return !excludedDomains.includes(element)
+        })
       } catch (error) {
         console.log(error)
       }

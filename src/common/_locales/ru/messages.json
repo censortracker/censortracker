@@ -30,25 +30,25 @@
     "message": "Сайт недоступен"
   },
   "controlledByOtherExtensionsMessage": {
-    "message": "Другое расширение контролирует прокси. Подробнее &rarr;"
+    "message": "Другое расширение контролирует прокси. Подробнее →"
   },
   "privateBrowsingPermissionsRequiredMessage": {
-    "message": "Прокси отключён. Требуется разрешение на работу в приватных окнах &rarr;"
+    "message": "Прокси отключён. Требуется разрешение на работу в приватных окнах →"
   },
   "whatThisMean": {
     "message": "что это значит"
   },
-  "extensionIsOff": {
+  "extensionDisabledTitle": {
     "message": "Censor Tracker выключен"
   },
-  "extensionIsOn": {
+  "extensionEnabledTitle": {
     "message": "включен"
   },
   "okayButton": {
     "message": "Ясно"
   },
   "readMoreButton": {
-    "message": "Подробнее"
+    "message": "Подробнее →"
   },
   "ignoredSitesTitle": {
     "message": "Игнорируемые сайты"
@@ -77,7 +77,7 @@
   "howToGrantPrivateBrowsingPermissions": {
     "message": "Как это сделать"
   },
-  "privateBrowsingPermissionsGranted": {
+  "grantPrivateBrowsingPermissions": {
     "message": "Я разрешил, включите прокси"
   },
   "optionsIgnoredWebsitesDesc": {
@@ -96,9 +96,9 @@
     "message": "Сайт недоступен или заблокирован"
   },
   "proxyDisabledDesc": {
-    "message": "Вы отключили обход блокировок сайтов с помощью Censor Tracker, но <b id=\"unavailableWebsite\">$details$</b> недоступен. Попробовать открыть его через прокси Censor Tracker?",
+    "message": "Вы отключили обход блокировок сайтов с помощью Censor Tracker, но <b id=\"unavailableWebsite\">$url$</b> недоступен. Попробовать открыть его через прокси Censor Tracker?",
     "placeholders": {
-      "details": {
+      "url": {
         "content": "$1"
       }
     }
@@ -112,6 +112,9 @@
   "useProxy": {
     "message": "Использовать прокси"
   },
+  "useOwnProxy": {
+    "message": "Свой прокси"
+  },
   "useProxyDesc": {
     "message": "Если сайт заблокирован, то Censor Tracker предоставит к нему доступ. Отключите эту настройку, если вы пользуетесь другим сервисом для обхода блокировок (например, VPN), чтобы увеличить скорость соединения."
   },
@@ -124,8 +127,8 @@
   "proxyPort": {
     "message": "Порт"
   },
-  "controlledByOtherExtension": {
-    "message": "Сейчас другое расширение &laquo;<div class=\"extension__name\">$NAME$</div>&raquo; контролирует ваши настройки прокси",
+  "controlledByOtherExtensionTitle": {
+    "message": "Сейчас другое расширение &laquo;<div class=\"extension__name\">$name$</div>&raquo; контролирует ваши настройки прокси",
     "placeholders": {
       "name": {
         "content": "$1"
@@ -153,7 +156,7 @@
     "message": "Не удалось открыть сайт через прокси Censor Tracker"
   },
   "proxyUnavailableDesc": {
-    "message": "Не удалось открыть сайт <b id=\"unavailableWebsite\">$URL$</b>. Мы работаем над исправлением проблемы, попробуйте открыть сайт позже.",
+    "message": "Не удалось открыть сайт <b id=\"unavailableWebsite\">$url$</b>. Мы работаем над исправлением проблемы, попробуйте открыть сайт позже.",
     "placeholders": {
       "url": {
         "content": "$1"
@@ -170,7 +173,7 @@
     "message": "Сайт недоступен или заблокирован в России"
   },
   "siteUnavailableDesc": {
-    "message": "Не удалось открыть сайт <b id=\"unavailableWebsite\">$URL$</b>. Попробовать открыть его через прокси Censor Tracker?",
+    "message": "Не удалось открыть сайт <b id=\"unavailableWebsite\">$url$</b>. Попробовать открыть его через прокси Censor Tracker?",
     "placeholders": {
       "url": {
         "content": "$1"
@@ -188,5 +191,25 @@
   },
   "installedDesc": {
     "message": "Закрепите расширение в&nbsp;панели браузера в&nbsp;два клика, чтобы всегда быть в&nbsp;курсе, какие сайты могут передавать ваши сообщения, личные данные и&nbsp;весь трафик третьим лицам."
+  },
+  "extensionInstalledDesc": {
+    "message": "Закрепите расширение в панели браузера в два клика, чтобы всегда быть в курсе, какие сайты могут передавать ваши сообщения, личные данные и весь трафик третьим лицам."
+  },
+  "thankYou": {
+    "message": "Спасибо!"
+  },
+  "cooperationAcceptedMessage": {
+    "message": "$hostname$ может передавать информацию третьим лицам.",
+    "placeholders": {
+      "hostname": {
+        "content": "$1"
+      }
+    }
+  },
+  "muteNotificationsForThis": {
+    "message": "Не показывать для этого сайта."
+  },
+  "turnOnExtensionToCheckWebsite": {
+    "message": "Включите, чтобы получить доступ заблокированным сайтам."
   }
 }

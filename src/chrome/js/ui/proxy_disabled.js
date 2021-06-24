@@ -1,17 +1,18 @@
 import { asynchrome } from '@/chrome/js/core'
-import { proxy } from '@/common/js'
-import { extractDecodedOriginUrl } from '@/common/js/utilities'
+import { extractDecodedOriginUrl, proxy, translateDocument } from '@/common/js'
 
 (async () => {
   const originUrl = extractDecodedOriginUrl(window.location.href)
   const [tab] = await asynchrome.tabs.query({ active: true, lastFocusedWindow: true })
 
-  document.getElementById('unavailableWebsite').innerText = originUrl
+  translateDocument(document, { url: originUrl })
+
   document.addEventListener('click', async (event) => {
     if (event.target.matches('#openThroughProxy')) {
-      await proxy.setProxy()
-      chrome.tabs.create({ url: originUrl, index: tab.index }, () => {
-        chrome.tabs.remove(tab.id)
+      proxy.setProxy().then(() => {
+        chrome.tabs.create({ url: originUrl, index: tab.index }, () => {
+          chrome.tabs.remove(tab.id)
+        })
       })
     }
 

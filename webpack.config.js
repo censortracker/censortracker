@@ -47,7 +47,7 @@ const webpackConfig = {
   entry: {
     background: `./src/${BROWSER}/js/background.js`,
     unavailable: `./src/${BROWSER}/js/ui/unavailable.js`,
-    popup: `./src/common/js/ui/popup.js`,
+    popup: './src/common/js/ui/popup.js',
     options: './src/common/js/ui/options.js',
     proxy_options: './src/common/js/ui/proxy_options.js',
     proxy_disabled: `./src/${BROWSER}/js/ui/proxy_disabled.js`,
@@ -117,10 +117,10 @@ const webpackConfig = {
           from: resolve('src/common/css'),
           to: resolve(`dist/${BROWSER}/${OUTPUT_SUB_DIR}/css`),
         },
-        // {
-        //   from: resolve('src/common/_locales/'),
-        //   to: resolve(`dist/${BROWSER}/${OUTPUT_SUB_DIR}/_locales`),
-        // },
+        {
+          from: resolve('src/common/_locales/'),
+          to: resolve(`dist/${BROWSER}/${OUTPUT_SUB_DIR}/_locales`),
+        },
       ],
     }),
     new HTMLWebpackPlugin({
@@ -213,6 +213,7 @@ if (isFirefox) {
 
 if (isChromium) {
   webpackConfig.entry.controlled = `./src/${BROWSER}/js/ui/controlled.js`
+  webpackConfig.entry.translator = `./src/common/js/ui/translator.js`
   webpackConfig.plugins.push(new HTMLWebpackPlugin({
     title: 'Настройки | Censor Tracker',
     filename: 'options.html',
@@ -242,7 +243,7 @@ if (isChromium) {
     filename: 'installed.html',
     template: `src/${BROWSER}/pages/installed.html`,
     inject: true,
-    chunks: [],
+    chunks: ['translator'],
     meta: contentSecurityPolicy,
   }))
 }

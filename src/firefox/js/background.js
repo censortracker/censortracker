@@ -156,7 +156,7 @@ const showCooperationAcceptedWarning = async (url) => {
         type: 'basic',
         title: settings.getName(),
         iconUrl: settings.getDangerIcon(),
-        message: `${hostname} может передавать информацию третьим лицам.`,
+        message: browser.i18n.getMessage('cooperationAcceptedMessage', hostname),
       })
 
       try {

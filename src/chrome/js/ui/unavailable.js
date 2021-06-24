@@ -1,4 +1,4 @@
-import { extractDecodedOriginUrl } from '@/common/js/utilities';
+import { extractDecodedOriginUrl, translateDocument } from '@/common/js';
 
 (async () => {
   const openThroughProxyButton = document.getElementById('openThroughProxy')
@@ -7,7 +7,7 @@ import { extractDecodedOriginUrl } from '@/common/js/utilities';
     if (changeInfo && changeInfo.status === 'complete') {
       const originUrl = extractDecodedOriginUrl(window.location.href)
 
-      document.getElementById('unavailableWebsite').innerText = originUrl
+      translateDocument(document, { url: originUrl })
 
       if (originUrl && openThroughProxyButton) {
         openThroughProxyButton.classList.remove('btn-hidden')

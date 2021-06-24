@@ -1,6 +1,8 @@
-import { proxy, settings, storage } from '@/common/js'
+import { proxy, settings, storage, translateDocument } from '@/common/js'
 
 (async () => {
+  translateDocument(document)
+
   const showNotificationsCheckbox = document.getElementById('showNotificationsCheckbox')
   const grantPrivateBrowsingPermissionsButton = document.getElementById('grantPrivateBrowsingPermissionsButton')
   const privateBrowsingPermissionsRequiredMessage = document.getElementById('privateBrowsingPermissionsRequiredMessage')

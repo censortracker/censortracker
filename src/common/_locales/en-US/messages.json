@@ -173,7 +173,7 @@
     "message": "The site is unavailable or blocked"
   },
   "siteUnavailableDesc": {
-    "message": "Unable to open the site <b id=\"unavailableWebsite\">$URL$</b>. try opening it through the Censor Tracker proxy?",
+    "message": "Unable to open the site <b id=\"unavailableWebsite\">$url$</b>. try opening it through the Censor Tracker proxy?",
     "placeholders": {
       "url": {
         "content": "$1"

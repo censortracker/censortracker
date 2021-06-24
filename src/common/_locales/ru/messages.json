@@ -173,7 +173,7 @@
     "message": "Сайт недоступен или заблокирован в России"
   },
   "siteUnavailableDesc": {
-    "message": "Не удалось открыть сайт <b id=\"unavailableWebsite\">$URL$</b>. Попробовать открыть его через прокси Censor Tracker?",
+    "message": "Не удалось открыть сайт <b id=\"unavailableWebsite\">$url$</b>. Попробовать открыть его через прокси Censor Tracker?",
     "placeholders": {
       "url": {
         "content": "$1"

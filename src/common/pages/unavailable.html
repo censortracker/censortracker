@@ -19,16 +19,22 @@
            width="128px" height="128px" alt="Blocked"/>
     </div>
     <div class="main-page__info">
-      <div class="main-page__title" data-i18n-key="siteUnavailableTitle">Сайт недоступен или заблокирован в России</div>
-      <div class="main-page__text">
-        Не удалось открыть сайт <b id="unavailableWebsite"></b>. Попробовать открыть его через прокси Censor Tracker?
+      <div class="main-page__title" data-i18n-key="siteUnavailableTitle">
+        <!-- Сайт недоступен или заблокирован в России -->
+      </div>
+      <div class="main-page__text" data-i18n-key="siteUnavailableDesc" data-i18n-render-prop="url">
+        <!-- Не удалось открыть сайт <b id="unavailableWebsite"></b>. -->
       </div>
       <div class="main-page__btn">
         <button id="openThroughProxy" class="btn btn-dark btn-disabled btn-hidden" disabled>
-          <span class="btn__text" data-i18n-key="openThroughProxy">Открыть через прокси</span>
+          <span class="btn__text" data-i18n-key="openThroughProxy">
+            <!-- Открыть через прокси -->
+          </span>
         </button>
         <button id="closeTab" class="btn btn-light">
-          <span class="btn__text" data-i18n-key="closeTab">Закрыть вкладку</span>
+          <span class="btn__text" data-i18n-key="closeTab">
+            <!-- Закрыть вкладку -->
+          </span>
         </button>
       </div>
     </div>

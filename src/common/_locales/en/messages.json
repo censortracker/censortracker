@@ -6,7 +6,7 @@
     "message": "Is not the information spreading organizer"
   },
   "notDistrDesc": {
-    "message": "Services from the IDO registry may automatically transmit your personal data, including messages and all traffic, to government authorities. This service is not in the IDO registry."
+    "message": "Services from the ISO (information spreading organizers) registry may automatically transmit your personal data, including messages and all traffic, to government authorities. This service is not in the ISO registry."
   },
   "distrDesc": {
     "message": "The Service may transfer your personal data, including messages and all traffic to government authorities automatically."

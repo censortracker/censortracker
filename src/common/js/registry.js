@@ -32,7 +32,7 @@ class Registry {
   /**
    * Fetch config for the user's country from the server (GeoIP).
    * If the config for the country is not present then local registry
-   * of restricted websites will be empty.
+   * of banned websites will be empty.
    * @returns {Promise<Object>}
    */
   getConfig = async () => {
@@ -143,7 +143,7 @@ class Registry {
   }
 
   /**
-   * Returns array of domains from the RKN's registry.
+   * Returns array of banned domains from the registry.
    */
   getDomains = async () => {
     const { domains, blockedDomains } = await storage.get({ domains: [], blockedDomains: [] })
@@ -165,7 +165,7 @@ class Registry {
   }
 
   /**
-   * Checks if URL is in the registry of restricted websites.
+   * Checks if the given URL is in the registry of banned websites.
    * @param url URL.
    * @returns {Promise<{boolean}>}
    */
@@ -187,7 +187,8 @@ class Registry {
   }
 
   /**
-   * Checks if URL in registry of "ОРИ".
+   * Checks if the given URL is in registry of ISO (Information Spreading Organizers).
+   * This method makes sense only for some countries (Russia).
    * @param url URL.
    * @returns {Promise<{}|*>}
    */
@@ -205,7 +206,7 @@ class Registry {
   }
 
   /**
-   * Sends a report about sites that potentially can be restricted through by DPI-filters.
+   * Sends a report about sites that potentially can be banned by DPI-filters.
    */
   sendReport = async () => {
     const { alreadyReported, blockedDomains } =
@@ -247,7 +248,7 @@ class Registry {
   }
 
   /**
-   * Adds passed hostname to the local storage of restricted domains.
+   * Adds passed hostname to the local storage of banned domains.
    * @param url Hostname.
    */
   add = async (url) => {

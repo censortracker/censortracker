@@ -23,13 +23,14 @@ export const select = ({ id, query, cls, doc = document }) => {
 }
 
 /**
- * Translate document
+ * Translate given document.
  * @param doc Document to translate.
  * @param props Properties.
  */
 export const translateDocument = (doc, props = {}) => {
   for (const element of select({ query: '[data-i18n-key]', doc })) {
     const value = element.getAttribute('data-i18n-key')
+    // Extract value with the given name from "props".
     const renderProp = element.getAttribute('data-i18n-render-prop')
 
     let message = currentBrowser.i18n.getMessage(value)

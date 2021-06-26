@@ -63,7 +63,7 @@ class Registry {
         if (customRegistryUrl) {
           apis.push({
             url: customRegistryUrl,
-            storageKey: 'unregisteredRecords',
+            storageKey: 'customRegistryRecords',
           })
         }
 
@@ -120,19 +120,19 @@ class Registry {
   /**
    * Returns unregistered records from our custom registry.
    */
-  getUnregisteredRecords = async () => {
-    const { unregisteredRecords } = await storage.get({ unregisteredRecords: [] })
+  getCustomRegistryRecords = async () => {
+    const { customRegistryRecords } = await storage.get({ customRegistryRecords: [] })
 
-    return unregisteredRecords
+    return customRegistryRecords
   }
 
   /**
    * Return details of unregistered record by URL.
    * @param url URL.
    */
-  getUnregisteredRecordByURL = async (url) => {
+  getCustomRegistryRecordByURL = async (url) => {
     const domain = extractHostnameFromUrl(url)
-    const records = await this.getUnregisteredRecords()
+    const records = await this.getCustomRegistryRecords()
 
     for (const record of records) {
       if (record.domains.includes(domain)) {

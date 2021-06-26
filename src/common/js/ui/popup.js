@@ -184,7 +184,7 @@ import {
       }
     }
 
-    const { restriction } = await registry.getUnregisteredRecordByURL(currentHostname)
+    const { restriction } = await registry.getCustomRegistryRecordByURL(currentHostname)
 
     if (restriction && restriction.name) {
       restrictionType.innerText = restriction.name

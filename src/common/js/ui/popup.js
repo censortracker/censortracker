@@ -73,6 +73,12 @@ import {
     controlledByOtherExtensionsButton.hidden = false
   }
 
+  const { countryDetails: { isoA2Code } } = await registry.getConfig()
+
+  if (isoA2Code !== 'RU') {
+    document.getElementById('ori').hidden = true
+  }
+
   const changeStatusImage = (imageName) => {
     const imageSrc = currentBrowser.runtime.getURL(`images/icons/512x512/${imageName}.png`)
 
@@ -219,12 +225,6 @@ import {
         button.style.display = 'flex'
       })
     })
-  }
-
-  const { countryDetails: { isoA2Code } } = await registry.getConfig()
-
-  if (isoA2Code !== 'RU') {
-    // TODO: Fix me
   }
 
   const show = () => {

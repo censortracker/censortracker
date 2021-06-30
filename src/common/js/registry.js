@@ -92,6 +92,12 @@ class Registry {
     return {}
   }
 
+  configuredForCountry = async ({ code }) => {
+    const { countryDetails: { isoA2Code } } = await this.getConfig()
+
+    return isoA2Code === code
+  }
+
   /**
    * Save JSON data from the remote resource in local storage.
    * @returns {Promise<boolean>} Returns true when succeed.

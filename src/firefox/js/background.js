@@ -130,8 +130,6 @@ const handleTabState = async (tabId, changeInfo, tab) => {
           await showCooperationAcceptedWarning(tab.url)
         }
       }
-    } else {
-      browser.browserAction.disable(tabId)
     }
   }
 }
@@ -217,7 +215,7 @@ const handleTabCreate = async ({ id, url }) => {
   const extensionEnabled = await settings.extensionEnabled()
 
   if (extensionEnabled) {
-    if (isValidURL(url)) {
+    if (!isValidURL(url)) {
       browser.browserAction.disable(id)
     }
   } else {

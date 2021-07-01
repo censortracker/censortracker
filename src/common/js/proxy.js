@@ -12,6 +12,7 @@ class Proxy extends BrowserAPI {
         timeout: (60 * 3) * 1000,
       },
       resetTimeout: (60 * 60) * 5000,
+      reserveConfigsUrl: 'https://app.censortracker.org/api/proxy-config/',
     }
 
     setInterval(async () => {
@@ -25,6 +26,18 @@ class Proxy extends BrowserAPI {
     setInterval(() => {
       this.ping()
     }, this.proxyConfig.ping.timeout)
+  }
+
+  /**
+   * Fetch config for current proxy.
+   * @returns {Promise<string>}
+   */
+  fetchReserveConfigs = async () => {
+    const response = await fetch(this.reserveConfigsUrl, { mode: 'cors' })
+    const data = await response.json()
+    const [{ server, port }] = data.filter((config) => config.priority > 0)
+
+    return `${server}:${port}`
   }
 
   getProxyServerURL = async () => {

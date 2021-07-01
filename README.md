@@ -1,23 +1,13 @@
-[![Logo](/.github/media/censortracker-popups.svg)](https://github.com/roskomsvoboda/censortracker)
+[![Logo](/.github/media/censortracker_popup_en.png)](https://github.com/roskomsvoboda/censortracker)
 
 ![Build](https://github.com/roskomsvoboda/censortracker/workflows/Build/badge.svg?branch=master)
 [![CodeFactor](https://www.codefactor.io/repository/github/roskomsvoboda/censortracker/badge)](https://www.codefactor.io/repository/github/roskomsvoboda/censortracker)
 
-**Censor Tracker** is an extension for [Google Chrome] and [Mozilla Firefox] which helps to bypass censorship in
-Russia and to detect websites blocked through the DPI filters.
+**Censor Tracker** is an extension for [Google Chrome] and [Mozilla Firefox] which helps to bypass censorship and to detect websites blocked through the DPI filters.
 
 [<img src="/.github/media/chrome-web-store.png" title="Chrome Web Store" width="170" height="48" />](https://chrome.google.com/webstore/detail/censor-tracker/gaidoampbkcknofoejhnhbhbhhifgdop)
 [<img src="/.github/media/firefox-add-ons.png" title="Firefox Add-ons" width="170" height="48" />](https://addons.mozilla.org/ru/firefox/addon/censor-tracker/)
 
-
-Note
-----
-This extension developed for users from Russian and will work correctly only in Russia since there are
-too many dependencies in data that is specific only for Russia.
-
-**But**, we are actively working on a global version of CensorTracker, which will work for any country with censhorship.
-
-You can find the Russian version of this README [here](/README_RU.md).
 
 Features
 ========

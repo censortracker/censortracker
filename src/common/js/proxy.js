@@ -1,18 +1,25 @@
 import { registry, storage } from '.'
 import { BrowserAPI } from './browser'
 
+const PROXY_SERVER_DEFAULT_HOST = 'proxy.roskomsvoboda.org'
+const PROXY_SERVER_DEFAULT_PORT = 33333
+const PROXY_SERVER_DEFAULT_PING_URL = `http://${PROXY_SERVER_DEFAULT_HOST}:39263`
+const PROXY_SERVER_DEFAULT_PING_TIMEOUT = (60 * 3) * 1000
+const PROXY_DEFAULT_RESET_TIMEOUT = (60 * 60) * 5000
+const RSERVE_PROXY_CONFIGS_API_URL = 'https://app.censortracker.org/api/proxy-configs/'
+
 class Proxy extends BrowserAPI {
   constructor () {
     super()
     this.proxyConfig = {
-      port: 33333,
-      host: 'proxy.roskomsvoboda.org',
+      port: PROXY_SERVER_DEFAULT_PORT,
+      host: PROXY_SERVER_DEFAULT_HOST,
       ping: {
-        url: 'http://proxy.roskomsvoboda.org:39263',
-        timeout: (60 * 3) * 1000,
+        url: PROXY_SERVER_DEFAULT_PING_URL,
+        timeout: PROXY_SERVER_DEFAULT_PING_TIMEOUT,
       },
-      resetTimeout: (60 * 60) * 5000,
-      reserveConfigsUrl: 'https://app.censortracker.org/api/proxy-config/',
+      resetTimeout: PROXY_DEFAULT_RESET_TIMEOUT,
+      reserveConfigsUrl: RSERVE_PROXY_CONFIGS_API_URL,
     }
 
     setInterval(async () => {
@@ -26,18 +33,6 @@ class Proxy extends BrowserAPI {
     setInterval(() => {
       this.ping()
     }, this.proxyConfig.ping.timeout)
-  }
-
-  /**
-   * Fetch config for current proxy.
-   * @returns {Promise<string>}
-   */
-  fetchReserveConfigs = async () => {
-    const response = await fetch(this.reserveConfigsUrl, { mode: 'cors' })
-    const data = await response.json()
-    const [{ server, port }] = data.filter((config) => config.priority > 0)
-
-    return `${server}:${port}`
   }
 
   getProxyServerURL = async () => {

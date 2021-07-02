@@ -1,5 +1,5 @@
 import { registry, storage } from '.'
-import { BrowserAPI } from './browser'
+import { Browser } from './browser'
 
 const PROXY_SERVER_DEFAULT_HOST = 'proxy.roskomsvoboda.org'
 const PROXY_SERVER_DEFAULT_PORT = 33333
@@ -8,7 +8,7 @@ const PROXY_SERVER_DEFAULT_PING_TIMEOUT = (60 * 3) * 1000
 const PROXY_DEFAULT_RESET_TIMEOUT = (60 * 60) * 5000
 const RSERVE_PROXY_CONFIGS_API_URL = 'https://app.censortracker.org/api/proxy-configs/'
 
-class Proxy extends BrowserAPI {
+class Proxy extends Browser {
   constructor () {
     super()
     this.proxyConfig = {

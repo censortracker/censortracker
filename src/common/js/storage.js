@@ -1,6 +1,6 @@
-import { BrowserAPI } from './browser'
+import { Browser } from './browser'
 
-class Storage extends BrowserAPI {
+class Storage extends Browser {
   set = async (keys = {}) => {
     try {
       await this.browser.storage.local.set(keys)

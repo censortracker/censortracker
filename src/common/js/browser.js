@@ -26,7 +26,7 @@ const isFirefox = () => {
   }
 }
 
-export class BrowserAPI {
+export class Browser {
   constructor () {
     this.browser = getBrowser()
     this.isFirefox = isFirefox()

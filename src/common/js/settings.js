@@ -1,7 +1,7 @@
-import { BrowserAPI } from './browser'
+import { Browser } from './browser'
 import storage from './storage'
 
-class Settings extends BrowserAPI {
+class Settings extends Browser {
   getName = () => this.manifest.name;
 
   getDangerIcon = () => this.browser.runtime.getURL('images/icons/128x128/danger.png');

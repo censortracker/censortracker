@@ -106,18 +106,38 @@ browser.webRequest.onErrorOccurred.addListener(
   getRequestFilter({ http: true, https: true }),
 )
 
-const handleTabState = async (tabId, changeInfo, tab) => {
+/**
+ * Check if proxy is ready to use.
+ * Set proxy if proxying enabled and incognito access granted.
+ * @returns {Promise<boolean>}
+ */
+const checkProxyReadiness = async () => {
+  const proxyingEnabled = await proxy.proxyingEnabled()
+  const controlledByThisExtension = await proxy.controlledByThisExtension()
+  const allowedIncognitoAccess = await browser.extension.isAllowedIncognitoAccess()
+
+  if (proxyingEnabled && allowedIncognitoAccess) {
+    if (!controlledByThisExtension) {
+      await proxy.setProxy()
+      await proxy.privateBrowsingPermissionsGranted()
+    }
+    console.log(`Proxy is already controlled by ${settings.getName()}`)
+    return true
+  }
+  console.warn('Proxy is not ready to use. Check if private browsing permissions granted.')
+  return false
+}
+
+const handleTabState = async (tabId, changeInfo, { url: tabUrl }) => {
+  const extensionEnabled = await settings.extensionEnabled()
+
   if (changeInfo && changeInfo.status === browser.tabs.TabStatus.COMPLETE) {
-    const extensionEnabled = await settings.extensionEnabled()
+    if (extensionEnabled && isValidURL(tabUrl) && !ignore.contains(tabUrl)) {
+      await checkProxyReadiness()
 
-    if (extensionEnabled && isValidURL(tab.url)) {
-      if (ignore.contains(tab.url)) {
-        return
-      }
-
-      const urlBlocked = await registry.contains(tab.url)
+      const urlBlocked = await registry.contains(tabUrl)
       const { url: distributorUrl, cooperationRefused } =
-        await registry.distributorsContains(tab.url)
+        await registry.distributorsContains(tabUrl)
 
       if (urlBlocked) {
         settings.setBlockedIcon(tabId)
@@ -127,7 +147,7 @@ const handleTabState = async (tabId, changeInfo, tab) => {
       if (distributorUrl) {
         settings.setDangerIcon(tabId)
         if (!cooperationRefused) {
-          await showCooperationAcceptedWarning(tab.url)
+          await showCooperationAcceptedWarning(tabUrl)
         }
       }
     }
@@ -136,9 +156,18 @@ const handleTabState = async (tabId, changeInfo, tab) => {
 
 browser.tabs.onActivated.addListener(handleTabState)
 browser.tabs.onUpdated.addListener(handleTabState)
-browser.tabs.onCreated.addListener(async (_tab) => {
-  await settings.updateIncognitoAccessDeniedBadge()
-})
+
+const handleTabCreate = async ({ id }) => {
+  const extensionEnabled = await settings.extensionEnabled()
+
+  if (extensionEnabled) {
+    await checkProxyReadiness()
+  } else {
+    settings.setDisableIcon(id)
+  }
+}
+
+browser.tabs.onCreated.addListener(handleTabCreate)
 
 const showCooperationAcceptedWarning = async (url) => {
   const hostname = extractHostnameFromUrl(url)
@@ -210,22 +239,6 @@ const handleUninstalled = async (_info) => {
 }
 
 browser.management.onUninstalled.addListener(handleUninstalled)
-
-const handleTabCreate = async ({ id, url }) => {
-  const extensionEnabled = await settings.extensionEnabled()
-
-  if (extensionEnabled) {
-    if (!isValidURL(url)) {
-      browser.browserAction.disable(id)
-    }
-  } else {
-    settings.setDisableIcon(id)
-  }
-  await settings.updateIncognitoAccessDeniedBadge()
-}
-
-browser.tabs.onCreated.addListener(handleTabCreate)
-
 browser.runtime.onStartup.addListener(async () => {
   await registry.sync()
 })
@@ -263,20 +276,10 @@ window.censortracker.webRequestListeners = webRequestListeners
  * @param changes Object describing the change. This contains one property for each key that changed.
  * @param _areaName The name of the storage area ("sync", "local") to which the changes were made.
  */
-const handleStorageChanged = async ({
-  enableExtension,
-  ignoredHosts,
-  useProxy,
-  privateBrowsingPermissionsRequired,
-}, _areaName) => {
+const handleStorageChanged = async ({ enableExtension, ignoredHosts, useProxy }, _areaName) => {
   if (ignoredHosts && ignoredHosts.newValue) {
     ignore.save()
   }
-
-  if (privateBrowsingPermissionsRequired) {
-    await settings.updateIncognitoAccessDeniedBadge()
-  }
-
   if (enableExtension) {
     const newValue = enableExtension.newValue
     const oldValue = enableExtension.oldValue

@@ -48,6 +48,7 @@ class Proxy extends Browser {
 
   requestPrivateBrowsingPermissions = async () => {
     if (this.isFirefox) {
+      await this.browser.browserAction.setBadgeText({ text: '✕' })
       await storage.set({ privateBrowsingPermissionsRequired: true })
       console.log('Private browsing permissions requested.')
     }
@@ -55,6 +56,7 @@ class Proxy extends Browser {
 
   privateBrowsingPermissionsGranted = async () => {
     if (this.isFirefox) {
+      await this.browser.browserAction.setBadgeText({ text: '' })
       await storage.set({ privateBrowsingPermissionsRequired: false })
       console.log('Private browsing permissions granted.')
     }
@@ -66,7 +68,7 @@ class Proxy extends Browser {
 
     if (!pacData) {
       console.warn('Local registry is empty: cannot set PAC')
-      return undefined
+      return false
     }
 
     if (this.isFirefox) {

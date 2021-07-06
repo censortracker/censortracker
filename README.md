@@ -83,21 +83,25 @@ and for Firefox, like this:
 shell supports per-command environment variables (i.e something like this `NODE_ENV=production npm run build:firefox:prod`)
 
 
-
 Going to production
 -------------------
 
 You can build a production version of the extension for Chrome like this:
 
     ~ npm run build:chrome:prod
-    ~ cd dist/chrome
+    ~ npm run release:chrome
+    ~ cd release/chrome
 
 and for Firefox like this:
 
     ~ npm run build:firefox:prod
-    ~ cd dist/firefox
-    ~ web-ext build
+    ~ npm run release:firefox
+    ~ cd release/firefox
 
+**Attention**: Webpack automatically increments `version` in the `manifest.json` file on *every build*.
+To prevent such behavior you need to add `NOBUILDUP=1` before the `npm run` command, just like that:
+
+    ~ NOBUILDUP=1 npm run build:firefox:prod
 
 Testing
 -------

@@ -38,7 +38,7 @@ const updateVersionInManifest = () => {
   fs.writeFileSync(manifestFile, JSON.stringify(object, null, '  '))
 }
 
-if (NOBUILDUP !== 1) {
+if (NOBUILDUP !== '1') {
   updateVersionInManifest()
 }
 

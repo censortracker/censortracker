@@ -135,7 +135,7 @@ const webpackConfig = {
       meta: contentSecurityPolicy,
     }),
     new HTMLWebpackPlugin({
-      title: 'Unavailable | Censor Tracker',
+      title: 'Censor Tracker',
       filename: 'unavailable.html',
       template: 'src/common/pages/unavailable.html',
       inject: true,
@@ -143,7 +143,7 @@ const webpackConfig = {
       meta: contentSecurityPolicy,
     }),
     new HTMLWebpackPlugin({
-      title: 'Проксирование недоступно | Censor Tracker',
+      title: 'Censor Tracker',
       filename: 'proxy_unavailable.html',
       template: 'src/common/pages/proxy_unavailable.html',
       inject: true,
@@ -151,7 +151,7 @@ const webpackConfig = {
       meta: contentSecurityPolicy,
     }),
     new HTMLWebpackPlugin({
-      title: 'Игнорируемые сайты | Censor Tracker',
+      title: 'Censor Tracker',
       filename: 'ignore_editor.html',
       template: 'src/common/pages/ignore_editor.html',
       inject: true,
@@ -159,7 +159,7 @@ const webpackConfig = {
       meta: contentSecurityPolicy,
     }),
     new HTMLWebpackPlugin({
-      title: 'Проксирование отключено | Censor Tracker',
+      title: 'Censor Tracker',
       filename: 'proxy_disabled.html',
       template: 'src/common/pages/proxy_disabled.html',
       inject: true,
@@ -189,7 +189,7 @@ const webpackConfig = {
 if (isFirefox) {
   webpackConfig.entry.additional_permissions_required = `./src/${BROWSER}/js/ui/additional_permissions_required.js`
   webpackConfig.plugins.push(new HTMLWebpackPlugin({
-    title: 'Требуется доступ к приватным окнам | Censor Tracker',
+    title: 'Censor Tracker',
     filename: 'additional_permissions_required.html',
     template: 'src/firefox/pages/additional_permissions_required.html',
     inject: true,
@@ -197,7 +197,7 @@ if (isFirefox) {
     meta: contentSecurityPolicy,
   }))
   webpackConfig.plugins.push(new HTMLWebpackPlugin({
-    title: 'Настройки прокси | Censor Tracker',
+    title: 'Censor Tracker',
     filename: 'proxy_options.html',
     template: 'src/common/pages/proxy_options.html',
     inject: true,
@@ -205,7 +205,7 @@ if (isFirefox) {
     meta: contentSecurityPolicy,
   }))
   webpackConfig.plugins.push(new HTMLWebpackPlugin({
-    title: 'Настройки | Censor Tracker',
+    title: 'Censor Tracker',
     filename: 'options.html',
     template: 'src/common/pages/options.html',
     inject: true,
@@ -218,7 +218,7 @@ if (isChromium) {
   webpackConfig.entry.controlled = `./src/${BROWSER}/js/ui/controlled.js`
   webpackConfig.entry.translator = `./src/common/js/ui/translator.js`
   webpackConfig.plugins.push(new HTMLWebpackPlugin({
-    title: 'Настройки | Censor Tracker',
+    title: 'Censor Tracker',
     filename: 'options.html',
     template: 'src/common/pages/options.html',
     inject: true,
@@ -226,7 +226,7 @@ if (isChromium) {
     meta: contentSecurityPolicy,
   }))
   webpackConfig.plugins.push(new HTMLWebpackPlugin({
-    title: 'Настройки прокси | Censor Tracker',
+    title: 'Censor Tracker',
     filename: 'proxy_options.html',
     template: 'src/common/pages/proxy_options.html',
     inject: true,
@@ -234,7 +234,7 @@ if (isChromium) {
     meta: contentSecurityPolicy,
   }))
   webpackConfig.plugins.push(new HTMLWebpackPlugin({
-    title: 'Controlled | Censor Tracker',
+    title: 'Censor Tracker',
     filename: 'controlled.html',
     template: `src/${BROWSER}/pages/controlled.html`,
     inject: true,
@@ -242,7 +242,7 @@ if (isChromium) {
     meta: contentSecurityPolicy,
   }))
   webpackConfig.plugins.push(new HTMLWebpackPlugin({
-    title: 'CensorTracker установлен',
+    title: 'CensorTracker',
     filename: 'installed.html',
     template: `src/${BROWSER}/pages/installed.html`,
     inject: true,

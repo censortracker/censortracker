@@ -116,6 +116,10 @@ const checkProxyReadiness = async () => {
   const controlledByThisExtension = await proxy.controlledByThisExtension()
   const allowedIncognitoAccess = await browser.extension.isAllowedIncognitoAccess()
 
+  if (allowedIncognitoAccess) {
+    await proxy.requestPrivateBrowsingPermissions()
+  }
+
   if (proxyingEnabled && allowedIncognitoAccess) {
     if (!controlledByThisExtension) {
       await proxy.setProxy()

@@ -211,5 +211,8 @@
   },
   "turnOnExtensionToCheckWebsite": {
     "message": "Включите, чтобы получить доступ заблокированным сайтам."
+  },
+  "howToGranPrivateBrowsingPermissionsLink": {
+    "message": "https://support.mozilla.org/ru/kb/dopolneniya-v-rezhime-privatnogo-prosmotra"
   }
 }

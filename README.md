@@ -28,8 +28,8 @@ Prerequisites
 
 Make sure you have required versions of `node` and `npm`, which are:
 
-- `node v15.4.0`
-- `npm 7.6.3`
+- `node v15.4.0` or higher
+- `npm 7.6.3` or higher
 
 Optionally, you may like:
 
@@ -47,8 +47,8 @@ so make sure you're using the latest ones.
 
 We've tested CensorTracker on the following versions:
 
-- Firefox, 80 or higher
-- Chrome, 80 or higher
+- Mozilla Firefox 80 or higher
+- Google Chrome 80 or higher
 
 Docker
 ------
@@ -98,7 +98,7 @@ and for Firefox like this:
     ~ npm run release:firefox
     ~ cd release/firefox
 
-**Attention**: Webpack automatically increments `version` in the `manifest.json` file on *every build*.
+**Attention**: Webpack automatically increments a key `version` in the `manifest.json` file on *every build*.
 To prevent such behavior you need to add `NOBUILDUP=1` before the `npm run` command, just like that:
 
     ~ NOBUILDUP=1 npm run build:firefox:prod

@@ -12,6 +12,7 @@ function resolve (dir) {
   return path.join(__dirname, dir)
 }
 
+const NOBUILDUP = process.env.NOBUILDUP
 const BROWSER = process.env.BROWSER
 const NODE_ENV = process.env.NODE_ENV || 'development'
 const PRODUCTION = NODE_ENV === 'production'
@@ -37,7 +38,9 @@ const updateVersionInManifest = () => {
   fs.writeFileSync(manifestFile, JSON.stringify(object, null, '  '))
 }
 
-updateVersionInManifest()
+if (NOBUILDUP !== 1) {
+  updateVersionInManifest()
+}
 
 const webpackConfig = {
   mode: NODE_ENV,

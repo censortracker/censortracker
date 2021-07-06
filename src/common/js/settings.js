@@ -59,21 +59,6 @@ class Settings extends Browser {
     return enableExtension
   }
 
-  updateIncognitoAccessDeniedBadge = async () => {
-    if (this.isFirefox) {
-      const allowedIncognitoAccess =
-        await this.browser.extension.isAllowedIncognitoAccess()
-      const { privateBrowsingPermissionsRequired } =
-        await storage.get({ privateBrowsingPermissionsRequired: false })
-
-      if (!allowedIncognitoAccess || privateBrowsingPermissionsRequired) {
-        await this.browser.browserAction.setBadgeText({ text: '✕' })
-      } else {
-        await this.browser.browserAction.setBadgeText({ text: '' })
-      }
-    }
-  }
-
   enableExtension = async () => {
     let useProxy = true
 

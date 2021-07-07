@@ -192,9 +192,22 @@ import {
 
     const { restriction } = await registry.getCustomRegistryRecordByURL(currentHostname)
 
-    if (restriction && restriction.name) {
-      restrictionType.innerText = restriction.name
-      restrictionDescription.innerText = restriction.description
+    if (restriction && restriction.code) {
+      let titlePlaceholder, descriptionPlaceholder
+
+      const isBanned = restriction.code === 'ban'
+      const isShaped = restriction.code === 'shaping'
+
+      if (isShaped) {
+        titlePlaceholder = 'trafficShapingTitle'
+        descriptionPlaceholder = 'trafficShapingDescription'
+      } else if (isBanned) {
+        titlePlaceholder = 'blockedTitle'
+        descriptionPlaceholder = 'blockedDesc'
+      }
+
+      restrictionType.innerText = currentBrowser.i18n.getMessage(titlePlaceholder)
+      restrictionDescription.innerText = currentBrowser.i18n.getMessage(descriptionPlaceholder)
     }
   } else {
     changeStatusImage('disabled')

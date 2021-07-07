@@ -211,5 +211,11 @@
   },
   "howToGranPrivateBrowsingPermissionsLink": {
     "message": "https://support.mozilla.org/en-US/kb/extensions-private-browsing"
+  },
+  "trafficShapingTitle": {
+    "message": "Traffic shaping"
+  },
+  "trafficShapingDescription": {
+    "message": "Traffic shaping detected: connection to the site is slowed down. Censor Tracker gives you access to the site at a normal speed."
   }
 }

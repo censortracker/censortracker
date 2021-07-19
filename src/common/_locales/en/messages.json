@@ -170,7 +170,7 @@
     "message": "Try again"
   },
   "siteUnavailableTitle": {
-    "message": "The site is unavailable or blocked"
+    "message": "The site is unavailable or blocked in your country"
   },
   "siteUnavailableDesc": {
     "message": "Unable to open the site <b id=\"unavailableWebsite\">$url$</b>. try opening it through the Censor Tracker proxy?",

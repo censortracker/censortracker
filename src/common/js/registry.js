@@ -107,7 +107,6 @@ class Registry {
 
     if (apis.length === 0) {
       console.warn(`Unsynchronized: API endpoints not provided for: ${countryName}.`)
-      return false
     }
 
     for (const { storageKey, url } of apis) {

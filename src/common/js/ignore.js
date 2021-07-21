@@ -1,3 +1,4 @@
+import registry from './registry'
 import storage from './storage'
 import { extractHostnameFromUrl, startsWithHttpHttps } from './utilities'
 
@@ -41,6 +42,21 @@ class Ignore {
       return ipRangeCheck(ip, this.specialPurposeIPs)
     } catch (error) {
       return false
+    }
+  }
+
+  setDefaultIgnoredHosts = async () => {
+    if (await registry.isConfiguredForCountry({ code: 'RU' })) {
+      // Don't proxy Google Services in Russia
+      await storage.set({
+        ignoredHosts: [
+          'youtu.be',
+          'youtube.com',
+          'google.ru',
+          'google.com',
+        ],
+      })
+      console.warn('Ignored hosts set!')
     }
   }
 

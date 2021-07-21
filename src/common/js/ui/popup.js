@@ -73,7 +73,7 @@ import {
     controlledByOtherExtensionsButton.hidden = false
   }
 
-  const { countryDetails: { isoA2Code } } = await registry.getConfig()
+  const { countryDetails: { isoA2Code } = {} } = await registry.getConfig()
 
   if (isoA2Code !== 'RU') {
     document.getElementById('ori').hidden = true

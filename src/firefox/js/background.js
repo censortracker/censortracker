@@ -214,7 +214,7 @@ const handleInstalled = async ({ reason }) => {
     browser.runtime.OnInstalledReason.INSTALL,
   ]
 
-  await registry.initDefaultIgnoredHosts()
+  await ignore.setDefaultIgnoredHosts()
 
   if (reasonsForSync.includes(reason)) {
     const synchronized = await registry.sync()

@@ -99,9 +99,9 @@ and for Firefox like this:
     ~ cd release/firefox
 
 **Attention**: Webpack automatically increments a key `version` in the `manifest.json` file on *every build*.
-To prevent such behavior you need to add `NOBUILDUP=1` before the `npm run` command, just like that:
+To prevent such behavior you need to add `BUILDUP=0` before the `npm run` command, just like that:
 
-    ~ NOBUILDUP=1 npm run build:firefox:prod
+    ~ BUILDUP=0 npm run build:firefox:prod
 
 Testing
 -------

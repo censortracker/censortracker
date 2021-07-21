@@ -88,14 +88,15 @@ class Registry {
       console.warn('CensorTracker do not support your country.')
     } catch (error) {
       console.error(error)
+      return {}
     }
     return {}
   }
 
-  configuredForCountry = async ({ code }) => {
+  isConfiguredForCountry = async ({ code }) => {
     const { countryDetails: { isoA2Code } } = await this.getConfig()
 
-    return isoA2Code === code
+    return isoA2Code.toUpperCase() === code.toUpperCase()
   }
 
   /**
@@ -148,7 +149,7 @@ class Registry {
   }
 
   initDefaultIgnoredHosts = async () => {
-    if (await this.configuredForCountry({ code: 'RU' })) {
+    if (await this.isConfiguredForCountry({ code: 'RU' })) {
       // Don't proxy Google Services in Russia
       await storage.set({
         ignoredHosts: [

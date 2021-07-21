@@ -214,6 +214,8 @@ const handleInstalled = async ({ reason }) => {
     chrome.runtime.OnInstalledReason.UPDATE,
   ]
 
+  await registry.initDefaultIgnoredHosts()
+
   if (reasonsForSync.includes(reason)) {
     const synchronized = await registry.sync()
 

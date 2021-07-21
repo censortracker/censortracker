@@ -156,3 +156,29 @@ export const startsWithHttpHttps = (string) => {
     return false
   }
 }
+
+/**
+ * Check if the pattern with wildcard matches the domain.
+ * @param pattern Pattern with wildcard.
+ * @param domain Target domain
+ * @returns {boolean} true or false
+ */
+export const wildcardDomainMatch = ({ pattern, domain }) => {
+  if (pattern.endsWith('.*')) {
+    pattern = `${pattern.slice(0, -2)}.[^.\\s]+`
+
+    if (!pattern.startsWith('*.')) {
+      pattern = `^${pattern}`
+    }
+  }
+
+  if (pattern.startsWith('*.')) {
+    pattern = `[^.\\s]+\\.${pattern.slice(2)}`
+  }
+
+  try {
+    return new RegExp(pattern).test(domain)
+  } catch (error) {
+    return false
+  }
+}

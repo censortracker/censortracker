@@ -3,6 +3,7 @@ import {
   enforceHttpsConnection,
   extractHostnameFromUrl,
   isValidURL,
+  wildcardDomainMatch,
 } from '../../src/common/js/utilities'
 
 describe('Validate URL', () => {
@@ -93,6 +94,23 @@ describe('Enforce HTTP', () => {
 
     for (const { url, expected } of urls) {
       expect(enforceHttpConnection(url)).toEqual(expected)
+    }
+  })
+})
+
+describe('Match domain by wildcard', () => {
+  test('match by wildcard', () => {
+    const inputData = [
+      { pattern: 'google.*', domain: 'google.com', expected: true },
+      { pattern: '*.google.*', domain: 'api.google.com', expected: true },
+      { pattern: '*.google.*', domain: 'google.com', expected: false },
+      { pattern: '*.google.com', domain: 'api.google.com', expected: true },
+      { pattern: 'google.*', domain: 'api.google.com', expected: false },
+      { pattern: '*.google.com', domain: 'google.com', expected: false },
+    ]
+
+    for (const { pattern, domain, expected } of inputData) {
+      expect(wildcardDomainMatch({ pattern, domain })).toEqual(expected)
     }
   })
 })

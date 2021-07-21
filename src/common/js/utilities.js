@@ -163,7 +163,7 @@ export const startsWithHttpHttps = (string) => {
  * @param domain Target domain
  * @returns {boolean} true or false
  */
-export const wildcardDomainMatch = ({ pattern, domain }) => {
+export const matchDomainByWildcard = ({ pattern, domain }) => {
   if (pattern.endsWith('.*')) {
     pattern = `${pattern.slice(0, -2)}.[^.\\s]+`
 

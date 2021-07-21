@@ -3,7 +3,7 @@ import {
   enforceHttpsConnection,
   extractHostnameFromUrl,
   isValidURL,
-  wildcardDomainMatch,
+  matchDomainByWildcard,
 } from '../../src/common/js/utilities'
 
 describe('Validate URL', () => {
@@ -110,7 +110,7 @@ describe('Match domain by wildcard', () => {
     ]
 
     for (const { pattern, domain, expected } of inputData) {
-      expect(wildcardDomainMatch({ pattern, domain })).toEqual(expected)
+      expect(matchDomainByWildcard({ pattern, domain })).toEqual(expected)
     }
   })
 })

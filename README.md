@@ -12,7 +12,7 @@
 Features
 ========
 
-Censor Tracker provides a lot of useful features, here are most
+Censor Tracker provides a lot of useful features, here are the most
 important:
 
 - Detects [DPI]-based restrictions

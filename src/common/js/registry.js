@@ -1,5 +1,5 @@
 import storage from './storage'
-import { extractHostnameFromUrl } from './utilities'
+import { extractHostnameFromUrl, matchDomainByWildcard } from './utilities'
 
 const CENSORTRACKER_CONFIG_API_URL = 'https://app.censortracker.org/api/config/'
 
@@ -178,6 +178,15 @@ class Registry {
     if (domainsFound || blockedDomainsFound) {
       try {
         return [...domains, ...blockedDomains].filter((element) => {
+          // TODO: Improve matching mechanism
+          for (const host of ignoredHosts) {
+            if (host.indexOf('*') !== -1) {
+              if (matchDomainByWildcard({ pattern: host, domain: element })) {
+                return false
+              }
+            }
+          }
+
           return !ignoredHosts.includes(element)
         })
       } catch (error) {

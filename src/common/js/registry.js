@@ -172,20 +172,27 @@ class Registry {
       ignoredHosts: [],
     })
 
+    const excludedDomains = ['youtube.com', 'youtu.be', 'google.com']
     const domainsFound = domains && domains.length > 0
     const blockedDomainsFound = blockedDomains && blockedDomains.length > 0
+
+    excludedDomains.forEach((domain) => {
+      if (Array.isArray(ignoredHosts)) {
+        ignoredHosts.push(domain)
+      }
+    })
 
     if (domainsFound || blockedDomainsFound) {
       try {
         return [...domains, ...blockedDomains].filter((element) => {
-          // TODO: Improve matching mechanism
-          for (const host of ignoredHosts) {
-            if (host.indexOf('*') !== -1) {
-              if (matchDomainByWildcard({ pattern: host, domain: element })) {
-                return false
-              }
-            }
-          }
+          // // TODO: Improve matching mechanism
+          // for (const host of ignoredHosts) {
+          //   if (host.indexOf('*') !== -1) {
+          //     if (matchDomainByWildcard({ pattern: host, domain: element })) {
+          //       return false
+          //     }
+          //   }
+          // }
 
           return !ignoredHosts.includes(element)
         })

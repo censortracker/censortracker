@@ -218,8 +218,7 @@ class Proxy extends Browser {
   }
 
   debugging = async () => {
-    await storage.set({ domains: [] })
-    await this.setProxy()
+    await this.removeProxy()
     console.warn('Debug mode enabled')
   }
 }

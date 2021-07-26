@@ -37,6 +37,8 @@ const handleBeforeRequest = ({ url }) => {
     return undefined
   }
 
+  console.warn(`Request redirected to HTTPS: ${hostname}`)
+
   return {
     redirectUrl: enforceHttpsConnection(url),
   }

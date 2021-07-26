@@ -10,11 +10,13 @@ import { extractDecodedOriginUrl } from '@/common/js/utilities'
 
   document.addEventListener('click', async (event) => {
     if (event.target.matches('#openThroughProxy')) {
-      proxy.setProxy().then(() => {
-        currentBrowser.tabs.create({ url: originUrl, index: tab.index }, () => {
+      const proxySet = await proxy.setProxy()
+
+      if (proxySet) {
+        await currentBrowser.tabs.create({ url: originUrl, index: tab.index }, () => {
           currentBrowser.tabs.remove(tab.id)
         })
-      })
+      }
     }
 
     if (event.target.matches('#doNotAskAnymore')) {
@@ -24,7 +26,7 @@ import { extractDecodedOriginUrl } from '@/common/js/utilities'
         webRequestListeners.deactivate()
       }
 
-      currentBrowser.tabs.update(tab.id, { url: originUrl })
+      await currentBrowser.tabs.update(tab.id, { url: originUrl })
     }
 
     event.preventDefault()

@@ -88,14 +88,15 @@ class Registry {
       console.warn('CensorTracker do not support your country.')
     } catch (error) {
       console.error(error)
+      return {}
     }
     return {}
   }
 
-  configuredForCountry = async ({ code }) => {
+  isConfiguredForCountry = async ({ code }) => {
     const { countryDetails: { isoA2Code } } = await this.getConfig()
 
-    return isoA2Code === code
+    return isoA2Code.toUpperCase() === code.toUpperCase()
   }
 
   /**
@@ -147,20 +148,44 @@ class Registry {
     return {}
   }
 
+  initDefaultIgnoredHosts = async () => {
+    if (await this.isConfiguredForCountry({ code: 'RU' })) {
+      // Don't proxy Google Services in Russia
+      await storage.set({
+        ignoredHosts: [
+          'youtu.be',
+          'youtube.com',
+          'google.ru',
+          'google.com',
+        ],
+      })
+    }
+  }
+
   /**
    * Returns array of banned domains from the registry.
    */
   getDomains = async () => {
-    const { domains, blockedDomains } = await storage.get({ domains: [], blockedDomains: [] })
+    const { domains, blockedDomains, ignoredHosts } = await storage.get({
+      domains: [],
+      blockedDomains: [],
+      ignoredHosts: [],
+    })
 
     const excludedDomains = ['youtube.com', 'youtu.be', 'google.com']
     const domainsFound = domains && domains.length > 0
     const blockedDomainsFound = blockedDomains && blockedDomains.length > 0
 
+    excludedDomains.forEach((domain) => {
+      if (Array.isArray(ignoredHosts)) {
+        ignoredHosts.push(domain)
+      }
+    })
+
     if (domainsFound || blockedDomainsFound) {
       try {
         return [...domains, ...blockedDomains].filter((element) => {
-          return !excludedDomains.includes(element)
+          return !ignoredHosts.includes(element)
         })
       } catch (error) {
         console.log(error)

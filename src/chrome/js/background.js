@@ -40,6 +40,8 @@ const handleBeforeRequest = ({ url }) => {
     return undefined
   }
 
+  console.warn(`Request redirected to HTTPS: ${hostname}`)
+
   return {
     redirectUrl: enforceHttpsConnection(url),
   }
@@ -213,6 +215,8 @@ const handleInstalled = async ({ reason }) => {
     chrome.runtime.OnInstalledReason.INSTALL,
     chrome.runtime.OnInstalledReason.UPDATE,
   ]
+
+  await ignore.setDefaultIgnoredHosts()
 
   if (reasonsForSync.includes(reason)) {
     const synchronized = await registry.sync()

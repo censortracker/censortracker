@@ -227,6 +227,7 @@ const handleInstalled = async ({ reason }) => {
         await browser.extension.isAllowedIncognitoAccess()
 
       if (allowedIncognitoAccess) {
+        console.warn('onInstall: incognito access allowed, setting proxy...')
         await proxy.setProxy()
       } else {
         await proxy.requestPrivateBrowsingPermissions()
@@ -234,6 +235,7 @@ const handleInstalled = async ({ reason }) => {
     }
   }
   proxy.ping()
+  console.warn('onInstall: preparation done!')
 }
 
 browser.runtime.onInstalled.addListener(handleInstalled)

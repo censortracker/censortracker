@@ -7,7 +7,7 @@ const CONNECTION_ERRORS = [
   'NS_ERROR_NET_ON_TLS_HANDSHAKE_ENDED',
 
   // Chromium
-  // 'net::ERR_TIMED_OUT',
+  'net::ERR_TIMED_OUT',
   'net::ERR_CONNECTION_RESET',
   'net::ERR_CONNECTION_TIMED_OUT',
 ]

@@ -30,15 +30,20 @@ window.censortracker = {
  */
 const handleBeforeRequest = ({ url }) => {
   const hostname = extractHostnameFromUrl(url)
+  const isAllowed = browser.extension.isAllowedIncognitoAccess()
 
-  proxy.ping()
+  isAllowed.then(async (allowed) => {
+    if (!allowed) {
+      await proxy.requestPrivateBrowsingPermissions()
+    }
+  })
 
   if (ignore.contains(hostname)) {
     return undefined
   }
 
   console.warn(`Request redirected to HTTPS: ${hostname}`)
-
+  proxy.ping()
   return {
     redirectUrl: enforceHttpsConnection(url),
   }
@@ -235,7 +240,6 @@ const handleInstalled = async ({ reason }) => {
     }
   }
   proxy.ping()
-  console.warn('onInstall: preparation done!')
 }
 
 browser.runtime.onInstalled.addListener(handleInstalled)

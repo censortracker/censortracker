@@ -1,15 +1,15 @@
 import registry from './registry'
 import storage from './storage'
-import { extractHostnameFromUrl, startsWithHttpHttps } from './utilities'
+import { extractHostnameFromUrl } from './utilities'
 
 const ipRangeCheck = require('ip-range-check')
 
 class Ignore {
   constructor () {
-    this.ignoredHosts = new Set()
-    this.temporarilyIgnoredHosts = new Set()
-    this.ignoreSyncIntervalMs = (60 * 30) * 1000
-    this.specialPurposeIPs = [
+    this._ignoredHosts = new Set()
+    this._temporarilyIgnoredHosts = new Set()
+    this._ignoreSyncIntervalMs = (60 * 30) * 1000
+    this._specialPurposeIPs = [
       '0.0.0.0/8',
       '10.0.0.0/8',
       '100.64.0.0/10',
@@ -34,12 +34,12 @@ class Ignore {
 
     setInterval(async () => {
       await this.save()
-    }, this.ignoreSyncIntervalMs)
+    }, this._ignoreSyncIntervalMs)
   }
 
   isSpecialPurposeIP = (ip) => {
     try {
-      return ipRangeCheck(ip, this.specialPurposeIPs)
+      return ipRangeCheck(ip, this._specialPurposeIPs)
     } catch (error) {
       return false
     }
@@ -64,7 +64,7 @@ class Ignore {
     storage.get({ ignoredHosts: [] })
       .then(({ ignoredHosts }) => {
         for (const hostname of ignoredHosts) {
-          this.ignoredHosts.add(hostname)
+          this._ignoredHosts.add(hostname)
         }
         console.log('All ignored domain saved!')
       })
@@ -73,8 +73,10 @@ class Ignore {
   add = async (url, { temporary = false } = {}) => {
     const hostname = extractHostnameFromUrl(url)
 
+    console.warn(`Added to ignore: ${url}`)
+
     if (temporary === true) {
-      this.temporarilyIgnoredHosts.add(hostname)
+      this._temporarilyIgnoredHosts.add(hostname)
     } else {
       const { ignoredHosts } = await storage.get({ ignoredHosts: [] })
 
@@ -83,7 +85,7 @@ class Ignore {
       }
 
       for (const item of ignoredHosts) {
-        this.ignoredHosts.add(item)
+        this._ignoredHosts.add(item)
       }
 
       await storage.set({ ignoredHosts })
@@ -94,13 +96,9 @@ class Ignore {
     const ignoreRegEx = /localhost/
     const hostname = extractHostnameFromUrl(url)
     const ignoredHosts = new Set([
-      ...this.ignoredHosts,
-      ...this.temporarilyIgnoredHosts,
+      ...this._ignoredHosts,
+      ...this._temporarilyIgnoredHosts,
     ])
-
-    if (!startsWithHttpHttps(url)) {
-      return true
-    }
 
     if (ignoredHosts.has(hostname) || hostname.match(ignoreRegEx)) {
       console.warn(`Ignoring host: ${hostname}`)

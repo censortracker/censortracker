@@ -67,6 +67,7 @@ const handleErrorOccurred = async ({ error, url, tabId }) => {
   const foundInRegistry = await registry.contains(url)
   const proxyingEnabled = await proxy.proxyingEnabled()
   const { proxyError, connectionError } = errors.determineError(error)
+  const allowedIncognitoAccess = await browser.extension.isAllowedIncognitoAccess()
 
   if (ignore.contains(url)) {
     return
@@ -82,6 +83,15 @@ const handleErrorOccurred = async ({ error, url, tabId }) => {
   }
 
   if (connectionError) {
+    if (!allowedIncognitoAccess) {
+      browser.tabs.update(tabId, {
+        url: browser.runtime.getURL(
+          `incognito_access_required.html?originUrl=${encodedUrl}`,
+        ),
+      })
+      return
+    }
+
     if (!proxyingEnabled) {
       browser.tabs.update(tabId, {
         url: browser.runtime.getURL(

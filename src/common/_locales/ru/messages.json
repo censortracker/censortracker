@@ -220,5 +220,29 @@
   },
   "trafficShapingDescription": {
     "message": "Скорость соединения с сайтом замедляется государством. Censor Tracker даёт доступ к сайту с обычной скоростью."
+  },
+
+  "installedAllowIncognitoTitle": {
+    "message": "Разрешите работу Censor Tracker в приватных окнах"
+  },
+  "installedAllowIncognitoDescription": {
+    "message": "Это разрешение требуется, чтобы мы могли открывать для вас заблокриванные сайты через прокси. В Firefox без этого никак."
+  },
+  "howToGrantIncognitoAccessBtnTitle": {
+    "message": "Как дать разрешение"
+  },
+  "installedAllowIncognitoDescriptionThen": {
+    "message": "После этого откройте расширение и подтвердите, что права даны."
+  },
+  "incognitoAccessRequiredTitle": {
+    "message": "Сайт недоступен или заблокирован. Разрешите Censor Tracker работать в приватных окнах, чтобы открывать такие сайты"
+  },
+  "incognitoAccessRequiredDescription": {
+    "message": "Чтобы открыть $hostname$ через прокси в Firefox требуется разрешение на работу в приватных окнах. Иначе прокси не работает.",
+    "placeholders": {
+      "hostname": {
+        "content": "$1"
+      }
+    }
   }
 }

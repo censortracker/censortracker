@@ -217,5 +217,28 @@
   },
   "trafficShapingDescription": {
     "message": "Traffic shaping detected: connection to the site is slowed down. Censor Tracker gives you access to the site at a normal speed."
+  },
+  "installedAllowIncognitoTitle": {
+    "message": "Allow Censor Tracker incognito access"
+  },
+  "installedAllowIncognitoDescription": {
+    "message": "This permission is required so that CensorTracker can open blocked sites for you through a proxy. In Firefox, there is no other way."
+  },
+  "howToGrantIncognitoAccessBtnTitle": {
+    "message": "How to grant permission"
+  },
+  "installedAllowIncognitoDescriptionThen": {
+    "message": "After that, open the popup of CensorTracker and confirm that the rights are given."
+  },
+  "incognitoAccessRequiredTitle": {
+    "message": "The site is unavailable or blocked. Allow Censor Tracker incognito access to open such sites."
+  },
+  "incognitoAccessRequiredDescription": {
+    "message": "To open $hostname$ through a proxy in Firefox, you need permission to work in private windows. Otherwise, the proxy will not work.",
+    "placeholders": {
+      "hostname": {
+        "content": "$1"
+      }
+    }
   }
 }

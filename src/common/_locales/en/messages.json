@@ -228,7 +228,7 @@
     "message": "How to grant permission"
   },
   "installedAllowIncognitoDescriptionThen": {
-    "message": "After that, open the popup of CensorTracker and confirm that the rights are given."
+    "message": "After that, open the popup of CensorTracker and confirm that the permissions are granted."
   },
   "incognitoAccessRequiredTitle": {
     "message": "The site is unavailable or blocked. Allow Censor Tracker incognito access to open such sites."

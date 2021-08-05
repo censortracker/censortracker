@@ -231,6 +231,12 @@ const handleInstalled = async ({ reason }) => {
     browser.runtime.OnInstalledReason.INSTALL,
   ]
 
+  if (reason === browser.runtime.OnInstalledReason.INSTALL) {
+    browser.tabs.create({
+      url: browser.runtime.getURL('installed.html'),
+    })
+  }
+
   await ignore.setDefaultIgnoredHosts()
 
   if (reasonsForSync.includes(reason)) {

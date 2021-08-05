@@ -216,6 +216,12 @@ const handleInstalled = async ({ reason }) => {
     chrome.runtime.OnInstalledReason.UPDATE,
   ]
 
+  if (reason === chrome.runtime.OnInstalledReason.INSTALL) {
+    chrome.tabs.create({
+      url: chrome.runtime.getURL('installed.html'),
+    })
+  }
+
   await ignore.setDefaultIgnoredHosts()
 
   if (reasonsForSync.includes(reason)) {
@@ -225,12 +231,6 @@ const handleInstalled = async ({ reason }) => {
       await proxy.setProxy()
       await settings.enableExtension()
     }
-  }
-
-  if (reason === chrome.runtime.OnInstalledReason.INSTALL) {
-    chrome.tabs.create({
-      url: chrome.runtime.getURL('installed.html'),
-    })
   }
 
   proxy.ping()

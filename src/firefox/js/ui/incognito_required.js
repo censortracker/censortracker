@@ -1,10 +1,10 @@
 import { extractDecodedOriginUrl, proxy, select, translateDocument } from '@/common/js'
 
 (async () => {
-  const closeTab = select({ id: 'closeTab', doc: document })
-  const backToPopup = select({ id: 'backToPopup', doc: document })
-  const howToGrantIncognitoAccess = select({ id: 'howToGrantIncognitoAccess', doc: document })
-  const grantPrivateBrowsingPermissionsButton = select({ id: 'grantPrivateBrowsingPermissionsButton', doc: document })
+  const closeTab = select({ id: 'closeTab' })
+  const backToPopup = select({ id: 'backToPopup' })
+  const howToGrantIncognitoAccess = select({ id: 'howToGrantIncognitoAccess' })
+  const grantPrivateBrowsingPermissionsButton = select({ id: 'grantPrivateBrowsingPermissionsButton' })
 
   const [tab] = await browser.tabs.query({ active: true, lastFocusedWindow: true })
   const originUrl = extractDecodedOriginUrl(tab.url)

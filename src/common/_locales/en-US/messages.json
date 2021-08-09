@@ -209,7 +209,7 @@
   "turnOnExtensionToCheckWebsite": {
     "message": "Enable to access blocked sites."
   },
-  "howToGranPrivateBrowsingPermissionsLink": {
+  "howToGrantPrivateBrowsingPermissionsLink": {
     "message": "https://support.mozilla.org/en-US/kb/extensions-private-browsing"
   },
   "trafficShapingTitle": {

@@ -5,7 +5,7 @@ import { translateDocument } from '@/common/js'
 
   howToGrantPrivateBrowsingPermissions.addEventListener('click', async () => {
     await browser.tabs.create({
-      url: browser.i18n.getMessage('howToGranPrivateBrowsingPermissionsLink'),
+      url: browser.i18n.getMessage('howToGrantPrivateBrowsingPermissionsLink'),
     })
   })
 

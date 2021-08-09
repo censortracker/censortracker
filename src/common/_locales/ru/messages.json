@@ -212,7 +212,7 @@
   "turnOnExtensionToCheckWebsite": {
     "message": "Включите, чтобы получить доступ заблокированным сайтам."
   },
-  "howToGranPrivateBrowsingPermissionsLink": {
+  "howToGrantPrivateBrowsingPermissionsLink": {
     "message": "https://support.mozilla.org/ru/kb/dopolneniya-v-rezhime-privatnogo-prosmotra"
   },
   "trafficShapingTitle": {

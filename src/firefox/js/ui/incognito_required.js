@@ -23,7 +23,7 @@ import { extractDecodedOriginUrl, proxy, select, translateDocument } from '@/com
 
   howToGrantPrivateBrowsingPermissions.addEventListener('click', async () => {
     await browser.tabs.create({
-      url: browser.i18n.getMessage('howToGranPrivateBrowsingPermissionsLink'),
+      url: browser.i18n.getMessage('howToGrantPrivateBrowsingPermissionsLink'),
     })
   })
 

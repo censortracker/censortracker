@@ -96,7 +96,7 @@
     "message": "Сайт недоступен или заблокирован"
   },
   "proxyDisabledDesc": {
-    "message": "Вы отключили обход блокировок сайтов с помощью Censor Tracker, но <b id=\"unavailableWebsite\">$url$</b> недоступен. Попробовать открыть его через прокси Censor Tracker?",
+    "message": "Вы отключили обход блокировок сайтов с помощью Censor Tracker, но <b>$url$</b> недоступен. Попробовать открыть его через прокси Censor Tracker?",
     "placeholders": {
       "url": {
         "content": "$1"
@@ -156,7 +156,7 @@
     "message": "Не удалось открыть сайт через прокси Censor Tracker"
   },
   "proxyUnavailableDesc": {
-    "message": "Не удалось открыть сайт <b id=\"unavailableWebsite\">$url$</b>. Мы работаем над исправлением проблемы, попробуйте открыть сайт позже.",
+    "message": "Не удалось открыть сайт <b>$url$</b>. Мы работаем над исправлением проблемы, попробуйте открыть сайт позже.",
     "placeholders": {
       "url": {
         "content": "$1"
@@ -173,7 +173,7 @@
     "message": "Сайт недоступен или заблокирован в вашей стране"
   },
   "siteUnavailableDesc": {
-    "message": "Не удалось открыть сайт <b id=\"unavailableWebsite\">$url$</b>. Попробовать открыть его через прокси Censor Tracker?",
+    "message": "Не удалось открыть сайт <b>$url$</b>. Попробовать открыть его через прокси Censor Tracker?",
     "placeholders": {
       "url": {
         "content": "$1"
@@ -238,7 +238,7 @@
     "message": "Сайт недоступен или заблокирован. Разрешите Censor Tracker работать в приватных окнах, чтобы открывать такие сайты"
   },
   "incognitoAccessRequiredDescription": {
-    "message": "Чтобы открыть $hostname$ через прокси в Firefox требуется разрешение на работу в приватных окнах. Иначе прокси не работает.",
+    "message": "Чтобы открыть <b>$hostname$</b> через прокси в Firefox требуется разрешение на работу в приватных окнах. Иначе прокси не работает.",
     "placeholders": {
       "hostname": {
         "content": "$1"

@@ -86,7 +86,7 @@ const handleErrorOccurred = async ({ error, url, tabId }) => {
     if (!allowedIncognitoAccess) {
       browser.tabs.update(tabId, {
         url: browser.runtime.getURL(
-          `incognito_access_required.html?originUrl=${encodedUrl}`,
+          `incognito_required_tab.html?originUrl=${encodedUrl}`,
         ),
       })
       return

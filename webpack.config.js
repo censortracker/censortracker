@@ -226,8 +226,8 @@ if (isFirefox) {
   }))
   webpackConfig.plugins.push(new HTMLWebpackPlugin({
     title: EXTENSION_NAME,
-    filename: 'incognito_access_required.html',
-    template: 'src/firefox/pages/incognito_access_required.html',
+    filename: 'incognito_required_tab.html',
+    template: 'src/firefox/pages/incognito_required_tab.html',
     inject: true,
     chunks: ['translator', 'incognito_required'],
     meta: contentSecurityPolicy,

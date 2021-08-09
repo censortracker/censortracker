@@ -29,6 +29,7 @@ import { proxy, settings, storage, translateDocument } from '@/common/js'
         const proxySet = await proxy.setProxy()
 
         if (proxySet === true) {
+          await proxy.grantIncognitoAccess()
           privateBrowsingPermissionsRequiredMessage.hidden = true
         }
       })

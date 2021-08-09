@@ -74,7 +74,7 @@
   "privateBrowsingRequiredDesc": {
     "message": "So that we can open blocked sites for you through a proxy. In Firefox, there is no way without it."
   },
-  "howToGrantPrivateBrowsingPermissions": {
+  "howToGrantIncognitoAccess": {
     "message": "How to do it"
   },
   "grantPrivateBrowsingPermissions": {
@@ -209,7 +209,7 @@
   "turnOnExtensionToCheckWebsite": {
     "message": "Enable to access blocked sites."
   },
-  "howToGrantPrivateBrowsingPermissionsLink": {
+  "howToGrantIncognitoAccessLink": {
     "message": "https://support.mozilla.org/en-US/kb/extensions-private-browsing"
   },
   "trafficShapingTitle": {

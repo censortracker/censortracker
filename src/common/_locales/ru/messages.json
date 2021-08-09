@@ -74,7 +74,7 @@
   "privateBrowsingRequiredDesc": {
     "message": "Чтобы мы могли открывать для вас заблокриванные сайты через прокси. В Firefox без этого никак."
   },
-  "howToGrantPrivateBrowsingPermissions": {
+  "howToGrantIncognitoAccess": {
     "message": "Как это сделать"
   },
   "grantPrivateBrowsingPermissions": {
@@ -212,7 +212,7 @@
   "turnOnExtensionToCheckWebsite": {
     "message": "Включите, чтобы получить доступ заблокированным сайтам."
   },
-  "howToGrantPrivateBrowsingPermissionsLink": {
+  "howToGrantIncognitoAccessLink": {
     "message": "https://support.mozilla.org/ru/kb/dopolneniya-v-rezhime-privatnogo-prosmotra"
   },
   "trafficShapingTitle": {

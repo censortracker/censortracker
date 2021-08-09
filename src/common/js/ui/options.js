@@ -6,7 +6,7 @@ import { proxy, settings, storage, translateDocument } from '@/common/js'
   const showNotificationsCheckbox = document.getElementById('showNotificationsCheckbox')
   const grantPrivateBrowsingPermissionsButton = document.getElementById('grantPrivateBrowsingPermissionsButton')
   const privateBrowsingPermissionsRequiredMessage = document.getElementById('privateBrowsingPermissionsRequiredMessage')
-  const howToGrantPrivateBrowsingPermissions = document.getElementById('howToGrantPrivateBrowsingPermissions')
+  const howToGrantIncognitoAccess = document.getElementById('howToGrantIncognitoAccess')
 
   if (settings.isFirefox) {
     const allowedIncognitoAccess =
@@ -16,9 +16,9 @@ import { proxy, settings, storage, translateDocument } from '@/common/js'
       privateBrowsingPermissionsRequired: false,
     })
 
-    howToGrantPrivateBrowsingPermissions.addEventListener('click', async () => {
+    howToGrantIncognitoAccess.addEventListener('click', async () => {
       await browser.tabs.create({
-        url: browser.i18n.getMessage('howToGrantPrivateBrowsingPermissionsLink'),
+        url: browser.i18n.getMessage('howToGrantIncognitoAccessLink'),
       })
     })
 

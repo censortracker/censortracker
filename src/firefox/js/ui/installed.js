@@ -1,11 +1,11 @@
 import { translateDocument } from '@/common/js'
 
 (() => {
-  const howToGrantPrivateBrowsingPermissions = document.getElementById('howToGrantPrivateBrowsingPermissions')
+  const howToGrantIncognitoAccess = document.getElementById('howToGrantIncognitoAccess')
 
-  howToGrantPrivateBrowsingPermissions.addEventListener('click', async () => {
+  howToGrantIncognitoAccess.addEventListener('click', async () => {
     await browser.tabs.create({
-      url: browser.i18n.getMessage('howToGrantPrivateBrowsingPermissionsLink'),
+      url: browser.i18n.getMessage('howToGrantIncognitoAccessLink'),
     })
   })
 

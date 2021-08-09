@@ -3,7 +3,7 @@ import { extractDecodedOriginUrl, proxy, select, translateDocument } from '@/com
 (async () => {
   const closeTab = select({ id: 'closeTab', doc: document })
   const backToPopup = select({ id: 'backToPopup', doc: document })
-  const howToGrantPrivateBrowsingPermissions = select({ id: 'howToGrantPrivateBrowsingPermissions', doc: document })
+  const howToGrantIncognitoAccess = select({ id: 'howToGrantIncognitoAccess', doc: document })
   const grantPrivateBrowsingPermissionsButton = select({ id: 'grantPrivateBrowsingPermissionsButton', doc: document })
 
   const [tab] = await browser.tabs.query({ active: true, lastFocusedWindow: true })
@@ -21,9 +21,9 @@ import { extractDecodedOriginUrl, proxy, select, translateDocument } from '@/com
     })
   }
 
-  howToGrantPrivateBrowsingPermissions.addEventListener('click', async () => {
+  howToGrantIncognitoAccess.addEventListener('click', async () => {
     await browser.tabs.create({
-      url: browser.i18n.getMessage('howToGrantPrivateBrowsingPermissionsLink'),
+      url: browser.i18n.getMessage('howToGrantIncognitoAccessLink'),
     })
   })
 

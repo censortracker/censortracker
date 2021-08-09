@@ -1,15 +1,25 @@
-import { proxy, translateDocument } from '@/common/js'
+import { extractDecodedOriginUrl, proxy, select, translateDocument } from '@/common/js'
 
 (async () => {
-  translateDocument(document)
+  const closeTab = select({ id: 'closeTab', doc: document })
+  const backToPopup = select({ id: 'backToPopup', doc: document })
+  const howToGrantPrivateBrowsingPermissions = select({ id: 'howToGrantPrivateBrowsingPermissions', doc: document })
+  const grantPrivateBrowsingPermissionsButton = select({ id: 'grantPrivateBrowsingPermissionsButton', doc: document })
 
-  const backToPopup = document.getElementById('backToPopup')
-  const howToGrantPrivateBrowsingPermissions = document.getElementById('howToGrantPrivateBrowsingPermissions')
-  const grantPrivateBrowsingPermissionsButton = document.getElementById('grantPrivateBrowsingPermissionsButton')
+  const [tab] = await browser.tabs.query({ active: true, lastFocusedWindow: true })
+  const originUrl = extractDecodedOriginUrl(tab.url)
 
-  backToPopup.addEventListener('click', () => {
-    window.location.href = browser.runtime.getURL('popup.html')
-  })
+  if (backToPopup) {
+    backToPopup.addEventListener('click', () => {
+      window.location.href = browser.runtime.getURL('popup.html')
+    })
+  }
+
+  if (closeTab) {
+    closeTab.addEventListener('click', () => {
+      browser.tabs.remove(tab.id)
+    })
+  }
 
   howToGrantPrivateBrowsingPermissions.addEventListener('click', async () => {
     await browser.tabs.create({
@@ -17,11 +27,16 @@ import { proxy, translateDocument } from '@/common/js'
     })
   })
 
-  grantPrivateBrowsingPermissionsButton.addEventListener('click', async () => {
-    const proxySet = await proxy.setProxy()
+  if (grantPrivateBrowsingPermissionsButton) {
+    grantPrivateBrowsingPermissionsButton.addEventListener('click', async () => {
+      const proxySet = await proxy.setProxy()
 
-    if (proxySet === true) {
-      window.location.href = browser.runtime.getURL('popup.html')
-    }
-  })
+      if (proxySet === true) {
+        await proxy.grantIncognitoAccess()
+        window.location.href = browser.runtime.getURL('popup.html')
+      }
+    })
+  }
+
+  translateDocument(document, { url: originUrl })
 })()

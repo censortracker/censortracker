@@ -46,7 +46,7 @@ class Proxy extends Browser {
     return `${this.proxyConfig.host}:${this.proxyConfig.port}`
   }
 
-  requestPrivateBrowsingPermissions = async () => {
+  requestIncognitoAccess = async () => {
     if (this.isFirefox) {
       await this.browser.browserAction.setBadgeText({ text: '✕' })
       await storage.set({ privateBrowsingPermissionsRequired: true })
@@ -54,7 +54,7 @@ class Proxy extends Browser {
     }
   }
 
-  privateBrowsingPermissionsGranted = async () => {
+  grantIncognitoAccess = async () => {
     if (this.isFirefox) {
       await this.browser.browserAction.setBadgeText({ text: '' })
       await storage.set({ privateBrowsingPermissionsRequired: false })
@@ -94,12 +94,11 @@ class Proxy extends Browser {
     try {
       await this.browser.proxy.settings.set(config)
       await this.enableProxy()
-      await this.privateBrowsingPermissionsGranted()
       console.log('PAC has been generated and set successfully!')
       return true
     } catch (error) {
       await this.disableProxy()
-      await this.requestPrivateBrowsingPermissions()
+      await this.requestIncognitoAccess()
       return false
     }
   }

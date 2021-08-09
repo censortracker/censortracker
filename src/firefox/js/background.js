@@ -34,7 +34,7 @@ const handleBeforeRequest = ({ url }) => {
 
   isAllowed.then(async (allowed) => {
     if (!allowed) {
-      await proxy.requestPrivateBrowsingPermissions()
+      await proxy.requestIncognitoAccess()
     }
   })
 
@@ -136,7 +136,7 @@ const checkProxyReadiness = async () => {
   if (proxyingEnabled && allowedIncognitoAccess) {
     if (!controlledByThisExtension) {
       await proxy.setProxy()
-      await proxy.privateBrowsingPermissionsGranted()
+      await proxy.grantIncognitoAccess()
     }
     console.log(`Proxy is already controlled by ${settings.getName()}`)
     return true
@@ -251,7 +251,7 @@ const handleInstalled = async ({ reason }) => {
         console.warn('onInstall: incognito access allowed, setting proxy...')
         await proxy.setProxy()
       } else {
-        await proxy.requestPrivateBrowsingPermissions()
+        await proxy.requestIncognitoAccess()
       }
     }
   }

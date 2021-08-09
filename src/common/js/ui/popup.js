@@ -60,7 +60,7 @@ import {
   const privateBrowsingPermissionsRequiredButton = select({ id: 'privateBrowsingPermissionsRequiredButton' })
 
   privateBrowsingPermissionsRequiredButton.addEventListener('click', () => {
-    window.location.href = 'additional_permissions_required.html'
+    window.location.href = 'incognito_required_popup.html'
   })
 
   controlledByOtherExtensionsButton.addEventListener('click', () => {

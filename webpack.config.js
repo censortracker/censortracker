@@ -190,12 +190,12 @@ const webpackConfig = {
 
 if (isFirefox) {
   webpackConfig.entry.incognito_required = `./src/${BROWSER}/js/ui/incognito_required.js`
-  webpackConfig.entry.translator = `./src/common/js/ui/translator.js`
-  webpackConfig.entry.installed = `./src/firefox/js/ui/installed.js`
+  webpackConfig.entry.translator = './src/common/js/ui/translator.js'
+  webpackConfig.entry.installed = './src/firefox/js/ui/installed.js'
   webpackConfig.plugins.push(new HTMLWebpackPlugin({
     title: EXTENSION_NAME,
-    filename: 'additional_permissions_required.html',
-    template: 'src/firefox/pages/additional_permissions_required.html',
+    filename: 'incognito_required_popup.html',
+    template: 'src/firefox/pages/incognito_required_popup.html',
     inject: true,
     chunks: ['incognito_required'],
     meta: contentSecurityPolicy,
@@ -236,7 +236,7 @@ if (isFirefox) {
 
 if (isChromium) {
   webpackConfig.entry.controlled = `./src/${BROWSER}/js/ui/controlled.js`
-  webpackConfig.entry.translator = `./src/common/js/ui/translator.js`
+  webpackConfig.entry.translator = './src/common/js/ui/translator.js'
   webpackConfig.plugins.push(new HTMLWebpackPlugin({
     title: EXTENSION_NAME,
     filename: 'options.html',

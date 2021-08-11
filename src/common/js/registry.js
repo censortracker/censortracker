@@ -254,7 +254,10 @@ class Registry {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ domain }),
+          body: JSON.stringify({
+            domain,
+            userAgent: navigator.userAgent,
+          }),
         })
         alreadyReported.push(domain)
         await storage.set({ alreadyReported })

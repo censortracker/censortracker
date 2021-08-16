@@ -36,7 +36,7 @@ const updateVersionInManifest = () => {
 
   const [major, minor, patch] = object.version.split('.')
 
-  object.version = `${major}.${minor}.${parseInt(patch) + 1}`
+  object.version = `${major}.${minor}.${parseInt(patch) + 1}.0`
   fs.writeFileSync(manifestFile, JSON.stringify(object, null, '  '))
 }
 

@@ -49,4 +49,9 @@ import { proxy, settings, storage, translateDocument } from '@/common/js'
     await storage.get({ showNotifications: true })
 
   showNotificationsCheckbox.checked = showNotifications
+
+  optionsDPIDetectionCheckbox.addEventListener(
+    'change', async () => {
+      // TODO: Implement logic
+    }, false)
 })()

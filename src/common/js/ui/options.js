@@ -2,11 +2,11 @@ import { proxy, settings, storage, translateDocument } from '@/common/js'
 
 (async () => {
   translateDocument(document)
-  const optionsDPIDetectionCheckbox = document.getElementById('optionsDPIDetectionCheckbox')
+  const dpiDetectionCheckbox = document.getElementById('dpiDetectionCheckbox')
   const showNotificationsCheckbox = document.getElementById('showNotificationsCheckbox')
+  const howToGrantIncognitoAccess = document.getElementById('howToGrantIncognitoAccess')
   const grantPrivateBrowsingPermissionsButton = document.getElementById('grantPrivateBrowsingPermissionsButton')
   const privateBrowsingPermissionsRequiredMessage = document.getElementById('privateBrowsingPermissionsRequiredMessage')
-  const howToGrantIncognitoAccess = document.getElementById('howToGrantIncognitoAccess')
 
   if (settings.isFirefox) {
     const allowedIncognitoAccess =
@@ -36,22 +36,24 @@ import { proxy, settings, storage, translateDocument } from '@/common/js'
     }
   }
 
-  showNotificationsCheckbox.addEventListener(
-    'change', async () => {
-      if (showNotificationsCheckbox.checked) {
-        await settings.enableNotifications()
-      } else {
-        await settings.disableNotifications()
-      }
-    }, false)
+  showNotificationsCheckbox.addEventListener('change', async () => {
+    if (showNotificationsCheckbox.checked) {
+      await settings.enableNotifications()
+    } else {
+      await settings.disableNotifications()
+    }
+  }, false)
 
   const { showNotifications } =
     await storage.get({ showNotifications: true })
 
   showNotificationsCheckbox.checked = showNotifications
 
-  optionsDPIDetectionCheckbox.addEventListener(
-    'change', async () => {
-      // TODO: Implement logic
-    }, false)
+  dpiDetectionCheckbox.addEventListener('change', async () => {
+    if (dpiDetectionCheckbox.checked) {
+      console.log('Turned on')
+    } else {
+      console.log('Turned off')
+    }
+  }, false)
 })()

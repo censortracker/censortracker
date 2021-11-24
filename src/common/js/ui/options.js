@@ -2,7 +2,7 @@ import { proxy, settings, storage, translateDocument } from '@/common/js'
 
 (async () => {
   translateDocument(document)
-
+  const optionsDPIDetectionCheckbox = document.getElementById('optionsDPIDetectionCheckbox')
   const showNotificationsCheckbox = document.getElementById('showNotificationsCheckbox')
   const grantPrivateBrowsingPermissionsButton = document.getElementById('grantPrivateBrowsingPermissionsButton')
   const privateBrowsingPermissionsRequiredMessage = document.getElementById('privateBrowsingPermissionsRequiredMessage')

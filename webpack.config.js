@@ -277,7 +277,7 @@ if (PRODUCTION) {
   webpackConfig.devtool = 'none'
 
   // See https://webpack.js.org/configuration/optimization/#optimizationminimize
-  webpackConfig.optimization.minimize = true
+  webpackConfig.optimization.minimize = false
 
   // See: https://webpack.js.org/plugins/terser-webpack-plugin/
   webpackConfig.plugins.push(new TerserPlugin({

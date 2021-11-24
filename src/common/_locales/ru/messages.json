@@ -244,5 +244,11 @@
         "content": "$1"
       }
     }
+  },
+  "optionsDPIDetection": {
+    "message": "Обнаружение и обход DPI-фильтров"
+  },
+  "optionsDPIDetectionDescription": {
+    "message": "Мы поможем вам обойти DPI-фильтрацию некоторых веб-сайтов"
   }
 }

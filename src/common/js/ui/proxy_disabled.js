@@ -20,12 +20,6 @@ import { extractDecodedOriginUrl } from '@/common/js/utilities'
     }
 
     if (event.target.matches('#doNotAskAnymore')) {
-      const { censortracker: { webRequestListeners } } = await currentBrowser.runtime.getBackgroundPage()
-
-      if (webRequestListeners.activated()) {
-        webRequestListeners.deactivate()
-      }
-
       await currentBrowser.tabs.update(tab.id, { url: originUrl })
     }
 

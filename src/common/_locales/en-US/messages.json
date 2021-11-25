@@ -242,10 +242,10 @@
       }
     }
   },
-  "optionsDPIDetection": {
+  "optionsUseDPIDetection": {
     "message": "Detect and bypass DPI-filters"
   },
-  "optionsDPIDetectionDescription": {
-    "message": "We will help you access websites restricted through the DPI filters"
+  "optionsUseDPIDetectionDescription": {
+    "message": "We will help you access websites restricted through the DPI filters (<b>experimental</b>)."
   }
 }

@@ -290,10 +290,26 @@ const webRequestListeners = {
  * @param _areaName The name of the storage area ("sync", "local") to which the changes were made.
  */
 const handleStorageChanged = async (changes, _areaName) => {
-  const { enableExtension, ignoredHosts, useProxy } = changes
+  const { enableExtension, ignoredHosts, useProxy, useDPIDetection } = changes
 
   if (ignoredHosts && ignoredHosts.newValue) {
     ignore.save()
+  }
+
+  if (useDPIDetection) {
+    if (
+      useDPIDetection.oldValue === false &&
+      useDPIDetection.newValue === true
+    ) {
+      webRequestListeners.activate()
+    }
+
+    if (
+      useDPIDetection.oldValue === true &&
+      !useDPIDetection.newValue === false
+    ) {
+      webRequestListeners.deactivate()
+    }
   }
 
   if (enableExtension) {
@@ -302,17 +318,10 @@ const handleStorageChanged = async (changes, _areaName) => {
 
     if (newValue === true && oldValue === false) {
       await proxy.setProxy()
-
-      if (!webRequestListeners.activated()) {
-        webRequestListeners.activate()
-      }
     }
 
     if (newValue === false && oldValue === true) {
       await proxy.removeProxy()
-      if (webRequestListeners.activated()) {
-        webRequestListeners.deactivate()
-      }
     }
   }
 
@@ -335,5 +344,3 @@ const handleStorageChanged = async (changes, _areaName) => {
 }
 
 chrome.storage.onChanged.addListener(handleStorageChanged)
-
-window.censortracker.webRequestListeners = webRequestListeners

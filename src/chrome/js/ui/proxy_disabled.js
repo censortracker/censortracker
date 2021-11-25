@@ -17,12 +17,6 @@ import { extractDecodedOriginUrl, proxy, translateDocument } from '@/common/js'
     }
 
     if (event.target.matches('#doNotAskAnymore')) {
-      const { censortracker: { webRequestListeners } } = await asynchrome.runtime.getBackgroundPage()
-
-      if (webRequestListeners.activated()) {
-        webRequestListeners.deactivate()
-      }
-
       chrome.tabs.update(tab.id, { url: originUrl })
     }
 

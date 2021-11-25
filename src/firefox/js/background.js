@@ -295,27 +295,30 @@ const webRequestListeners = {
   },
 }
 
-window.censortracker.webRequestListeners = webRequestListeners
-
 /**
  * Fired when one or more items change.
  * @param changes Object describing the change. This contains one property for each key that changed.
  * @param _areaName The name of the storage area ("sync", "local") to which the changes were made.
  */
-const handleStorageChanged = async ({ enableExtension, ignoredHosts, useProxy, useDPIDetection }, _areaName) => {
+const handleStorageChanged = async (changes, _areaName) => {
+  const { enableExtension, ignoredHosts, useProxy, useDPIDetection } = changes
+
   if (ignoredHosts && ignoredHosts.newValue) {
     ignore.save()
   }
 
   if (useDPIDetection) {
-    const newValue = useDPIDetection.newValue
-    const oldValue = useDPIDetection.oldValue
-
-    if (newValue === true && oldValue === false) {
+    if (
+      useDPIDetection.oldValue === false &&
+      useDPIDetection.newValue === true
+    ) {
       webRequestListeners.activate()
     }
 
-    if (!newValue === false && oldValue === true) {
+    if (
+      useDPIDetection.oldValue === true &&
+      !useDPIDetection.newValue === false
+    ) {
       webRequestListeners.deactivate()
     }
   }
@@ -326,18 +329,10 @@ const handleStorageChanged = async ({ enableExtension, ignoredHosts, useProxy, u
 
     if (newValue === true && oldValue === false) {
       await proxy.setProxy()
-
-      if (!webRequestListeners.activated()) {
-        webRequestListeners.activate()
-      }
     }
 
     if (newValue === false && oldValue === true) {
       await proxy.removeProxy()
-
-      if (webRequestListeners.activated()) {
-        webRequestListeners.deactivate()
-      }
     }
   }
 

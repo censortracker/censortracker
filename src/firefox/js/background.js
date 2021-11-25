@@ -49,13 +49,11 @@ const handleBeforeRequest = ({ url }) => {
   }
 }
 
-window.handleBeforeRequest = handleBeforeRequest
-
-browser.webRequest.onBeforeRequest.addListener(
-  handleBeforeRequest,
-  getRequestFilter({ http: true, https: false }),
-  ['blocking'],
-)
+// browser.webRequest.onBeforeRequest.addListener(
+//   handleBeforeRequest,
+//   getRequestFilter({ http: true, https: false }),
+//   ['blocking'],
+// )
 
 /**
  * Fires when a request could not be processed successfully.
@@ -120,12 +118,10 @@ const handleErrorOccurred = async ({ error, url, tabId }) => {
   })
 }
 
-window.handleErrorOccurred = handleErrorOccurred
-
-browser.webRequest.onErrorOccurred.addListener(
-  handleErrorOccurred,
-  getRequestFilter({ http: true, https: true }),
-)
+// browser.webRequest.onErrorOccurred.addListener(
+//   handleErrorOccurred,
+//   getRequestFilter({ http: true, https: true }),
+// )
 
 /**
  * Check if proxy is ready to use.
@@ -306,10 +302,24 @@ window.censortracker.webRequestListeners = webRequestListeners
  * @param changes Object describing the change. This contains one property for each key that changed.
  * @param _areaName The name of the storage area ("sync", "local") to which the changes were made.
  */
-const handleStorageChanged = async ({ enableExtension, ignoredHosts, useProxy }, _areaName) => {
+const handleStorageChanged = async ({ enableExtension, ignoredHosts, useProxy, useDPIDetection }, _areaName) => {
   if (ignoredHosts && ignoredHosts.newValue) {
     ignore.save()
   }
+
+  if (useDPIDetection) {
+    const newValue = useDPIDetection.newValue
+    const oldValue = useDPIDetection.oldValue
+
+    if (newValue === true && oldValue === false) {
+      webRequestListeners.activate()
+    }
+
+    if (!newValue === false && oldValue === true) {
+      webRequestListeners.deactivate()
+    }
+  }
+
   if (enableExtension) {
     const newValue = enableExtension.newValue
     const oldValue = enableExtension.oldValue

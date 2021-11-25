@@ -49,6 +49,8 @@ const handleBeforeRequest = ({ url }) => {
   }
 }
 
+window.handleBeforeRequest = handleBeforeRequest
+
 browser.webRequest.onBeforeRequest.addListener(
   handleBeforeRequest,
   getRequestFilter({ http: true, https: false }),
@@ -117,6 +119,8 @@ const handleErrorOccurred = async ({ error, url, tabId }) => {
     url: enforceHttpConnection(url),
   })
 }
+
+window.handleErrorOccurred = handleErrorOccurred
 
 browser.webRequest.onErrorOccurred.addListener(
   handleErrorOccurred,

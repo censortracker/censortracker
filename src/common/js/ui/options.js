@@ -2,7 +2,7 @@ import { proxy, settings, storage, translateDocument } from '@/common/js'
 
 (async () => {
   translateDocument(document)
-  const dpiDetectionCheckbox = document.getElementById('dpiDetectionCheckbox')
+  const useDPIDetectionCheckbox = document.getElementById('useDPIDetectionCheckbox')
   const showNotificationsCheckbox = document.getElementById('showNotificationsCheckbox')
   const howToGrantIncognitoAccess = document.getElementById('howToGrantIncognitoAccess')
   const grantPrivateBrowsingPermissionsButton = document.getElementById('grantPrivateBrowsingPermissionsButton')
@@ -49,11 +49,11 @@ import { proxy, settings, storage, translateDocument } from '@/common/js'
 
   showNotificationsCheckbox.checked = showNotifications
 
-  dpiDetectionCheckbox.addEventListener('change', async () => {
-    if (dpiDetectionCheckbox.checked) {
-      console.log('Turned on')
-    } else {
-      console.log('Turned off')
-    }
+  useDPIDetectionCheckbox.addEventListener('change', async () => {
+    await storage.set({ useDPIDetection: useDPIDetectionCheckbox.checked })
   }, false)
+
+  const { useDPIDetection } = await storage.get({ useDPIDetection: true })
+
+  useDPIDetectionCheckbox.checked = useDPIDetection
 })()

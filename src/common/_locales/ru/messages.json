@@ -245,10 +245,10 @@
       }
     }
   },
-  "optionsDPIDetection": {
+  "optionsUseDPIDetection": {
     "message": "Обнаружение и обход DPI-фильтров"
   },
-  "optionsDPIDetectionDescription": {
-    "message": "Мы поможем вам обойти DPI-фильтрацию некоторых веб-сайтов"
+  "optionsUseDPIDetectionDescription": {
+    "message": "Мы поможем вам обойти DPI-фильтрацию некоторых веб-сайтов (<b>экспериментальной функция</b>)."
   }
 }

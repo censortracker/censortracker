@@ -18,13 +18,12 @@ export const handleBeforeRequest = ({ url }) => {
   const hostname = extractHostnameFromUrl(url)
 
   if (settings.isFirefox) {
-    const isAllowed = currentBrowser.extension.isAllowedIncognitoAccess()
-
-    isAllowed.then(async (allowed) => {
-      if (!allowed) {
-        await proxy.requestIncognitoAccess()
-      }
-    })
+    currentBrowser.extension.isAllowedIncognitoAccess()
+      .then(async (allowed) => {
+        if (!allowed) {
+          await proxy.requestIncognitoAccess()
+        }
+      })
   }
 
   if (ignore.contains(hostname)) {

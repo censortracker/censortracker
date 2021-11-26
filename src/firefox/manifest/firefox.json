@@ -1,5 +1,5 @@
 {
-  "version": "3.10.54.0",
+  "version": "3.10.55.0",
   "browser_action": {
     "default_popup": "popup.html",
     "default_icon": "images/icons/128x128/default.png"

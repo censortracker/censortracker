@@ -36,3 +36,12 @@ export const handleBeforeRequest = ({ url }) => {
     redirectUrl: enforceHttpsConnection(url),
   }
 }
+
+/**
+ * Fires when a request could not be processed successfully.
+ * @param url Current URL address.
+ * @param error The error description.
+ * @param tabId The ID of the tab in which the request takes place.
+ */
+// eslint-disable-next-line handle-callback-err
+export const handleErrorOccurred = ({ error, url, tabId }) => {}

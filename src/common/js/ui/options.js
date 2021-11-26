@@ -53,7 +53,7 @@ import { proxy, settings, storage, translateDocument } from '@/common/js'
     await storage.set({ useDPIDetection: useDPIDetectionCheckbox.checked })
   }, false)
 
-  const { useDPIDetection } = await storage.get({ useDPIDetection: true })
+  const { useDPIDetection } = await storage.get({ useDPIDetection: false })
 
   useDPIDetectionCheckbox.checked = useDPIDetection
 })()

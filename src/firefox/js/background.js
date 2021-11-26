@@ -1,6 +1,5 @@
 import {
   enforceHttpConnection,
-  enforceHttpsConnection,
   errors,
   extractHostnameFromUrl,
   getRequestFilter,
@@ -12,6 +11,8 @@ import {
   storage,
 } from '@/common/js'
 
+import { handleBeforeRequest } from '../../common/js/handlers/webrequest'
+
 window.censortracker = {
   proxy,
   registry,
@@ -21,39 +22,6 @@ window.censortracker = {
   ignore,
   extractHostnameFromUrl,
 }
-
-/**
- * Fires when a request is about to occur. This event is sent before any TCP
- * connection is made and can be used to cancel or redirect requests.
- * @param url Current URL address.
- * @returns {undefined|{redirectUrl: *}} Undefined or redirection to HTTPS.
- */
-const handleBeforeRequest = ({ url }) => {
-  const hostname = extractHostnameFromUrl(url)
-  const isAllowed = browser.extension.isAllowedIncognitoAccess()
-
-  isAllowed.then(async (allowed) => {
-    if (!allowed) {
-      await proxy.requestIncognitoAccess()
-    }
-  })
-
-  if (ignore.contains(hostname)) {
-    return undefined
-  }
-
-  console.warn(`Request redirected to HTTPS: ${hostname}`)
-  proxy.ping()
-  return {
-    redirectUrl: enforceHttpsConnection(url),
-  }
-}
-
-// browser.webRequest.onBeforeRequest.addListener(
-//   handleBeforeRequest,
-//   getRequestFilter({ http: true, https: false }),
-//   ['blocking'],
-// )
 
 /**
  * Fires when a request could not be processed successfully.
@@ -295,7 +263,7 @@ const webRequestListeners = {
   },
 }
 
-window.webRequestListeners = webRequestListeners
+window.censortracker.webRequestListeners = webRequestListeners
 
 /**
  * Fired when one or more items change.

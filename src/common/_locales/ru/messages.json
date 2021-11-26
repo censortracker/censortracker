@@ -250,5 +250,17 @@
   },
   "optionsUseDPIDetectionDescription": {
     "message": "Мы поможем вам обойти DPI-фильтрацию некоторых веб-сайтов (<b>экспериментальной функция</b>)."
+  },
+  "optionsPageTitle": {
+    "message": "Настройки"
+  },
+  "installedPageTitle": {
+    "message": "CensorTracker Установлен"
+  },
+  "incognitoRequiredPageTitle": {
+    "message": "Требуется разрешение для работы в приватных окнах"
+  },
+  "ignoreEditorPageTitle": {
+    "message": "Игнорируемые сайты"
   }
 }

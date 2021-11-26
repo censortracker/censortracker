@@ -246,5 +246,17 @@
   },
   "optionsUseDPIDetectionDescription": {
     "message": "We will help you access websites restricted through the DPI filters (<b>experimental</b>)."
+  },
+  "optionsPageTitle": {
+    "message": "Options"
+  },
+  "installedPageTitle": {
+    "message": "CensorTracker Installed"
+  },
+  "incognitoRequiredPageTitle": {
+    "message": "Private Browsing Permission Required"
+  },
+  "ignoreEditorPageTitle": {
+    "message": "Ignored Sites"
   }
 }

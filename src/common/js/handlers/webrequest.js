@@ -15,6 +15,8 @@ const browserAPI = settings.getBrowser()
  * @returns {undefined|{redirectUrl: *}} Undefined or redirection to HTTPS.
  */
 export const handleBeforeRequest = ({ url }) => {
+  console.warn('handleBeforeRequest works fine!')
+
   const hostname = extractHostnameFromUrl(url)
 
   if (settings.isFirefox) {

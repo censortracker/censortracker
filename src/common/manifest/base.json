@@ -13,8 +13,7 @@
     "notifications",
     "unlimitedStorage",
     "webRequestBlocking",
-    "http://*/*",
-    "https://*/*"
+    "<all_urls>"
   ],
   "background": {
     "scripts": [

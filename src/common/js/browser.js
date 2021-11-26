@@ -35,4 +35,5 @@ export class Browser {
   }
 
   getBrowser = () => this.browser
+  getBrowserWrapper = () => this
 }

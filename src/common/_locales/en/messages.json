@@ -51,7 +51,7 @@
     "message": "Read More →"
   },
   "ignoredSitesTitle": {
-    "message": "Ignored Sites"
+    "message": "Ignored sites"
   },
   "ignoredSitesDesc": {
     "message": "Addresses that will always be ignored by the Censor Tracker. It can help if there are problems with opening the site. Each address starts with a new line."

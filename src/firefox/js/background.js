@@ -295,6 +295,8 @@ const webRequestListeners = {
   },
 }
 
+window.webRequestListeners = webRequestListeners
+
 /**
  * Fired when one or more items change.
  * @param changes Object describing the change. This contains one property for each key that changed.

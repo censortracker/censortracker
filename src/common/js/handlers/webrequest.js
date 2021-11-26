@@ -6,7 +6,7 @@ import {
   settings,
 } from '@/common/js'
 
-const currentBrowser = settings.getBrowser()
+const browserAPI = settings.getBrowser()
 
 /**
  * Fires when a request is about to occur. This event is sent before any TCP
@@ -18,7 +18,7 @@ export const handleBeforeRequest = ({ url }) => {
   const hostname = extractHostnameFromUrl(url)
 
   if (settings.isFirefox) {
-    currentBrowser.extension.isAllowedIncognitoAccess()
+    browserAPI.extension.isAllowedIncognitoAccess()
       .then(async (allowed) => {
         if (!allowed) {
           await proxy.requestIncognitoAccess()

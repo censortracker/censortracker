@@ -258,57 +258,32 @@ chrome.proxy.onProxyError.addListener((details) => {
   console.error(`Proxy error: ${JSON.stringify(details)}`)
 })
 
-const webRequestListeners = {
-  activated: () => {
-    return (
-      chrome.webRequest.onErrorOccurred.hasListener(handleErrorOccurred) &&
-      chrome.webRequest.onBeforeRequest.hasListener(handleBeforeRequest)
-    )
-  },
-  deactivate: () => {
-    chrome.webRequest.onErrorOccurred.removeListener(handleErrorOccurred)
-    chrome.webRequest.onBeforeRequest.removeListener(handleBeforeRequest)
-    console.warn('Web request listeners disabled')
-  },
-  activate: () => {
-    chrome.webRequest.onErrorOccurred.addListener(
-      handleErrorOccurred,
-      getRequestFilter({ http: true, https: true }),
-    )
-    chrome.webRequest.onBeforeRequest.addListener(
-      handleBeforeRequest,
-      getRequestFilter({ http: true, https: false }),
-      ['blocking'],
-    )
-    console.warn('Web request listeners enabled')
-  },
-}
-
 /**
  * Fired when one or more items change.
  * @param changes Object describing the change. This contains one property for each key that changed.
  * @param _areaName The name of the storage area ("sync", "local") to which the changes were made.
  */
-const handleStorageChanged = async (changes, _areaName) => {
-  const { enableExtension, ignoredHosts, useProxy, useDPIDetection } = changes
-
+const handleStorageChanged = async ({ enableExtension, ignoredHosts, useProxy, useDPIDetection }, _areaName) => {
   if (ignoredHosts && ignoredHosts.newValue) {
     ignore.save()
   }
 
   if (useDPIDetection) {
-    if (
-      useDPIDetection.oldValue === false &&
-      useDPIDetection.newValue === true
-    ) {
-      webRequestListeners.activate()
+    if (useDPIDetection.newValue === true) {
+      browser.webRequest.onErrorOccurred.addListener(
+        handleErrorOccurred, getRequestFilter({ http: true, https: true }),
+      )
+      browser.webRequest.onBeforeRequest.addListener(
+        handleBeforeRequest, getRequestFilter({ http: true, https: false }),
+        ['blocking'],
+      )
+      console.warn('WEBREQUEST LISTENERS ENABLED')
     }
 
-    if (
-      useDPIDetection.oldValue === true &&
-      !useDPIDetection.newValue === false
-    ) {
-      webRequestListeners.deactivate()
+    if (useDPIDetection.newValue === false) {
+      browser.webRequest.onErrorOccurred.removeListener(handleErrorOccurred)
+      browser.webRequest.onBeforeRequest.removeListener(handleBeforeRequest)
+      console.warn('WEBREQUEST LISTENERS REMOVED')
     }
   }
 

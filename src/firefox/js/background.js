@@ -1,5 +1,6 @@
 import {
   enforceHttpConnection,
+  enforceHttpsConnection,
   errors,
   extractHostnameFromUrl,
   getRequestFilter,
@@ -11,8 +12,6 @@ import {
   storage,
 } from '@/common/js'
 
-import { handleBeforeRequest } from '../../common/js/handlers/webrequest'
-
 window.censortracker = {
   proxy,
   registry,
@@ -21,6 +20,34 @@ window.censortracker = {
   errors,
   ignore,
   extractHostnameFromUrl,
+}
+
+/**
+ * Fires when a request is about to occur. This event is sent before any TCP
+ * connection is made and can be used to cancel or redirect requests.
+ * @param url Current URL address.
+ * @returns {undefined|{redirectUrl: *}} Undefined or redirection to HTTPS.
+ */
+const handleBeforeRequest = ({ url }) => {
+  const hostname = extractHostnameFromUrl(url)
+
+  console.warn(`Request redirected to HTTPS: ${hostname}`)
+
+  browser.extension.isAllowedIncognitoAccess()
+    .then(async (allowed) => {
+      if (!allowed) {
+        await proxy.requestIncognitoAccess()
+      }
+    })
+
+  if (ignore.contains(hostname)) {
+    return undefined
+  }
+
+  proxy.ping()
+  return {
+    redirectUrl: enforceHttpsConnection(url),
+  }
 }
 
 /**
@@ -85,11 +112,6 @@ const handleErrorOccurred = async ({ error, url, tabId }) => {
     url: enforceHttpConnection(url),
   })
 }
-
-// browser.webRequest.onErrorOccurred.addListener(
-//   handleErrorOccurred,
-//   getRequestFilter({ http: true, https: true }),
-// )
 
 /**
  * Check if proxy is ready to use.
@@ -237,59 +259,29 @@ browser.runtime.onStartup.addListener(async () => {
   await registry.sync()
 })
 
-const webRequestListeners = {
-  activated: () => {
-    return (
-      browser.webRequest.onErrorOccurred.hasListener(handleErrorOccurred) &&
-      browser.webRequest.onBeforeRequest.hasListener(handleBeforeRequest)
-    )
-  },
-  deactivate: () => {
-    browser.webRequest.onErrorOccurred.removeListener(handleErrorOccurred)
-    browser.webRequest.onBeforeRequest.removeListener(handleBeforeRequest)
-    console.warn('Web request listeners disabled')
-  },
-  activate: () => {
-    browser.webRequest.onErrorOccurred.addListener(
-      handleErrorOccurred,
-      getRequestFilter({ http: true, https: true }),
-    )
-    browser.webRequest.onBeforeRequest.addListener(
-      handleBeforeRequest,
-      getRequestFilter({ http: true, https: false }),
-      ['blocking'],
-    )
-    console.warn('Web request listeners enabled')
-  },
-}
-
-window.censortracker.webRequestListeners = webRequestListeners
-
 /**
  * Fired when one or more items change.
  * @param changes Object describing the change. This contains one property for each key that changed.
  * @param _areaName The name of the storage area ("sync", "local") to which the changes were made.
  */
-const handleStorageChanged = async (changes, _areaName) => {
-  const { enableExtension, ignoredHosts, useProxy, useDPIDetection } = changes
-
+const handleStorageChanged = async ({ enableExtension, ignoredHosts, useProxy, useDPIDetection }, _areaName) => {
   if (ignoredHosts && ignoredHosts.newValue) {
     ignore.save()
   }
 
+  console.warn(JSON.stringify(useDPIDetection))
+
   if (useDPIDetection) {
-    if (
-      useDPIDetection.oldValue === false &&
-      useDPIDetection.newValue === true
-    ) {
-      webRequestListeners.activate()
+    if (useDPIDetection.newValue === true) {
+      browser.webRequest.onErrorOccurred.addListener(handleErrorOccurred, getRequestFilter({ http: true, https: true }))
+      browser.webRequest.onBeforeRequest.addListener(handleBeforeRequest, getRequestFilter({ http: true, https: false }), ['blocking'])
+      console.warn('WEBREQUEST LISTENERS ENABLED')
     }
 
-    if (
-      useDPIDetection.oldValue === true &&
-      !useDPIDetection.newValue === false
-    ) {
-      webRequestListeners.deactivate()
+    if (useDPIDetection.newValue === false) {
+      browser.webRequest.onErrorOccurred.removeListener(handleErrorOccurred)
+      browser.webRequest.onBeforeRequest.removeListener(handleBeforeRequest)
+      console.warn('WEBREQUEST LISTENERS REMOVED')
     }
   }
 

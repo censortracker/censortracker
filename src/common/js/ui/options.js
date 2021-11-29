@@ -2,7 +2,6 @@ import { proxy, settings, storage, translateDocument } from '@/common/js'
 
 (async () => {
   translateDocument(document)
-  const ignoreEditorGroup = document.getElementById('ignoreEditorGroup')
   const useDPIDetectionCheckbox = document.getElementById('useDPIDetectionCheckbox')
   const showNotificationsCheckbox = document.getElementById('showNotificationsCheckbox')
   const howToGrantIncognitoAccess = document.getElementById('howToGrantIncognitoAccess')
@@ -53,7 +52,6 @@ import { proxy, settings, storage, translateDocument } from '@/common/js'
   useDPIDetectionCheckbox.addEventListener('change', async () => {
     const currentState = useDPIDetectionCheckbox.checked
 
-    ignoreEditorGroup.hidden = !currentState
     await storage.set({ useDPIDetection: currentState })
   }, false)
 

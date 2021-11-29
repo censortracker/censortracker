@@ -269,12 +269,15 @@ const handleStorageChanged = async ({ enableExtension, ignoredHosts, useProxy, u
     ignore.save()
   }
 
-  console.warn(JSON.stringify(useDPIDetection))
-
   if (useDPIDetection) {
     if (useDPIDetection.newValue === true) {
-      browser.webRequest.onErrorOccurred.addListener(handleErrorOccurred, getRequestFilter({ http: true, https: true }))
-      browser.webRequest.onBeforeRequest.addListener(handleBeforeRequest, getRequestFilter({ http: true, https: false }), ['blocking'])
+      browser.webRequest.onErrorOccurred.addListener(
+        handleErrorOccurred, getRequestFilter({ http: true, https: true }),
+      )
+      browser.webRequest.onBeforeRequest.addListener(
+        handleBeforeRequest, getRequestFilter({ http: true, https: false }),
+        ['blocking'],
+      )
       console.warn('WEBREQUEST LISTENERS ENABLED')
     }
 

@@ -51,7 +51,7 @@
     "message": "Read More →"
   },
   "ignoredSitesTitle": {
-    "message": "Ignored sites"
+    "message": "Ignored Sites"
   },
   "ignoredSitesDesc": {
     "message": "Addresses that will always be ignored by the Censor Tracker. It can help if there are problems with opening the site. Each address starts with a new line."
@@ -60,16 +60,16 @@
     "message": "Changes are automatically saved when clicked <code>Enter</code> or <code>Backspace</code>."
   },
   "optionsTitle": {
-    "message": "Censor Tracker extension settings"
+    "message": "Censor Tracker Settings"
   },
   "proxySettings": {
-    "message": "Proxy settings"
+    "message": "Proxy Settings"
   },
   "optionsProxyDesc": {
     "message": "If the site is blocked, the Censor Tracker will grant access to it. Disable this setting if you use another service to bypass blocking (for example, a VPN) to increase the connection speed."
   },
   "privateBrowsingRequired": {
-    "message": "Allow the extension to work in private windows."
+    "message": "Allow the Extension to Work in Private Windows."
   },
   "privateBrowsingRequiredDesc": {
     "message": "So that we can open blocked sites for you through a proxy. In Firefox, there is no way without it."
@@ -84,13 +84,13 @@
     "message": "Addresses for which the proxy will always be disabled. It can help if there are problems with opening the site."
   },
   "showNotificationsTitle": {
-    "message": "Show system notifications"
+    "message": "Show System Notifications"
   },
   "showNotificationsDesc": {
     "message": "We will warn you when a site transmits your messages, personal data and all traffic to third parties automatically."
   },
-  "aboutExtension": {
-    "message": "About extension"
+  "shareFeedback": {
+    "message": "Got issues or suggestions? Let us know!"
   },
   "unavailableOrBlocked": {
     "message": "The site is unavailable or blocked"
@@ -243,10 +243,10 @@
     }
   },
   "optionsUseDPIDetection": {
-    "message": "Detect and bypass DPI-filters"
+    "message": "Detect and Bypass DPI-filters"
   },
   "optionsUseDPIDetectionDescription": {
-    "message": "We will help you access websites restricted through the DPI filters (<b>experimental</b>)."
+    "message": "When this feature is turned on, the browser redirects all HTTP requests to HTTPS to make blocked websites abort the connection and spit out an error, based on which CensorTracker decides whether to proxy the website or not."
   },
   "optionsPageTitle": {
     "message": "Options"

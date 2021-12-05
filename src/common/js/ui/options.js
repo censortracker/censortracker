@@ -50,9 +50,11 @@ import { proxy, settings, storage, translateDocument } from '@/common/js'
   showNotificationsCheckbox.checked = showNotifications
 
   useDPIDetectionCheckbox.addEventListener('change', async () => {
-    const currentState = useDPIDetectionCheckbox.checked
-
-    await storage.set({ useDPIDetection: currentState })
+    if (useDPIDetectionCheckbox.checked) {
+      await settings.enableDPIDetection()
+    } else {
+      await settings.disableDPIDetection()
+    }
   }, false)
 
   const { useDPIDetection } = await storage.get({ useDPIDetection: false })

@@ -47,12 +47,6 @@ const handleBeforeRequest = ({ url }) => {
   }
 }
 
-chrome.webRequest.onBeforeRequest.addListener(
-  handleBeforeRequest,
-  getRequestFilter({ http: true, https: false }),
-  ['blocking'],
-)
-
 /**
  * Fires when a request could not be processed successfully.
  * @param url Current URL address.
@@ -102,11 +96,6 @@ const handleErrorOccurred = async ({ url, error, tabId }) => {
     url: enforceHttpConnection(url),
   })
 }
-
-chrome.webRequest.onErrorOccurred.addListener(
-  handleErrorOccurred,
-  getRequestFilter({ http: true, https: true }),
-)
 
 const handleNotificationButtonClicked = async (notificationId, buttonIndex) => {
   if (buttonIndex === 0) {
@@ -222,6 +211,7 @@ const handleInstalled = async ({ reason }) => {
     })
   }
 
+  await settings.disableDPIDetection()
   await ignore.setDefaultIgnoredHosts()
 
   if (reasonsForSync.includes(reason)) {
@@ -269,20 +259,23 @@ const handleStorageChanged = async ({ enableExtension, ignoredHosts, useProxy, u
   }
 
   if (useDPIDetection) {
-    if (useDPIDetection.newValue === true) {
-      browser.webRequest.onErrorOccurred.addListener(
+    const webRequestListenersActivate = chrome.webRequest.onErrorOccurred.hasListener(handleErrorOccurred) &&
+      chrome.webRequest.onBeforeRequest.hasListener(handleBeforeRequest)
+
+    if (useDPIDetection.newValue === true && !webRequestListenersActivate) {
+      chrome.webRequest.onErrorOccurred.addListener(
         handleErrorOccurred, getRequestFilter({ http: true, https: true }),
       )
-      browser.webRequest.onBeforeRequest.addListener(
+      chrome.webRequest.onBeforeRequest.addListener(
         handleBeforeRequest, getRequestFilter({ http: true, https: false }),
         ['blocking'],
       )
       console.warn('WEBREQUEST LISTENERS ENABLED')
     }
 
-    if (useDPIDetection.newValue === false) {
-      browser.webRequest.onErrorOccurred.removeListener(handleErrorOccurred)
-      browser.webRequest.onBeforeRequest.removeListener(handleBeforeRequest)
+    if (useDPIDetection.newValue === false && webRequestListenersActivate) {
+      chrome.webRequest.onErrorOccurred.removeListener(handleErrorOccurred)
+      chrome.webRequest.onBeforeRequest.removeListener(handleBeforeRequest)
       console.warn('WEBREQUEST LISTENERS REMOVED')
     }
   }

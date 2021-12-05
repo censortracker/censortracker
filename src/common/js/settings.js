@@ -97,6 +97,14 @@ class Settings extends Browser {
     console.warn('Notifications disabled.')
     await storage.set({ showNotifications: false })
   }
+
+  disableDPIDetection = async () => {
+    await storage.set({ useDPIDetection: false })
+  }
+
+  enableDPIDetection = async () => {
+    await storage.set({ useDPIDetection: true })
+  }
 }
 
 export default new Settings()

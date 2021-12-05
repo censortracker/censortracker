@@ -227,6 +227,7 @@ const handleInstalled = async ({ reason }) => {
     })
   }
 
+  await settings.disableDPIDetection()
   await ignore.setDefaultIgnoredHosts()
 
   if (reasonsForSync.includes(reason)) {
@@ -270,7 +271,10 @@ const handleStorageChanged = async ({ enableExtension, ignoredHosts, useProxy, u
   }
 
   if (useDPIDetection) {
-    if (useDPIDetection.newValue === true) {
+    const webRequestListenersActivate = browser.webRequest.onErrorOccurred.hasListener(handleErrorOccurred) &&
+      browser.webRequest.onBeforeRequest.hasListener(handleBeforeRequest)
+
+    if (useDPIDetection.newValue === true && !webRequestListenersActivate) {
       browser.webRequest.onErrorOccurred.addListener(
         handleErrorOccurred, getRequestFilter({ http: true, https: true }),
       )
@@ -281,7 +285,7 @@ const handleStorageChanged = async ({ enableExtension, ignoredHosts, useProxy, u
       console.warn('WEBREQUEST LISTENERS ENABLED')
     }
 
-    if (useDPIDetection.newValue === false) {
+    if (useDPIDetection.newValue === false && webRequestListenersActivate) {
       browser.webRequest.onErrorOccurred.removeListener(handleErrorOccurred)
       browser.webRequest.onBeforeRequest.removeListener(handleBeforeRequest)
       console.warn('WEBREQUEST LISTENERS REMOVED')

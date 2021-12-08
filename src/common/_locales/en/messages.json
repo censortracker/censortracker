@@ -258,5 +258,11 @@
   },
   "ignoreEditorPageTitle": {
     "message": "Ignored Sites"
+  },
+  "advancedOptionsTitle": {
+    "message": "Advanced Options"
+  },
+  "advancedOptionsDesc": {
+    "message": "You can manually update the local database of blocked websites, update the config of CensorTracker and manage other advanced options."
   }
 }

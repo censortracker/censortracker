@@ -57,6 +57,7 @@ const webpackConfig = {
     proxy_options: './src/common/js/ui/proxy_options.js',
     proxy_disabled: `./src/${BROWSER}/js/ui/proxy_disabled.js`,
     ignore_editor: './src/common/js/ui/ignore_editor.js',
+    translator: './src/common/js/ui/translator.js',
   },
 
   output: {
@@ -168,6 +169,14 @@ const webpackConfig = {
       chunks: ['proxy_disabled'],
       meta: contentSecurityPolicy,
     }),
+    new HTMLWebpackPlugin({
+      title: EXTENSION_NAME,
+      filename: 'options.html',
+      template: 'src/common/pages/options.html',
+      inject: true,
+      chunks: ['options'],
+      meta: contentSecurityPolicy,
+    }),
     new MergeJsonWebpackPlugin({
       globOptions: {
         nosort: false,
@@ -190,7 +199,6 @@ const webpackConfig = {
 
 if (isFirefox) {
   webpackConfig.entry.incognito_required = `./src/${BROWSER}/js/ui/incognito_required.js`
-  webpackConfig.entry.translator = './src/common/js/ui/translator.js'
   webpackConfig.entry.installed = './src/firefox/js/ui/installed.js'
   webpackConfig.plugins.push(new HTMLWebpackPlugin({
     title: EXTENSION_NAME,
@@ -206,14 +214,6 @@ if (isFirefox) {
     template: 'src/common/pages/proxy_options.html',
     inject: true,
     chunks: ['proxy_options'],
-    meta: contentSecurityPolicy,
-  }))
-  webpackConfig.plugins.push(new HTMLWebpackPlugin({
-    title: EXTENSION_NAME,
-    filename: 'options.html',
-    template: 'src/common/pages/options.html',
-    inject: true,
-    chunks: ['options'],
     meta: contentSecurityPolicy,
   }))
   webpackConfig.plugins.push(new HTMLWebpackPlugin({
@@ -236,15 +236,6 @@ if (isFirefox) {
 
 if (isChromium) {
   webpackConfig.entry.controlled = `./src/${BROWSER}/js/ui/controlled.js`
-  webpackConfig.entry.translator = './src/common/js/ui/translator.js'
-  webpackConfig.plugins.push(new HTMLWebpackPlugin({
-    title: EXTENSION_NAME,
-    filename: 'options.html',
-    template: 'src/common/pages/options.html',
-    inject: true,
-    chunks: ['options'],
-    meta: contentSecurityPolicy,
-  }))
   webpackConfig.plugins.push(new HTMLWebpackPlugin({
     title: EXTENSION_NAME,
     filename: 'proxy_options.html',

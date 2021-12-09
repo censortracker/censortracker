@@ -264,5 +264,8 @@
   },
   "advancedOptionsDesc": {
     "message": "You can manually update the local database of blocked websites, update the config of CensorTracker and manage other advanced options."
+  },
+  "resetSettingsToDefault": {
+    "message": "Reset settings to default (fetch config again and update local database)"
   }
 }

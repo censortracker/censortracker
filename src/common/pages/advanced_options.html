@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8"/>
+  <title data-i18n-key="ignoreEditorPageTitle"></title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="css/options.css"/>
+  <link rel="stylesheet" href="css/codemirror.css"/>
+</head>
+
+<body>
+<div class="main-container">
+  <div class="main-page">
+    <div class="main-page__image">
+      <img src="../images/settings/quokka.png" width="200" height="auto"
+           alt="<%= htmlWebpackPlugin.options.title %>"/>
+    </div>
+    <div class="main-page__info">
+      <div class="main-page__return">
+        <a class="return-link" href="advanced_options.html">
+          <svg width="24" height="16" viewBox="0 0 24 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M1.46967 7.46967C1.17678 7.76256 1.17678 8.23744 1.46967 8.53033L6.24264 13.3033C6.53553
+              13.5962 7.01041 13.5962 7.3033 13.3033C7.59619 13.0104 7.59619 12.5355 7.3033 12.2426L3.06066 8L7.3033
+              3.75736C7.59619 3.46447 7.59619 2.98959 7.3033 2.6967C7.01041 2.40381 6.53553 2.40381 6.24264
+              2.6967L1.46967 7.46967ZM22 7.25L2 7.25V8.75L22 8.75V7.25Z"/>
+          </svg>
+        </a>
+      </div>
+      <div class="main-page__title" data-i18n-key="advancedOptionsTitle"></div>
+
+      <div class="checkbox__group" id="useDPIDetectionGroup">
+        <div class="main-page__turn">
+          <label for="useDPIDetectionCheckbox" class="toggle-text" data-i18n-key="optionsUseDPIDetection"></label>
+          <input id="useDPIDetectionCheckbox" type="checkbox" class="toggle-button">
+        </div>
+        <div class="main-page__about" data-i18n-key="optionsUseDPIDetectionDescription"></div>
+      </div>
+
+      <a href="https://t.me/censortracker_feedback" class="main-page__link">
+        <span class="main-page__about" data-i18n-key="resetSettingsToDefault"></span><span>&#x27f2;</span>
+      </a>
+
+    </div>
+  </div>
+</div>
+</body>
+</html>

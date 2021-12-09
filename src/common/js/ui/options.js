@@ -16,48 +16,56 @@ import { proxy, settings, storage, translateDocument } from '@/common/js'
       privateBrowsingPermissionsRequired: false,
     })
 
-    howToGrantIncognitoAccess.addEventListener('click', async () => {
-      await browser.tabs.create({
-        url: browser.i18n.getMessage('howToGrantIncognitoAccessLink'),
+    if (howToGrantIncognitoAccess) {
+      howToGrantIncognitoAccess.addEventListener('click', async () => {
+        await browser.tabs.create({
+          url: browser.i18n.getMessage('howToGrantIncognitoAccessLink'),
+        })
       })
-    })
+    }
 
     if (privateBrowsingPermissionsRequired || !allowedIncognitoAccess) {
       privateBrowsingPermissionsRequiredMessage.hidden = false
 
-      grantPrivateBrowsingPermissionsButton.addEventListener('click', async () => {
-        const proxySet = await proxy.setProxy()
+      if (grantPrivateBrowsingPermissionsButton) {
+        grantPrivateBrowsingPermissionsButton.addEventListener('click', async () => {
+          const proxySet = await proxy.setProxy()
 
-        if (proxySet === true) {
-          await proxy.grantIncognitoAccess()
-          privateBrowsingPermissionsRequiredMessage.hidden = true
-        }
-      })
+          if (proxySet === true) {
+            await proxy.grantIncognitoAccess()
+            privateBrowsingPermissionsRequiredMessage.hidden = true
+          }
+        })
+      }
     }
   }
 
-  showNotificationsCheckbox.addEventListener('change', async () => {
-    if (showNotificationsCheckbox.checked) {
-      await settings.enableNotifications()
-    } else {
-      await settings.disableNotifications()
-    }
-  }, false)
+  if (showNotificationsCheckbox) {
+    showNotificationsCheckbox.addEventListener('change', async () => {
+      if (showNotificationsCheckbox.checked) {
+        await settings.enableNotifications()
+      } else {
+        await settings.disableNotifications()
+      }
+    }, false)
 
-  const { showNotifications } =
-    await storage.get({ showNotifications: true })
+    const { showNotifications } =
+      await storage.get({ showNotifications: true })
 
-  showNotificationsCheckbox.checked = showNotifications
+    showNotificationsCheckbox.checked = showNotifications
+  }
 
-  useDPIDetectionCheckbox.addEventListener('change', async () => {
-    if (useDPIDetectionCheckbox.checked) {
-      await settings.enableDPIDetection()
-    } else {
-      await settings.disableDPIDetection()
-    }
-  }, false)
+  if (useDPIDetectionCheckbox) {
+    useDPIDetectionCheckbox.addEventListener('change', async () => {
+      if (useDPIDetectionCheckbox.checked) {
+        await settings.enableDPIDetection()
+      } else {
+        await settings.disableDPIDetection()
+      }
+    }, false)
 
-  const { useDPIDetection } = await storage.get({ useDPIDetection: false })
+    const { useDPIDetection } = await storage.get({ useDPIDetection: false })
 
-  useDPIDetectionCheckbox.checked = useDPIDetection
+    useDPIDetectionCheckbox.checked = useDPIDetection
+  }
 })()

@@ -177,6 +177,14 @@ const webpackConfig = {
       chunks: ['options'],
       meta: contentSecurityPolicy,
     }),
+    new HTMLWebpackPlugin({
+      title: EXTENSION_NAME,
+      filename: 'advanced_options.html',
+      template: 'src/common/pages/advanced_options.html',
+      inject: true,
+      chunks: ['options'],
+      meta: contentSecurityPolicy,
+    }),
     new MergeJsonWebpackPlugin({
       globOptions: {
         nosort: false,

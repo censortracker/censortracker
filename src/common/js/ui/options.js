@@ -1,17 +1,37 @@
-import { proxy, settings, storage, translateDocument } from '@/common/js'
+import { ignore, proxy, registry, settings, storage, translateDocument } from '@/common/js'
 
 (async () => {
   translateDocument(document)
+
+  const currentBrowser = settings.getBrowser()
+  const resetSettingsToDefault = document.getElementById('resetSettingsToDefault')
   const useDPIDetectionCheckbox = document.getElementById('useDPIDetectionCheckbox')
   const showNotificationsCheckbox = document.getElementById('showNotificationsCheckbox')
   const howToGrantIncognitoAccess = document.getElementById('howToGrantIncognitoAccess')
   const grantPrivateBrowsingPermissionsButton = document.getElementById('grantPrivateBrowsingPermissionsButton')
   const privateBrowsingPermissionsRequiredMessage = document.getElementById('privateBrowsingPermissionsRequiredMessage')
 
-  if (settings.isFirefox) {
-    const allowedIncognitoAccess =
-      await browser.extension.isAllowedIncognitoAccess()
+  if (resetSettingsToDefault) {
+    resetSettingsToDefault.addEventListener('click', async () => {
+      // eslint-disable-next-line no-restricted-globals, no-alert
+      const confirmed = confirm(currentBrowser.i18n.getMessage('optionsConfirmResetMessage'))
 
+      if (confirmed) {
+        registry.invalidateCache()
+        await registry.cleanLocalRegistry()
+        await settings.enableExtension()
+        await settings.disableDPIDetection()
+        await ignore.setDefaultIgnoredHosts()
+        await proxy.setProxy()
+
+        window.location.reload()
+        console.warn('CensorTracker has been reset to default settings.')
+      }
+    })
+  }
+
+  if (settings.isFirefox) {
+    const allowedIncognitoAccess = await browser.extension.isAllowedIncognitoAccess()
     const { privateBrowsingPermissionsRequired } = await storage.get({
       privateBrowsingPermissionsRequired: false,
     })
@@ -49,8 +69,7 @@ import { proxy, settings, storage, translateDocument } from '@/common/js'
       }
     }, false)
 
-    const { showNotifications } =
-      await storage.get({ showNotifications: true })
+    const { showNotifications } = await storage.get({ showNotifications: true })
 
     showNotificationsCheckbox.checked = showNotifications
   }

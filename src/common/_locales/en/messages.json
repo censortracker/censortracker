@@ -267,5 +267,8 @@
   },
   "resetSettingsToDefault": {
     "message": "Reset settings to default (fetch config again and update local database)"
+  },
+  "optionsConfirmResetMessage": {
+    "message": "All your settings will be removed. Are you sure you want to do this?"
   }
 }

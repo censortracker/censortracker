@@ -211,6 +211,7 @@ const handleInstalled = async ({ reason }) => {
     })
   }
 
+  await settings.enableNotifications()
   await settings.disableDPIDetection()
   await ignore.setDefaultIgnoredHosts()
 

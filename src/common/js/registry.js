@@ -281,6 +281,13 @@ class Registry {
   }
 
   /**
+   * Remove cached config.
+   */
+  invalidateCache = () => {
+    this._cachedConfig = undefined
+  }
+
+  /**
    * Adds passed hostname to the local storage of banned domains.
    * @param url Hostname.
    */

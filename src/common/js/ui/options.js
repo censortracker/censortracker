@@ -2,7 +2,6 @@ import { ignore, proxy, registry, settings, storage, translateDocument } from '@
 
 (async () => {
   translateDocument(document)
-
   const currentBrowser = settings.getBrowser()
   const resetSettingsToDefault = document.getElementById('resetSettingsToDefault')
   const useDPIDetectionCheckbox = document.getElementById('useDPIDetectionCheckbox')
@@ -12,16 +11,18 @@ import { ignore, proxy, registry, settings, storage, translateDocument } from '@
   const privateBrowsingPermissionsRequiredMessage = document.getElementById('privateBrowsingPermissionsRequiredMessage')
 
   if (resetSettingsToDefault) {
+    const optionsConfirmResetMessage = currentBrowser.i18n.getMessage('optionsConfirmResetMessage')
+
     resetSettingsToDefault.addEventListener('click', async () => {
       // eslint-disable-next-line no-restricted-globals, no-alert
-      const confirmed = confirm(currentBrowser.i18n.getMessage('optionsConfirmResetMessage'))
+      const confirmed = confirm(optionsConfirmResetMessage)
 
       if (confirmed) {
-        registry.invalidateCache()
-        await registry.cleanLocalRegistry()
         await settings.enableExtension()
         await settings.disableDPIDetection()
         await ignore.setDefaultIgnoredHosts()
+        await registry.clearLocalRegistry()
+        await registry.sync()
         await proxy.setProxy()
 
         window.location.reload()

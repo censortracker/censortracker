@@ -256,7 +256,7 @@ if (isChromium) {
     meta: contentSecurityPolicy,
   }))
   webpackConfig.plugins.push(new HTMLWebpackPlugin({
-    title: 'CensorTracker',
+    title: EXTENSION_NAME,
     filename: 'installed.html',
     template: `src/${BROWSER}/pages/installed.html`,
     inject: true,

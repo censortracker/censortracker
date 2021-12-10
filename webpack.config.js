@@ -146,7 +146,6 @@ const webpackConfig = {
       meta: contentSecurityPolicy,
     }),
     new HTMLWebpackPlugin({
-      title: EXTENSION_NAME,
       filename: 'proxy_unavailable.html',
       template: 'src/common/pages/proxy_unavailable.html',
       inject: true,
@@ -154,7 +153,6 @@ const webpackConfig = {
       meta: contentSecurityPolicy,
     }),
     new HTMLWebpackPlugin({
-      title: EXTENSION_NAME,
       filename: 'ignore_editor.html',
       template: 'src/common/pages/ignore_editor.html',
       inject: true,
@@ -162,7 +160,6 @@ const webpackConfig = {
       meta: contentSecurityPolicy,
     }),
     new HTMLWebpackPlugin({
-      title: EXTENSION_NAME,
       filename: 'proxy_disabled.html',
       template: 'src/common/pages/proxy_disabled.html',
       inject: true,
@@ -170,7 +167,6 @@ const webpackConfig = {
       meta: contentSecurityPolicy,
     }),
     new HTMLWebpackPlugin({
-      title: EXTENSION_NAME,
       filename: 'options.html',
       template: 'src/common/pages/options.html',
       inject: true,
@@ -178,7 +174,6 @@ const webpackConfig = {
       meta: contentSecurityPolicy,
     }),
     new HTMLWebpackPlugin({
-      title: EXTENSION_NAME,
       filename: 'advanced_options.html',
       template: 'src/common/pages/advanced_options.html',
       inject: true,

@@ -5,14 +5,9 @@ const CENSORTRACKER_CONFIG_API_URL = 'https://app.censortracker.org/api/config/'
 
 class Registry {
   constructor () {
-    this._cachedConfig = undefined
-
     setInterval(async () => {
       await this.sendReport()
-    }, 60 * 60 * 3000)
-
-    setInterval(async () => {
-      await this.cleanLocalRegistry()
+      await this.clearLocalRegistry()
     }, 60 * 60 * 1000)
 
     setInterval(async () => {
@@ -22,11 +17,6 @@ class Registry {
         await this.sync()
       }
     }, 60 * 60 * 400)
-
-    setInterval(async () => {
-      this._cachedConfig = undefined
-      console.log('Registry: cached config removed!')
-    }, 60 * 60 * 500)
   }
 
   /**
@@ -36,10 +26,6 @@ class Registry {
    * @returns {Promise<Object>}
    */
   getConfig = async () => {
-    if (this._cachedConfig) {
-      return this._cachedConfig
-    }
-
     try {
       const response = await fetch(CENSORTRACKER_CONFIG_API_URL)
 
@@ -77,13 +63,13 @@ class Registry {
           }
         }
 
-        this._cachedConfig = {
+        await storage.set({ countryDetails })
+
+        return {
           apis,
           reportEndpoint,
           countryDetails,
         }
-
-        return this._cachedConfig
       }
       console.warn('CensorTracker do not support your country.')
     } catch (error) {
@@ -107,7 +93,8 @@ class Registry {
     const { apis, countryDetails: { name: countryName } } = await this.getConfig()
 
     if (apis.length === 0) {
-      console.warn(`Unsynchronized: API endpoints not provided for: ${countryName}.`)
+      console.error(`Sync error: API endpoints are not provided for: ${countryName}.`)
+      return false
     }
 
     for (const { storageKey, url } of apis) {
@@ -239,29 +226,33 @@ class Registry {
    * Sends a report about sites that potentially can be banned by DPI-filters.
    */
   sendReport = async () => {
-    const { alreadyReported, blockedDomains } =
+    const { alreadyReported, blockedDomains, useDPIDetection } =
       await storage.get({
         alreadyReported: [],
         blockedDomains: [],
+        useDPIDetection: false,
       })
 
-    const { reportEndpoint } = await this.getConfig()
+    if (useDPIDetection) {
+      const userAgent = navigator.userAgent
+      const { reportEndpoint } = await this.getConfig()
 
-    for (const domain of blockedDomains) {
-      if (!alreadyReported.includes(domain)) {
-        await fetch(reportEndpoint, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            domain,
-            userAgent: navigator.userAgent,
-          }),
-        })
-        alreadyReported.push(domain)
-        await storage.set({ alreadyReported })
-        console.warn(`Reported new lock: ${domain}`)
+      for (const domain of blockedDomains) {
+        if (!alreadyReported.includes(domain)) {
+          await fetch(reportEndpoint, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              domain,
+              userAgent,
+            }),
+          })
+          alreadyReported.push(domain)
+          await storage.set({ alreadyReported })
+          console.warn(`Reported new domain: ${domain}`)
+        }
       }
     }
   }
@@ -270,21 +261,13 @@ class Registry {
    * Clean local registry by schedule.
    * @returns {Promise<void>}
    */
-  cleanLocalRegistry = async () => {
+  clearLocalRegistry = async () => {
     const day = new Date().getDate()
-    const cleaningDays = [5, 15, 20, 25, 30]
 
-    if (cleaningDays.includes(day)) {
+    if (day % 2 === 0) {
       await storage.set({ blockedDomains: [] })
       console.warn('Outdated domains has been removed.')
     }
-  }
-
-  /**
-   * Remove cached config.
-   */
-  invalidateCache = () => {
-    this._cachedConfig = undefined
   }
 
   /**

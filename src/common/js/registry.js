@@ -16,7 +16,7 @@ class Registry {
       if (domains.length === 0) {
         await this.sync()
       }
-    }, 60 * 60 * 400)
+    }, 30 * 60 * 1000)
   }
 
   /**

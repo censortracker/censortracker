@@ -270,5 +270,14 @@
   },
   "optionsConfirmResetMessage": {
     "message": "All your settings will be removed. Are you sure you want to do this?"
+  },
+  "advancedOptionsPageTitle": {
+    "message": "Advanced Options"
+  },
+  "proxyDisabledPageTitle": {
+    "message": "Proxying Disabled"
+  },
+  "proxyUnavailablePageTitle": {
+    "message": "Proxy is Unavailable"
   }
 }

@@ -20,6 +20,12 @@ important:
 - Bypass [registry](https://eais.rkn.gov.ru/) restrictions
 
 
+How does DPI-filters detection work?
+====================================
+
+![DPI](https://raw.githubusercontent.com/roskomsvoboda/censortracker/main/.github/media/dpi-diagram.svg)
+
+
 Development
 ===========
 

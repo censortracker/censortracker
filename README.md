@@ -1,9 +1,12 @@
+CensorTracker: Bypass Censorship
+================================
+
 [![Logo](/.github/media/censortracker_popup_en.png)](https://github.com/roskomsvoboda/censortracker)
 
 ![Build](https://github.com/roskomsvoboda/censortracker/workflows/Build/badge.svg?branch=master)
 [![CodeFactor](https://www.codefactor.io/repository/github/roskomsvoboda/censortracker/badge)](https://www.codefactor.io/repository/github/roskomsvoboda/censortracker)
 
-**Censor Tracker** is an extension for [Google Chrome] and [Mozilla Firefox] which helps to bypass censorship and to detect websites blocked through the DPI filters.
+**CensorTracker** is an extension for [Google Chrome] and [Mozilla Firefox] which helps to bypass censorship and to detect websites blocked through the DPI filters.
 
 [<img src="/.github/media/chrome-web-store.png" title="Chrome Web Store" width="170" height="48" />](https://chrome.google.com/webstore/detail/censor-tracker/gaidoampbkcknofoejhnhbhbhhifgdop)
 [<img src="/.github/media/firefox-add-ons.png" title="Firefox Add-ons" width="170" height="48" />](https://addons.mozilla.org/ru/firefox/addon/censor-tracker/)
@@ -12,19 +15,30 @@
 Features
 ========
 
-Censor Tracker provides a lot of useful features, here are the most
+CensorTracker provides a lot of useful features, here are the most
 important:
 
-- Detects [DPI]-based restrictions
-- Bypass [DPI]-based restrictions
-- Bypass [registry](https://eais.rkn.gov.ru/) restrictions
+- Configurable proxy
+- Country-specific proxying
+- Detects [DPI]-filtration
+- Bypass censorship and restrictions
+- Warns about sites that transfer data to third parties
 
 
 How does DPI-filters detection work?
 ====================================
 
-<img src="https://raw.githubusercontent.com/roskomsvoboda/censortracker/main/.github/media/dpi-diagram.svg" style="width:500px;"/>
+<img src="/.github/media/dpi-diagram.svg" style="width:500px;"/>
 
+
+What about this "Report DPI-filter" thing?
+==========================================
+
+We are collecting fully-anonymized data to check the availability issues of the websites for users from different parts of the country. Such data helps us to extend the list of blocked websites for proxying them and fastly react to new acts of censorship.
+
+Our backend is fully open-sourced, so you can check how it works: [censortracker_backend](https://github.com/roskomsvoboda/censortracker_backend)
+
+This is an **experimental** feature and can be removed in future releases if it turns out that it is an ineffective way to detect censorship.
 
 Development
 ===========

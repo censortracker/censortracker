@@ -1,4 +1,3 @@
-import registry from './registry'
 import storage from './storage'
 import { extractHostnameFromUrl } from './utilities'
 

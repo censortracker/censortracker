@@ -18,10 +18,11 @@ Features
 Censor Tracker provides a lot of useful features, here are the most
 important:
 
+- Configurable proxy
+- Country-specific proxying
 - Detects [DPI]-filtration
 - Bypass censorship and restrictions
 - Warns about sites that transfer data to third parties
-- Country-specific proxying
 
 
 How does DPI-filters detection work?

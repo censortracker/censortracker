@@ -7,6 +7,7 @@ import { extractDecodedOriginUrl, proxy, select, translateDocument } from '@/com
   const grantPrivateBrowsingPermissionsButton = select({ id: 'grantPrivateBrowsingPermissionsButton' })
 
   const [tab] = await browser.tabs.query({ active: true, lastFocusedWindow: true })
+  const allowedIncognitoAccess = await browser.extension.isAllowedIncognitoAccess()
   const originUrl = extractDecodedOriginUrl(tab.url)
 
   if (backToPopup) {
@@ -14,6 +15,8 @@ import { extractDecodedOriginUrl, proxy, select, translateDocument } from '@/com
       window.location.href = browser.runtime.getURL('popup.html')
     })
   }
+
+  grantPrivateBrowsingPermissionsButton.hidden = !allowedIncognitoAccess
 
   if (closeTab) {
     closeTab.addEventListener('click', () => {

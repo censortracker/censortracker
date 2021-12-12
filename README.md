@@ -31,8 +31,8 @@ How does DPI-filters detection work?
 <img src="/.github/media/dpi-diagram.svg" style="width:500px;"/>
 
 
-What about this report-DPI thing?
-=================================
+What about this "Report DPI-filter" thing?
+==========================================
 
 We are collecting fully-anonymized data to check the availability issues of the websites for users from different parts of the country. Such data helps us to extend the list of blocked websites for proxying them and fastly react to new acts of censorship.
 

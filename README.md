@@ -1,3 +1,6 @@
+CensorTracker: Bypass Censorship
+================================
+
 [![Logo](/.github/media/censortracker_popup_en.png)](https://github.com/roskomsvoboda/censortracker)
 
 ![Build](https://github.com/roskomsvoboda/censortracker/workflows/Build/badge.svg?branch=master)
@@ -15,15 +18,16 @@ Features
 Censor Tracker provides a lot of useful features, here are the most
 important:
 
-- Detects [DPI]-based restrictions
-- Bypass [DPI]-based restrictions
-- Bypass [registry](https://eais.rkn.gov.ru/) restrictions
+- Detects [DPI]-filtration
+- Bypass censorship and restrictions
+- Warns about sites that transfer data to third parties
+- Country-specific proxying
 
 
 How does DPI-filters detection work?
 ====================================
 
-<img src="https://raw.githubusercontent.com/roskomsvoboda/censortracker/main/.github/media/dpi-diagram.svg" style="width:500px;"/>
+<img src="/.github/media/dpi-diagram.svg" style="width:500px;"/>
 
 
 Development

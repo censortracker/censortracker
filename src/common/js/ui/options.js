@@ -20,7 +20,6 @@ import { ignore, proxy, registry, settings, storage, translateDocument } from '@
       if (confirmed) {
         await settings.enableExtension()
         await settings.disableDPIDetection()
-        await ignore.setDefaultIgnoredHosts()
         await registry.clearLocalRegistry()
         await registry.sync()
         await proxy.setProxy()

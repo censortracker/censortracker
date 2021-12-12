@@ -135,20 +135,6 @@ class Registry {
     return {}
   }
 
-  initDefaultIgnoredHosts = async () => {
-    if (await this.isConfiguredForCountry({ code: 'RU' })) {
-      // Don't proxy Google Services in Russia
-      await storage.set({
-        ignoredHosts: [
-          'youtu.be',
-          'youtube.com',
-          'google.ru',
-          'google.com',
-        ],
-      })
-    }
-  }
-
   /**
    * Returns array of banned domains from the registry.
    */

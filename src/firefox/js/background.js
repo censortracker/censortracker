@@ -229,7 +229,6 @@ const handleInstalled = async ({ reason }) => {
 
   await settings.disableDPIDetection()
   await settings.enableNotifications()
-  await ignore.setDefaultIgnoredHosts()
 
   if (reasonsForSync.includes(reason)) {
     const synchronized = await registry.sync()

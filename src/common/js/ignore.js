@@ -45,21 +45,6 @@ class Ignore {
     }
   }
 
-  setDefaultIgnoredHosts = async () => {
-    if (await registry.isConfiguredForCountry({ code: 'RU' })) {
-      // Don't proxy Google Services in Russia
-      await storage.set({
-        ignoredHosts: [
-          'youtu.be',
-          'youtube.com',
-          'google.ru',
-          'google.com',
-        ],
-      })
-      console.warn('Ignored hosts set!')
-    }
-  }
-
   save = () => {
     storage.get({ ignoredHosts: [] })
       .then(({ ignoredHosts }) => {

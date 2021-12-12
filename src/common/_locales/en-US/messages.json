@@ -26,8 +26,8 @@
   "notBlockedDesc": {
     "message": "If access to the site is banned, then Censor Tracker will offer to open the site through a reliable proxy."
   },
-  "siteIsUnavailable": {
-    "message": "The site is unavailable "
+  "popupNewTabText": {
+    "message": "New Tab"
   },
   "controlledByOtherExtensionsMessage": {
     "message": "Another extension controls the proxy. More detailed →"

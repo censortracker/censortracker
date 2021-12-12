@@ -124,7 +124,7 @@ import {
   const currentHostname = extractHostnameFromUrl(currentUrl)
 
   currentDomainBlocks.forEach((element) => {
-    element.innerText = currentHostname || currentBrowser.i18n.getMessage('siteIsUnavailable')
+    element.innerText = currentHostname || currentBrowser.i18n.getMessage('popupNewTabText')
   })
 
   if (extensionEnabled) {

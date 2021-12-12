@@ -23,7 +23,7 @@ important:
 How does DPI-filters detection work?
 ====================================
 
-![DPI](https://raw.githubusercontent.com/roskomsvoboda/censortracker/main/.github/media/dpi-diagram.svg)
+<img src="https://raw.githubusercontent.com/roskomsvoboda/censortracker/main/.github/media/dpi-diagram.svg" style="width:500px;"/>
 
 
 Development

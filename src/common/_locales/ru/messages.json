@@ -26,7 +26,7 @@
   "notBlockedDesc": {
     "message": "Если доступ к сайту запретят, то Censor Tracker предложит открыть сайт через надёжный прокси."
   },
-  "popupNewTabText": {
+  "popupNewTabMessage": {
     "message": "Новая вкладка"
   },
   "controlledByOtherExtensionsMessage": {

@@ -1,5 +1,6 @@
 import {
   extractHostnameFromUrl,
+  isExtensionUrl,
   proxy,
   registry,
   select,
@@ -124,7 +125,17 @@ import {
   const currentHostname = extractHostnameFromUrl(currentUrl)
 
   currentDomainBlocks.forEach((element) => {
-    element.innerText = currentHostname || currentBrowser.i18n.getMessage('popupNewTabText')
+    if (isExtensionUrl(currentUrl)) {
+      const popupNewTabMessage = currentBrowser.i18n.getMessage('popupNewTabMessage')
+
+      element.innerText = popupNewTabMessage
+
+      if (popupNewTabMessage.length >= 25) {
+        element.style.fontSize = '15px'
+      }
+    } else {
+      element.innerText = currentHostname
+    }
   })
 
   if (extensionEnabled) {

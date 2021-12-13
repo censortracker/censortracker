@@ -11,6 +11,7 @@ export {
   extractHostnameFromUrl,
   getRequestFilter,
   isValidURL,
+  isExtensionUrl,
   startsWithHttpHttps,
   extractDecodedOriginUrl,
 } from './utilities'

@@ -1,5 +1,11 @@
 import validator from 'validator'
 
+export const isExtensionUrl = (url) => {
+  return url.startsWith('about:') ||
+      url.startsWith('moz-extension:') ||
+      url.startsWith('chrome-extension:')
+}
+
 /**
  * Validate passed URL using regex.
  * @param url URL
@@ -7,7 +13,7 @@ import validator from 'validator'
  */
 export const isValidURL = (url) => {
   try {
-    if (url.startsWith('about:') || url.startsWith('chrome-extension:')) {
+    if (isExtensionUrl(url)) {
       return false
     }
     return validator.isURL(url, { protocols: ['http', 'https'], validate_length: true })
@@ -22,12 +28,14 @@ export const isValidURL = (url) => {
  * @returns {string|*}
  */
 const extractURLFromQueryParams = (url) => {
-  if (url.startsWith('moz-extension:') || url.startsWith('chrome-extension:')) {
+  if (isExtensionUrl(url)) {
     const urlParams = url.split('?')[1]
     const searchParams = new URLSearchParams(urlParams)
     const encodedUrl = searchParams.get('loadFor')
 
-    return window.atob(encodedUrl)
+    if (encodedUrl) {
+      return window.atob(encodedUrl)
+    }
   }
   return url
 }

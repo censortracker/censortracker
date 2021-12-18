@@ -22,29 +22,43 @@ window.censortracker = {
   extractHostnameFromUrl,
 }
 
+const handlerBeforeRequestPing = (_details) => {
+  proxy.ping()
+}
+
+const handleBeforeRequestCheckIncognitoAccess = async (_details) => {
+  const allowed = await browser.extension.isAllowedIncognitoAccess()
+
+  if (!allowed) {
+    await proxy.requestIncognitoAccess()
+  }
+}
+
+browser.webRequest.onBeforeRequest.addListener(
+  handlerBeforeRequestPing,
+  getRequestFilter({ http: true, https: true }),
+  ['blocking'],
+)
+
+browser.webRequest.onBeforeRequest.addListener(
+  handleBeforeRequestCheckIncognitoAccess,
+  getRequestFilter({ http: true, https: true }),
+  ['blocking'],
+)
+
 /**
  * Fires when a request is about to occur. This event is sent before any TCP
  * connection is made and can be used to cancel or redirect requests.
  * @param url Current URL address.
  * @returns {undefined|{redirectUrl: *}} Undefined or redirection to HTTPS.
  */
-const handleBeforeRequest = ({ url }) => {
-  const hostname = extractHostnameFromUrl(url)
+const handleBeforeRequestRedirectToHttps = ({ url }) => {
+  console.warn(`Request redirected to HTTPS for ${url}`)
 
-  console.warn(`Request redirected to HTTPS: ${hostname}`)
-
-  browser.extension.isAllowedIncognitoAccess()
-    .then(async (allowed) => {
-      if (!allowed) {
-        await proxy.requestIncognitoAccess()
-      }
-    })
-
-  if (ignore.contains(hostname)) {
+  if (ignore.contains(url)) {
     return undefined
   }
 
-  proxy.ping()
   return {
     redirectUrl: enforceHttpsConnection(url),
   }
@@ -128,7 +142,6 @@ const checkProxyReadiness = async () => {
       await proxy.setProxy()
       await proxy.grantIncognitoAccess()
     }
-    console.log(`Proxy is already controlled by ${settings.getName()}`)
     return true
   }
   console.warn('Proxy is not ready to use. Check if private browsing permissions granted.')
@@ -272,14 +285,14 @@ const handleStorageChanged = async ({ enableExtension, ignoredHosts, useProxy, u
 
   if (useDPIDetection) {
     const webRequestListenersActivate = browser.webRequest.onErrorOccurred.hasListener(handleErrorOccurred) &&
-      browser.webRequest.onBeforeRequest.hasListener(handleBeforeRequest)
+      browser.webRequest.onBeforeRequest.hasListener(handleBeforeRequestRedirectToHttps)
 
     if (useDPIDetection.newValue === true && !webRequestListenersActivate) {
       browser.webRequest.onErrorOccurred.addListener(
         handleErrorOccurred, getRequestFilter({ http: true, https: true }),
       )
       browser.webRequest.onBeforeRequest.addListener(
-        handleBeforeRequest, getRequestFilter({ http: true, https: false }),
+        handleBeforeRequestRedirectToHttps, getRequestFilter({ http: true, https: false }),
         ['blocking'],
       )
       console.warn('WEBREQUEST LISTENERS ENABLED')
@@ -287,7 +300,7 @@ const handleStorageChanged = async ({ enableExtension, ignoredHosts, useProxy, u
 
     if (useDPIDetection.newValue === false && webRequestListenersActivate) {
       browser.webRequest.onErrorOccurred.removeListener(handleErrorOccurred)
-      browser.webRequest.onBeforeRequest.removeListener(handleBeforeRequest)
+      browser.webRequest.onBeforeRequest.removeListener(handleBeforeRequestRedirectToHttps)
       console.warn('WEBREQUEST LISTENERS REMOVED')
     }
   }

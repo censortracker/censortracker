@@ -1,9 +1,8 @@
 import validator from 'validator'
 
-import { proxy, storage, translateDocument } from '@/common/js'
+import { proxy, registry, storage, translateDocument } from '@/common/js'
 
 (async () => {
-  translateDocument(document)
   const proxyEnabled = await proxy.proxyingEnabled()
   const useProxyCheckbox = document.getElementById('useProxyCheckbox')
   const proxyCustomOptions = document.getElementById('proxyCustomOptions')
@@ -101,4 +100,8 @@ import { proxy, storage, translateDocument } from '@/common/js'
   }, false)
 
   useProxyCheckbox.checked = await proxy.proxyingEnabled()
+
+  const { countryDetails: { name: country } } = await registry.getConfig()
+
+  translateDocument(document, { country })
 })()

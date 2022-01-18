@@ -280,5 +280,13 @@
   },
   "proxyUnavailablePageTitle": {
     "message": "Proxy is Unavailable"
+  },
+  "proxyPageMetaInfo": {
+    "message": "Currently using PAC file for $COUNTRY$.",
+    "placeholders": {
+      "country": {
+        "content": "$1"
+      }
+    }
   }
 }

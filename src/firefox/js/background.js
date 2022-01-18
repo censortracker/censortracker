@@ -1,6 +1,5 @@
 import {
   enforceHttpConnection,
-  enforceHttpsConnection,
   errors,
   extractHostnameFromUrl,
   getRequestFilter,
@@ -12,6 +11,11 @@ import {
   storage,
 } from '@/common/js'
 
+import {
+  handleBeforeRequestRedirectToHttps,
+  handlerBeforeRequestPing,
+} from '../../common/js/handlers'
+
 window.censortracker = {
   proxy,
   registry,
@@ -21,10 +25,11 @@ window.censortracker = {
   ignore,
   extractHostnameFromUrl,
 }
-
-const handlerBeforeRequestPing = (_details) => {
-  proxy.ping()
-}
+browser.webRequest.onBeforeRequest.addListener(
+  handlerBeforeRequestPing,
+  getRequestFilter({ http: true, https: true }),
+  ['blocking'],
+)
 
 const handleBeforeRequestCheckIncognitoAccess = async (_details) => {
   const allowed = await browser.extension.isAllowedIncognitoAccess()
@@ -35,34 +40,10 @@ const handleBeforeRequestCheckIncognitoAccess = async (_details) => {
 }
 
 browser.webRequest.onBeforeRequest.addListener(
-  handlerBeforeRequestPing,
-  getRequestFilter({ http: true, https: true }),
-  ['blocking'],
-)
-
-browser.webRequest.onBeforeRequest.addListener(
   handleBeforeRequestCheckIncognitoAccess,
   getRequestFilter({ http: true, https: true }),
   ['blocking'],
 )
-
-/**
- * Fires when a request is about to occur. This event is sent before any TCP
- * connection is made and can be used to cancel or redirect requests.
- * @param url Current URL address.
- * @returns {undefined|{redirectUrl: *}} Undefined or redirection to HTTPS.
- */
-const handleBeforeRequestRedirectToHttps = ({ url }) => {
-  console.warn(`Request redirected to HTTPS for ${url}`)
-
-  if (ignore.contains(url)) {
-    return undefined
-  }
-
-  return {
-    redirectUrl: enforceHttpsConnection(url),
-  }
-}
 
 /**
  * Fires when a request could not be processed successfully.
@@ -230,10 +211,11 @@ browser.windows.onRemoved.addListener(handleWindowRemoved)
  */
 const handleInstalled = async ({ reason }) => {
   const reasonsForSync = [
+    browser.runtime.OnInstalledReason.UPDATE,
     browser.runtime.OnInstalledReason.INSTALL,
   ]
 
-  if (reasonsForSync.includes(reason)) {
+  if (reason === browser.runtime.OnInstalledReason.INSTALL) {
     browser.tabs.create({
       url: browser.runtime.getURL('installed.html'),
     })
@@ -268,6 +250,9 @@ const handleUninstalled = async (_info) => {
 }
 
 browser.management.onUninstalled.addListener(handleUninstalled)
+browser.runtime.onStartup.addListener(async () => {
+  await registry.sync()
+})
 
 /**
  * Fired when one or more items change.

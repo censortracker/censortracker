@@ -105,6 +105,10 @@ a {
   justify-content: space-between;
 }
 
+.center-text {
+  justify-content: center !important;
+}
+
 .extension__title {
   margin-bottom: 10px;
 }

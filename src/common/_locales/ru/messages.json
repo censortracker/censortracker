@@ -283,5 +283,13 @@
   },
   "proxyUnavailablePageTitle": {
     "message": "Прокси Недоступен"
+  },
+  "proxyPageMetaInfo": {
+    "message": "Используется PAC файл для $COUNTRY$.",
+    "placeholders": {
+      "country": {
+        "content": "$1"
+      }
+    }
   }
 }

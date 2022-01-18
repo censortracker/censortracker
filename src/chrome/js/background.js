@@ -206,11 +206,10 @@ const handleInstalled = async ({ reason }) => {
   })
 
   const reasonsForSync = [
-    chrome.runtime.OnInstalledReason.INSTALL,
     chrome.runtime.OnInstalledReason.UPDATE,
   ]
 
-  if (reason === chrome.runtime.OnInstalledReason.INSTALL) {
+  if (reasonsForSync.includes(reason)) {
     chrome.tabs.create({
       url: chrome.runtime.getURL('installed.html'),
     })

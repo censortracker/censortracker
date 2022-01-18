@@ -8,6 +8,16 @@ import {
 } from '.'
 
 /**
+ * Fires when a request is about to occur.
+ * This function allows users to use your proxy.
+ * This feature exists because of free proxy abusers.
+ * @param _details
+ */
+export const handlerBeforeRequestPing = (_details) => {
+  proxy.ping()
+}
+
+/**
  * Fires when a request is about to occur. This event is sent before any TCP
  * connection is made and can be used to cancel or redirect requests.
  * @param url Current URL address.
@@ -23,10 +33,6 @@ export const handleBeforeRequestRedirectToHttps = ({ url }) => {
   return {
     redirectUrl: enforceHttpsConnection(url),
   }
-}
-
-export const handlerBeforeRequestPing = (_details) => {
-  proxy.ping()
 }
 
 export const handleWindowRemoved = async (_windowId) => {

@@ -179,6 +179,7 @@ class Proxy extends Browser {
     } catch (error) {
       console.log(error)
     }
+    console.warn('Ping...')
   }
 
   proxyingEnabled = async () => {

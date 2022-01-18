@@ -16,15 +16,6 @@ import {
   handlerBeforeRequestPing,
 } from '../../common/js/handlers'
 
-window.censortracker = {
-  proxy,
-  registry,
-  settings,
-  storage,
-  errors,
-  ignore,
-  extractHostnameFromUrl,
-}
 browser.webRequest.onBeforeRequest.addListener(
   handlerBeforeRequestPing,
   getRequestFilter({ http: true, https: true }),
@@ -322,3 +313,14 @@ browser.storage.onChanged.addListener(handleStorageChanged)
 browser.proxy.onError.addListener(async (error) => {
   console.log(error)
 })
+
+// Debug namespaces.
+window.censortracker = {
+  proxy,
+  registry,
+  settings,
+  storage,
+  errors,
+  ignore,
+  extractHostnameFromUrl,
+}

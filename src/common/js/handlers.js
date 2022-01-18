@@ -39,10 +39,6 @@ export const handleWindowRemoved = async (_windowId) => {
   await storage.remove(['notifiedHosts'])
 }
 
-export const handleUninstalled = async (_info) => {
-  await storage.clear()
-}
-
 export const handleStartup = async () => {
   await registry.sync()
 }

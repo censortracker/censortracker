@@ -10,11 +10,16 @@ import {
   settings,
   storage,
 } from '@/common/js'
-
 import {
   handleBeforeRequestRedirectToHttps,
   handlerBeforeRequestPing,
-} from '../../common/js/handlers'
+  handleStartup,
+  handleUninstalled,
+  handleWindowRemoved,
+} from '@/common/js/handlers'
+
+browser.runtime.onStartup.addListener(handleStartup)
+browser.management.onUninstalled.addListener(handleUninstalled)
 
 browser.webRequest.onBeforeRequest.addListener(
   handlerBeforeRequestPing,
@@ -188,10 +193,6 @@ const showCooperationAcceptedWarning = async (url) => {
   }
 }
 
-const handleWindowRemoved = async (_windowId) => {
-  await storage.remove(['notifiedHosts'])
-}
-
 browser.windows.onRemoved.addListener(handleWindowRemoved)
 
 /**
@@ -235,15 +236,6 @@ const handleInstalled = async ({ reason }) => {
 }
 
 browser.runtime.onInstalled.addListener(handleInstalled)
-
-const handleUninstalled = async (_info) => {
-  await storage.clear()
-}
-
-browser.management.onUninstalled.addListener(handleUninstalled)
-browser.runtime.onStartup.addListener(async () => {
-  await registry.sync()
-})
 
 /**
  * Fired when one or more items change.

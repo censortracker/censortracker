@@ -230,11 +230,10 @@ browser.windows.onRemoved.addListener(handleWindowRemoved)
  */
 const handleInstalled = async ({ reason }) => {
   const reasonsForSync = [
-    browser.runtime.OnInstalledReason.UPDATE,
     browser.runtime.OnInstalledReason.INSTALL,
   ]
 
-  if (reason === browser.runtime.OnInstalledReason.INSTALL) {
+  if (reasonsForSync.includes(reason)) {
     browser.tabs.create({
       url: browser.runtime.getURL('installed.html'),
     })
@@ -269,9 +268,6 @@ const handleUninstalled = async (_info) => {
 }
 
 browser.management.onUninstalled.addListener(handleUninstalled)
-browser.runtime.onStartup.addListener(async () => {
-  await registry.sync()
-})
 
 /**
  * Fired when one or more items change.

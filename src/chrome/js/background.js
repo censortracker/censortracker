@@ -1,6 +1,5 @@
 import {
   enforceHttpConnection,
-  enforceHttpsConnection,
   errors,
   extractHostnameFromUrl,
   getRequestFilter,
@@ -12,45 +11,17 @@ import {
   storage,
 } from '@/common/js'
 
+import {
+  handleBeforeRequestRedirectToHttps,
+  handlerBeforeRequestPing,
+  handleWindowRemoved,
+} from '../../common/js/handlers'
 import { asynchrome } from './core'
-
-window.censortracker = {
-  proxy,
-  registry,
-  settings,
-  errors,
-  ignore,
-  asynchrome,
-  storage,
-  extractHostnameFromUrl,
-}
-
-const handlerBeforeRequestPing = (_details) => {
-  proxy.ping()
-}
 
 chrome.webRequest.onBeforeRequest.addListener(
   handlerBeforeRequestPing, getRequestFilter({ http: true, https: true }),
   ['blocking'],
 )
-
-/**
- * Fires when a request is about to occur. This event is sent before any TCP
- * connection is made and can be used to cancel or redirect requests.
- * @param url Current URL address.
- * @returns {undefined|{redirectUrl: *}} Undefined or redirection to HTTPS§.
- */
-const handleBeforeRequest = ({ url }) => {
-  console.warn(`Request redirected to HTTPS for ${url}`)
-
-  if (ignore.contains(url)) {
-    return undefined
-  }
-
-  return {
-    redirectUrl: enforceHttpsConnection(url),
-  }
-}
 
 /**
  * Fires when a request could not be processed successfully.
@@ -207,6 +178,7 @@ const handleInstalled = async ({ reason }) => {
 
   const reasonsForSync = [
     chrome.runtime.OnInstalledReason.UPDATE,
+    chrome.runtime.OnInstalledReason.INSTALL,
   ]
 
   if (reasonsForSync.includes(reason)) {
@@ -226,7 +198,6 @@ const handleInstalled = async ({ reason }) => {
       await settings.enableExtension()
     }
   }
-
   proxy.ping()
 }
 
@@ -243,9 +214,10 @@ const handleTabCreate = async ({ id }) => {
 }
 
 chrome.tabs.onCreated.addListener(handleTabCreate)
+chrome.windows.onRemoved.addListener(handleWindowRemoved)
 
-chrome.windows.onRemoved.addListener(async (_windowId) => {
-  await storage.remove(['notifiedHosts'])
+chrome.runtime.onStartup.addListener(async () => {
+  await registry.sync()
 })
 
 chrome.proxy.onProxyError.addListener((details) => {
@@ -264,14 +236,14 @@ const handleStorageChanged = async ({ enableExtension, ignoredHosts, useProxy, u
 
   if (useDPIDetection) {
     const webRequestListenersActivate = chrome.webRequest.onErrorOccurred.hasListener(handleErrorOccurred) &&
-      chrome.webRequest.onBeforeRequest.hasListener(handleBeforeRequest)
+      chrome.webRequest.onBeforeRequest.hasListener(handleBeforeRequestRedirectToHttps)
 
     if (useDPIDetection.newValue === true && !webRequestListenersActivate) {
       chrome.webRequest.onErrorOccurred.addListener(
         handleErrorOccurred, getRequestFilter({ http: true, https: true }),
       )
       chrome.webRequest.onBeforeRequest.addListener(
-        handleBeforeRequest, getRequestFilter({ http: true, https: false }),
+        handleBeforeRequestRedirectToHttps, getRequestFilter({ http: true, https: false }),
         ['blocking'],
       )
       console.warn('WEBREQUEST LISTENERS ENABLED')
@@ -279,7 +251,7 @@ const handleStorageChanged = async ({ enableExtension, ignoredHosts, useProxy, u
 
     if (useDPIDetection.newValue === false && webRequestListenersActivate) {
       chrome.webRequest.onErrorOccurred.removeListener(handleErrorOccurred)
-      chrome.webRequest.onBeforeRequest.removeListener(handleBeforeRequest)
+      chrome.webRequest.onBeforeRequest.removeListener(handleBeforeRequestRedirectToHttps)
       console.warn('WEBREQUEST LISTENERS REMOVED')
     }
   }
@@ -316,3 +288,15 @@ const handleStorageChanged = async ({ enableExtension, ignoredHosts, useProxy, u
 }
 
 chrome.storage.onChanged.addListener(handleStorageChanged)
+
+// Debug namespaces.
+window.censortracker = {
+  proxy,
+  registry,
+  settings,
+  errors,
+  ignore,
+  asynchrome,
+  storage,
+  extractHostnameFromUrl,
+}

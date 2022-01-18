@@ -107,6 +107,7 @@ class Registry {
         console.error(`Error on fetching data from the API endpoint: ${url}`)
       }
     }
+    console.warn('Synced!')
     return true
   }
 

@@ -36,7 +36,9 @@ import { proxy, registry, settings, storage, translateDocument } from '@/common/
       privateBrowsingPermissionsRequired: false,
     })
 
-    grantPrivateBrowsingPermissionsButton.hidden = !allowedIncognitoAccess
+    if (grantPrivateBrowsingPermissionsButton) {
+      grantPrivateBrowsingPermissionsButton.hidden = !allowedIncognitoAccess
+    }
 
     if (howToGrantIncognitoAccess) {
       howToGrantIncognitoAccess.addEventListener('click', async () => {

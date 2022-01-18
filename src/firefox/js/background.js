@@ -14,12 +14,10 @@ import {
   handleBeforeRequestRedirectToHttps,
   handlerBeforeRequestPing,
   handleStartup,
-  handleUninstalled,
   handleWindowRemoved,
 } from '@/common/js/handlers'
 
 browser.runtime.onStartup.addListener(handleStartup)
-browser.management.onUninstalled.addListener(handleUninstalled)
 
 browser.webRequest.onBeforeRequest.addListener(
   handlerBeforeRequestPing,

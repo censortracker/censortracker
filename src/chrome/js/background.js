@@ -14,9 +14,13 @@ import {
 import {
   handleBeforeRequestRedirectToHttps,
   handlerBeforeRequestPing,
+  handleStartup,
   handleWindowRemoved,
 } from '../../common/js/handlers'
 import { asynchrome } from './core'
+
+chrome.windows.onRemoved.addListener(handleWindowRemoved)
+chrome.runtime.onStartup.addListener(handleStartup)
 
 chrome.webRequest.onBeforeRequest.addListener(
   handlerBeforeRequestPing, getRequestFilter({ http: true, https: true }),
@@ -214,11 +218,6 @@ const handleTabCreate = async ({ id }) => {
 }
 
 chrome.tabs.onCreated.addListener(handleTabCreate)
-chrome.windows.onRemoved.addListener(handleWindowRemoved)
-
-chrome.runtime.onStartup.addListener(async () => {
-  await registry.sync()
-})
 
 chrome.proxy.onProxyError.addListener((details) => {
   console.error(`Proxy error: ${JSON.stringify(details)}`)

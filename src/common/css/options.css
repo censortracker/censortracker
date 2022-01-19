@@ -571,3 +571,14 @@ a {
 #feedbackLink {
   margin-top: 35px;
 }
+
+kbd {
+  margin: 0 .1em;
+  font-size: 12px;
+  padding: .1em .6em;
+  border-radius: 3px;
+  display: inline-block;
+  overflow-wrap: break-word;
+  border: 1px solid hsl(210, 8.6%, 63.5%);
+  box-shadow: 0 1px 1px hsl(210deg 8% 5% / 44%), inset 0 1px 0 0 hsl(0deg 0% 42% / 14%);
+}

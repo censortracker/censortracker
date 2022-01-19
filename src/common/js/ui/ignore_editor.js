@@ -25,25 +25,29 @@ import { translateDocument } from './ui'
     },
   )
 
-  const getValidatedContent = (instance) => {
+  const getIgnoredHosts = (instance) => {
+    const result = new Set()
     const domains = instance.getValue().split('\n')
-    const uniqueDomains = new Set(domains)
 
-    return Array.from(uniqueDomains).filter((e) => e !== '' && e.indexOf('.') !== -1)
+    for (const domain of domains) {
+      if (domain !== '' && domain.indexOf('.') !== -1) {
+        result.add(domain)
+      }
+    }
+    return Array.from(result)
   }
 
-  // Set the editor content.
   editor.setValue(content)
   editor.setOption('extraKeys', {
     Enter: (instance) => {
       storage.set({
-        ignoredHosts: getValidatedContent(instance),
+        ignoredHosts: getIgnoredHosts(instance),
       })
       return CodeMirror.Pass
     },
-    Backspace: (instance) => {
+    'Ctrl-S': (instance) => {
       storage.set({
-        ignoredHosts: getValidatedContent(instance),
+        ignoredHosts: getIgnoredHosts(instance),
       })
       return CodeMirror.Pass
     },
@@ -51,7 +55,9 @@ import { translateDocument } from './ui'
 
   searchInput.addEventListener('input', () => {
     // Returns an array containing all marked ranges in the document.
-    editor.getAllMarks().forEach((marker) => marker.clear())
+    for (const marker of editor.getAllMarks()) {
+      marker.clear()
+    }
 
     const value = searchInput.value
     const cursor = editor.getSearchCursor(value)

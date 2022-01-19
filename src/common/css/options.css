@@ -582,3 +582,8 @@ kbd {
   border: 1px solid hsl(210, 8.6%, 63.5%);
   box-shadow: 0 1px 1px hsl(210deg 8% 5% / 44%), inset 0 1px 0 0 hsl(0deg 0% 42% / 14%);
 }
+
+#proxyMetaInfo {
+  font-size: 15px;
+  font-weight: 500;
+}

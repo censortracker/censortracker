@@ -57,7 +57,7 @@
     "message": "Addresses that will always be ignored by the Censor Tracker. It can help if there are problems with opening the site. Each address starts with a new line."
   },
   "ignoreAutosaveTip": {
-    "message": "Changes are automatically saved when clicked <code>Enter</code> or <code>Backspace</code>."
+    "message": "Changes are automatically saved when <kbd>Enter</kbd> or <kbd>Control</kbd> + <kbd>S</kbd> pressed."
   },
   "optionsTitle": {
     "message": "Censor Tracker Settings"

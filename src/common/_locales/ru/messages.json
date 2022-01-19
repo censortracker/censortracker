@@ -57,7 +57,7 @@
     "message": "Адреса, которые всегда будут игнорироваться Censor Tracker. Может помочь, если есть проблемы с открытием сайта. Каждый адрес с новой строки."
   },
   "ignoreAutosaveTip": {
-    "message": "Изменения автоматически сохраняются при нажатии <code>Enter</code> или <code>Backspace</code>."
+    "message": "Изменения автоматически сохраняются при нажатии <kbd>Enter</kbd> или <kbd>Control</kbd> + <kbd>S</kbd>."
   },
   "optionsTitle": {
     "message": "Настройки расширения Censor Tracker"

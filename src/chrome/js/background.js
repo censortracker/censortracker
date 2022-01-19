@@ -229,10 +229,6 @@ chrome.tabs.onCreated.addListener(handleTabCreate)
  * @param _areaName The name of the storage area ("sync", "local") to which the changes were made.
  */
 const handleStorageChanged = async ({ enableExtension, ignoredHosts, useProxy, useDPIDetection }, _areaName) => {
-  if (ignoredHosts && ignoredHosts.newValue) {
-    ignore.save()
-  }
-
   if (useDPIDetection) {
     const webRequestListenersActivate = chrome.webRequest.onErrorOccurred.hasListener(handleErrorOccurred) &&
       chrome.webRequest.onBeforeRequest.hasListener(handleBeforeRequestRedirectToHttps)

@@ -13,6 +13,7 @@ import {
 
 import {
   handleBeforeRequestRedirectToHttps,
+  handleIgnoredHostsChange,
   handleProxyError,
   handlerBeforeRequestPing,
   handleStartup,
@@ -23,6 +24,7 @@ import { asynchrome } from './core'
 chrome.runtime.onStartup.addListener(handleStartup)
 chrome.proxy.onProxyError.addListener(handleProxyError)
 chrome.windows.onRemoved.addListener(handleWindowRemoved)
+chrome.storage.onChanged.addListener(handleIgnoredHostsChange)
 
 chrome.webRequest.onBeforeRequest.addListener(
   handlerBeforeRequestPing, getRequestFilter({ http: true, https: true }),

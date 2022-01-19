@@ -12,6 +12,7 @@ import {
 } from '@/common/js'
 import {
   handleBeforeRequestRedirectToHttps,
+  handleIgnoredHostsChange,
   handleProxyError,
   handlerBeforeRequestPing,
   handleStartup,
@@ -21,6 +22,7 @@ import {
 browser.runtime.onStartup.addListener(handleStartup)
 browser.proxy.onError.addListener(handleProxyError)
 browser.windows.onRemoved.addListener(handleWindowRemoved)
+browser.storage.onChanged.addListener(handleIgnoredHostsChange)
 
 browser.webRequest.onBeforeRequest.addListener(
   handlerBeforeRequestPing,
@@ -242,10 +244,6 @@ browser.runtime.onInstalled.addListener(handleInstalled)
  * @param _areaName The name of the storage area ("sync", "local") to which the changes were made.
  */
 const handleStorageChanged = async ({ enableExtension, ignoredHosts, useProxy, useDPIDetection }, _areaName) => {
-  if (ignoredHosts && ignoredHosts.newValue) {
-    ignore.save()
-  }
-
   if (useDPIDetection) {
     const webRequestListenersActivate = browser.webRequest.onErrorOccurred.hasListener(handleErrorOccurred) &&
       browser.webRequest.onBeforeRequest.hasListener(handleBeforeRequestRedirectToHttps)

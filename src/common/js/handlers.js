@@ -43,6 +43,10 @@ export const handleStartup = async () => {
   await registry.sync()
 }
 
+export const handleProxyError = (details) => {
+  console.error(`Proxy error: ${JSON.stringify(details)}`)
+}
+
 export const handleEnableExtension = async ({ enableExtension: { newValue, oldValue } = {} }) => {
   if (newValue === true && oldValue === false) {
     await proxy.setProxy()

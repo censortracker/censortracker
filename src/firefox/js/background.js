@@ -12,12 +12,15 @@ import {
 } from '@/common/js'
 import {
   handleBeforeRequestRedirectToHttps,
+  handleProxyError,
   handlerBeforeRequestPing,
   handleStartup,
   handleWindowRemoved,
 } from '@/common/js/handlers'
 
 browser.runtime.onStartup.addListener(handleStartup)
+browser.proxy.onError.addListener(handleProxyError)
+browser.windows.onRemoved.addListener(handleWindowRemoved)
 
 browser.webRequest.onBeforeRequest.addListener(
   handlerBeforeRequestPing,
@@ -191,8 +194,6 @@ const showCooperationAcceptedWarning = async (url) => {
   }
 }
 
-browser.windows.onRemoved.addListener(handleWindowRemoved)
-
 /**
  * Fired when the extension is first installed, when the extension is
  * updated to a new version, and when the browser is updated to a new version.
@@ -299,10 +300,6 @@ const handleStorageChanged = async ({ enableExtension, ignoredHosts, useProxy, u
 }
 
 browser.storage.onChanged.addListener(handleStorageChanged)
-
-browser.proxy.onError.addListener(async (error) => {
-  console.log(error)
-})
 
 // Debug namespaces.
 window.censortracker = {

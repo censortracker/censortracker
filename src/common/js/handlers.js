@@ -3,7 +3,6 @@ import {
   ignore,
   proxy,
   registry,
-  settings,
   storage,
 } from '.'
 
@@ -57,25 +56,8 @@ export const handleEnableExtension = async ({ enableExtension: { newValue, oldVa
   }
 }
 
-export const handleOptionsChange = async ({ enableExtension, ignoredHosts, useProxy }, _areaName) => {
+export const handleIgnoredHostsChange = async ({ ignoredHosts }, _areaName) => {
   if (ignoredHosts && ignoredHosts.newValue) {
     ignore.save()
-  }
-
-  if (useProxy && enableExtension === undefined) {
-    const newValue = useProxy.newValue
-    const oldValue = useProxy.oldValue
-
-    const extensionEnabled = settings.extensionEnabled()
-
-    if (extensionEnabled) {
-      if (newValue === true && oldValue === false) {
-        await proxy.setProxy()
-      }
-
-      if (newValue === false && oldValue === true) {
-        await proxy.removeProxy()
-      }
-    }
   }
 }

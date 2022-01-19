@@ -108,5 +108,5 @@ import { proxy, registry, storage, translateDocument } from '@/common/js'
 
   setTimeout(() => {
     proxyMetaInfo.hidden = false
-  }, 1000 * 5)
+  }, 1000)
 })()

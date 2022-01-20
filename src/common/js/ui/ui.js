@@ -44,3 +44,20 @@ export const translateDocument = (doc, props = {}) => {
     }
   }
 }
+
+/**
+ * Returns content of CodeMirror as array of domains.
+ * @param instance CodeMirror instance.
+ * @returns {string[]}
+ */
+export const getCodeMirrorContent = (instance) => {
+  const result = new Set()
+  const domains = instance.getValue().split('\n')
+
+  for (const domain of domains) {
+    if (domain !== '' && domain.indexOf('.') !== -1) {
+      result.add(domain)
+    }
+  }
+  return Array.from(result)
+}

@@ -5,7 +5,7 @@ import 'codemirror/addon/search/searchcursor'
 import CodeMirror from 'codemirror'
 
 import storage from '../storage'
-import { translateDocument } from './ui'
+import { getCodeMirrorContent, translateDocument } from './ui'
 
 (async () => {
   translateDocument(document)
@@ -25,29 +25,17 @@ import { translateDocument } from './ui'
     },
   )
 
-  const getIgnoredHosts = (instance) => {
-    const result = new Set()
-    const domains = instance.getValue().split('\n')
-
-    for (const domain of domains) {
-      if (domain !== '' && domain.indexOf('.') !== -1) {
-        result.add(domain)
-      }
-    }
-    return Array.from(result)
-  }
-
   editor.setValue(content)
   editor.setOption('extraKeys', {
     Enter: (instance) => {
       storage.set({
-        customProxiedDomains: getIgnoredHosts(instance),
+        customProxiedDomains: getCodeMirrorContent(instance),
       })
       return CodeMirror.Pass
     },
     'Ctrl-S': (instance) => {
       storage.set({
-        customProxiedDomains: getIgnoredHosts(instance),
+        customProxiedDomains: getCodeMirrorContent(instance),
       })
       return CodeMirror.Pass
     },

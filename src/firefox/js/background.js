@@ -10,19 +10,22 @@ import {
   settings,
   storage,
 } from '@/common/js'
+
 import {
   handleBeforeRequestRedirectToHttps,
+  handleCustomProxiedDomainsChange,
   handleIgnoredHostsChange,
   handleProxyError,
   handlerBeforeRequestPing,
   handleStartup,
   handleWindowRemoved,
-} from '@/common/js/handlers'
+} from '../../common/js/handlers'
 
 browser.runtime.onStartup.addListener(handleStartup)
 browser.proxy.onError.addListener(handleProxyError)
 browser.windows.onRemoved.addListener(handleWindowRemoved)
 browser.storage.onChanged.addListener(handleIgnoredHostsChange)
+browser.storage.onChanged.addListener(handleCustomProxiedDomainsChange)
 
 browser.webRequest.onBeforeRequest.addListener(
   handlerBeforeRequestPing,

@@ -61,3 +61,14 @@ export const handleIgnoredHostsChange = async ({ ignoredHosts }, _areaName) => {
     ignore.save()
   }
 }
+
+export const handleCustomProxiedDomainsChange = async ({ customProxiedDomains }, _areaName) => {
+  const { enableExtension, useProxy } = await storage.get({ enableExtension: false, useProxy: false })
+
+  if (customProxiedDomains && customProxiedDomains.newValue) {
+    if (enableExtension && useProxy) {
+      await proxy.setProxy()
+      console.warn('Updated custom proxied domains.')
+    }
+  }
+}

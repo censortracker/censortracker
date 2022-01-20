@@ -25,12 +25,30 @@ import { translateDocument } from './ui'
     },
   )
 
+  const getIgnoredHosts = (instance) => {
+    const result = new Set()
+    const domains = instance.getValue().split('\n')
+
+    for (const domain of domains) {
+      if (domain !== '' && domain.indexOf('.') !== -1) {
+        result.add(domain)
+      }
+    }
+    return Array.from(result)
+  }
+
   editor.setValue(content)
   editor.setOption('extraKeys', {
     Enter: (instance) => {
+      storage.set({
+        customProxiedDomains: getIgnoredHosts(instance),
+      })
       return CodeMirror.Pass
     },
     'Ctrl-S': (instance) => {
+      storage.set({
+        customProxiedDomains: getIgnoredHosts(instance),
+      })
       return CodeMirror.Pass
     },
   })

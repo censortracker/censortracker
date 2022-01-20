@@ -13,6 +13,7 @@ import {
 
 import {
   handleBeforeRequestRedirectToHttps,
+  handleCustomProxiedDomainsChange,
   handleIgnoredHostsChange,
   handleProxyError,
   handlerBeforeRequestPing,
@@ -25,6 +26,7 @@ chrome.runtime.onStartup.addListener(handleStartup)
 chrome.proxy.onProxyError.addListener(handleProxyError)
 chrome.windows.onRemoved.addListener(handleWindowRemoved)
 chrome.storage.onChanged.addListener(handleIgnoredHostsChange)
+chrome.storage.onChanged.addListener(handleCustomProxiedDomainsChange)
 
 chrome.webRequest.onBeforeRequest.addListener(
   handlerBeforeRequestPing, getRequestFilter({ http: true, https: true }),

@@ -291,5 +291,17 @@
         "content": "$1"
       }
     }
+  },
+  "proxiedWebsitesEditorPageTitle": {
+    "message": "Проксируемые Сайты"
+  },
+  "proxiedWebsitesEditorPageDesc": {
+    "message": "Вы можете вручную управлять сайтами, которые будут проксироваться расширением."
+  },
+  "optionsProxiedWebsitesEditorTitle": {
+    "message": "Проксируемые Сайты"
+  },
+  "optionsProxiedWebsitesEditorDesc": {
+    "message": "Вы можете вручную управлять сайтами, которые будут проксироваться расширением."
   }
 }

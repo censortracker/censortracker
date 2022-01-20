@@ -57,6 +57,7 @@ const webpackConfig = {
     proxy_options: './src/common/js/ui/proxy_options.js',
     proxy_disabled: `./src/${BROWSER}/js/ui/proxy_disabled.js`,
     ignore_editor: './src/common/js/ui/ignore_editor.js',
+    proxied_websites_editor: './src/common/js/ui/proxied_websites_editor.js',
     translator: './src/common/js/ui/translator.js',
   },
 
@@ -157,6 +158,13 @@ const webpackConfig = {
       template: 'src/common/pages/ignore_editor.html',
       inject: true,
       chunks: ['ignore_editor'],
+      meta: contentSecurityPolicy,
+    }),
+    new HTMLWebpackPlugin({
+      filename: 'proxied_websites_editor.html',
+      template: 'src/common/pages/proxied_websites_editor.html',
+      inject: true,
+      chunks: ['proxied_websites_editor'],
       meta: contentSecurityPolicy,
     }),
     new HTMLWebpackPlugin({

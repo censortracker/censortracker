@@ -140,15 +140,17 @@ class Registry {
    * Returns array of banned domains from the registry.
    */
   getDomains = async () => {
-    const { domains, blockedDomains, ignoredHosts } = await storage.get({
+    const { domains, blockedDomains, ignoredHosts, customProxiedDomains } = await storage.get({
       domains: [],
       blockedDomains: [],
       ignoredHosts: [],
+      customProxiedDomains: [],
     })
 
     const excludedDomains = ['youtube.com', 'youtu.be', 'google.com']
     const domainsFound = domains && domains.length > 0
     const blockedDomainsFound = blockedDomains && blockedDomains.length > 0
+    const customProxiedDomainsFound = customProxiedDomains && customProxiedDomains.length > 0
 
     excludedDomains.forEach((domain) => {
       if (Array.isArray(ignoredHosts)) {
@@ -156,9 +158,9 @@ class Registry {
       }
     })
 
-    if (domainsFound || blockedDomainsFound) {
+    if (domainsFound || blockedDomainsFound || customProxiedDomainsFound) {
       try {
-        return [...domains, ...blockedDomains].filter((element) => {
+        return [...domains, ...blockedDomains, ...customProxiedDomains].filter((element) => {
           return !ignoredHosts.includes(element)
         })
       } catch (error) {

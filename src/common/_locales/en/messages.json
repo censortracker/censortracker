@@ -51,7 +51,7 @@
     "message": "Read More →"
   },
   "ignoredSitesTitle": {
-    "message": "Ignored Sites"
+    "message": "Ignored Websites"
   },
   "ignoredSitesDesc": {
     "message": "Addresses that will always be ignored by the Censor Tracker. It can help if there are problems with opening the site. Each address starts with a new line."
@@ -72,7 +72,7 @@
     "message": "Allow the Extension to Work in Private Windows."
   },
   "privateBrowsingRequiredDesc": {
-    "message": "So that we can open blocked sites for you through a proxy. In Firefox, there is no way without it."
+    "message": "So that we can open blocked websites for you through a proxy. In Firefox, there is no way without it."
   },
   "howToGrantIncognitoAccess": {
     "message": "How to do it"
@@ -190,7 +190,7 @@
     "message": "Thank you!"
   },
   "extensionInstalledDesc": {
-    "message": "Pin the extension in browser panel in two clicks to always be aware which sites can transfer your messages, personal data and all traffic to third parties."
+    "message": "Pin the extension in browser panel in two clicks to always be aware which websites can transfer your messages, personal data and all traffic to third parties."
   },
   "thankYou": {
     "message": "Thank you!"
@@ -207,7 +207,7 @@
     "message": "Do not show for this website"
   },
   "turnOnExtensionToCheckWebsite": {
-    "message": "Enable to access blocked sites."
+    "message": "Enable to access blocked websites."
   },
   "howToGrantIncognitoAccessLink": {
     "message": "https://support.mozilla.org/en-US/kb/extensions-private-browsing"
@@ -222,7 +222,7 @@
     "message": "Allow Censor Tracker incognito access"
   },
   "installedAllowIncognitoDescription": {
-    "message": "This permission is required so that CensorTracker can open blocked sites for you through a proxy. In Firefox, there is no other way."
+    "message": "This permission is required so that CensorTracker can open blocked websites for you through a proxy. In Firefox, there is no other way."
   },
   "howToGrantIncognitoAccessBtnTitle": {
     "message": "How to grant permission"
@@ -231,7 +231,7 @@
     "message": "After that, open the popup of CensorTracker and confirm that the permissions are granted."
   },
   "incognitoAccessRequiredTitle": {
-    "message": "The site is unavailable or blocked. Allow Censor Tracker incognito access to open such sites."
+    "message": "The site is unavailable or blocked. Allow Censor Tracker incognito access to open such websites."
   },
   "incognitoAccessRequiredDescription": {
     "message": "To open <b>$hostname$</b> through a proxy in Firefox, you need permission to work in private windows. Otherwise, the proxy will not work.",
@@ -257,7 +257,7 @@
     "message": "Private Browsing Permission Required"
   },
   "ignoreEditorPageTitle": {
-    "message": "Ignored Sites"
+    "message": "Ignored Websites"
   },
   "advancedOptionsTitle": {
     "message": "Advanced Options"
@@ -287,5 +287,17 @@
         "content": "$1"
       }
     }
+  },
+  "proxiedWebsitesEditorPageTitle": {
+    "message": "Proxied Websites"
+  },
+  "proxiedWebsitesEditorPageDesc": {
+    "message": "You can manually add domains that will be proxied by the extension."
+  },
+  "optionsProxiedWebsitesEditorTitle": {
+    "message": "Proxied Websites"
+  },
+  "optionsProxiedWebsitesEditorDesc": {
+    "message": "You can manually manage the list of domains that will be proxied by the extension."
   }
 }

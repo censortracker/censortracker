@@ -375,8 +375,8 @@ a {
   fill: #625c55;
 }
 
-#ignoredSitesTitle {
-  margin-bottom: 10px;
+.title-mb {
+  margin-bottom: 10px !important;
 }
 
 .main-page__about code {

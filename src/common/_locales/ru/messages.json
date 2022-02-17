@@ -303,5 +303,11 @@
   },
   "optionsProxiedWebsitesEditorDesc": {
     "message": "Вы можете вручную управлять сайтами, которые будут проксироваться расширением."
+  },
+  "proxyRegionTurnedOn" : {
+    "message": "Включен"
+  },
+  "proxyRegionTurnedOff": {
+    "message": "Выключен"
   }
 }

@@ -299,5 +299,11 @@
   },
   "optionsProxiedWebsitesEditorDesc": {
     "message": "You can manually manage the list of domains that will be proxied by the extension."
+  },
+  "proxyRegionTurnedOn" : {
+    "message": "Turned on"
+  },
+  "proxyRegionTurnedOff": {
+    "message": "Turned off"
   }
 }

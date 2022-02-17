@@ -3,12 +3,26 @@ import { proxy, registry, settings, storage, translateDocument } from '@/common/
 (async () => {
   translateDocument(document)
   const currentBrowser = settings.getBrowser()
+  const proxyRegion = document.getElementById('proxyRegion')
   const resetSettingsToDefault = document.getElementById('resetSettingsToDefault')
   const useDPIDetectionCheckbox = document.getElementById('useDPIDetectionCheckbox')
   const showNotificationsCheckbox = document.getElementById('showNotificationsCheckbox')
   const howToGrantIncognitoAccess = document.getElementById('howToGrantIncognitoAccess')
   const grantPrivateBrowsingPermissionsButton = document.getElementById('grantPrivateBrowsingPermissionsButton')
   const privateBrowsingPermissionsRequiredMessage = document.getElementById('privateBrowsingPermissionsRequiredMessage')
+
+  const { useProxy } = await storage.get({ useProxy: false })
+
+  let proxyRegionText = currentBrowser.i18n.getMessage('proxyRegionTurnedOff')
+
+  if (useProxy) {
+    proxyRegionText = currentBrowser.i18n.getMessage('proxyRegionTurnedOn')
+  }
+
+  const { countryDetails: { name: countryName } } = await registry.getConfig()
+
+  proxyRegion.innerText = `${proxyRegionText} | ${countryName}`
+  proxyRegion.hidden = false
 
   if (resetSettingsToDefault) {
     const optionsConfirmResetMessage = currentBrowser.i18n.getMessage('optionsConfirmResetMessage')

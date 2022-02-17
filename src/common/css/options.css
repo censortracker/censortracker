@@ -587,3 +587,11 @@ kbd {
   font-size: 15px;
   font-weight: 500;
 }
+
+#proxyRegion {
+  opacity: 0.5;
+  color: #3B332B;
+  font-size: 12px;
+  line-height: 17px;
+  margin-left: 311px;
+}

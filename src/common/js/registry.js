@@ -177,15 +177,16 @@ class Registry {
    */
   contains = async (url) => {
     const hostname = extractHostnameFromUrl(url)
-    const { domains, blockedDomains } =
+    const { domains, ignoredHosts, blockedDomains } =
       await storage.get({
         domains: [],
+        ignoredHosts: [],
         blockedDomains: [],
       })
 
     const domainsArray = domains.concat(blockedDomains)
 
-    if (domainsArray.includes(hostname)) {
+    if (domainsArray.includes(hostname) && !ignoredHosts.includes(hostname)) {
       console.log(`Registry match found: ${hostname}`)
       return true
     }

@@ -235,7 +235,7 @@ import {
       })
 
       button.style.display = 'none'
-      button.nextSibling.style.display = 'block'
+      button.nextElementSibling.style.display = 'block'
     })
   }
 

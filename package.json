@@ -1,6 +1,6 @@
 {
   "name": "censortracker",
-  "version": "3.8.5",
+  "version": "4.6.0.0",
   "description": "|",
   "author": "Roskomsvoboda",
   "license": "MIT",
@@ -8,8 +8,8 @@
   "scripts": {
     "build:chrome": "NODE_OPTIONS=--openssl-legacy-provider NODE_ENV=development BROWSER=chrome webpack --progress --config webpack.config.js",
     "build:firefox": "NODE_OPTIONS=--openssl-legacy-provider NODE_ENV=development BROWSER=firefox webpack --progress --config webpack.config.js",
-    "build:chrome:prod": "NODE_OPTIONS=--openssl-legacy-provider NODE_ENV=production BROWSER=chrome webpack --progress --config webpack.config.js",
-    "build:firefox:prod": "NODE_OPTIONS=--openssl-legacy-provider NODE_ENV=production BROWSER=firefox webpack --progress --config webpack.config.js",
+    "build:chrome:prod": "NODE_OPTIONS=--openssl-legacy-provider NODE_ENV=production BROWSER=chrome BUILDUP=0 webpack --progress --config webpack.config.js",
+    "build:firefox:prod": "NODE_OPTIONS=--openssl-legacy-provider NODE_ENV=production BROWSER=firefox BUILDUP=0  webpack --progress --config webpack.config.js",
     "release:firefox": "web-ext build -o --source-dir=./dist/firefox/prod --artifacts-dir=./releases/firefox",
     "release:chrome": "web-ext build -o --source-dir=./dist/chrome/prod --artifacts-dir=./releases/chrome",
     "lint": "eslint --ext=.js ./src/",

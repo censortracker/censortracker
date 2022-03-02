@@ -58,7 +58,6 @@ class Registry {
             apis.push({
               url: specifics.cooperationRefusedORIUrl,
               storageKey: 'distributors',
-
             })
           }
         }
@@ -147,16 +146,9 @@ class Registry {
       customProxiedDomains: [],
     })
 
-    const excludedDomains = ['youtube.com', 'youtu.be', 'google.com']
     const domainsFound = domains && domains.length > 0
     const blockedDomainsFound = blockedDomains && blockedDomains.length > 0
     const customProxiedDomainsFound = customProxiedDomains && customProxiedDomains.length > 0
-
-    excludedDomains.forEach((domain) => {
-      if (Array.isArray(ignoredHosts)) {
-        ignoredHosts.push(domain)
-      }
-    })
 
     if (domainsFound || blockedDomainsFound || customProxiedDomainsFound) {
       try {

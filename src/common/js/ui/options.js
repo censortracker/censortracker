@@ -21,8 +21,10 @@ import { proxy, registry, settings, storage, translateDocument } from '@/common/
 
   const { countryDetails: { name: countryName } } = await registry.getConfig()
 
-  proxyRegion.innerText = `${proxyRegionText} | ${countryName}`
-  proxyRegion.hidden = false
+  if (proxyRegion) {
+    proxyRegion.innerText = `${proxyRegionText} | ${countryName}`
+    proxyRegion.hidden = false
+  }
 
   if (resetSettingsToDefault) {
     const optionsConfirmResetMessage = currentBrowser.i18n.getMessage('optionsConfirmResetMessage')

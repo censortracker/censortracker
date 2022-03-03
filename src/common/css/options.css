@@ -599,3 +599,7 @@ kbd {
 .invalid-input {
   border: 1px solid #f11111 !important;
 }
+
+.hidden {
+  display: none;
+}

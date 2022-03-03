@@ -9,15 +9,27 @@ import { proxy, registry, storage, translateDocument } from '@/common/js'
   const proxyHostInput = document.getElementById('proxyHostInput')
   const proxyPortInput = document.getElementById('proxyPortInput')
   const proxyMetaInfo = document.getElementById('proxyMetaInfo')
-  const proxyInputs = document.querySelectorAll('.input-proxy')
+  const proxyOptionsInputs = document.getElementById('proxyOptionsInputs')
   const proxyCustomOptionsRadioGroup = document.getElementById('proxyCustomOptionsRadioGroup')
   const isProxyControlledByThisExtension = await proxy.controlledByThisExtension()
   const isProxyControlledByOtherExtensions = await proxy.controlledByOtherExtensions()
 
+  const useCustomProxyRadioButton = document.getElementById('useCustomProxy')
+  const useDefaultProxyRadioButton = document.getElementById('useDefaultProxy')
+
   proxyCustomOptions.hidden = !proxyEnabled
 
-  const { customProxyHost, customProxyPort } =
-    await storage.get(['customProxyHost', 'customProxyPort'])
+  const { customProxyHost, customProxyPort, useCustomChecked } =
+    await storage.get(['customProxyHost', 'customProxyPort', 'useCustomChecked'])
+
+  if (useCustomChecked) {
+    proxyOptionsInputs.hidden = false
+    useCustomProxyRadioButton.checked = true
+    proxyOptionsInputs.classList.remove('hidden')
+  } else {
+    proxyOptionsInputs.classList.add('hidden')
+    useDefaultProxyRadioButton.checked = true
+  }
 
   if (customProxyHost) {
     proxyHostInput.value = customProxyHost
@@ -27,46 +39,36 @@ import { proxy, registry, storage, translateDocument } from '@/common/js'
     proxyPortInput.value = customProxyPort
   }
 
-  for (const input of proxyInputs) {
-    input.addEventListener('input', async (event) => {
-      const value = event.target.value
-      const isPortInput = event.target.classList.contains('port')
-      const isHostInput = event.target.classList.contains('host')
+  document.addEventListener('keydown', async (event) => {
+    const host = proxyHostInput.value
+    const port = proxyPortInput.value
 
-      if (isHostInput) {
-        if (validator.isIP(value) || validator.isFQDN(value)) {
-          await storage.set({ customProxyHost: value })
-          console.log(`Proxy host set to: ${value}`)
-        }
-      }
+    if ((event.ctrlKey && event.key === 's') || event.keyCode === 13) {
+      if (host && validator.isPort(port)) {
+        await storage.set({ useCustomChecked: true })
+        await storage.set({ customProxyPort: port, customProxyHost: host })
+        await proxy.setProxy()
 
-      if (isPortInput) {
-        if (validator.isPort(value)) {
-          await storage.set({ customProxyPort: value })
-          console.log(`Proxy port set to: ${value}`)
-        }
+        proxyHostInput.classList.remove('invalid-input')
+        proxyPortInput.classList.remove('invalid-input')
+        console.log(`Proxy host changed to: ${host}:${port}`)
+      } else {
+        proxyHostInput.classList.add('invalid-input')
+        proxyPortInput.classList.add('invalid-input')
       }
-    })
-  }
+      event.preventDefault()
+    }
+  })
 
   proxyCustomOptionsRadioGroup.addEventListener('change', async (event) => {
-    const oneMinute = 1000 * 60
-    const value = event.target.value
-
-    if (value !== 'default') {
-      setTimeout(async () => {
-        const { customProxyHost: proxyHost, customProxyPort: proxyPort } =
-          await storage.get(['customProxyHost', 'customProxyPort'])
-
-        if (proxyHost && proxyPort) {
-          await proxy.setProxy()
-        }
-      }, oneMinute)
+    if (event.target.value !== 'default') {
+      await proxy.setProxy()
+      proxyOptionsInputs.classList.remove('hidden')
     } else {
-      await storage.remove([
-        'customProxyHost',
-        'customProxyPort',
-      ])
+      await proxy.setProxy()
+      await storage.set({ useCustomChecked: false })
+      await storage.remove(['customProxyHost', 'customProxyPort'])
+      proxyOptionsInputs.classList.add('hidden')
     }
   })
 

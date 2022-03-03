@@ -56,7 +56,7 @@
   "ignoredSitesDesc": {
     "message": "Addresses that will always be ignored by the Censor Tracker. It can help if there are problems with opening the site. Each address starts with a new line."
   },
-  "ignoreAutosaveTip": {
+  "autosaveTip": {
     "message": "Changes will be automatically applied when <kbd>Enter</kbd> or <kbd>Control</kbd> + <kbd>S</kbd> is pressed."
   },
   "optionsTitle": {

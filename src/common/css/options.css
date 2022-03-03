@@ -595,3 +595,7 @@ kbd {
   line-height: 17px;
   margin-left: 315px;
 }
+
+.invalid-input {
+  border: 1px solid #f11111 !important;
+}

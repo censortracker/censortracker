@@ -8,7 +8,6 @@ import { proxy, registry, storage, translateDocument } from '@/common/js'
   const proxyCustomOptions = document.getElementById('proxyCustomOptions')
   const proxyHostInput = document.getElementById('proxyHostInput')
   const proxyPortInput = document.getElementById('proxyPortInput')
-  const proxyMetaInfo = document.getElementById('proxyMetaInfo')
   const proxyOptionsInputs = document.getElementById('proxyOptionsInputs')
   const proxyCustomOptionsRadioGroup = document.getElementById('proxyCustomOptionsRadioGroup')
   const isProxyControlledByThisExtension = await proxy.controlledByThisExtension()
@@ -107,8 +106,4 @@ import { proxy, registry, storage, translateDocument } from '@/common/js'
   const { countryDetails: { name: country } } = await registry.getConfig()
 
   translateDocument(document, { country })
-
-  setTimeout(() => {
-    proxyMetaInfo.hidden = false
-  }, 1000)
 })()

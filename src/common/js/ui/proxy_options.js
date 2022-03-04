@@ -84,9 +84,6 @@ import { proxy, registry, storage, translateDocument } from '@/common/js'
     if (!proxyEnabled) {
       await proxy.enableProxy()
     }
-  } else {
-    useProxyCheckbox.checked = true
-    useProxyCheckbox.disabled = true
   }
 
   useProxyCheckbox.addEventListener('change', async () => {

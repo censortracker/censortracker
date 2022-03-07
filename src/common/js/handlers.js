@@ -59,6 +59,7 @@ export const handleEnableExtension = async ({ enableExtension: { newValue, oldVa
 export const handleIgnoredHostsChange = async ({ ignoredHosts }, _areaName) => {
   if (ignoredHosts && ignoredHosts.newValue) {
     ignore.save()
+    await proxy.setProxy()
   }
 }
 

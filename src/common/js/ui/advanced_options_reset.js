@@ -29,10 +29,15 @@ import { ignore, proxy, registry, settings, translateDocument } from '@/common/j
   })
 
   updateLocalRegistry.addEventListener('click', async (event) => {
-    await registry.sync()
-    await proxy.setProxy()
-    document.location.reload()
-    window.location.href = 'options.html'
+    const synced = await registry.sync()
+
+    if (synced) {
+      await proxy.setProxy()
+      document.location.reload()
+      window.location.href = 'options.html'
+    } else {
+      console.error('Error on syncing database')
+    }
   })
 
   btnConfirmReset.addEventListener('click', async (event) => {

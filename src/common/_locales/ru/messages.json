@@ -318,5 +318,26 @@
   },
   "resetToDefaultDesc": {
     "message": "Перегенерировать PAC-файл для вашего текущего региона и обновить настройки."
+  },
+  "areYouSureYouWantToResetSettingsTitle": {
+    "message": "Вы уверены, что хотите сбросить все настройки?"
+  },
+  "areYouSureYouWantToResetSettingsDesc": {
+    "message": "Переустановить конфиг и обновить локальную базу данных"
+  },
+  "confirmPopupResetSettings": {
+    "message": "Да, сбросить"
+  },
+  "cancel": {
+    "message": "Отмена"
+  },
+  "updateTakesTime": {
+    "message": "Обновление базы займёт какое-то время"
+  },
+  "youCanCloseThisWindow": {
+    "message": "Можно закрыть это окно"
+  },
+  "good": {
+    "message": "Хорошо"
   }
 }

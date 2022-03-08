@@ -54,6 +54,7 @@ const webpackConfig = {
     unavailable: `./src/${BROWSER}/js/ui/unavailable.js`,
     popup: './src/common/js/ui/popup.js',
     options: './src/common/js/ui/options.js',
+    advanced_options_reset: './src/common/js/ui/advanced_options_reset.js',
     proxy_options: './src/common/js/ui/proxy_options.js',
     proxy_disabled: `./src/${BROWSER}/js/ui/proxy_disabled.js`,
     ignore_editor: './src/common/js/ui/ignore_editor.js',
@@ -185,7 +186,7 @@ const webpackConfig = {
       filename: 'advanced_options.html',
       template: 'src/common/pages/advanced_options.html',
       inject: true,
-      chunks: ['options'],
+      chunks: ['options', 'advanced_options_reset'],
       meta: contentSecurityPolicy,
     }),
     new MergeJsonWebpackPlugin({

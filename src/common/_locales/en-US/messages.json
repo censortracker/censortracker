@@ -307,12 +307,33 @@
     "message": "Force update of the extension's local database"
   },
   "updateLocalRegistryDesc": {
-    "message": "Update the local database (registry) of the restricted websites for your region."
+    "message": "Update the local database of the restricted websites for your region."
   },
   "resetToDefaultTitle": {
     "message": "Reset to Default"
   },
   "resetToDefaultDesc": {
     "message": "Regenerate the PAC file for your current region and update the settings."
+  },
+  "areYouSureYouWantToResetSettingsTitle": {
+    "message": "Are you sure you want to reset all settings?"
+  },
+  "areYouSureYouWantToResetSettingsDesc": {
+    "message": "Regenerate the PAC file for your current region and reset the settings to factory default."
+  },
+  "confirmPopupResetSettings": {
+    "message": "Yes, I'm sure!"
+  },
+  "cancel": {
+    "message": "Cancel"
+  },
+  "updateTakesTime": {
+    "message": "The database update will take some time."
+  },
+  "youCanCloseThisWindow": {
+    "message": "You can close this window"
+  },
+  "good": {
+    "message": "Okay"
   }
 }

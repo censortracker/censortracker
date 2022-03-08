@@ -50,5 +50,42 @@
     </div>
   </div>
 </div>
+
+<div class="popup popup_confirm" id="popupConfirmReset">
+  <div class="popup_content">
+    <div class="close_popup" id="closePopupReset">
+      <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M10 10L34 34M34 10L10 34" stroke-opacity="0.5" stroke-width="2"/>
+      </svg>
+    </div>
+
+    <div class="main-page__title popup_title" data-i18n-key="areYouSureYouWantToResetSettingsTitle"></div>
+    <div class="popup_text" data-i18n-key="areYouSureYouWantToResetSettingsDesc"></div>
+    <button class="btn btn-dark" id="confirmReset">
+      <span class="btn__text" data-i18n-key="confirmPopupResetSettings"></span>
+    </button>
+
+    <button class="btn btn-light" id="cancelPopupReset">
+      <span class="btn__text" data-i18n-key="cancel"></span>
+    </button>
+  </div>
+</div>
+
+
+<div class="popup popup_notification" id="popupNotification">
+  <div class="popup_content">
+    <div class="close_popup" id="closePopupConfirm">
+      <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M10 10L34 34M34 10L10 34" stroke-opacity="0.5" stroke-width="2"/>
+      </svg>
+    </div>
+    <div class="main-page__title popup_title" data-i18n-key="updateTakesTime"></div>
+    <div class="popup_text" data-i18n-key="youCanCloseThisWindow"></div>
+    <button class="btn btn-dark" id="confirmOk">
+      <span class="btn__text" data-i18n-key="good"></span>
+    </button>
+  </div>
+</div>
+
 </body>
 </html>

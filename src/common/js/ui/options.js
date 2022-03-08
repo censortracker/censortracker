@@ -4,7 +4,6 @@ import { proxy, registry, settings, storage, translateDocument } from '@/common/
   translateDocument(document)
   const currentBrowser = settings.getBrowser()
   const proxyRegion = document.getElementById('proxyRegion')
-  const resetSettingsToDefault = document.getElementById('resetSettingsToDefault')
   const useDPIDetectionCheckbox = document.getElementById('useDPIDetectionCheckbox')
   const showNotificationsCheckbox = document.getElementById('showNotificationsCheckbox')
   const howToGrantIncognitoAccess = document.getElementById('howToGrantIncognitoAccess')
@@ -24,26 +23,6 @@ import { proxy, registry, settings, storage, translateDocument } from '@/common/
   if (proxyRegion) {
     proxyRegion.innerText = `${proxyRegionText} | ${countryName}`
     proxyRegion.hidden = false
-  }
-
-  if (resetSettingsToDefault) {
-    const optionsConfirmResetMessage = currentBrowser.i18n.getMessage('optionsConfirmResetMessage')
-
-    resetSettingsToDefault.addEventListener('click', async () => {
-      // eslint-disable-next-line no-restricted-globals, no-alert
-      const confirmed = confirm(optionsConfirmResetMessage)
-
-      if (confirmed) {
-        await settings.enableExtension()
-        await settings.disableDPIDetection()
-        await registry.clearLocalRegistry()
-        await registry.sync()
-        await proxy.setProxy()
-
-        window.location.reload()
-        console.warn('CensorTracker has been reset to default settings.')
-      }
-    })
   }
 
   if (settings.isFirefox) {

@@ -54,6 +54,12 @@ class Ignore {
       })
   }
 
+  clear = async () => {
+    this._ignoredHosts.clear()
+    this._temporarilyIgnoredHosts.clear()
+    await storage.set({ ignoredHosts: [] })
+  }
+
   add = async (url, { temporary = false } = {}) => {
     const hostname = extractHostnameFromUrl(url)
 

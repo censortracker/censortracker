@@ -7,7 +7,7 @@ class Registry {
   constructor () {
     setInterval(async () => {
       await this.sendReport()
-      await this.clearLocalRegistry()
+      await this.clear()
     }, 60 * 60 * 1000)
 
     setInterval(async () => {
@@ -243,7 +243,7 @@ class Registry {
    * Clean local registry by schedule.
    * @returns {Promise<void>}
    */
-  clearLocalRegistry = async () => {
+  clear = async () => {
     const day = new Date().getDate()
 
     if (day % 2 === 0) {

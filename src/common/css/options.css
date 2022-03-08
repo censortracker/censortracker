@@ -183,6 +183,7 @@ a {
 
 .main-page__turn:hover,
 .toggle-text:hover,
+.option:hover,
 .main-page__link:hover > span,
 .use_proxy__link:hover {
   color: #625c55;

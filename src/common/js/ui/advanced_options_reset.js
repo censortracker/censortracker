@@ -9,6 +9,7 @@ import { ignore, proxy, registry, settings, translateDocument } from '@/common/j
   const popupNotification = document.getElementById('popupNotification')
   const btnCancelPopupReset = document.getElementById('cancelPopupReset')
   const btnClosePopupConfirm = document.getElementById('closePopupConfirm')
+  const updateLocalRegistry = document.getElementById('updateLocalRegistry')
   const resetSettingsToDefault = document.getElementById('resetSettingsToDefault')
 
   resetSettingsToDefault.addEventListener('click', (event) => {
@@ -25,6 +26,13 @@ import { ignore, proxy, registry, settings, translateDocument } from '@/common/j
   })
   btnConfirmOk.addEventListener('click', (event) => {
     popupNotification.classList.remove('popup_show')
+  })
+
+  updateLocalRegistry.addEventListener('click', async (event) => {
+    await registry.sync()
+    await proxy.setProxy()
+    toastr.info('Are you the 6 fingered man?')
+    window.reload()
   })
 
   btnConfirmReset.addEventListener('click', async (event) => {

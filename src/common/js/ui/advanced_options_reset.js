@@ -2,7 +2,7 @@ import { ignore, proxy, registry, settings, translateDocument } from '@/common/j
 
 (async () => {
   translateDocument(document)
-  const currentBrowser = settings.currentBrowser()
+  const currentBrowser = settings.getBrowser()
   const btnConfirmOk = document.getElementById('confirmOk')
   const btnConfirmReset = document.getElementById('confirmReset')
   const btnClosePopupReset = document.getElementById('closePopupReset')

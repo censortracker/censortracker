@@ -91,6 +91,7 @@ a {
 }
 
 .main-page__turn,
+.option__link,
 .main-page__link,
 .extension__title {
   font-size: 16px;
@@ -100,6 +101,16 @@ a {
 
 .main-page__link {
   margin-top: 50px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.option__link {
+  cursor: pointer;
+}
+
+.option__link {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -256,7 +267,7 @@ a {
   cursor: pointer;
 }
 
-.checkbox__group {
+.checkbox__group, .option {
   margin-bottom: 25px;
 }
 

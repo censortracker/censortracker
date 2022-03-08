@@ -265,9 +265,6 @@
   "advancedOptionsDesc": {
     "message": "You can manually update the local database of blocked websites, update the config of CensorTracker and manage other advanced options."
   },
-  "resetSettingsToDefault": {
-    "message": "Reset settings to default (fetch config again and update local database)"
-  },
   "optionsConfirmResetMessage": {
     "message": "All your settings will be removed. Are you sure you want to do this?"
   },
@@ -305,5 +302,17 @@
   },
   "proxyRegionTurnedOff": {
     "message": "Turned off"
+  },
+  "updateLocalRegistryTitle": {
+    "message": "Force update of the extension's local database"
+  },
+  "updateLocalRegistryDesc": {
+    "message": "Update the local database (registry) of the restricted websites for your region."
+  },
+  "resetToDefaultTitle": {
+    "message": "Reset to Default"
+  },
+  "resetToDefaultDesc": {
+    "message": "Regenerate the PAC file for your current region and update the settings."
   }
 }

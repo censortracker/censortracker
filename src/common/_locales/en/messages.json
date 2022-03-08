@@ -310,7 +310,7 @@
     "message": "Update the local database of the restricted websites for your region."
   },
   "resetToDefaultTitle": {
-    "message": "Reset to Default"
+    "message": "Reset to default"
   },
   "resetToDefaultDesc": {
     "message": "Regenerate the PAC file for your current region and update the settings."

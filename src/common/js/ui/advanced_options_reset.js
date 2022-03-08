@@ -2,6 +2,7 @@ import { ignore, proxy, registry, settings, translateDocument } from '@/common/j
 
 (async () => {
   translateDocument(document)
+  const currentBrowser = settings.currentBrowser()
   const btnConfirmOk = document.getElementById('confirmOk')
   const btnConfirmReset = document.getElementById('confirmReset')
   const btnClosePopupReset = document.getElementById('closePopupReset')
@@ -34,7 +35,8 @@ import { ignore, proxy, registry, settings, translateDocument } from '@/common/j
     if (synced) {
       await proxy.setProxy()
       document.location.reload()
-      window.location.href = 'options.html'
+      // eslint-disable-next-line no-alert
+      alert(currentBrowser.i18n.getMessage('localRegistryUpdated'))
     } else {
       console.error('Error on syncing database')
     }

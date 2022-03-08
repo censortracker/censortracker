@@ -31,8 +31,8 @@ import { ignore, proxy, registry, settings, translateDocument } from '@/common/j
   updateLocalRegistry.addEventListener('click', async (event) => {
     await registry.sync()
     await proxy.setProxy()
-    toastr.info('Are you the 6 fingered man?')
-    window.reload()
+    document.location.reload()
+    window.location.href = 'options.html'
   })
 
   btnConfirmReset.addEventListener('click', async (event) => {

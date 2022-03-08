@@ -335,5 +335,8 @@
   },
   "good": {
     "message": "Okay"
+  },
+  "proxiedWebsitesTitle": {
+    "message": "Proxied Websites"
   }
 }

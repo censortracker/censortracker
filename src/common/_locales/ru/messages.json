@@ -339,5 +339,8 @@
   },
   "good": {
     "message": "Хорошо"
+  },
+  "proxiedWebsitesTitle": {
+    "message": "Проксируемые сайты"
   }
 }

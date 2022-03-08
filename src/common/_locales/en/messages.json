@@ -1,12 +1,12 @@
 {
   "distrTitle": {
-    "message": "Is the information spreading organizer"
+    "message": "Is the information dissemination organizer"
   },
   "notDistrTitle": {
-    "message": "Is not the information spreading organizer"
+    "message": "Is not the information dissemination organizer"
   },
   "notDistrDesc": {
-    "message": "Services from the ISO (information spreading organizers) registry may automatically transmit your personal data, including messages and all traffic, to government authorities. This service is not in the ISO registry."
+    "message": "Services from the IDO (information dissemination organizers) registry may automatically transmit your personal data, including messages and all traffic, to government authorities. This service is not in the ISO registry."
   },
   "distrDesc": {
     "message": "The Service may transfer your personal data, including messages and all traffic to government authorities automatically."

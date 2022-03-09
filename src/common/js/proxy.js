@@ -35,6 +35,26 @@ class Proxy extends Browser {
     }, this.proxyConfig.ping.timeout)
   }
 
+  fetchConfig = async () => {
+    try {
+      const response = await fetch(RSERVE_PROXY_CONFIGS_API_URL)
+      const { server: host, port, pingHost, pingPort } = await response.json()
+
+      if (host && port) {
+        return {
+          port,
+          host,
+          ping: {
+            url: `${pingHost}:${pingPort}`,
+          },
+        }
+      }
+      return {}
+    } catch (error) {
+      return {}
+    }
+  }
+
   getProxyServerURL = async () => {
     const { customProxyHost, customProxyPort } =
       await storage.get(['customProxyHost', 'customProxyPort'])
@@ -105,7 +125,7 @@ class Proxy extends Browser {
 
   /**
    * ATTENTION: DO NOT MODIFY THIS FUNCTION!
-   * @returns {string} The PAC data.
+   * @returns {string|undefined} The PAC data.
    */
   generateProxyAutoConfigData = async () => {
     const domains = await registry.getDomains()

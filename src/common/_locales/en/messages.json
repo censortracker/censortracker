@@ -341,5 +341,11 @@
   },
   "localRegistryUpdated": {
     "message": "Local database updated!"
+  },
+  "done": {
+    "message": "Done!"
+  },
+  "doneDescription": {
+    "message": "Operation completed successfully."
   }
 }

@@ -2,31 +2,49 @@ import { ignore, proxy, registry, settings, translateDocument } from '@/common/j
 
 (async () => {
   translateDocument(document)
-  const currentBrowser = settings.getBrowser()
   const btnConfirmOk = document.getElementById('confirmOk')
   const btnConfirmReset = document.getElementById('confirmReset')
   const btnClosePopupReset = document.getElementById('closePopupReset')
   const popupConfirmReset = document.getElementById('popupConfirmReset')
-  const popupNotification = document.getElementById('popupNotification')
   const btnCancelPopupReset = document.getElementById('cancelPopupReset')
   const btnClosePopupConfirm = document.getElementById('closePopupConfirm')
   const updateLocalRegistry = document.getElementById('updateLocalRegistry')
   const resetSettingsToDefault = document.getElementById('resetSettingsToDefault')
+  const popupCompletedSuccessfully = document.getElementById('popupCompletedSuccessfully')
+
+  const showPopupClass = 'popup_show'
+
+  const toggleCompletedPopup = () => {
+    if (popupCompletedSuccessfully.classList.contains(showPopupClass)) {
+      popupCompletedSuccessfully.classList.remove(showPopupClass)
+    } else {
+      popupCompletedSuccessfully.classList.add(showPopupClass)
+    }
+  }
+
+  const toggleResetPopup = () => {
+    if (popupConfirmReset.classList.contains(showPopupClass)) {
+      popupConfirmReset.classList.remove(showPopupClass)
+    } else {
+      popupConfirmReset.classList.add(showPopupClass)
+    }
+  }
 
   resetSettingsToDefault.addEventListener('click', (event) => {
-    popupConfirmReset.classList.add('popup_show')
+    toggleResetPopup()
   })
   btnClosePopupReset.addEventListener('click', (event) => {
-    popupConfirmReset.classList.remove('popup_show')
+    toggleResetPopup()
   })
   btnCancelPopupReset.addEventListener('click', (event) => {
-    popupConfirmReset.classList.remove('popup_show')
+    toggleResetPopup()
   })
   btnClosePopupConfirm.addEventListener('click', (event) => {
-    popupNotification.classList.remove('popup_show')
+    toggleCompletedPopup()
   })
+
   btnConfirmOk.addEventListener('click', (event) => {
-    popupNotification.classList.remove('popup_show')
+    toggleCompletedPopup()
   })
 
   updateLocalRegistry.addEventListener('click', async (event) => {
@@ -34,25 +52,22 @@ import { ignore, proxy, registry, settings, translateDocument } from '@/common/j
 
     if (synced) {
       await proxy.setProxy()
-      document.location.reload()
-      // eslint-disable-next-line no-alert
-      alert(currentBrowser.i18n.getMessage('localRegistryUpdated'))
+      toggleCompletedPopup()
     } else {
       console.error('Error on syncing database')
+      toggleCompletedPopup()
     }
   })
 
   btnConfirmReset.addEventListener('click', async (event) => {
-    await settings.enableExtension()
-    await settings.disableDPIDetection()
     await ignore.clear()
     await registry.clear()
     await registry.sync()
     await proxy.setProxy()
-    popupNotification.classList.add('popup_show')
-    popupConfirmReset.classList.remove('popup_show')
-    window.reload()
-
+    await settings.enableExtension()
+    await settings.disableDPIDetection()
+    toggleResetPopup()
+    toggleCompletedPopup()
     console.warn('CensorTracker has been reset to default settings.')
   })
 })()

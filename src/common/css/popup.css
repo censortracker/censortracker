@@ -368,6 +368,7 @@ div#grantPrivateBrowsingPermissionsButton {
   font-size: 13px;
   line-height: 15px;
   color: #8A8580;
+  margin-top: 3px;
 }
 .censor-tracker__status.status-error{
   color: #B66B14;

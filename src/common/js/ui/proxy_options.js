@@ -41,16 +41,18 @@ import { proxy, registry, storage, translateDocument } from '@/common/js'
   document.addEventListener('keydown', async (event) => {
     const host = proxyHostInput.value
     const port = proxyPortInput.value
+    const customProxyServerURI = `${host}:${port}`
 
     if ((event.ctrlKey && event.key === 's') || event.keyCode === 13) {
       if (host && validator.isPort(port)) {
         await storage.set({ useCustomChecked: true })
         await storage.set({ customProxyPort: port, customProxyHost: host })
+        await storage.set({ customProxyServerURI })
         await proxy.setProxy()
 
         proxyHostInput.classList.remove('invalid-input')
         proxyPortInput.classList.remove('invalid-input')
-        console.log(`Proxy host changed to: ${host}:${port}`)
+        console.log(`Proxy host changed to: ${customProxyServerURI}`)
       } else {
         proxyHostInput.classList.add('invalid-input')
         proxyPortInput.classList.add('invalid-input')
@@ -66,7 +68,7 @@ import { proxy, registry, storage, translateDocument } from '@/common/js'
     } else {
       await proxy.setProxy()
       await storage.set({ useCustomChecked: false })
-      await storage.remove(['customProxyHost', 'customProxyPort'])
+      await storage.remove(['customProxyHost', 'customProxyPort', 'customProxyServerURI'])
       proxyOptionsInputs.classList.add('hidden')
     }
   })

@@ -12,8 +12,8 @@ import {
  * This feature exists because of free proxy abusers.
  * @param _details
  */
-export const handlerBeforeRequestPing = (_details) => {
-  proxy.ping()
+export const handlerBeforeRequestPing = async (_details) => {
+  await proxy.ping()
 }
 
 /**

@@ -236,7 +236,7 @@ const handleInstalled = async ({ reason }) => {
       }
     }
   }
-  proxy.ping()
+  await proxy.ping()
 }
 
 browser.runtime.onInstalled.addListener(handleInstalled)

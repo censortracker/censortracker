@@ -91,9 +91,11 @@
     <div class="censor-tracker censor-tracker-">
       <div class="censor-tracker__column">
         <div class="censor-tracker__title">
-          Censor Tracker
+          <b>Censor Tracker</b> <span data-i18n-key="extensionEnabledTitle"></span>
         </div>
-        <div class="censor-tracker__turn" data-i18n-key="extensionEnabledTitle"></div>
+        <div id="popupProxyStatusOk" data-i18n-key="popupProxyStatusOk" class="censor-tracker__status" hidden></div>
+        <div id="popupProxyStatusError" data-i18n-key="popupProxyStatusError" class="censor-tracker__status status-error" hidden></div>
+        <div id="popupProxyDisabled" data-i18n-key="popupProxyDisabled" class="censor-tracker__status" hidden></div>
       </div>
       <div class="censor-tracker__column">
         <div class="censor-tracker__btn" id="disableExtension">

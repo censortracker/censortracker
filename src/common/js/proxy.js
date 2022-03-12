@@ -191,6 +191,10 @@ class Proxy extends Browser {
     console.warn('PAC data cleaned!')
   }
 
+  alive = async () => {
+    return true
+  }
+
   ping = async () => {
     const request = new XMLHttpRequest()
     const { reserveProxyPingURI } = await storage.get({

@@ -351,5 +351,20 @@
   },
   "doneDescription": {
     "message": "Операция выполнена успешно."
+  },
+  "popupProxyStatusOk" : {
+    "message": "прокси работает нормально"
+  },
+  "popupProxyStatusError": {
+    "message": "прокси работает с перебоями"
+  },
+  "proxyOptionsStatusTitle": {
+    "message": "Сейчас прокси работает с перебоями"
+  },
+  "proxyOptionsStatusDesc": {
+    "message": "Можете попробовать отключить проксирование совсем или переключиться на свой прокси."
+  },
+  "popupProxyDisabled": {
+    "message": "прокси выключен"
   }
 }

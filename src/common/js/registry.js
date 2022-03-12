@@ -187,12 +187,12 @@ class Registry {
   }
 
   /**
-   * Checks if the given URL is in registry of ISO (Information Spreading Organizers).
+   * Checks if the given URL is in registry of ISO (Information Dissemination Organizer).
    * This method makes sense only for some countries (Russia).
    * @param url URL.
    * @returns {Promise<{}|*>}
    */
-  distributorsContains = async (url) => {
+  retrieveInformationDisseminationOrganizerJSON = async (url) => {
     const hostname = extractHostnameFromUrl(url)
     const { distributors } =
       await storage.get({ distributors: [] })

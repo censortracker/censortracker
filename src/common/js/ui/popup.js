@@ -167,7 +167,8 @@ import {
       }
     })
 
-    const { url: distributorUrl, cooperationRefused } = await registry.distributorsContains(currentHostname)
+    const { url: distributorUrl, cooperationRefused } =
+      await registry.retrieveInformationDisseminationOrganizerJSON(currentHostname)
 
     if (distributorUrl) {
       currentDomainHeader.classList.add('title-ori')

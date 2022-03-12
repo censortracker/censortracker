@@ -373,3 +373,7 @@ div#grantPrivateBrowsingPermissionsButton {
 .censor-tracker__status.status-error{
   color: #B66B14;
 }
+
+.censor-tracker__turn {
+  font-weight: 400;
+}

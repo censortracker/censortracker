@@ -8,13 +8,19 @@ import { proxy, registry, storage, translateDocument } from '@/common/js'
   const proxyCustomOptions = document.getElementById('proxyCustomOptions')
   const proxyHostInput = document.getElementById('proxyHostInput')
   const proxyPortInput = document.getElementById('proxyPortInput')
+  const proxyStatusIsDown = document.getElementById('proxyStatusIsDown')
   const proxyOptionsInputs = document.getElementById('proxyOptionsInputs')
   const proxyCustomOptionsRadioGroup = document.getElementById('proxyCustomOptionsRadioGroup')
   const isProxyControlledByThisExtension = await proxy.controlledByThisExtension()
   const isProxyControlledByOtherExtensions = await proxy.controlledByOtherExtensions()
-
   const useCustomProxyRadioButton = document.getElementById('useCustomProxy')
   const useDefaultProxyRadioButton = document.getElementById('useDefaultProxy')
+
+  const proxyIsAlive = await proxy.alive()
+
+  if (!proxyIsAlive) {
+    proxyStatusIsDown.hidden = false
+  }
 
   proxyCustomOptions.hidden = !proxyEnabled
 

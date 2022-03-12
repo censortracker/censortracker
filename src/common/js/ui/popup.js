@@ -52,6 +52,9 @@ import {
   const restrictionType = select({ id: 'restrictionType' })
   const mainPageInfoBlocks = select({ query: '.main-page-info' })
   const currentDomainBlocks = select({ query: '.current-domain' })
+  const popupProxyStatusOk = select({ id: 'popupProxyStatusOk' })
+  const popupProxyDisabled = select({ id: 'popupProxyDisabled' })
+  const popupProxyStatusError = select({ id: 'popupProxyStatusError' })
   const footerExtensionIsOn = select({ id: 'footerExtensionIsOn' })
   const currentDomainHeader = select({ id: 'currentDomainHeader' })
   const closeDetailsButtons = select({ query: '.btn-hide-details' })
@@ -67,6 +70,21 @@ import {
   controlledByOtherExtensionsButton.addEventListener('click', () => {
     window.location.href = 'controlled.html'
   })
+
+  const proxyIsAlive = await proxy.alive()
+  const { useProxy } = await storage.get({ useProxy: true })
+
+  if (useProxy) {
+    if (proxyIsAlive) {
+      popupProxyStatusOk.hidden = false
+      popupProxyStatusError.hidden = true
+    } else {
+      popupProxyStatusOk.hidden = true
+      popupProxyStatusError.hidden = false
+    }
+  } else {
+    popupProxyDisabled.hidden = false
+  }
 
   const proxyControlledByOtherExtensions = await proxy.controlledByOtherExtensions()
 

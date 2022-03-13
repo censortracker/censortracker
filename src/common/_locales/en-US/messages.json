@@ -362,5 +362,8 @@
   },
   "popupProxyDisabled": {
     "message": "proxying is disabled"
+  },
+  "debugInfoTip": {
+    "message": "Press <kbd>Control</kbd> + <kbd>D</kbd> to see debugging information."
   }
 }

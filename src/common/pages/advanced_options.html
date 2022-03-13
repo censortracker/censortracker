@@ -6,7 +6,6 @@
   <title data-i18n-key="advancedOptionsPageTitle"></title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <link rel="stylesheet" href="css/options.css"/>
-  <link rel="stylesheet" href="css/codemirror.css"/>
 </head>
 
 <body>
@@ -27,7 +26,8 @@
           </svg>
         </a>
       </div>
-      <div class="main-page__title" data-i18n-key="advancedOptionsTitle"></div>
+      <div class="main-page__title title-mb" data-i18n-key="advancedOptionsTitle"></div>
+      <div class="main-page__about mt-10" data-i18n-key="debugInfoTip"></div>
 
       <div class="checkbox__group" id="useDPIDetectionGroup">
         <div class="main-page__turn">
@@ -83,6 +83,23 @@
     <div class="popup_text" data-i18n-key="doneDescription"></div>
     <button class="btn btn-dark" id="confirmOk">
       <span class="btn__text" data-i18n-key="good"></span>
+    </button>
+  </div>
+</div>
+
+<div class="popup popup_notification" id="popupDebugInformation">
+  <div class="popup_content">
+    <div class="close_popup" id="closeDebugInfo">
+      <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M10 10L34 34M34 10L10 34" stroke-opacity="0.5" stroke-width="2"/>
+      </svg>
+    </div>
+    <div class="main-page__title popup_title">Debug Information</div>
+    <div class="popup_text">
+      <textarea id="debugInfoJSON"></textarea>
+    </div>
+    <button class="btn btn-dark" id="okDebugInfo">
+      <span class="btn__text">Ok</span>
     </button>
   </div>
 </div>

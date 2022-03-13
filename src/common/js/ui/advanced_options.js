@@ -1,7 +1,3 @@
-import 'codemirror/addon/search/search'
-import 'codemirror/addon/search/matchesonscrollbar'
-import 'codemirror/addon/search/searchcursor'
-
 import { ignore, proxy, registry, settings, translateDocument } from '@/common/js'
 
 (async () => {

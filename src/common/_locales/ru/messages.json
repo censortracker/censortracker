@@ -366,5 +366,8 @@
   },
   "popupProxyDisabled": {
     "message": "прокси выключен"
+  },
+  "debugInfoTip": {
+    "message": "Нажмите комбинацию клавиш <kbd>Control</kbd> + <kbd>D</kbd> чтобы увидеть отладочную информацию."
   }
 }

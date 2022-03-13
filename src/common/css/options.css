@@ -786,8 +786,17 @@ kbd {
 }
 
 .proxy__disclaimer {
-  background-color: #FFF8EB;
+  background-color: #fff8eb;
   border-radius: 4px;
   padding: 20px 30px;
   margin-bottom: 30px;
+}
+
+#debugInfoJSON {
+  width: 550px;
+  height: 350px;
+}
+
+#useDPIDetectionGroup {
+  margin-top: 30px;
 }

@@ -1,3 +1,5 @@
+import axios from 'axios'
+
 import { registry, storage } from '.'
 import { Browser } from './browser'
 
@@ -28,8 +30,14 @@ class Proxy extends Browser {
 
   fetchReserveConfig = async () => {
     try {
-      const response = await fetch(PROXY_CONFIG_API_URL)
-      const { server, port, pingHost, pingPort } = await response.json()
+      const {
+        data: {
+          server,
+          port,
+          pingHost,
+          pingPort,
+        } = {},
+      } = await axios.get(PROXY_CONFIG_API_URL)
 
       if (server && port && pingHost && pingPort) {
         await storage.set({
@@ -43,7 +51,9 @@ class Proxy extends Browser {
     } catch (error) {
       const fetchTimeout = new Date(FETCH_CONFIG_TIMEOUT)
 
-      console.error(`Error on fetching reverse proxy: trying again in ${fetchTimeout.getMinutes()} minutes...`)
+      console.error(
+        `Error on fetching reverse proxy: trying again in ${fetchTimeout.getMinutes()} minutes...`,
+      )
     }
   }
 

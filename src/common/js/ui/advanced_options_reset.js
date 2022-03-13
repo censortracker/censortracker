@@ -46,7 +46,7 @@ import { ignore, proxy, registry, settings, translateDocument } from '@/common/j
   }
 
   document.addEventListener('keydown', async (event) => {
-    if ((event.ctrlKey && event.key === 'd')) {
+    if (event.ctrlKey && event.key === 'd') {
       const debugInfoJSON = document.getElementById('debugInfoJSON')
       const currentConfig = await registry.getConfig()
 

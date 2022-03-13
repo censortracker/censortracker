@@ -1,8 +1,10 @@
+import axios from 'axios'
+
 import storage from './storage'
 import { extractHostnameFromUrl } from './utilities'
 
 const CENSORTRACKER_CONFIG_API_URL = 'https://app.censortracker.org/api/config/'
-const SYNC_REGISTRY_TIMEOUT = (60 * 20) * 1000 // Every 30 minutes
+const SYNC_REGISTRY_TIMEOUT = (60 * 20) * 1000 // Every 20 minutes
 
 class Registry {
   constructor () {
@@ -28,17 +30,19 @@ class Registry {
    */
   getConfig = async () => {
     try {
-      const response = await fetch(CENSORTRACKER_CONFIG_API_URL)
-
-      if (response.status === 200) {
-        const apis = []
-        const {
+      const {
+        data: {
+          specifics,
           registryUrl,
           countryDetails,
           reportEndpoint,
           customRegistryUrl,
-          specifics,
-        } = await response.json()
+        } = {},
+        status,
+      } = await axios.get(CENSORTRACKER_CONFIG_API_URL)
+
+      if (status === 200) {
+        const apis = []
 
         if (registryUrl) {
           apis.push({
@@ -99,10 +103,9 @@ class Registry {
 
     for (const { storageKey, url } of apis) {
       try {
-        const response = await fetch(url)
-        const jsonData = await response.json()
+        const { data } = await axios.get(url)
 
-        await storage.set({ [storageKey]: jsonData })
+        await storage.set({ [storageKey]: data })
       } catch (error) {
         console.error(`Error on fetching data from the API endpoint: ${url}`)
       }
@@ -209,29 +212,30 @@ class Registry {
    * Sends a report about sites that potentially can be banned by DPI-filters.
    */
   sendReport = async () => {
-    const { alreadyReported, blockedDomains, useDPIDetection } =
+    const { blockedDomains, alreadyReported, enableExtension, useDPIDetection } =
       await storage.get({
-        alreadyReported: [],
         blockedDomains: [],
+        alreadyReported: [],
+        enableExtension: false,
         useDPIDetection: false,
       })
 
-    if (useDPIDetection) {
-      const userAgent = navigator.userAgent
+    if (enableExtension && useDPIDetection) {
       const { reportEndpoint } = await this.getConfig()
 
       for (const domain of blockedDomains) {
         if (!alreadyReported.includes(domain)) {
-          await fetch(reportEndpoint, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
+          const userAgent = navigator.userAgent
+
+          axios.post(
+            reportEndpoint,
+            { domain, userAgent },
+            {
+              headers: {
+                'Content-Type': 'application/json',
+              },
             },
-            body: JSON.stringify({
-              domain,
-              userAgent,
-            }),
-          })
+          )
           alreadyReported.push(domain)
           await storage.set({ alreadyReported })
           console.warn(`Reported new domain: ${domain}`)

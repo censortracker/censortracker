@@ -4,7 +4,7 @@ import { registry, storage } from '.'
 import { Browser } from './browser'
 
 const PROXY_CONFIG_API_URL = 'https://app.censortracker.org/api/proxy-config/'
-const REFRESH_PAC_TIMEOUT = 60 * 20 * 1000 // Every 20 minutes
+const REFRESH_PAC_TIMEOUT = 60 * 15 * 1000 // Every 15 minutes
 const FETCH_CONFIG_TIMEOUT = 60 * 5 * 1000 // Every 5 minutes
 const FALLBACK_PROXY_SERVER_HOST = 'proxy.roskomsvoboda.org'
 const FALLBACK_PROXY_SERVER_PORT = 33333

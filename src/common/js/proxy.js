@@ -40,11 +40,11 @@ class Proxy extends Browser {
       } = await axios.get(PROXY_CONFIG_API_URL)
 
       if (server && port && pingHost && pingPort) {
-        await storage.set({
-          reserveProxyPingURI: `${pingHost}:${pingPort}`,
-          reserveProxyServerURI: `${server}:${port}`,
-        })
-        console.warn('Reserve proxy fetched!')
+        const reserveProxyPingURI = `${pingHost}:${pingPort}`
+        const reserveProxyServerURI = `${server}:${port}`
+
+        await storage.set({ reserveProxyPingURI, reserveProxyServerURI })
+        console.warn(`Reserve proxy fetched: ${reserveProxyServerURI}!`)
       } else {
         console.warn('Reverse proxy is not provided.')
       }
@@ -126,7 +126,6 @@ class Proxy extends Browser {
     try {
       await this.browser.proxy.settings.set(config)
       await this.enableProxy()
-      await this.ping()
       console.log('PAC has been generated and set successfully!')
       return true
     } catch (error) {

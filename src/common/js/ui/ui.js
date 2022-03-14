@@ -50,7 +50,7 @@ export const translateDocument = (doc, props = {}) => {
  * @param instance CodeMirror instance.
  * @returns {string[]}
  */
-export const getCodeMirrorContent = (instance) => {
+export const getValidatedDomains = (instance) => {
   const result = new Set()
   const urls = instance.getValue().split('\n')
 

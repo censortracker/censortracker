@@ -5,7 +5,7 @@ import 'codemirror/addon/search/searchcursor'
 import CodeMirror from 'codemirror'
 
 import storage from '../storage'
-import { getCodeMirrorContent, translateDocument } from './ui'
+import { getValidatedDomains, translateDocument } from './ui'
 
 (async () => {
   translateDocument(document)
@@ -29,13 +29,13 @@ import { getCodeMirrorContent, translateDocument } from './ui'
   editor.setOption('extraKeys', {
     Enter: (instance) => {
       storage.set({
-        customProxiedDomains: getCodeMirrorContent(instance),
+        customProxiedDomains: getValidatedDomains(instance),
       })
       return CodeMirror.Pass
     },
     'Ctrl-S': (instance) => {
       storage.set({
-        customProxiedDomains: getCodeMirrorContent(instance),
+        customProxiedDomains: getValidatedDomains(instance),
       })
       return CodeMirror.Pass
     },

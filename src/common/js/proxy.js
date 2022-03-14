@@ -140,6 +140,9 @@ class Proxy extends Browser {
    */
   generateProxyAutoConfigData = async () => {
     const domains = await registry.getDomains()
+    const proxyServerURI = await this.getProxyServerURI()
+
+    await storage.set({ proxyServerURI })
 
     if (domains.length === 0) {
       return undefined
@@ -187,7 +190,7 @@ class Proxy extends Browser {
 
         // Return result
         if (isHostBlocked(domains, host)) {
-          return 'HTTPS ${await this.getProxyServerURI()};';
+          return 'HTTPS ${proxyServerURI};';
         } else {
           return 'DIRECT';
         }
@@ -201,7 +204,20 @@ class Proxy extends Browser {
   }
 
   alive = async () => {
-    return true
+    const { proxyServerURI } = await storage.get('proxyServerURI')
+
+    try {
+      const response = await fetch(`https://${proxyServerURI}/`)
+      const responseText = await response.text()
+      const { err } = JSON.parse(responseText)
+
+      console.log(`Proxy ${proxyServerURI} is alive!`)
+
+      return !!err
+    } catch (error) {
+      console.warn(`Proxy ${proxyServerURI} is down!`)
+      return false
+    }
   }
 
   ping = async () => {

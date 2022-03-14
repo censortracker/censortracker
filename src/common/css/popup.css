@@ -162,6 +162,10 @@ a {
   padding-right: 40px;
 }
 
+.block-disabled {
+  padding-right: 0;
+}
+
 .block__btn {
   font-weight: 400;
   font-size: 13px;

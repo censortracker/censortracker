@@ -18,13 +18,11 @@ import {
   handleProxyError,
   handlerBeforeRequestPing,
   handleStartup,
-  handleWindowRemoved,
 } from '../../common/js/handlers'
 import { asynchrome } from './core'
 
 chrome.runtime.onStartup.addListener(handleStartup)
 chrome.proxy.onProxyError.addListener(handleProxyError)
-chrome.windows.onRemoved.addListener(handleWindowRemoved)
 chrome.storage.onChanged.addListener(handleIgnoredHostsChange)
 chrome.storage.onChanged.addListener(handleCustomProxiedDomainsChange)
 

@@ -33,10 +33,6 @@ export const handleBeforeRequestRedirectToHttps = ({ url }) => {
   }
 }
 
-export const handleWindowRemoved = async (_windowId) => {
-  await storage.remove(['notifiedHosts'])
-}
-
 export const handleStartup = async () => {
   await proxy.setProxy()
 }

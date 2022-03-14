@@ -18,12 +18,10 @@ import {
   handleProxyError,
   handlerBeforeRequestPing,
   handleStartup,
-  handleWindowRemoved,
 } from '../../common/js/handlers'
 
 browser.runtime.onStartup.addListener(handleStartup)
 browser.proxy.onError.addListener(handleProxyError)
-browser.windows.onRemoved.addListener(handleWindowRemoved)
 browser.storage.onChanged.addListener(handleIgnoredHostsChange)
 browser.storage.onChanged.addListener(handleCustomProxiedDomainsChange)
 

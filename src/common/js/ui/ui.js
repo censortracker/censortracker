@@ -52,11 +52,18 @@ export const translateDocument = (doc, props = {}) => {
  */
 export const getCodeMirrorContent = (instance) => {
   const result = new Set()
-  const domains = instance.getValue().split('\n')
+  const urls = instance.getValue().split('\n')
 
-  for (const domain of domains) {
-    if (domain !== '' && domain.indexOf('.') !== -1) {
-      result.add(domain)
+  for (const url of urls) {
+    if (url !== '' && url.indexOf('.') !== -1) {
+      try {
+        const { hostname } = new URL(url)
+        const domain = hostname.replace('www.', '')
+
+        result.add(domain)
+      } catch (error) {
+        console.log('Error on parsing')
+      }
     }
   }
   return Array.from(result)

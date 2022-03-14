@@ -187,7 +187,6 @@ const handleInstalled = async ({ reason }) => {
   })
 
   const reasonsForSync = [
-    chrome.runtime.OnInstalledReason.UPDATE,
     chrome.runtime.OnInstalledReason.INSTALL,
   ]
 

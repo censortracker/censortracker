@@ -1,45 +1,73 @@
-import { ignore, proxy, registry, settings, translateDocument } from '@/common/js'
+import {
+  ignore,
+  proxy,
+  registry,
+  settings,
+  translateDocument,
+} from '@/common/js';
 
 (async () => {
   translateDocument(document)
-  const btnConfirmOk = document.getElementById('confirmOk')
-  const okDebugInfo = document.getElementById('okDebugInfo')
-  const btnConfirmReset = document.getElementById('confirmReset')
-  const closeDebugInfo = document.getElementById('closeDebugInfo')
-  const btnClosePopupReset = document.getElementById('closePopupReset')
-  const popupConfirmReset = document.getElementById('popupConfirmReset')
-  const btnCancelPopupReset = document.getElementById('cancelPopupReset')
-  const btnClosePopupConfirm = document.getElementById('closePopupConfirm')
-  const updateLocalRegistry = document.getElementById('updateLocalRegistry')
-  const popupDebugInformation = document.getElementById('popupDebugInformation')
-  const resetSettingsToDefault = document.getElementById('resetSettingsToDefault')
-  const popupCompletedSuccessfully = document.getElementById('popupCompletedSuccessfully')
+  const completedConfirmBtn = document.getElementById('completedConfirm')
+  const debugInfoOkBtn = document.getElementById('debugInfoOk')
+  const confirmResetBtn = document.getElementById('confirmReset')
+  const closeDebugInfoBtn = document.getElementById('closeDebugInfo')
+  const closePopupResetBtn = document.getElementById('closePopupReset')
+  const cancelPopupResetBtn = document.getElementById('cancelPopupReset')
+  const closePopupConfirmBtn = document.getElementById('closePopupConfirm')
+  const updateLocalRegistryBtn = document.getElementById('updateLocalRegistry')
+  const resetSettingsToDefaultBtn = document.getElementById(
+    'resetSettingsToDefault',
+  )
 
-  const showPopupClass = 'popup_show'
+  const togglePopup = (id) => {
+    const showPopupClass = 'popup_show'
+    const popup = document.getElementById(id)
 
-  const toggleCompletedPopup = () => {
-    if (popupCompletedSuccessfully.classList.contains(showPopupClass)) {
-      popupCompletedSuccessfully.classList.remove(showPopupClass)
+    if (popup) {
+      if (popup.classList.contains(showPopupClass)) {
+        popup.classList.remove(showPopupClass)
+      } else {
+        popup.classList.add(showPopupClass)
+      }
     } else {
-      popupCompletedSuccessfully.classList.add(showPopupClass)
+      console.error('Nothing to toggle.')
     }
   }
 
-  const toggleResetPopup = () => {
-    if (popupConfirmReset.classList.contains(showPopupClass)) {
-      popupConfirmReset.classList.remove(showPopupClass)
-    } else {
-      popupConfirmReset.classList.add(showPopupClass)
-    }
-  }
+  debugInfoOkBtn.addEventListener('click', (event) => {
+    togglePopup('popupDebugInformation')
+  })
+  closeDebugInfoBtn.addEventListener('click', (event) => {
+    togglePopup('popupDebugInformation')
+  })
+  resetSettingsToDefaultBtn.addEventListener('click', (event) => {
+    togglePopup('popupConfirmReset')
+  })
+  closePopupResetBtn.addEventListener('click', (event) => {
+    togglePopup('popupConfirmReset')
+  })
+  cancelPopupResetBtn.addEventListener('click', (event) => {
+    togglePopup('popupConfirmReset')
+  })
+  closePopupConfirmBtn.addEventListener('click', (event) => {
+    togglePopup('popupCompletedSuccessfully')
+  })
+  completedConfirmBtn.addEventListener('click', (event) => {
+    togglePopup('popupCompletedSuccessfully')
+  })
 
-  const toggleDebugInfoPopup = () => {
-    if (popupDebugInformation.classList.contains(showPopupClass)) {
-      popupDebugInformation.classList.remove(showPopupClass)
+  updateLocalRegistryBtn.addEventListener('click', async (event) => {
+    const synced = await registry.sync()
+
+    if (synced) {
+      await proxy.setProxy()
+      togglePopup('popupCompletedSuccessfully')
     } else {
-      popupDebugInformation.classList.add(showPopupClass)
+      console.error('Error on syncing database')
+      togglePopup('popupCompletedSuccessfully')
     }
-  }
+  })
 
   document.addEventListener('keydown', async (event) => {
     if (event.ctrlKey && event.key === 'd') {
@@ -49,57 +77,20 @@ import { ignore, proxy, registry, settings, translateDocument } from '@/common/j
       currentConfig.currentProxyURI = await proxy.getProxyServerURI()
       debugInfoJSON.innerText = JSON.stringify(currentConfig, undefined, 4)
 
-      toggleDebugInfoPopup()
+      togglePopup('popupDebugInformation')
     }
     event.preventDefault()
   })
 
-  okDebugInfo.addEventListener('click', (event) => {
-    toggleDebugInfoPopup()
-  })
-
-  closeDebugInfo.addEventListener('click', (event) => {
-    toggleDebugInfoPopup()
-  })
-
-  resetSettingsToDefault.addEventListener('click', (event) => {
-    toggleResetPopup()
-  })
-  btnClosePopupReset.addEventListener('click', (event) => {
-    toggleResetPopup()
-  })
-  btnCancelPopupReset.addEventListener('click', (event) => {
-    toggleResetPopup()
-  })
-  btnClosePopupConfirm.addEventListener('click', (event) => {
-    toggleCompletedPopup()
-  })
-
-  btnConfirmOk.addEventListener('click', (event) => {
-    toggleCompletedPopup()
-  })
-
-  updateLocalRegistry.addEventListener('click', async (event) => {
-    const synced = await registry.sync()
-
-    if (synced) {
-      await proxy.setProxy()
-      toggleCompletedPopup()
-    } else {
-      console.error('Error on syncing database')
-      toggleCompletedPopup()
-    }
-  })
-
-  btnConfirmReset.addEventListener('click', async (event) => {
+  confirmResetBtn.addEventListener('click', async (event) => {
     await ignore.clear()
     await registry.clear()
     await registry.sync()
     await proxy.setProxy()
     await settings.enableExtension()
     await settings.disableDPIDetection()
-    toggleResetPopup()
-    toggleCompletedPopup()
+    togglePopup('popupConfirmReset')
+    togglePopup('popupCompletedSuccessfully')
     console.warn('CensorTracker has been reset to default settings.')
   })
 })()

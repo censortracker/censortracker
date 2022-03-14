@@ -2,7 +2,6 @@ import {
   enforceHttpsConnection,
   ignore,
   proxy,
-  registry,
   storage,
 } from '.'
 
@@ -39,7 +38,7 @@ export const handleWindowRemoved = async (_windowId) => {
 }
 
 export const handleStartup = async () => {
-  await registry.sync()
+  await proxy.setProxy()
 }
 
 export const handleProxyError = (details) => {

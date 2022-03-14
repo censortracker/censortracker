@@ -4,7 +4,7 @@ import storage from './storage'
 import { extractHostnameFromUrl } from './utilities'
 
 const CENSORTRACKER_CONFIG_API_URL = 'https://app.censortracker.org/api/config/'
-const SYNC_REGISTRY_TIMEOUT = (60 * 20) * 1000 // Every 20 minutes
+const SYNC_REGISTRY_TIMEOUT = (60 * 10) * 1000 // Every 10 minutes
 
 class Registry {
   constructor () {
@@ -14,11 +14,7 @@ class Registry {
     }, 60 * 60 * 1000)
 
     setInterval(async () => {
-      const { domains } = await storage.get({ domains: [] })
-
-      if (domains.length === 0) {
-        await this.sync()
-      }
+      await this.sync()
     }, SYNC_REGISTRY_TIMEOUT)
   }
 

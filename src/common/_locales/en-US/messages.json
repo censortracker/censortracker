@@ -347,5 +347,23 @@
   },
   "doneDescription": {
     "message": "Operation completed successfully."
+  },
+  "popupProxyStatusOk" : {
+    "message": "proxy is working fine"
+  },
+  "popupProxyStatusError": {
+    "message": "proxy is intermittent"
+  },
+  "proxyOptionsStatusTitle": {
+    "message": "The proxy is working intermittently right now."
+  },
+  "proxyOptionsStatusDesc": {
+    "message": "You can disable proxying or switch to your own proxy."
+  },
+  "popupProxyDisabled": {
+    "message": "proxying is disabled"
+  },
+  "debugInfoTip": {
+    "message": "Press <kbd>Control</kbd> + <kbd>D</kbd> to see debugging information."
   }
 }

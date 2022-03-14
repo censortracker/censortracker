@@ -1,26 +1,19 @@
+import axios from 'axios'
+
 import { registry, storage } from '.'
 import { Browser } from './browser'
 
-const PROXY_SERVER_DEFAULT_HOST = 'proxy.roskomsvoboda.org'
-const PROXY_SERVER_DEFAULT_PORT = 33333
-const PROXY_SERVER_DEFAULT_PING_URL = `http://${PROXY_SERVER_DEFAULT_HOST}:39263`
-const PROXY_SERVER_DEFAULT_PING_TIMEOUT = (60 * 3) * 1000
-const PROXY_DEFAULT_RESET_TIMEOUT = (60 * 60) * 5000
-const RSERVE_PROXY_CONFIGS_API_URL = 'https://app.censortracker.org/api/proxy-configs/'
+const PROXY_CONFIG_API_URL = 'https://app.censortracker.org/api/proxy-config/'
+const REFRESH_PAC_TIMEOUT = 60 * 15 * 1000 // Every 15 minutes
+const FETCH_CONFIG_TIMEOUT = 60 * 5 * 1000 // Every 5 minutes
+const FALLBACK_PROXY_SERVER_HOST = 'proxy.roskomsvoboda.org'
+const FALLBACK_PROXY_SERVER_PORT = 33333
+const FALLBACK_PROXY_SERVER_URL = `${FALLBACK_PROXY_SERVER_HOST}:${FALLBACK_PROXY_SERVER_PORT}`
+const FALLBACK_PROXY_SERVER_PING_URL = `http://${FALLBACK_PROXY_SERVER_HOST}:39263`
 
 class Proxy extends Browser {
   constructor () {
     super()
-    this.proxyConfig = {
-      port: PROXY_SERVER_DEFAULT_PORT,
-      host: PROXY_SERVER_DEFAULT_HOST,
-      ping: {
-        url: PROXY_SERVER_DEFAULT_PING_URL,
-        timeout: PROXY_SERVER_DEFAULT_PING_TIMEOUT,
-      },
-      resetTimeout: PROXY_DEFAULT_RESET_TIMEOUT,
-      reserveConfigsUrl: RSERVE_PROXY_CONFIGS_API_URL,
-    }
 
     setInterval(async () => {
       const proxyingEnabled = await this.proxyingEnabled()
@@ -28,42 +21,61 @@ class Proxy extends Browser {
       if (proxyingEnabled) {
         await this.setProxy()
       }
-    }, this.proxyConfig.resetTimeout)
+    }, REFRESH_PAC_TIMEOUT)
 
-    setInterval(() => {
-      this.ping()
-    }, this.proxyConfig.ping.timeout)
+    setInterval(async () => {
+      await this.fetchReserveConfig()
+    }, FETCH_CONFIG_TIMEOUT)
   }
 
-  fetchConfig = async () => {
+  fetchReserveConfig = async () => {
     try {
-      const response = await fetch(RSERVE_PROXY_CONFIGS_API_URL)
-      const { server: host, port, pingHost, pingPort } = await response.json()
-
-      if (host && port) {
-        return {
+      const {
+        data: {
+          server,
           port,
-          host,
-          ping: {
-            url: `${pingHost}:${pingPort}`,
-          },
-        }
+          pingHost,
+          pingPort,
+        } = {},
+      } = await axios.get(PROXY_CONFIG_API_URL)
+
+      if (server && port && pingHost && pingPort) {
+        const reserveProxyPingURI = `${pingHost}:${pingPort}`
+        const reserveProxyServerURI = `${server}:${port}`
+
+        await storage.set({ reserveProxyPingURI, reserveProxyServerURI })
+        console.warn(`Reserve proxy fetched: ${reserveProxyServerURI}!`)
+      } else {
+        console.warn('Reverse proxy is not provided.')
       }
-      return {}
     } catch (error) {
-      return {}
+      const fetchTimeout = new Date(FETCH_CONFIG_TIMEOUT)
+
+      console.error(
+        `Error on fetching reverse proxy: trying again in ${fetchTimeout.getMinutes()} minutes...`,
+      )
     }
   }
 
-  getProxyServerURL = async () => {
-    const { customProxyHost, customProxyPort } =
-      await storage.get(['customProxyHost', 'customProxyPort'])
+  getProxyServerURI = async () => {
+    await this.fetchReserveConfig()
+    const { customProxyServerURI, reserveProxyServerURI } =
+      await storage.get([
+        'customProxyServerURI',
+        'reserveProxyServerURI',
+      ])
 
-    if (customProxyHost && customProxyPort) {
-      return `${customProxyHost}:${customProxyPort}`
+    if (customProxyServerURI) {
+      console.warn('Using custom proxy for PAC.')
+      return customProxyServerURI
     }
 
-    return `${this.proxyConfig.host}:${this.proxyConfig.port}`
+    if (reserveProxyServerURI) {
+      console.warn('Using reserve proxy for PAC.')
+      return reserveProxyServerURI
+    }
+    console.log('Using fallback proxy for PAC.')
+    return FALLBACK_PROXY_SERVER_URL
   }
 
   requestIncognitoAccess = async () => {
@@ -125,10 +137,12 @@ class Proxy extends Browser {
 
   /**
    * ATTENTION: DO NOT MODIFY THIS FUNCTION!
-   * @returns {string|undefined} The PAC data.
    */
   generateProxyAutoConfigData = async () => {
     const domains = await registry.getDomains()
+    const proxyServerURI = await this.getProxyServerURI()
+
+    await storage.set({ proxyServerURI })
 
     if (domains.length === 0) {
       return undefined
@@ -176,7 +190,7 @@ class Proxy extends Browser {
 
         // Return result
         if (isHostBlocked(domains, host)) {
-          return 'HTTPS ${await this.getProxyServerURL()};';
+          return 'HTTPS ${proxyServerURI};';
         } else {
           return 'DIRECT';
         }
@@ -189,22 +203,40 @@ class Proxy extends Browser {
     console.warn('PAC data cleaned!')
   }
 
-  ping = () => {
-    const request = new XMLHttpRequest()
-
-    request.open('GET', this.proxyConfig.ping.url, true)
+  alive = async () => {
+    const { proxyServerURI } = await storage.get('proxyServerURI')
 
     try {
+      const response = await fetch(`https://${proxyServerURI}/`)
+      const responseText = await response.text()
+      const { err } = JSON.parse(responseText)
+
+      console.log(`Proxy ${proxyServerURI} is alive!`)
+
+      return !!err
+    } catch (error) {
+      console.warn(`Proxy ${proxyServerURI} is down!`)
+      return false
+    }
+  }
+
+  ping = async () => {
+    const request = new XMLHttpRequest()
+    const { reserveProxyPingURI } = await storage.get({
+      reserveProxyPingURI: FALLBACK_PROXY_SERVER_PING_URL,
+    })
+
+    try {
+      request.open('GET', `http://${reserveProxyPingURI}`, true)
       request.send(null)
+      console.warn(`Ping ${reserveProxyPingURI}`)
     } catch (error) {
       console.log(error)
     }
-    console.warn('Ping...')
   }
 
   proxyingEnabled = async () => {
-    const { useProxy } =
-      await storage.get({ useProxy: true })
+    const { useProxy } = await storage.get({ useProxy: true })
 
     return useProxy
   }
@@ -224,15 +256,13 @@ class Proxy extends Browser {
   }
 
   controlledByOtherExtensions = async () => {
-    const { levelOfControl } =
-      await this.browser.proxy.settings.get({})
+    const { levelOfControl } = await this.browser.proxy.settings.get({})
 
     return levelOfControl === 'controlled_by_other_extensions'
   }
 
   controlledByThisExtension = async () => {
-    const { levelOfControl } =
-      await this.browser.proxy.settings.get({})
+    const { levelOfControl } = await this.browser.proxy.settings.get({})
 
     return levelOfControl === 'controlled_by_this_extension'
   }

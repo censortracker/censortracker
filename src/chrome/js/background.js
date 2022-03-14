@@ -119,7 +119,7 @@ const handleTabState = async (tabId, changeInfo, tab) => {
 
       const urlBlocked = await registry.contains(tab.url)
       const { url: distributorUrl, cooperationRefused } =
-        await registry.distributorsContains(tab.url)
+        await registry.retrieveInformationDisseminationOrganizerJSON(tab.url)
 
       if (urlBlocked) {
         settings.setBlockedIcon(tabId)
@@ -208,7 +208,7 @@ const handleInstalled = async ({ reason }) => {
       await settings.enableExtension()
     }
   }
-  proxy.ping()
+  await proxy.ping()
 }
 
 chrome.runtime.onInstalled.addListener(handleInstalled)

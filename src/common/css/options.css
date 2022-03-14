@@ -93,10 +93,24 @@ a {
 .main-page__turn,
 .option__link,
 .main-page__link,
-.extension__title {
+.extension__title,
+.disclaimer__title {
   font-size: 16px;
   line-height: 20px;
   font-weight: 500;
+}
+
+.disclaimer__text {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  color: #6d675f;
+  margin-right: 70px;
+}
+
+.disclaimer__text {
+  margin-right: 0;
+  margin-top: 5px;
 }
 
 .main-page__link {
@@ -769,4 +783,20 @@ kbd {
 
 .popup .popup_content .close_popup:hover path {
   stroke: #625C55;
+}
+
+.proxy__disclaimer {
+  background-color: #fff8eb;
+  border-radius: 4px;
+  padding: 20px 30px;
+  margin-bottom: 30px;
+}
+
+#debugInfoJSON {
+  width: 550px;
+  height: 350px;
+}
+
+#useDPIDetectionGroup {
+  margin-top: 30px;
 }

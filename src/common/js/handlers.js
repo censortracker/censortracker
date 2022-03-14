@@ -2,7 +2,6 @@ import {
   enforceHttpsConnection,
   ignore,
   proxy,
-  registry,
   storage,
 } from '.'
 
@@ -12,8 +11,8 @@ import {
  * This feature exists because of free proxy abusers.
  * @param _details
  */
-export const handlerBeforeRequestPing = (_details) => {
-  proxy.ping()
+export const handlerBeforeRequestPing = async (_details) => {
+  await proxy.ping()
 }
 
 /**
@@ -39,7 +38,7 @@ export const handleWindowRemoved = async (_windowId) => {
 }
 
 export const handleStartup = async () => {
-  await registry.sync()
+  await proxy.setProxy()
 }
 
 export const handleProxyError = (details) => {

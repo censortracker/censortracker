@@ -3,12 +3,15 @@ import { ignore, proxy, registry, settings, translateDocument } from '@/common/j
 (async () => {
   translateDocument(document)
   const btnConfirmOk = document.getElementById('confirmOk')
+  const okDebugInfo = document.getElementById('okDebugInfo')
   const btnConfirmReset = document.getElementById('confirmReset')
+  const closeDebugInfo = document.getElementById('closeDebugInfo')
   const btnClosePopupReset = document.getElementById('closePopupReset')
   const popupConfirmReset = document.getElementById('popupConfirmReset')
   const btnCancelPopupReset = document.getElementById('cancelPopupReset')
   const btnClosePopupConfirm = document.getElementById('closePopupConfirm')
   const updateLocalRegistry = document.getElementById('updateLocalRegistry')
+  const popupDebugInformation = document.getElementById('popupDebugInformation')
   const resetSettingsToDefault = document.getElementById('resetSettingsToDefault')
   const popupCompletedSuccessfully = document.getElementById('popupCompletedSuccessfully')
 
@@ -29,6 +32,35 @@ import { ignore, proxy, registry, settings, translateDocument } from '@/common/j
       popupConfirmReset.classList.add(showPopupClass)
     }
   }
+
+  const toggleDebugInfoPopup = () => {
+    if (popupDebugInformation.classList.contains(showPopupClass)) {
+      popupDebugInformation.classList.remove(showPopupClass)
+    } else {
+      popupDebugInformation.classList.add(showPopupClass)
+    }
+  }
+
+  document.addEventListener('keydown', async (event) => {
+    if (event.ctrlKey && event.key === 'd') {
+      const debugInfoJSON = document.getElementById('debugInfoJSON')
+      const currentConfig = await registry.getConfig()
+
+      currentConfig.currentProxyURI = await proxy.getProxyServerURI()
+      debugInfoJSON.innerText = JSON.stringify(currentConfig, undefined, 4)
+
+      toggleDebugInfoPopup()
+    }
+    event.preventDefault()
+  })
+
+  okDebugInfo.addEventListener('click', (event) => {
+    toggleDebugInfoPopup()
+  })
+
+  closeDebugInfo.addEventListener('click', (event) => {
+    toggleDebugInfoPopup()
+  })
 
   resetSettingsToDefault.addEventListener('click', (event) => {
     toggleResetPopup()

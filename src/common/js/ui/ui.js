@@ -56,13 +56,13 @@ export const getValidatedDomains = (instance) => {
 
   for (const url of urls) {
     if (url !== '' && url.indexOf('.') !== -1) {
-      try {
-        const { hostname } = new URL(url)
-        const domain = hostname.replace('www.', '')
+      let domain = url.replace(/^https?:\/\//, '').replace('www.', '')
 
+      if (domain.indexOf('/') !== -1) {
+        domain = domain.split('/', 1)
         result.add(domain)
-      } catch (error) {
-        console.log('Error on parsing')
+      } else {
+        result.add(domain)
       }
     }
   }

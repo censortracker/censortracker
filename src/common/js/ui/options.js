@@ -11,14 +11,13 @@ import { proxy, settings, storage, translateDocument } from '@/common/js'
   const grantPrivateBrowsingPermissionsButton = document.getElementById('grantPrivateBrowsingPermissionsButton')
   const privateBrowsingPermissionsRequiredMessage = document.getElementById('privateBrowsingPermissionsRequiredMessage')
 
-  let proxyStatusText = currentBrowser.i18n.getMessage('optionsProxyStatusTurnedOff')
-
-  if (useProxy) {
-    proxyStatusText = currentBrowser.i18n.getMessage('optionsProxyStatusTurnedOn')
-  }
-
   if (proxyStatus) {
-    proxyStatus.innerText = proxyStatusText
+    let proxyStatusMessage = 'optionsProxyStatusTurnedOff'
+
+    if (useProxy) {
+      proxyStatusMessage = 'optionsProxyStatusTurnedOn'
+    }
+    proxyStatus.innerText = currentBrowser.i18n.getMessage(proxyStatusMessage)
     proxyStatus.hidden = false
   }
 

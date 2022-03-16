@@ -9,7 +9,7 @@ const FETCH_CONFIG_TIMEOUT = 60 * 5 * 1000 // Every 5 minutes
 const FALLBACK_PROXY_SERVER_HOST = 'proxy.roskomsvoboda.org'
 const FALLBACK_PROXY_SERVER_PORT = 33333
 const FALLBACK_PROXY_SERVER_URL = `${FALLBACK_PROXY_SERVER_HOST}:${FALLBACK_PROXY_SERVER_PORT}`
-const FALLBACK_PROXY_SERVER_PING_URL = `http://${FALLBACK_PROXY_SERVER_HOST}:39263`
+const FALLBACK_PROXY_SERVER_PING_URI = `${FALLBACK_PROXY_SERVER_HOST}:39263`
 
 class Proxy extends Browser {
   constructor () {
@@ -225,7 +225,7 @@ class Proxy extends Browser {
   ping = async () => {
     const request = new XMLHttpRequest()
     const { reserveProxyPingURI } = await storage.get({
-      reserveProxyPingURI: FALLBACK_PROXY_SERVER_PING_URL,
+      reserveProxyPingURI: FALLBACK_PROXY_SERVER_PING_URI,
     })
 
     try {

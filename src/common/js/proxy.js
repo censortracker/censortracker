@@ -204,20 +204,22 @@ class Proxy extends Browser {
   }
 
   alive = async () => {
-    const { proxyServerURI } = await storage.get('proxyServerURI')
+    // const { proxyServerURI } = await storage.get('proxyServerURI')
+    //
+    // try {
+    //   const response = await fetch(`https://${proxyServerURI}/`)
+    //   const responseText = await response.text()
+    //   const { err } = JSON.parse(responseText)
+    //
+    //   console.log(`Proxy ${proxyServerURI} is alive!`)
+    //
+    //   return !!err
+    // } catch (error) {
+    //   console.warn(`Proxy ${proxyServerURI} is down!`)
+    //   return false
+    // }
 
-    try {
-      const response = await fetch(`https://${proxyServerURI}/`)
-      const responseText = await response.text()
-      const { err } = JSON.parse(responseText)
-
-      console.log(`Proxy ${proxyServerURI} is alive!`)
-
-      return !!err
-    } catch (error) {
-      console.warn(`Proxy ${proxyServerURI} is down!`)
-      return false
-    }
+    return true
   }
 
   ping = async () => {

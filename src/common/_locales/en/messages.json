@@ -297,10 +297,10 @@
   "optionsProxiedWebsitesEditorDesc": {
     "message": "You can manually manage the list of domains that will be proxied by the extension."
   },
-  "proxyRegionTurnedOn" : {
+  "optionsProxyStatusTurnedOn" : {
     "message": "Turned on"
   },
-  "proxyRegionTurnedOff": {
+  "optionsProxyStatusTurnedOff": {
     "message": "Turned off"
   },
   "updateLocalRegistryTitle": {

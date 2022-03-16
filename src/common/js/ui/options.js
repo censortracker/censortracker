@@ -1,28 +1,25 @@
-import { proxy, registry, settings, storage, translateDocument } from '@/common/js'
+import { proxy, settings, storage, translateDocument } from '@/common/js'
 
 (async () => {
   translateDocument(document)
   const currentBrowser = settings.getBrowser()
-  const proxyRegion = document.getElementById('proxyRegion')
+  const useProxy = await proxy.proxyingEnabled()
+  const proxyStatus = document.getElementById('proxyStatus')
   const useDPIDetectionCheckbox = document.getElementById('useDPIDetectionCheckbox')
   const showNotificationsCheckbox = document.getElementById('showNotificationsCheckbox')
   const howToGrantIncognitoAccess = document.getElementById('howToGrantIncognitoAccess')
   const grantPrivateBrowsingPermissionsButton = document.getElementById('grantPrivateBrowsingPermissionsButton')
   const privateBrowsingPermissionsRequiredMessage = document.getElementById('privateBrowsingPermissionsRequiredMessage')
 
-  const { useProxy } = await storage.get({ useProxy: false })
-
-  let proxyRegionText = currentBrowser.i18n.getMessage('proxyRegionTurnedOff')
+  let proxyStatusText = currentBrowser.i18n.getMessage('optionsProxyStatusTurnedOff')
 
   if (useProxy) {
-    proxyRegionText = currentBrowser.i18n.getMessage('proxyRegionTurnedOn')
+    proxyStatusText = currentBrowser.i18n.getMessage('optionsProxyStatusTurnedOn')
   }
 
-  const { countryDetails: { name: countryName } } = await registry.getConfig()
-
-  if (proxyRegion) {
-    proxyRegion.innerText = `${proxyRegionText} | ${countryName}`
-    proxyRegion.hidden = false
+  if (proxyStatus) {
+    proxyStatus.innerText = proxyStatusText
+    proxyStatus.hidden = false
   }
 
   if (settings.isFirefox) {

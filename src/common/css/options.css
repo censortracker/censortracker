@@ -614,12 +614,12 @@ kbd {
   font-weight: 500;
 }
 
-#proxyRegion {
+#proxyStatus {
   opacity: 0.5;
   color: #3B332B;
-  font-size: 12px;
+  font-size: 13px;
   line-height: 17px;
-  margin-left: 315px;
+  margin-left: 400px;
 }
 
 .invalid-input {

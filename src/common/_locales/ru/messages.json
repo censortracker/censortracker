@@ -301,10 +301,10 @@
   "optionsProxiedWebsitesEditorDesc": {
     "message": "Вы можете вручную управлять сайтами, которые будут проксироваться расширением."
   },
-  "proxyRegionTurnedOn" : {
+  "optionsProxyStatusTurnedOn" : {
     "message": "Включен"
   },
-  "proxyRegionTurnedOff": {
+  "optionsProxyStatusTurnedOff": {
     "message": "Выключен"
   },
   "updateLocalRegistryTitle": {

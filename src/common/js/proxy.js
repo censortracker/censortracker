@@ -91,7 +91,7 @@ class Proxy extends Browser {
   }
 
   setProxy = async () => {
-    const proxyingEnabled = await this.proxyingEnabled()
+    const proxyingEnabled = await this.enabled()
 
     if (proxyingEnabled) {
       const config = {}
@@ -240,7 +240,7 @@ class Proxy extends Browser {
     }
   }
 
-  proxyingEnabled = async () => {
+  enabled = async () => {
     const { useProxy } = await storage.get({ useProxy: true })
 
     return useProxy
@@ -248,16 +248,12 @@ class Proxy extends Browser {
 
   enableProxy = async () => {
     console.log('Proxying enabled.')
-    await storage.set({
-      useProxy: true,
-    })
+    await storage.set({ useProxy: true })
   }
 
   disableProxy = async () => {
     console.warn('Proxying disabled.')
-    await storage.set({
-      useProxy: false,
-    })
+    await storage.set({ useProxy: false })
   }
 
   controlledByOtherExtensions = async () => {

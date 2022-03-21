@@ -9,11 +9,13 @@ import { extractDecodedOriginUrl, proxy, translateDocument } from '@/common/js'
 
   document.addEventListener('click', async (event) => {
     if (event.target.matches('#openThroughProxy')) {
-      proxy.setProxy().then(() => {
+      const proxySet = await proxy.setProxy()
+
+      if (proxySet === true) {
         chrome.tabs.create({ url: originUrl, index: tab.index }, () => {
           chrome.tabs.remove(tab.id)
         })
-      })
+      }
     }
 
     if (event.target.matches('#doNotAskAnymore')) {

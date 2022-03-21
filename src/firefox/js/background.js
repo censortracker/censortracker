@@ -222,8 +222,9 @@ const handleInstalled = async ({ reason }) => {
   if (reasonsForSync.includes(reason)) {
     const synchronized = await registry.sync()
 
+    await settings.enableExtension()
+
     if (synchronized) {
-      await settings.enableExtension()
       const allowedIncognitoAccess =
         await browser.extension.isAllowedIncognitoAccess()
 

@@ -174,7 +174,7 @@ import {
       const renderVar = el.dataset.renderVar
       const value = uiText.restrictions[restrictionsFound][renderVar]
 
-      if (restrictionsFound) {
+      if (restrictionsFound && proxyingEnabled) {
         changeStatusImage('blocked')
       }
 

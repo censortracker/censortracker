@@ -130,6 +130,7 @@ const checkProxyReadiness = async () => {
 }
 
 const handleTabState = async (tabId, changeInfo, { url: tabUrl }) => {
+  const proxyingEnabled = await proxy.enabled()
   const extensionEnabled = await settings.extensionEnabled()
 
   if (changeInfo && changeInfo.status === browser.tabs.TabStatus.COMPLETE) {
@@ -140,7 +141,7 @@ const handleTabState = async (tabId, changeInfo, { url: tabUrl }) => {
       const { url: distributorUrl, cooperationRefused } =
         await registry.retrieveInformationDisseminationOrganizerJSON(tabUrl)
 
-      if (urlBlocked) {
+      if (proxyingEnabled && urlBlocked) {
         settings.setBlockedIcon(tabId)
         return
       }

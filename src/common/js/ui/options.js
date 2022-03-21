@@ -3,7 +3,7 @@ import { proxy, settings, storage, translateDocument } from '@/common/js'
 (async () => {
   translateDocument(document)
   const currentBrowser = settings.getBrowser()
-  const useProxy = await proxy.enabled()
+  const proxyingEnabled = await proxy.enabled()
   const proxyStatus = document.getElementById('proxyStatus')
   const useDPIDetectionCheckbox = document.getElementById('useDPIDetectionCheckbox')
   const showNotificationsCheckbox = document.getElementById('showNotificationsCheckbox')
@@ -14,7 +14,7 @@ import { proxy, settings, storage, translateDocument } from '@/common/js'
   if (proxyStatus) {
     let proxyStatusMessage = 'optionsProxyStatusTurnedOff'
 
-    if (useProxy) {
+    if (proxyingEnabled) {
       proxyStatusMessage = 'optionsProxyStatusTurnedOn'
     }
     proxyStatus.innerText = currentBrowser.i18n.getMessage(proxyStatusMessage)

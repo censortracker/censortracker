@@ -109,6 +109,7 @@ chrome.notifications.onButtonClicked.addListener(handleNotificationButtonClicked
 const handleTabState = async (tabId, changeInfo, tab) => {
   if (changeInfo && changeInfo.status === chrome.tabs.TabStatus.COMPLETE) {
     const extensionEnabled = await settings.extensionEnabled()
+    const proxyingEnabled = await proxy.enabled()
 
     if (extensionEnabled && isValidURL(tab.url)) {
       if (ignore.contains(tab.url)) {
@@ -119,7 +120,7 @@ const handleTabState = async (tabId, changeInfo, tab) => {
       const { url: distributorUrl, cooperationRefused } =
         await registry.retrieveInformationDisseminationOrganizerJSON(tab.url)
 
-      if (urlBlocked) {
+      if (proxyingEnabled && urlBlocked) {
         settings.setBlockedIcon(tabId)
         return
       }

@@ -56,10 +56,10 @@ class Proxy extends Browser {
   getProxyServerURI = async () => {
     await this.fetchReserveConfig()
     const { customProxyServerURI, reserveProxyServerURI } =
-      await storage.get({
-        customProxyServerURI: undefined,
-        reserveProxyServerURI: undefined,
-      })
+      await storage.get([
+        'customProxyServerURI',
+        'reserveProxyServerURI',
+      ])
 
     if (customProxyServerURI) {
       console.warn('Using custom proxy for PAC.')

@@ -5,7 +5,7 @@ import 'codemirror/addon/search/searchcursor'
 import CodeMirror from 'codemirror'
 
 import storage from '../storage'
-import { getValidatedDomains, translateDocument } from './ui'
+import { translateDocument, validateArrayOfURLs } from './ui'
 
 (async () => {
   translateDocument(document)
@@ -26,19 +26,16 @@ import { getValidatedDomains, translateDocument } from './ui'
   )
 
   editor.setValue(content)
-  editor.setOption('extraKeys', {
-    Enter: (instance) => {
-      storage.set({
-        customProxiedDomains: getValidatedDomains(instance),
+
+  document.addEventListener('keydown', async (event) => {
+    if ((event.ctrlKey && event.key === 's') || event.keyCode === 13) {
+      const urls = editor.getValue().split('\n')
+
+      await storage.set({
+        customProxiedDomains: validateArrayOfURLs(urls),
       })
-      return CodeMirror.Pass
-    },
-    'Ctrl-S': (instance) => {
-      storage.set({
-        customProxiedDomains: getValidatedDomains(instance),
-      })
-      return CodeMirror.Pass
-    },
+      event.preventDefault()
+    }
   })
 
   searchInput.addEventListener('input', () => {

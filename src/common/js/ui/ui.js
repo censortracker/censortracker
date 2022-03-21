@@ -45,14 +45,8 @@ export const translateDocument = (doc, props = {}) => {
   }
 }
 
-/**
- * Returns content of CodeMirror as array of domains.
- * @param instance CodeMirror instance.
- * @returns {string[]}
- */
-export const getValidatedDomains = (instance) => {
+export const validateArrayOfURLs = (urls) => {
   const result = new Set()
-  const urls = instance.getValue().split('\n')
 
   for (const url of urls) {
     if (url !== '' && url.indexOf('.') !== -1) {

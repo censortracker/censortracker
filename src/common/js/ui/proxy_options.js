@@ -3,7 +3,7 @@ import validator from 'validator'
 import { proxy, registry, storage, translateDocument } from '@/common/js'
 
 (async () => {
-  const useProxy = await proxy.enabled()
+  const proxyingEnabled = await proxy.enabled()
   const useProxyCheckbox = document.getElementById('useProxyCheckbox')
   const proxyCustomOptions = document.getElementById('proxyCustomOptions')
   const proxyHostInput = document.getElementById('proxyHostInput')
@@ -22,7 +22,7 @@ import { proxy, registry, storage, translateDocument } from '@/common/js'
     proxyStatusIsDown.hidden = false
   }
 
-  proxyCustomOptions.hidden = !useProxy
+  proxyCustomOptions.hidden = !proxyingEnabled
 
   const { customProxyHost, customProxyPort, useCustomChecked } =
     await storage.get(['customProxyHost', 'customProxyPort', 'useCustomChecked'])
@@ -89,7 +89,7 @@ import { proxy, registry, storage, translateDocument } from '@/common/js'
     useProxyCheckbox.checked = true
     useProxyCheckbox.disabled = false
 
-    if (!useProxy) {
+    if (!proxyingEnabled) {
       await proxy.enableProxy()
     }
   }

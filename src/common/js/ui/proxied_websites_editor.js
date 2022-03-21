@@ -5,25 +5,25 @@ import 'codemirror/addon/search/searchcursor'
 import CodeMirror from 'codemirror'
 
 import storage from '../storage'
-import { translateDocument, validateArrayOfURLs } from './ui'
+import { translateDocument, validateArrayOfURLs } from './ui';
 
 (async () => {
   translateDocument(document)
   const searchInput = document.getElementById('search')
   const domainsList = document.getElementById('domainsList')
-  const { customProxiedDomains } = await storage.get({ customProxiedDomains: [] })
+  const { customProxiedDomains } = await storage.get({
+    customProxiedDomains: [],
+  })
 
   const content = customProxiedDomains.join('\n')
-  const editor = CodeMirror.fromTextArea(
-    domainsList, {
-      lineNumbers: true,
-      lineWrapping: true,
-      mode: 'text/x-mysql',
-      styleActiveLine: true,
-      styleActiveSelected: true,
-      disableSpellcheck: true,
-    },
-  )
+  const editor = CodeMirror.fromTextArea(domainsList, {
+    lineNumbers: true,
+    lineWrapping: true,
+    mode: 'text/x-mysql',
+    styleActiveLine: true,
+    styleActiveSelected: true,
+    disableSpellcheck: true,
+  })
 
   editor.setValue(content)
 
@@ -49,13 +49,9 @@ import { translateDocument, validateArrayOfURLs } from './ui'
 
     while (cursor.findNext()) {
       // Mark a range of text with a specific CSS class name.
-      editor.markText(
-        cursor.from(),
-        cursor.to(),
-        {
-          className: 'highlight',
-        },
-      )
+      editor.markText(cursor.from(), cursor.to(), {
+        className: 'highlight',
+      })
     }
   })
 })()

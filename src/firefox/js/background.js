@@ -55,7 +55,7 @@ browser.webRequest.onBeforeRequest.addListener(
 const handleErrorOccurred = async ({ error, url, tabId }) => {
   const encodedUrl = window.btoa(url)
   const foundInRegistry = await registry.contains(url)
-  const proxyingEnabled = await proxy.proxyingEnabled()
+  const proxyingEnabled = await proxy.enabled()
   const { proxyError, connectionError } = errors.determineError(error)
   const allowedIncognitoAccess = await browser.extension.isAllowedIncognitoAccess()
 
@@ -114,7 +114,7 @@ const handleErrorOccurred = async ({ error, url, tabId }) => {
  * @returns {Promise<boolean>}
  */
 const checkProxyReadiness = async () => {
-  const proxyingEnabled = await proxy.proxyingEnabled()
+  const proxyingEnabled = await proxy.enabled()
   const controlledByThisExtension = await proxy.controlledByThisExtension()
   const allowedIncognitoAccess = await browser.extension.isAllowedIncognitoAccess()
 

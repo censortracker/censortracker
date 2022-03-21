@@ -72,9 +72,9 @@ import {
   })
 
   const proxyIsAlive = await proxy.alive()
-  const { useProxy } = await storage.get({ useProxy: true })
+  const proxyingEnabled = await proxy.enabled()
 
-  if (useProxy) {
+  if (proxyingEnabled) {
     if (proxyIsAlive) {
       popupProxyStatusOk.hidden = false
       popupProxyStatusError.hidden = true

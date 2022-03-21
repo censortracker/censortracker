@@ -78,8 +78,8 @@ import {
       debugInfoJSON.innerText = JSON.stringify(currentConfig, undefined, 4)
 
       togglePopup('popupDebugInformation')
+      event.preventDefault()
     }
-    event.preventDefault()
   })
 
   confirmResetBtn.addEventListener('click', async (event) => {

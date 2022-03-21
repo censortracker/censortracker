@@ -16,11 +16,7 @@ class Proxy extends Browser {
     super()
 
     setInterval(async () => {
-      const proxyingEnabled = await this.proxyingEnabled()
-
-      if (proxyingEnabled) {
-        await this.setProxy()
-      }
+      await this.setProxy()
     }, REFRESH_PAC_TIMEOUT)
 
     setInterval(async () => {
@@ -95,42 +91,49 @@ class Proxy extends Browser {
   }
 
   setProxy = async () => {
-    const config = {}
-    const pacData = await this.generateProxyAutoConfigData()
+    const proxyingEnabled = await this.proxyingEnabled()
 
-    if (!pacData) {
-      console.warn('Local registry is empty: cannot set PAC')
-      return false
-    }
+    if (proxyingEnabled) {
+      const config = {}
+      const pacData = await this.generateProxyAutoConfigData()
 
-    if (this.isFirefox) {
-      const blob = new Blob([pacData], {
-        type: 'application/x-ns-proxy-autoconfig',
-      })
+      if (!pacData) {
+        console.warn('Cannot set proxy: local database is empty')
+        return false
+      }
 
-      config.value = {
-        proxyType: 'autoConfig',
-        autoConfigUrl: URL.createObjectURL(blob),
+      if (this.isFirefox) {
+        const blob = new Blob([pacData], {
+          type: 'application/x-ns-proxy-autoconfig',
+        })
+
+        config.value = {
+          proxyType: 'autoConfig',
+          autoConfigUrl: URL.createObjectURL(blob),
+        }
+      } else {
+        config.scope = 'regular'
+        config.value = {
+          mode: 'pac_script',
+          pacScript: {
+            data: pacData,
+            mandatory: false,
+          },
+        }
+      }
+
+      try {
+        await this.browser.proxy.settings.set(config)
+        await this.enableProxy()
+        console.warn('PAC has been generated and set successfully!')
+        return true
+      } catch (error) {
+        await this.disableProxy()
+        await this.requestIncognitoAccess()
+        return false
       }
     } else {
-      config.scope = 'regular'
-      config.value = {
-        mode: 'pac_script',
-        pacScript: {
-          data: pacData,
-          mandatory: false,
-        },
-      }
-    }
-
-    try {
-      await this.browser.proxy.settings.set(config)
-      await this.enableProxy()
-      console.log('PAC has been generated and set successfully!')
-      return true
-    } catch (error) {
-      await this.disableProxy()
-      await this.requestIncognitoAccess()
+      console.warn('Cannot set proxy: proxying is disabled')
       return false
     }
   }

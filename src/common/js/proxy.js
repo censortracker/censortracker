@@ -4,10 +4,10 @@ import { registry, storage } from '.'
 import { Browser } from './browser'
 
 const PROXY_CONFIG_API_URL = 'https://app.censortracker.org/api/proxy-config/'
-const REFRESH_PAC_TIMEOUT = 60 * 10 * 1000 // Every 10 minutes
 const FALLBACK_PROXY_SERVER_HOST = 'proxy.roskomsvoboda.org'
 const FALLBACK_PROXY_SERVER_URL = `${FALLBACK_PROXY_SERVER_HOST}:33333`
 const FALLBACK_PROXY_SERVER_PING_URI = `${FALLBACK_PROXY_SERVER_HOST}:39263`
+const REFRESH_PAC_TIMEOUT = 60 * 10 * 1000 // Every 10 minutes
 
 class Proxy extends Browser {
   constructor () {

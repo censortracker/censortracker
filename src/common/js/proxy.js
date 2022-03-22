@@ -33,27 +33,26 @@ class Proxy extends Browser {
         const reserveProxyPingURI = `${pingHost}:${pingPort}`
         const reserveProxyServerURI = `${server}:${port}`
 
+        console.warn(`Proxy fetched: ${reserveProxyServerURI}!`)
+
         await storage.set({ reserveProxyPingURI, reserveProxyServerURI })
-        console.warn(`Reserve proxy fetched: ${reserveProxyServerURI}!`)
-      } else {
-        console.warn('Reverse proxy is not provided.')
+
+        return { reserveProxyServerURI }
       }
+      console.warn('Reverse proxy is not provided.')
     } catch (error) {
       const fetchTimeout = new Date(REFRESH_PAC_TIMEOUT)
 
       console.error(
-        `Error on fetching reverse proxy: trying again in ${fetchTimeout.getMinutes()} minutes...`,
+        `Error on fetching proxy: trying again in ${fetchTimeout.getMinutes()} minutes...`,
       )
     }
+    return {}
   }
 
   getProxyServerURI = async () => {
-    await this.fetchReserveConfig()
-    const { customProxyServerURI, reserveProxyServerURI } =
-      await storage.get([
-        'customProxyServerURI',
-        'reserveProxyServerURI',
-      ])
+    const { reserveProxyServerURI } = await this.fetchReserveConfig()
+    const { customProxyServerURI } = await storage.get(['customProxyServerURI'])
 
     if (customProxyServerURI) {
       console.warn('Using custom proxy for PAC.')

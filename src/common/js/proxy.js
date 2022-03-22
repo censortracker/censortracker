@@ -4,11 +4,9 @@ import { registry, storage } from '.'
 import { Browser } from './browser'
 
 const PROXY_CONFIG_API_URL = 'https://app.censortracker.org/api/proxy-config/'
-const REFRESH_PAC_TIMEOUT = 60 * 15 * 1000 // Every 15 minutes
-const FETCH_CONFIG_TIMEOUT = 60 * 5 * 1000 // Every 5 minutes
+const REFRESH_PAC_TIMEOUT = 60 * 10 * 1000 // Every 10 minutes
 const FALLBACK_PROXY_SERVER_HOST = 'proxy.roskomsvoboda.org'
-const FALLBACK_PROXY_SERVER_PORT = 33333
-const FALLBACK_PROXY_SERVER_URL = `${FALLBACK_PROXY_SERVER_HOST}:${FALLBACK_PROXY_SERVER_PORT}`
+const FALLBACK_PROXY_SERVER_URL = `${FALLBACK_PROXY_SERVER_HOST}:33333`
 const FALLBACK_PROXY_SERVER_PING_URI = `${FALLBACK_PROXY_SERVER_HOST}:39263`
 
 class Proxy extends Browser {
@@ -18,10 +16,6 @@ class Proxy extends Browser {
     setInterval(async () => {
       await this.setProxy()
     }, REFRESH_PAC_TIMEOUT)
-
-    setInterval(async () => {
-      await this.fetchReserveConfig()
-    }, FETCH_CONFIG_TIMEOUT)
   }
 
   fetchReserveConfig = async () => {
@@ -45,7 +39,7 @@ class Proxy extends Browser {
         console.warn('Reverse proxy is not provided.')
       }
     } catch (error) {
-      const fetchTimeout = new Date(FETCH_CONFIG_TIMEOUT)
+      const fetchTimeout = new Date(REFRESH_PAC_TIMEOUT)
 
       console.error(
         `Error on fetching reverse proxy: trying again in ${fetchTimeout.getMinutes()} minutes...`,

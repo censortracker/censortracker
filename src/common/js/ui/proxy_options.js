@@ -111,4 +111,82 @@ import { proxy, registry, storage, translateDocument } from '@/common/js'
   const { countryDetails: { name: country } } = await registry.getConfig()
 
   translateDocument(document, { country })
+
+  // ----------------------------------------------------------------------------------------------
+  // ----------------------------------------------------------------------------------------------
+  // ----------------------------------------------------------------------------------------------
+  // ----------------------------------------------------------------------------------------------
+
+  document.addEventListener('click', (event) => {
+    if (!event.target.closest('.select')) {
+      document.querySelectorAll('.select_show').forEach((select) => {
+        select.classList.remove('select_show')
+      })
+    }
+  })
+
+  const countriesArray = [
+    { name: 'Россия', code: 'RU' },
+    { name: 'Беларусь', code: 'BY' },
+    { name: 'Украина', code: 'UA' },
+    { name: 'Турция', code: 'TR', i18nCode: '' },
+  ]
+  const availableCountries = document.getElementById('availableCountries')
+
+  for (const { name, code } of countriesArray) {
+    const li = document.createElement('li')
+
+    li.innerText = name
+    li.classList.add('select__option')
+    li.setAttribute('data-select', 'option')
+    li.setAttribute('data-value', code)
+    li.setAttribute('data-index', 1)
+
+    availableCountries.append(li)
+  }
+
+  const CLASS_NAME_SELECTED = 'select__option_selected'
+  const SELECTOR_OPTION_SELECTED = '.select__option_selected'
+  const SELECTOR_DATA_TOGGLE = '[data-select="toggle"]'
+  const BTN_DRPDN = document.getElementById('select_toggle')
+
+  const selected = document.querySelector(SELECTOR_OPTION_SELECTED)
+  const select = document.querySelector('.select')
+  const options = document.querySelectorAll('.select__option')
+  const elToggle = document.querySelector(SELECTOR_DATA_TOGGLE)
+
+  BTN_DRPDN.addEventListener('click', (event) => {
+    select.classList.toggle('select_show')
+  })
+
+  options.forEach((item, i) => {
+    item.addEventListener('click', (event) => {
+      if (item.classList.contains(CLASS_NAME_SELECTED)) {
+        return
+      }
+      update(item)
+      hide()
+    })
+  })
+
+  function update (option) {
+    options.forEach((item, i) => {
+      item.classList.remove(CLASS_NAME_SELECTED)
+    })
+
+    option = option.closest('.select__option')
+    if (selected) {
+      selected.classList.remove(CLASS_NAME_SELECTED)
+    }
+    option.classList.add(CLASS_NAME_SELECTED)
+    elToggle.textContent = option.textContent
+    elToggle.value = option.dataset.value
+    elToggle.dataset.index = option.dataset.index
+
+    return option.dataset.value
+  }
+
+  function hide () {
+    select.classList.remove('select_show')
+  }
 })()

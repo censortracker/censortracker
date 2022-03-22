@@ -62,6 +62,24 @@
           </div>
         </div>
 
+        <div id="selectRegistryRegion">
+          <div class="border-line"></div>
+          <div class="extension__title">Регион, для обхода специфичесих блокировок</div>
+          <div class="select__region select ">
+            <button type="button" class="select__toggle" name="region" value="auto" data-select="toggle" data-index="0"
+                    id="select_toggle">Определять автоматически (Россия)
+            </button>
+            <div class="select__dropdown">
+              <ul class="select__options" id="availableCountries">
+                <li class="select__option select__option_selected" data-select="option" data-value="auto"
+                    data-index="0">
+                  Определять автоматически
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
         <div id="controlledByOtherExtension" class="main-page__extension" hidden>
           <div class="extension__title" data-i18n-key="controlledByOtherExtensionTitle" data-i18n-render-prop="extensionName">
           </div>

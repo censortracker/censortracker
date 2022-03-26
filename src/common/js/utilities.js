@@ -190,3 +190,10 @@ export const matchDomainByWildcard = ({ pattern, domain }) => {
     return false
   }
 }
+
+/**
+ * Get UNIX timestamp
+ */
+export const timestamp = () => {
+  return Math.floor(Date.now() / 1000)
+}

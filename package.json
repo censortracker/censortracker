@@ -25,7 +25,7 @@
     "axios": "^0.26.1",
     "codemirror": "^5.60.0",
     "ip-range-check": "^0.2.0",
-    "validator": "^13.6.0"
+    "validator": "^13.7.0"
   },
   "devDependencies": {
     "@atomix/eslint-config": "^7.0.0-next.1",

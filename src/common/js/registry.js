@@ -1,43 +1,54 @@
 import axios from 'axios'
 
 import storage from './storage'
-import { extractHostnameFromUrl } from './utilities'
+import { extractHostnameFromUrl, timestamp } from './utilities'
 
-const CENSORTRACKER_CONFIG_API_URL = 'https://app.censortracker.org/api/config/'
-const SYNC_REGISTRY_TIMEOUT = (60 * 10) * 1000 // Every 10 minutes
+const CONFIG_API_URL = 'https://app.censortracker.org/api/config/'
+const SYNC_TIMEOUT = 60 * 30 * 1000 // Every 30 minutes
+const CONFIG_EXPIRATION_TIME = 60 * 60 * 3 // 3 Hours
 
 class Registry {
   constructor () {
     setInterval(async () => {
+      await this.sync()
       await this.sendReport()
       await this.clear()
-    }, 60 * 60 * 1000)
-
-    setInterval(async () => {
-      await this.sync()
-    }, SYNC_REGISTRY_TIMEOUT)
+    }, SYNC_TIMEOUT)
   }
 
-  /**
-   * Fetch config for the user's country from the server (GeoIP).
-   * If the config for the country is not present then local registry
-   * of banned websites will be empty.
-   * @returns {Promise<Object>}
-   */
+  _configExpired = async () => {
+    const { registryConfigTimestamp } = await storage.get({
+      registryConfigTimestamp: timestamp(),
+    })
+
+    return (timestamp() - registryConfigTimestamp) >= CONFIG_EXPIRATION_TIME
+  }
+
   getConfig = async () => {
+    const configExpired = await this._configExpired()
+    const { registryConfig } = await storage.get(['registryConfig'])
+
+    if (registryConfig && !configExpired) {
+      console.warn('Using cached registry config...')
+      return registryConfig
+    }
+
+    console.warn(`Fetching registry config from: ${CONFIG_API_URL}`)
+
     try {
-      const {
-        data: {
+      const { data } = await axios.get(CONFIG_API_URL, {
+        validateStatus: false,
+      })
+
+      if (data) {
+        const {
           specifics,
           registryUrl,
           countryDetails,
           reportEndpoint,
           customRegistryUrl,
-        } = {},
-        status,
-      } = await axios.get(CENSORTRACKER_CONFIG_API_URL)
+        } = data
 
-      if (status === 200) {
         const apis = []
 
         if (registryUrl) {
@@ -63,65 +74,78 @@ class Registry {
           }
         }
 
-        await storage.set({ countryDetails })
-
-        return {
+        const config = {
           apis,
           reportEndpoint,
           countryDetails,
         }
+
+        await storage.set({ countryDetails }) // FIXME
+        await storage.set({
+          registryConfig: config,
+          registryConfigTimestamp: timestamp(),
+        })
+
+        console.warn('Registry config cached successfully.')
+
+        return config
       }
       console.warn('CensorTracker do not support your country.')
+      return {}
     } catch (error) {
       console.error(error)
       return {}
     }
-    return {}
-  }
+  };
 
   isConfiguredForCountry = async ({ code }) => {
-    const { countryDetails: { isoA2Code } } = await this.getConfig()
+    const {
+      countryDetails: { isoA2Code },
+    } = await this.getConfig()
 
     return isoA2Code.toUpperCase() === code.toUpperCase()
-  }
+  };
 
   /**
-   * Save JSON data from the remote resource in local storage.
-   * @returns {Promise<boolean>} Returns true when succeed.
+   * Save JSON data from the remote resources in local storage.
    */
   sync = async () => {
-    const { apis, countryDetails: { name: countryName } } = await this.getConfig()
+    const { apis } = await this.getConfig()
 
-    if (apis.length === 0) {
-      console.error(`Sync error: API endpoints are not provided for: ${countryName}.`)
-      return false
-    }
+    if (apis.length > 0) {
+      for (const { storageKey, url } of apis) {
+        try {
+          const { data } = await axios.get(url)
 
-    for (const { storageKey, url } of apis) {
-      try {
-        const { data } = await axios.get(url)
+          console.warn(`${url} -> Fetched!`)
 
-        await storage.set({ [storageKey]: data })
-      } catch (error) {
-        console.error(`Error on fetching data from the API endpoint: ${url}`)
+          await storage.set({ [storageKey]: data })
+        } catch (error) {
+          console.error(`Error on fetching data from the API endpoint: ${url}`)
+        }
       }
+      console.warn('Registry synced successfully.')
+    } else {
+      console.error(
+        'Sync error: API endpoints are not provided for your country.',
+      )
     }
-    console.warn('Synced!')
     return true
-  }
+  };
 
   /**
    * Returns unregistered records from our custom registry.
    */
   getCustomRegistryRecords = async () => {
-    const { customRegistryRecords } = await storage.get({ customRegistryRecords: [] })
+    const { customRegistryRecords } = await storage.get({
+      customRegistryRecords: [],
+    })
 
     return customRegistryRecords
-  }
+  };
 
   /**
    * Return details of unregistered record by URL.
-   * @param url URL.
    */
   getCustomRegistryRecordByURL = async (url) => {
     const domain = extractHostnameFromUrl(url)
@@ -133,48 +157,49 @@ class Registry {
       }
     }
     return {}
-  }
+  };
 
   /**
    * Returns array of banned domains from the registry.
    */
   getDomains = async () => {
-    const { domains, blockedDomains, ignoredHosts, customProxiedDomains } = await storage.get({
-      domains: [],
-      blockedDomains: [],
-      ignoredHosts: [],
-      customProxiedDomains: [],
-    })
+    const { domains, blockedDomains, ignoredHosts, customProxiedDomains } =
+      await storage.get({
+        domains: [],
+        blockedDomains: [],
+        ignoredHosts: [],
+        customProxiedDomains: [],
+      })
 
     const domainsFound = domains && domains.length > 0
     const blockedDomainsFound = blockedDomains && blockedDomains.length > 0
-    const customProxiedDomainsFound = customProxiedDomains && customProxiedDomains.length > 0
+    const customProxiedDomainsFound =
+      customProxiedDomains && customProxiedDomains.length > 0
 
     if (domainsFound || blockedDomainsFound || customProxiedDomainsFound) {
       try {
-        return [...domains, ...blockedDomains, ...customProxiedDomains].filter((element) => {
-          return !ignoredHosts.includes(element)
-        })
+        return [...domains, ...blockedDomains, ...customProxiedDomains].filter(
+          (element) => {
+            return !ignoredHosts.includes(element)
+          },
+        )
       } catch (error) {
         console.log(error)
       }
     }
     return []
-  }
+  };
 
   /**
    * Checks if the given URL is in the registry of banned websites.
-   * @param url URL.
-   * @returns {Promise<{boolean}>}
    */
   contains = async (url) => {
     const hostname = extractHostnameFromUrl(url)
-    const { domains, ignoredHosts, blockedDomains } =
-      await storage.get({
-        domains: [],
-        ignoredHosts: [],
-        blockedDomains: [],
-      })
+    const { domains, ignoredHosts, blockedDomains } = await storage.get({
+      domains: [],
+      ignoredHosts: [],
+      blockedDomains: [],
+    })
 
     const domainsArray = domains.concat(blockedDomains)
 
@@ -183,38 +208,41 @@ class Registry {
       return true
     }
     return false
-  }
+  };
 
   /**
    * Checks if the given URL is in registry of ISO (Information Dissemination Organizer).
    * This method makes sense only for some countries (Russia).
-   * @param url URL.
-   * @returns {Promise<{}|*>}
    */
   retrieveInformationDisseminationOrganizerJSON = async (url) => {
     const hostname = extractHostnameFromUrl(url)
-    const { distributors } =
-      await storage.get({ distributors: [] })
+    const { distributors } = await storage.get({ distributors: [] })
 
-    const dataObject = distributors.find(({ url: innerUrl }) => (hostname === innerUrl))
+    const dataObject = distributors.find(
+      ({ url: innerUrl }) => hostname === innerUrl,
+    )
 
     if (dataObject) {
       return dataObject
     }
     return {}
-  }
+  };
 
   /**
    * Sends a report about sites that potentially can be banned by DPI-filters.
    */
   sendReport = async () => {
-    const { blockedDomains, alreadyReported, enableExtension, useDPIDetection } =
-      await storage.get({
-        blockedDomains: [],
-        alreadyReported: [],
-        enableExtension: false,
-        useDPIDetection: false,
-      })
+    const {
+      blockedDomains,
+      alreadyReported,
+      enableExtension,
+      useDPIDetection,
+    } = await storage.get({
+      blockedDomains: [],
+      alreadyReported: [],
+      enableExtension: false,
+      useDPIDetection: false,
+    })
 
     if (enableExtension && useDPIDetection) {
       const { reportEndpoint } = await this.getConfig()
@@ -238,11 +266,10 @@ class Registry {
         }
       }
     }
-  }
+  };
 
   /**
    * Clean local registry by schedule.
-   * @returns {Promise<void>}
    */
   clear = async () => {
     const day = new Date().getDate()
@@ -251,11 +278,10 @@ class Registry {
       await storage.set({ blockedDomains: [] })
       console.warn('Outdated domains has been removed.')
     }
-  }
+  };
 
   /**
    * Adds passed hostname to the local storage of banned domains.
-   * @param url Hostname.
    */
   add = async (url) => {
     const hostname = extractHostnameFromUrl(url)
@@ -267,7 +293,7 @@ class Registry {
     }
 
     await storage.set({ blockedDomains })
-  }
+  };
 }
 
 export default new Registry()

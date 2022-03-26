@@ -1,8 +1,10 @@
+import axios from 'axios'
 import validator from 'validator'
 
-import { proxy, registry, storage, translateDocument } from '@/common/js'
+import { proxy, registry, settings, storage, translateDocument } from '@/common/js'
 
 (async () => {
+  const currentBrowser = settings.getBrowser()
   const proxyingEnabled = await proxy.enabled()
   const useProxyCheckbox = document.getElementById('useProxyCheckbox')
   const proxyCustomOptions = document.getElementById('proxyCustomOptions')
@@ -119,27 +121,40 @@ import { proxy, registry, storage, translateDocument } from '@/common/js'
 
   document.addEventListener('click', (event) => {
     if (!event.target.closest('.select')) {
-      document.querySelectorAll('.select_show').forEach((select) => {
-        select.classList.remove('select_show')
-      })
+      document.querySelectorAll('.select_show')
+        .forEach((select) => {
+          select.classList.remove('select_show')
+        })
     }
   })
 
-  const countriesArray = [
-    { name: 'Россия', code: 'RU' },
-    { name: 'Беларусь', code: 'BY' },
-    { name: 'Украина', code: 'UA' },
-    { name: 'Турция', code: 'TR', i18nCode: '' },
-  ]
+  const getSupportedRegions = async () => {
+    const { supportedRegions } = await storage.get({ supportedRegions: [] })
+
+    if (supportedRegions.length === 0) {
+      const response = await axios.get('https://app.censortracker.org/api/countries/')
+
+      return response.data
+    }
+
+    return supportedRegions
+  }
+
+  const countriesArray = await getSupportedRegions()
   const availableCountries = document.getElementById('availableCountries')
 
-  for (const { name, code } of countriesArray) {
+  for (const { name, isoA2Code } of countriesArray) {
     const li = document.createElement('li')
 
-    li.innerText = name
+    try {
+      li.innerText = currentBrowser.i18n.getMessage(`countryName${isoA2Code}`)
+    } catch (error) {
+      li.innerText = name
+    }
+
     li.classList.add('select__option')
     li.setAttribute('data-select', 'option')
-    li.setAttribute('data-value', code)
+    li.setAttribute('data-value', isoA2Code)
     li.setAttribute('data-index', 1)
 
     availableCountries.append(li)
@@ -148,14 +163,14 @@ import { proxy, registry, storage, translateDocument } from '@/common/js'
   const CLASS_NAME_SELECTED = 'select__option_selected'
   const SELECTOR_OPTION_SELECTED = '.select__option_selected'
   const SELECTOR_DATA_TOGGLE = '[data-select="toggle"]'
-  const BTN_DRPDN = document.getElementById('select_toggle')
+  const dropdown = document.getElementById('select_toggle')
 
   const selected = document.querySelector(SELECTOR_OPTION_SELECTED)
   const select = document.querySelector('.select')
   const options = document.querySelectorAll('.select__option')
   const elToggle = document.querySelector(SELECTOR_DATA_TOGGLE)
 
-  BTN_DRPDN.addEventListener('click', (event) => {
+  dropdown.addEventListener('click', (event) => {
     select.classList.toggle('select_show')
   })
 

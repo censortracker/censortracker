@@ -365,5 +365,17 @@
   },
   "debugInfoTip": {
     "message": "Press <kbd>Control</kbd> + <kbd>D</kbd> to see debugging information."
+  },
+  "countryNameRU": {
+    "message": "Russia"
+  },
+  "countryNameBY": {
+    "message": "Belarus"
+  },
+  "countryNameUA": {
+    "message": "Ukraine"
+  },
+  "countryNameTR": {
+    "message": "Turkey"
   }
 }

@@ -369,5 +369,17 @@
   },
   "debugInfoTip": {
     "message": "Нажмите комбинацию клавиш <kbd>Control</kbd> + <kbd>D</kbd> чтобы увидеть отладочную информацию."
+  },
+  "countryNameRU": {
+    "message": "Россия"
+  },
+  "countryNameBY": {
+    "message": "Беларусь"
+  },
+  "countryNameUA": {
+    "message": "Украина"
+  },
+  "countryNameTR": {
+    "message": "Турция"
   }
 }

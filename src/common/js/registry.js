@@ -40,7 +40,7 @@ class Registry {
         validateStatus: false,
       })
 
-      if (data) {
+      if (Object.keys(data).length > 0) {
         const {
           specifics,
           registryUrl,

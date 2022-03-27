@@ -16,7 +16,7 @@ class Registry {
     }, SYNC_TIMEOUT)
   }
 
-  _configExpired = async () => {
+  configExpired = async () => {
     const { registryConfigTimestamp } = await storage.get({
       registryConfigTimestamp: timestamp(),
     })
@@ -25,7 +25,7 @@ class Registry {
   }
 
   getConfig = async () => {
-    const configExpired = await this._configExpired()
+    const configExpired = await this.configExpired()
     const { registryConfig } = await storage.get(['registryConfig'])
 
     if (registryConfig && !configExpired) {
@@ -96,14 +96,6 @@ class Registry {
       console.error(error)
       return {}
     }
-  };
-
-  isConfiguredForCountry = async ({ code }) => {
-    const {
-      countryDetails: { isoA2Code },
-    } = await this.getConfig()
-
-    return isoA2Code.toUpperCase() === code.toUpperCase()
   };
 
   /**

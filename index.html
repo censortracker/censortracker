@@ -153,7 +153,149 @@
   </div>
 </section>
 <hr>
+<section class="container py-5 px-md-5 my-md-5">
+    <h2 class="h2 py-5 text-center mb-4">Ответы на частые вопросы</h2>
+    <div class="accordion" id="accordionExample">
+      <div class="card">
+        <div class="card-header bg-transparent" id="headingOne">
+          <h2 class="mb-0">
+            <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+              У&nbsp;меня не&nbsp;открывается Twitter/YouTube/Facebook/Любой другой сайт из&nbsp;списка, что мне делать?
+            </button>
+          </h2>
+        </div>
 
+        <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">
+          <div class="card-body  text-secondary">
+            <ol>
+              <li>Проверьте установлена&nbsp;ли у&nbsp;вас последняя версия расширения.</li>
+              <li>Зайдите в&nbsp;продвинутые настройки и&nbsp;обновить базу данных (сделать это можно так&nbsp;&mdash; нажать на&nbsp;иконку расширения &mdash;&gt; нажать на&nbsp;шестеренку в&nbsp;правом верхнем углу внутри появившегося окна &mdash;&gt; продвинутые настройки &mdash;&gt; принудительно обновить локальную базу данных).</li>
+              <li>Внесите сайт в&nbsp;игнорируемые. Важно! Вносить нужно без протокола, то&nbsp;есть ссылка должна выглядеть так&nbsp;&mdash; example.com (Не&nbsp;забудьте нажать Enter после ввода, тем самым вы&nbsp;сохраните введенные изменения).</li>
+              <li>Если у&nbsp;вас включен VPN&nbsp;&mdash; то&nbsp;отключите его, это может мешать работе расширения.</li>
+            </ol>
+            <p>Если ничего из&nbsp;этого вам не&nbsp;помогло напишите нам!</p>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header bg-transparent" id="headingTwo">
+          <h2 class="mb-0">
+            <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+              Почему у&nbsp;меня на&nbsp;YouTube выскакивает предупреждение и&nbsp;мне не&nbsp;дают доступ к&nbsp;видеоматериалам?
+            </button>
+          </h2>
+        </div>
+        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+          <div class="card-body  text-secondary">
+            У&nbsp;нас пока только один proxy-сервер, который мы&nbsp;можем предоставить для использования на&nbsp;веб-сайтах, поэтому YouTube считает, что трафик идет подозрительно. Мы&nbsp;уже работаем над расширением серверов и&nbsp;в&nbsp;будущих обновлениях добавим больше локаций, что решит данную проблему.
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header bg-transparent" id="headingThree">
+          <h2 class="mb-0">
+            <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+              Могу&nbsp;ли я&nbsp;использовать этот плагин, чтобы зайти на&nbsp;заблокированный сайт не&nbsp;из&nbsp;списка Роскомнадзора?
+            </button>
+          </h2>
+        </div>
+        <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
+          <div class="card-body  text-secondary">
+            Да, вы&nbsp;спокойно можете это сделать (нажмите на&nbsp;иконку расширения &mdash;&gt; в&nbsp;правом верхнем углу щелкните на&nbsp;шестеренку &mdash;&gt; Проксируемые сайты). Важно! Вносить нужно без протокола, то&nbsp;есть вот так&nbsp;&mdash; example.com (Не&nbsp;забудьте нажать Enter после ввода, тем самым вы&nbsp;сохраните введенные изменения).
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header bg-transparent" id="heading4">
+          <h2 class="mb-0">
+            <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapse4" aria-expanded="false" aria-controls="collapse4">
+              Можно использовать свой Proxy сервер?
+            </button>
+          </h2>
+        </div>
+        <div id="collapse4" class="collapse" aria-labelledby="heading4" data-parent="#accordionExample">
+          <div class="card-body  text-secondary">
+            Да, расширение предоставляет вам такую возможность для этого зайдите в&nbsp;расширение (иконка расширения &mdash;&gt; нажать на&nbsp;шестеренку в&nbsp;правом верхнем углу внутри появившегося окна &mdash;&gt; Настройка Прокси). Расширение поддерживает только HTTPS прокси. Корректный вод выглядит так&nbsp;&mdash; в&nbsp;первое поле водим username:password@адрес, во&nbsp;втором поле вводим порт.
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header bg-transparent" id="heading5">
+          <h2 class="mb-0">
+            <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapse5" aria-expanded="false" aria-controls="collapse5">
+              Расширение имеет открытый исходный код?
+            </button>
+          </h2>
+        </div>
+        <div id="collapse5" class="collapse" aria-labelledby="heading5" data-parent="#accordionExample">
+          <div class="card-body  text-secondary">
+            Да. Разработчики регулярно работают над улучшением продукта. Вы&nbsp;можете прочитать что изменяется в&nbsp;каждой версии. Также вы&nbsp;сами можете поучаствовать в&nbsp;его <a href="https://github.com/roskomsvoboda/censortracker" target="_blank">разработке</a>.
+          </div>
+          </div>
+        </div>
+      <div class="card">
+        <div class="card-header bg-transparent" id="heading6">
+          <h2 class="mb-0">
+            <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapse6" aria-expanded="false" aria-controls="collapse6">
+              На&nbsp;некоторых сайтах мне пишет, что мой IP&nbsp;&mdash; Немецкий, все хорошо?
+            </button>
+          </h2>
+        </div>
+        <div id="collapse6" class="collapse" aria-labelledby="heading6" data-parent="#accordionExample">
+          <div class="card-body  text-secondary">
+            Да. Прокси-сервер предоставляет вам Немецкий IP&nbsp;для обхода блокировок.
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header bg-transparent" id="heading7">
+          <h2 class="mb-0">
+            <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapse7" aria-expanded="false" aria-controls="collapse7">
+              Какие браузеры поддерживают расширения?
+            </button>
+          </h2>
+        </div>
+        <div id="collapse7" class="collapse" aria-labelledby="heading7" data-parent="#accordionExample">
+          <div class="card-body  text-secondary">
+            Поддерживают&nbsp;&mdash; Chrome, Mozilla Firefox, Brave, Opera.<br />
+            НЕ&nbsp;поддерживают&nbsp;&mdash; Mozilla Android, Safari, LibreWolf.
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header bg-transparent" id="heading8">
+          <h2 class="mb-0">
+            <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapse8" aria-expanded="false" aria-controls="collapse8">
+              Где мне узнать про расширение подробнее?
+            </button>
+          </h2>
+        </div>
+        <div id="collapse8" class="collapse" aria-labelledby="heading8" data-parent="#accordionExample">
+          <div class="card-body  text-secondary">
+            Вот здесь&nbsp;&mdash; <a href="https://censortracker.org/" target="_blank">https://censortracker.org/</a>.
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header bg-transparent" id="heading9">
+          <h2 class="mb-0">
+            <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapse9" aria-expanded="false" aria-controls="collapse9">
+              Могу&nbsp;ли я&nbsp;связаться с&nbsp;вами, чтобы сообщить о&nbsp;проблеме?
+            </button>
+          </h2>
+        </div>
+        <div id="collapse9" class="collapse" aria-labelledby="heading9" data-parent="#accordionExample">
+          <div class="card-body  text-secondary">
+            Да, у&nbsp;нас есть <a href="https://t.me/CensorTracker_feedback" target="_blank">чат в&nbsp;Телеграм</a> для обсуждения найденных пользователями ошибками или обсуждения работы расширения.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+</section>
+<hr>
 <section class="container text-center py-5 px-md-5">
     <h2 class="h2 py-5 text-center mb-4">Поддерживаемые браузеры</h2>
     <div class="row mt-5">

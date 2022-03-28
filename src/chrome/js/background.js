@@ -195,13 +195,12 @@ const handleInstalled = async ({ reason }) => {
     })
   }
 
+  await settings.enableExtension()
   await settings.enableNotifications()
   await settings.disableDPIDetection()
 
   if (reasonsForSync.includes(reason)) {
     const synchronized = await registry.sync()
-
-    await settings.enableExtension()
 
     if (synchronized) {
       await proxy.setProxy()

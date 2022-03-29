@@ -1,13 +1,18 @@
+import axios from 'axios'
+
 import storage from './storage'
 import { extractHostnameFromUrl } from './utilities'
 
 const ipRangeCheck = require('ip-range-check')
 
+const IGNORE_API_URL = 'https://app.censortracker.org/api/ignore/'
+const IGNORE_FETCH_TIMEOUT = (60 * 30) * 1000
+const IGNORE_SAVE_INTERVAL = (60 * 30) * 1000
+
 class Ignore {
   constructor () {
     this._ignoredHosts = new Set()
     this._temporarilyIgnoredHosts = new Set()
-    this._ignoreSyncIntervalMs = (60 * 30) * 1000
     this._specialPurposeIPs = [
       '0.0.0.0/8',
       '10.0.0.0/8',
@@ -32,8 +37,25 @@ class Ignore {
     ]
 
     setInterval(async () => {
+      await this.fetch()
+    }, IGNORE_FETCH_TIMEOUT)
+
+    setInterval(async () => {
       await this.save()
-    }, this._ignoreSyncIntervalMs)
+    }, IGNORE_SAVE_INTERVAL)
+  }
+
+  fetch = async () => {
+    try {
+      const { data: domains } = await axios.get(IGNORE_API_URL)
+
+      if (domains.length > 0) {
+        domains.sort()
+        await storage.set({ ignoredHosts: domains })
+      }
+    } catch (error) {
+      console.warn('Fetching ignored domains...')
+    }
   }
 
   isSpecialPurposeIP = (ip) => {
@@ -72,6 +94,7 @@ class Ignore {
 
       if (!ignoredHosts.includes(hostname)) {
         ignoredHosts.push(hostname)
+        console.warn(`Adding ${hostname} to ignore`)
       }
 
       for (const item of ignoredHosts) {

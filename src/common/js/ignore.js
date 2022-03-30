@@ -5,40 +5,41 @@ import { extractHostnameFromUrl } from './utilities'
 
 const ipRangeCheck = require('ip-range-check')
 
-const IGNORE_API_URL = 'https://app.censortracker.org/api/ignore/'
-const IGNORE_FETCH_TIMEOUT = (60 * 30) * 1000
 const IGNORE_SAVE_INTERVAL = (60 * 30) * 1000
+const IGNORE_FETCH_INTERVAL = (60 * 15) * 1000
+const IGNORE_API_ENDPOINT_URI = 'https://app.censortracker.org/api/ignore/'
+
+const SPECIAL_PURPOSE_IPS = [
+  '0.0.0.0/8',
+  '10.0.0.0/8',
+  '100.64.0.0/10',
+  '127.0.0.0/8',
+  '169.254.0.0/16',
+  '172.16.0.0/12',
+  '192.168.0.0/16',
+  '198.51.100.0/24',
+  '203.0.113.0/24',
+  '224.0.0.0/4',
+  '240.0.0.0/4',
+  '::/128',
+  '::1/128',
+  '::/96',
+  '::ffff:/96',
+  '2001:db8::/32',
+  'fe80::/10',
+  'fec0::/10',
+  'fc00::/7',
+  'ff00::/8',
+]
 
 class Ignore {
   constructor () {
     this._ignoredHosts = new Set()
     this._temporarilyIgnoredHosts = new Set()
-    this._specialPurposeIPs = [
-      '0.0.0.0/8',
-      '10.0.0.0/8',
-      '100.64.0.0/10',
-      '127.0.0.0/8',
-      '169.254.0.0/16',
-      '172.16.0.0/12',
-      '192.168.0.0/16',
-      '198.51.100.0/24',
-      '203.0.113.0/24',
-      '224.0.0.0/4',
-      '240.0.0.0/4',
-      '::/128',
-      '::1/128',
-      '::/96',
-      '::ffff:/96',
-      '2001:db8::/32',
-      'fe80::/10',
-      'fec0::/10',
-      'fc00::/7',
-      'ff00::/8',
-    ]
 
     setInterval(async () => {
       await this.fetch()
-    }, IGNORE_FETCH_TIMEOUT)
+    }, IGNORE_FETCH_INTERVAL)
 
     setInterval(async () => {
       await this.save()
@@ -47,12 +48,14 @@ class Ignore {
 
   fetch = async () => {
     try {
-      const { data: domains } = await axios.get(IGNORE_API_URL)
+      const { data: domains } = await axios.get(IGNORE_API_ENDPOINT_URI)
+      const { ignoredHosts } = await storage.get({ ignoredHosts: [] })
 
-      if (domains.length > 0) {
-        domains.sort()
-        await storage.set({ ignoredHosts: domains })
+      for (const domain of domains) {
+        ignoredHosts.push(domain)
       }
+
+      await storage.set({ ignoredHosts })
     } catch (error) {
       console.warn('Fetching ignored domains...')
     }
@@ -60,7 +63,7 @@ class Ignore {
 
   isSpecialPurposeIP = (ip) => {
     try {
-      return ipRangeCheck(ip, this._specialPurposeIPs)
+      return ipRangeCheck(ip, SPECIAL_PURPOSE_IPS)
     } catch (error) {
       return false
     }

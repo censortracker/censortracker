@@ -168,11 +168,29 @@
     <h2 class="h2 py-5 text-center mb-4">Ответы на частые вопросы</h2>
     <div class="accordion" id="accordionExample">
         <div class="card">
+            <div class="card-header bg-transparent" id="heading0">
+                <h2 class="mb-0">
+                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse"
+                            data-target="#collapse0" aria-expanded="true" aria-controls="collapse0">
+                        Что ещё за суверенный рунет?
+                    </button>
+                </h2>
+            </div>
+
+            <div id="collapse0" class="collapse" aria-labelledby="heading0" data-parent="#accordionExample">
+                <div class="card-body  text-secondary">
+                    Вы можете подробнее почитать об этом в карточке <a
+                        href="https://roskomsvoboda.org/cards/card/o-suverennom-runete/" target="_blank">«Суверенизация
+                    Рунета». Что с ней не так?</a>
+                </div>
+            </div>
+        </div>
+        <div class="card">
             <div class="card-header bg-transparent" id="headingOne">
                 <h2 class="mb-0">
                     <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse"
                             data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                        У&nbsp;меня не&nbsp;открывается Twitter/YouTube/Facebook/Любой другой сайт из&nbsp;списка, что
+                        У&nbsp;меня не&nbsp;открывается Twitter/YouTube/Любой другой сайт, что
                         мне делать?
                     </button>
                 </h2>
@@ -383,47 +401,38 @@
 <hr>
 
 <section class="container text-center py-5 px-md-5">
-    <img src="static/img/quokka-logo.svg">
+    <img src="static/img/quokka-logo.svg" alt="CensorTracker">
     <h2 class="mt-5">Censor Tracker</h2>
     <ul class="lead list-unstyled">
         <li>
             <a href="https://chrome.google.com/webstore/detail/censor-tracker/gaidoampbkcknofoejhnhbhbhhifgdop/related"
                target="_blank">
-                <button class="btn btn-lg btn-primary download-btn"><img src="static/img/chrome.svg"> Установить в
-                    Chrome
+                <button class="btn btn-lg btn-primary download-btn">
+                    <img alt="Chrome" src="static/img/chrome.svg"> Установить в Chrome
                 </button>
             </a>
         </li>
-
         <li>
             <a href="https://addons.mozilla.org/en-US/firefox/addon/censor-tracker/" target="_blank">
-                <button class="btn btn-lg btn-primary download-btn"><img width="31" height="28" src="static/img/ff.svg">
-                    Установить в Firefox
+                <button class="btn btn-lg btn-primary download-btn">
+                    <img alt="Firefox" width="31" height="28" src="static/img/ff.svg"> Установить в Firefox
                 </button>
             </a>
         </li>
-        <li><a href="https://github.com/roskomsvoboda/censortracker/releases/" target="_blank">Скачать архив с
-            расширением</a></li>
+        <li>
+            <a href="https://github.com/roskomsvoboda/censortracker/releases/" target="_blank">
+                Скачать архив с расширением
+            </a>
+        </li>
     </ul>
-    <div class="row mt-5">
-        <div class="col-lg-4 offset-md-1">
-            <img src="static/img/opera.png">
-        </div>
-        <small class="col-lg-6 text-gray text-left text-small">
-            Мы не гарантируем работоспособность в Opera, но вы можете воспользоваться <a
-                href="https://addons.opera.com/ru/extensions/details/install-chrome-extensions/" target="_blank">официальным
-            расширением Opera</a> для установки расширений Chrome.
-
-            <br>
-            <br>
-        </small>
-    </div>
 </section>
 
 <hr>
 
 <footer class="text-center pt-4 pb-5">
-    <a href="https://roskomsvoboda.org/" target="_blank"><img src="static/img/rks.svg"></a>
+    <a href="https://roskomsvoboda.org/" target="_blank">
+        <img src="static/img/rks.svg">
+    </a>
 </footer>
 
 <!-- Bootstrap core JavaScript -->

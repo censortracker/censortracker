@@ -52,9 +52,10 @@ class Ignore {
       const { ignoredHosts } = await storage.get({ ignoredHosts: [] })
 
       for (const domain of domains) {
-        ignoredHosts.push(domain)
+        if (!ignoredHosts.includes(domain)) {
+          ignoredHosts.push(domain)
+        }
       }
-
       await storage.set({ ignoredHosts })
     } catch (error) {
       console.warn('Fetching ignored domains...')

@@ -1,3 +1,7 @@
+### 5.3.1.0
+
+- Fixed duplication in ignore
+
 ### 5.3.0.0
 
 - Fixed bugs

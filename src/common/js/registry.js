@@ -5,7 +5,7 @@ import { extractHostnameFromUrl, timestamp } from './utilities'
 
 const CONFIG_API_URL = 'https://app.censortracker.org/api/config/'
 const SYNC_TIMEOUT = 60 * 30 * 1000 // Every 30 minutes
-const CONFIG_EXPIRATION_TIME = 60 * 60 * 3 // 3 Hours
+const CONFIG_EXPIRATION_TIME = 60 * 60 * 3000 // 3 Hours
 
 class Registry {
   constructor () {

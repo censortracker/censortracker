@@ -1,3 +1,9 @@
+### 5.3.0.0
+
+- Fixed bugs
+- Improved performance
+- Add global ignore support
+
 ### 5.2.0.0
 
 - Fix config fetching mechanism

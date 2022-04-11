@@ -19,8 +19,8 @@ class Settings extends Browser {
       this.browser.browserAction.setIcon({ tabId, path })
       this.browser.browserAction.setTitle({ title, tabId })
     } else {
-      this.browser.pageAction.setIcon({ tabId, path })
-      this.browser.pageAction.setTitle({ title, tabId })
+      this.browser.action.setIcon({ tabId, path })
+      this.browser.action.setTitle({ title, tabId })
     }
   }
 

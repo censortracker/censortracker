@@ -1,9 +1,8 @@
-import { asynchrome } from '@/chrome/js/core'
 import { extractDecodedOriginUrl, proxy, translateDocument } from '@/common/js'
 
 (async () => {
   const originUrl = extractDecodedOriginUrl(window.location.href)
-  const [tab] = await asynchrome.tabs.query({ active: true, lastFocusedWindow: true })
+  const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true })
 
   translateDocument(document, { url: originUrl })
 

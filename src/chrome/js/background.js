@@ -19,14 +19,13 @@ import {
   handlerBeforeRequestPing,
   handleStartup,
 } from '../../common/js/handlers'
-import { asynchrome } from './core'
 
 chrome.runtime.onStartup.addListener(handleStartup)
 chrome.proxy.onProxyError.addListener(handleProxyError)
 chrome.storage.onChanged.addListener(handleIgnoredHostsChange)
 chrome.storage.onChanged.addListener(handleCustomProxiedDomainsChange)
 
-chrome.webRequest.onBeforeRequest.addListener(
+chrome.declarativeNetRequest.onBeforeRequest.addListener(
   handlerBeforeRequestPing, getRequestFilter({ http: true, https: true }),
   ['blocking'],
 )
@@ -83,7 +82,7 @@ const handleErrorOccurred = async ({ url, error, tabId }) => {
 
 const handleNotificationButtonClicked = async (notificationId, buttonIndex) => {
   if (buttonIndex === 0) {
-    const [tab] = await asynchrome.tabs.query({
+    const [tab] = await chrome.tabs.query({
       active: true,
       lastFocusedWindow: true,
     })
@@ -149,7 +148,7 @@ const showCooperationAcceptedWarning = async (url) => {
 
   if (showNotifications && !mutedForever.includes(hostname)) {
     if (!notifiedHosts.includes(hostname)) {
-      await asynchrome.notifications.create({
+      await chrome.notifications.create({
         type: 'basic',
         title: settings.getName(),
         priority: 2,
@@ -230,14 +229,14 @@ chrome.tabs.onCreated.addListener(handleTabCreate)
  */
 const handleStorageChanged = async ({ enableExtension, ignoredHosts, useProxy, useDPIDetection }, _areaName) => {
   if (useDPIDetection) {
-    const webRequestListenersActivate = chrome.webRequest.onErrorOccurred.hasListener(handleErrorOccurred) &&
-      chrome.webRequest.onBeforeRequest.hasListener(handleBeforeRequestRedirectToHttps)
+    const webRequestListenersActivate = chrome.declarativeNetRequest.onErrorOccurred.hasListener(handleErrorOccurred) &&
+      chrome.declarativeNetRequest.onBeforeRequest.hasListener(handleBeforeRequestRedirectToHttps)
 
     if (useDPIDetection.newValue === true && !webRequestListenersActivate) {
-      chrome.webRequest.onErrorOccurred.addListener(
+      chrome.declarativeNetRequest.onErrorOccurred.addListener(
         handleErrorOccurred, getRequestFilter({ http: true, https: true }),
       )
-      chrome.webRequest.onBeforeRequest.addListener(
+      chrome.declarativeNetRequest.onBeforeRequest.addListener(
         handleBeforeRequestRedirectToHttps, getRequestFilter({ http: true, https: false }),
         ['blocking'],
       )
@@ -245,8 +244,8 @@ const handleStorageChanged = async ({ enableExtension, ignoredHosts, useProxy, u
     }
 
     if (useDPIDetection.newValue === false && webRequestListenersActivate) {
-      chrome.webRequest.onErrorOccurred.removeListener(handleErrorOccurred)
-      chrome.webRequest.onBeforeRequest.removeListener(handleBeforeRequestRedirectToHttps)
+      chrome.declarativeNetRequest.onErrorOccurred.removeListener(handleErrorOccurred)
+      chrome.declarativeNetRequest.onBeforeRequest.removeListener(handleBeforeRequestRedirectToHttps)
       console.warn('WEBREQUEST LISTENERS REMOVED')
     }
   }
@@ -291,7 +290,6 @@ window.censortracker = {
   settings,
   errors,
   ignore,
-  asynchrome,
   storage,
   extractHostnameFromUrl,
 }

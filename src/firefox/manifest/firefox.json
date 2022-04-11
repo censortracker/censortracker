@@ -1,13 +1,25 @@
 {
   "version": "5.3.1.0",
+  "background": {
+    "scripts": [
+      "background.js"
+    ],
+    "persistent": true
+  },
   "browser_action": {
     "default_popup": "popup.html",
     "default_icon": "images/icons/128x128/default.png"
   },
-  "content_security_policy": "script-src 'self'; object-src 'self';",
   "browser_specific_settings": {
     "gecko": {
       "strict_min_version": "91.1.0"
     }
-  }
+  },
+  "content_security_policy": "script-src 'self'; object-src 'self';",
+  "manifest_version": 2,
+  "permissions": [
+    "<all_urls>",
+    "webRequest",
+    "webRequestBlocking"
+  ]
 }

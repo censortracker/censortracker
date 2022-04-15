@@ -51,7 +51,6 @@ const webpackConfig = {
 
   entry: {
     background: `./src/${BROWSER}/js/background.js`,
-    unavailable: `./src/${BROWSER}/js/ui/unavailable.js`,
     popup: './src/common/js/ui/popup.js',
     options: './src/common/js/ui/options.js',
     advanced_options: './src/common/js/ui/advanced_options.js',
@@ -137,21 +136,6 @@ const webpackConfig = {
       template: 'src/common/pages/popup.html',
       inject: true,
       chunks: ['popup'],
-      meta: contentSecurityPolicy,
-    }),
-    new HTMLWebpackPlugin({
-      title: EXTENSION_NAME,
-      filename: 'unavailable.html',
-      template: 'src/common/pages/unavailable.html',
-      inject: true,
-      chunks: ['unavailable'],
-      meta: contentSecurityPolicy,
-    }),
-    new HTMLWebpackPlugin({
-      filename: 'proxy_unavailable.html',
-      template: 'src/common/pages/proxy_unavailable.html',
-      inject: true,
-      chunks: ['unavailable'],
       meta: contentSecurityPolicy,
     }),
     new HTMLWebpackPlugin({

@@ -5,9 +5,6 @@ import { proxy, settings, storage, translateDocument } from '@/common/js';
   const currentBrowser = settings.getBrowser()
   const proxyingEnabled = await proxy.enabled()
   const proxyStatus = document.getElementById('proxyStatus')
-  const useDPIDetectionCheckbox = document.getElementById(
-    'useDPIDetectionCheckbox',
-  )
   const showNotificationsCheckbox = document.getElementById(
     'showNotificationsCheckbox',
   )
@@ -87,23 +84,5 @@ import { proxy, settings, storage, translateDocument } from '@/common/js';
     })
 
     showNotificationsCheckbox.checked = showNotifications
-  }
-
-  if (useDPIDetectionCheckbox) {
-    useDPIDetectionCheckbox.addEventListener(
-      'change',
-      async () => {
-        if (useDPIDetectionCheckbox.checked) {
-          await settings.enableDPIDetection()
-        } else {
-          await settings.disableDPIDetection()
-        }
-      },
-      false,
-    )
-
-    const { useDPIDetection } = await storage.get({ useDPIDetection: false })
-
-    useDPIDetectionCheckbox.checked = useDPIDetection
   }
 })()

@@ -241,12 +241,6 @@
       }
     }
   },
-  "optionsUseDPIDetection": {
-    "message": "Detect and Bypass DPI-filters"
-  },
-  "optionsUseDPIDetectionDescription": {
-    "message": "When this feature is turned on, the browser redirects all HTTP requests to HTTPS to make blocked websites abort the connection and spit out an error, based on which CensorTracker decides whether to proxy the website or not. This is experimental feature."
-  },
   "optionsPageTitle": {
     "message": "Options"
   },

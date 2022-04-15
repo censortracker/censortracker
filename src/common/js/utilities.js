@@ -57,51 +57,6 @@ export const extractHostnameFromUrl = (url) => {
 }
 
 /**
- * Enforce HTTP in for the passed URL.
- * @param url URL address.
- * @returns {*} URL with "http://" prefix.
- */
-export const enforceHttpConnection = (url) => {
-  return url.replace(/^https:/, 'http:')
-}
-
-/**
- * Enforce HTTPS for the passed URL.
- * @param url URL address.
- * @returns {*} URL with "https://" prefix.
- */
-export const enforceHttpsConnection = (url) => {
-  return url.replace(/^http:/, 'https:')
-}
-
-/**
- * Returns an object describing filters to apply to webRequest events.
- * @param http Include all HTTP resource to "urls" array.
- * @param https Include all HTTPS resource to "urls" array.
- * @param types This type is a string, which represents the context
- * in which a resource was fetched in a web request.
- * @returns {{urls: [], types: [string]}} Request filter.
- */
-export const getRequestFilter = ({ http = true, https = true, types = undefined } = {}) => {
-  // See: https://mzl.la/3tnkndy
-  const urls = []
-
-  if (types === undefined) {
-    types = ['main_frame']
-  }
-
-  if (http) {
-    urls.push('http://*/*')
-  }
-
-  if (https) {
-    urls.push('https://*/*')
-  }
-
-  return { urls, types }
-}
-
-/**
  * Search for target in array using binary search.
  * @param array Array for search.
  * @param target Target.

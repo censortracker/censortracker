@@ -36,14 +36,13 @@ class Ignore {
     }
   }
 
-  save = () => {
-    storage.get({ ignoredHosts: [] })
-      .then(({ ignoredHosts }) => {
-        for (const hostname of ignoredHosts) {
-          this._ignoredHosts.add(hostname)
-        }
-        console.log('All ignored domain saved!')
-      })
+  save = async () => {
+    const { ignoredHosts } = await storage.get({ ignoredHosts: [] })
+
+    for (const hostname of ignoredHosts) {
+      this._ignoredHosts.add(hostname)
+      console.log('All ignored domain saved!')
+    }
   }
 
   clear = async () => {

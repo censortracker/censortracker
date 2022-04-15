@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 import storage from './storage'
-import { extractHostnameFromUrl, timestamp } from './utilities'
+import * as utilities from './utilities'
 
 const CONFIG_API_URL = 'https://app.censortracker.org/api/config/'
 const SYNC_TIMEOUT = 60 * 30 * 1000 // Every 30 minutes
@@ -17,10 +17,10 @@ class Registry {
 
   configExpired = async () => {
     const { registryConfigTimestamp } = await storage.get({
-      registryConfigTimestamp: timestamp(),
+      registryConfigTimestamp: utilities.timestamp(),
     })
 
-    return (timestamp() - registryConfigTimestamp) >= CONFIG_EXPIRATION_TIME
+    return (utilities.timestamp() - registryConfigTimestamp) >= CONFIG_EXPIRATION_TIME
   }
 
   getConfig = async () => {
@@ -82,7 +82,7 @@ class Registry {
         await storage.set({ countryDetails }) // FIXME
         await storage.set({
           registryConfig: config,
-          registryConfigTimestamp: timestamp(),
+          registryConfigTimestamp: utilities.timestamp(),
         })
 
         console.warn('Registry config cached successfully.')
@@ -139,7 +139,7 @@ class Registry {
    * Return details of unregistered record by URL.
    */
   getCustomRegistryRecordByURL = async (url) => {
-    const domain = extractHostnameFromUrl(url)
+    const domain = utilities.extractHostnameFromUrl(url)
     const records = await this.getCustomRegistryRecords()
 
     for (const record of records) {
@@ -185,7 +185,7 @@ class Registry {
    * Checks if the given URL is in the registry of banned websites.
    */
   contains = async (url) => {
-    const hostname = extractHostnameFromUrl(url)
+    const hostname = utilities.extractHostnameFromUrl(url)
     const { domains, ignoredHosts, blockedDomains } = await storage.get({
       domains: [],
       ignoredHosts: [],
@@ -206,7 +206,7 @@ class Registry {
    * This method makes sense only for some countries (Russia).
    */
   retrieveInformationDisseminationOrganizerJSON = async (url) => {
-    const hostname = extractHostnameFromUrl(url)
+    const hostname = utilities.extractHostnameFromUrl(url)
     const { distributors } = await storage.get({ distributors: [] })
 
     const dataObject = distributors.find(
@@ -235,7 +235,7 @@ class Registry {
    * Adds passed hostname to the local storage of banned domains.
    */
   add = async (url) => {
-    const hostname = extractHostnameFromUrl(url)
+    const hostname = utilities.extractHostnameFromUrl(url)
     const { blockedDomains } = await storage.get({ blockedDomains: [] })
 
     if (!blockedDomains.includes(hostname)) {

@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 import storage from './storage'
-import { extractHostnameFromUrl } from './utilities'
+import * as utilities from './utilities'
 
 const IGNORE_SAVE_INTERVAL = (60 * 30) * 1000
 const IGNORE_FETCH_INTERVAL = (60 * 15) * 1000
@@ -51,7 +51,7 @@ class Ignore {
   }
 
   add = async (url) => {
-    const hostname = extractHostnameFromUrl(url)
+    const hostname = utilities.extractHostnameFromUrl(url)
 
     console.warn(`Added to ignore: ${url}`)
 
@@ -70,7 +70,7 @@ class Ignore {
   }
 
   contains = (url) => {
-    const hostname = extractHostnameFromUrl(url)
+    const hostname = utilities.extractHostnameFromUrl(url)
 
     if (this._ignoredHosts.has(hostname)) {
       console.warn(`Ignoring host: ${hostname}`)

@@ -1,7 +1,5 @@
 import {
-  extractHostnameFromUrl,
   ignore,
-  isValidURL,
   proxy,
   registry,
   settings,
@@ -13,6 +11,7 @@ import {
   handleProxyError,
   handleStartup,
 } from '@/common/js/handlers'
+import * as utilities from '@/common/js/utilities'
 
 chrome.runtime.onStartup.addListener(handleStartup)
 chrome.proxy.onProxyError.addListener(handleProxyError)
@@ -26,7 +25,7 @@ const handleNotificationButtonClicked = async (notificationId, buttonIndex) => {
       lastFocusedWindow: true,
     })
 
-    const hostname = extractHostnameFromUrl(tab.url)
+    const hostname = utilities.extractHostnameFromUrl(tab.url)
     const { mutedForever } = await storage.get({ mutedForever: [] })
 
     if (!mutedForever.find((item) => item === hostname)) {
@@ -49,7 +48,7 @@ const handleTabState = async (tabId, changeInfo, tab) => {
     const extensionEnabled = await settings.extensionEnabled()
     const proxyingEnabled = await proxy.enabled()
 
-    if (extensionEnabled && isValidURL(tab.url)) {
+    if (extensionEnabled && utilities.isValidURL(tab.url)) {
       if (ignore.contains(tab.url)) {
         return
       }
@@ -77,7 +76,7 @@ chrome.tabs.onActivated.addListener(handleTabState)
 chrome.tabs.onUpdated.addListener(handleTabState)
 
 const showCooperationAcceptedWarning = async (url) => {
-  const hostname = extractHostnameFromUrl(url)
+  const hostname = utilities.extractHostnameFromUrl(url)
   const { notifiedHosts, mutedForever, showNotifications } =
     await storage.get({
       notifiedHosts: [],

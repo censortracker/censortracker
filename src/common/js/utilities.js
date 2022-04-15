@@ -105,48 +105,6 @@ export const extractDecodedOriginUrl = (url, key = 'originUrl') => {
 }
 
 /**
- * Checks if the string is URL starting with http(s).
- * @param string URL.
- * @returns {boolean} true or false.
- */
-export const startsWithHttpHttps = (string) => {
-  try {
-    const url = new URL(string)
-    const allowedProtocols = ['http:', 'https:']
-
-    return allowedProtocols.includes(url.protocol)
-  } catch (error) {
-    return false
-  }
-}
-
-/**
- * Check if the pattern with wildcard matches the domain.
- * @param pattern Pattern with wildcard.
- * @param domain Target domain
- * @returns {boolean} true or false
- */
-export const matchDomainByWildcard = ({ pattern, domain }) => {
-  if (pattern.endsWith('.*')) {
-    pattern = `${pattern.slice(0, -2)}.[^.\\s]+`
-
-    if (!pattern.startsWith('*.')) {
-      pattern = `^${pattern}`
-    }
-  }
-
-  if (pattern.startsWith('*.')) {
-    pattern = `[^.\\s]+\\.${pattern.slice(2)}`
-  }
-
-  try {
-    return new RegExp(pattern).test(domain)
-  } catch (error) {
-    return false
-  }
-}
-
-/**
  * Get UNIX timestamp
  */
 export const timestamp = () => {

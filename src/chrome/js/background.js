@@ -14,7 +14,6 @@ import {
   handleProxyError,
   handleStartup,
 } from '../../common/js/handlers'
-import { asynchrome } from './core'
 
 chrome.runtime.onStartup.addListener(handleStartup)
 chrome.proxy.onProxyError.addListener(handleProxyError)
@@ -23,7 +22,7 @@ chrome.storage.onChanged.addListener(handleCustomProxiedDomainsChange)
 
 const handleNotificationButtonClicked = async (notificationId, buttonIndex) => {
   if (buttonIndex === 0) {
-    const [tab] = await asynchrome.tabs.query({
+    const [tab] = await chrome.tabs.query({
       active: true,
       lastFocusedWindow: true,
     })
@@ -89,7 +88,7 @@ const showCooperationAcceptedWarning = async (url) => {
 
   if (showNotifications && !mutedForever.includes(hostname)) {
     if (!notifiedHosts.includes(hostname)) {
-      await asynchrome.notifications.create({
+      await chrome.notifications.create({
         type: 'basic',
         title: settings.getName(),
         priority: 2,

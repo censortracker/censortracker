@@ -8,13 +8,12 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 const HTMLWebpackPlugin = require('html-webpack-plugin')
 const MergeJsonWebpackPlugin = require('merge-jsons-webpack-plugin')
 
-const EXTENSION_NAME = 'Censor Tracker'
+const EXTENSION_NAME = 'CensorTracker'
 
-function resolve (dir) {
+function resolve(dir) {
   return path.join(__dirname, dir)
 }
 
-const BUILDUP = process.env.BUILDUP || '1'
 const BROWSER = process.env.BROWSER
 const NODE_ENV = process.env.NODE_ENV || 'development'
 const PRODUCTION = NODE_ENV === 'production'
@@ -27,21 +26,6 @@ const contentSecurityPolicy = {
   'Content-Security-Policy': 'script-src \'self\'; object-src \'self\'; ' +
     'style-src \'self\' https://fonts.googleapis.com; ' +
     'font-src \'self\' https://fonts.gstatic.com ',
-}
-
-const updateVersionInManifest = () => {
-  const manifestFile = `./src/${BROWSER}/manifest/${BROWSER}.json`
-  const file = fs.readFileSync(resolve(manifestFile))
-  const object = JSON.parse(file)
-
-  const [major, minor, patch] = object.version.split('.')
-
-  object.version = `${major}.${minor}.${parseInt(patch) + 1}.0`
-  fs.writeFileSync(manifestFile, JSON.stringify(object, null, '  '))
-}
-
-if (BUILDUP === '1') {
-  updateVersionInManifest()
 }
 
 const webpackConfig = {
@@ -180,7 +164,7 @@ const webpackConfig = {
       files: [
         './src/common/manifest/base.json',
         `./src/${BROWSER}/manifest/${BROWSER}.json`,
-        `./src/common/manifest/environments/${NODE_ENV}.json`,
+        // `./src/common/manifest/environments/${NODE_ENV}.json`,
       ],
       output: {
         fileName: 'manifest.json',

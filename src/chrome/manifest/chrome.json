@@ -1,12 +1,23 @@
 {
-  "version": "5.3.1.0",
-  "permissions": [
-    "declarativeContent"
+  "version": "6.0.0.0",
+  "background": {
+    "service_worker": "background.js"
+  },
+  "host_permissions": [
+    "<all_urls>"
   ],
-  "page_action": {
+  "manifest_version": 3,
+  "action": {
     "default_name": "Censor Tracker",
     "default_popup": "popup.html",
     "default_icon": "images/icons/128x128/default.png"
   },
-  "content_security_policy": "object-src 'self'; script-src 'self' 'sha256-EmtrypMkEq0dFud+9u9fLPIo2VN6p0FvSrq0tWdOzBk=';"
+  "permissions": [
+    "alarms",
+    "declarativeContent",
+    "declarativeNetRequest"
+  ],
+  "content_security_policy": {
+    "extension_pages": "object-src 'self'; script-src 'self';"
+  }
 }

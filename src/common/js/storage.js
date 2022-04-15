@@ -1,9 +1,18 @@
-import { Browser } from './browser'
+const getBrowser = () => {
+  try {
+    browser.runtime.getBrowserInfo()
+    return browser
+  } catch (error) {
+    return chrome
+  }
+}
 
-class Storage extends Browser {
+const currentBrowser = getBrowser()
+
+class Storage {
   set = async (keys = {}) => {
     try {
-      await this.browser.storage.local.set(keys)
+      await currentBrowser.storage.local.set(keys)
       return true
     } catch (error) {
       console.error(error)
@@ -13,7 +22,7 @@ class Storage extends Browser {
 
   get = async (keys = {}) => {
     try {
-      return await this.browser.storage.local.get(keys)
+      return await currentBrowser.storage.local.get(keys)
     } catch (error) {
       console.error(error)
       return {}
@@ -22,7 +31,7 @@ class Storage extends Browser {
 
   clear = async () => {
     try {
-      await this.browser.storage.local.clear()
+      await currentBrowser.storage.local.clear()
       return true
     } catch (error) {
       console.error(error)
@@ -32,7 +41,7 @@ class Storage extends Browser {
 
   remove = async (keys = []) => {
     try {
-      await this.browser.storage.local.remove(keys)
+      await currentBrowser.storage.local.remove(keys)
       return true
     } catch (error) {
       console.error(error)

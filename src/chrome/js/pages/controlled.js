@@ -1,4 +1,3 @@
-import { asynchrome } from '@/chrome/js/core'
 import { proxy, translateDocument } from '@/common/js'
 
 (async () => {
@@ -14,8 +13,8 @@ import { proxy, translateDocument } from '@/common/js'
   const isProxyControlledByOtherExtensions = await proxy.controlledByOtherExtensions()
 
   if (isProxyControlledByOtherExtensions) {
-    const self = await asynchrome.management.getSelf()
-    const extensions = await asynchrome.management.getAll()
+    const self = await chrome.management.getSelf()
+    const extensions = await chrome.management.getAll()
 
     const extensionsWithProxyPermissions = extensions.filter(({ name, permissions }) => {
       return permissions.includes('proxy') && name !== self.name
@@ -47,7 +46,7 @@ import { proxy, translateDocument } from '@/common/js'
         const currentPage = window.location.pathname.split('/').pop()
 
         for (const { id } of extensionsWithProxyPermissions) {
-          await asynchrome.management.setEnabled(id, false)
+          await chrome.management.setEnabled(id, false)
         }
 
         if (currentPage.startsWith('controlled')) {

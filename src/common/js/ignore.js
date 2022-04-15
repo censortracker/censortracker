@@ -1,5 +1,3 @@
-import axios from 'axios'
-
 import storage from './storage'
 import * as utilities from './utilities'
 
@@ -22,7 +20,8 @@ class Ignore {
 
   fetch = async () => {
     try {
-      const { data: domains } = await axios.get(IGNORE_API_ENDPOINT_URI)
+      const response = await fetch(IGNORE_API_ENDPOINT_URI)
+      const { domains } = await response.json()
       const { ignoredHosts } = await storage.get({ ignoredHosts: [] })
 
       for (const domain of domains) {

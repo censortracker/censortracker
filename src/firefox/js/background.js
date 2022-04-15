@@ -1,7 +1,5 @@
 import {
-  extractHostnameFromUrl,
   ignore,
-  isValidURL,
   proxy,
   registry,
   settings,
@@ -14,6 +12,7 @@ import {
   handlerBeforeRequestPing,
   handleStartup,
 } from '@/common/js/handlers'
+import * as utilities from '@/common/js/utilities'
 
 browser.runtime.onStartup.addListener(handleStartup)
 browser.proxy.onError.addListener(handleProxyError)
@@ -66,7 +65,7 @@ const handleTabState = async (tabId, changeInfo, { url: tabUrl }) => {
   const extensionEnabled = await settings.extensionEnabled()
 
   if (changeInfo && changeInfo.status === browser.tabs.TabStatus.COMPLETE) {
-    if (extensionEnabled && isValidURL(tabUrl) && !ignore.contains(tabUrl)) {
+    if (extensionEnabled && utilities.isValidURL(tabUrl) && !ignore.contains(tabUrl)) {
       await checkProxyReadiness()
 
       const urlBlocked = await registry.contains(tabUrl)
@@ -104,7 +103,7 @@ const handleTabCreate = async ({ id }) => {
 browser.tabs.onCreated.addListener(handleTabCreate)
 
 const showCooperationAcceptedWarning = async (url) => {
-  const hostname = extractHostnameFromUrl(url)
+  const hostname = utilities.extractHostnameFromUrl(url)
   const { notifiedHosts, showNotifications } = await storage.get({
     notifiedHosts: new Set(),
     showNotifications: true,
@@ -218,5 +217,4 @@ window.censortracker = {
   settings,
   storage,
   ignore,
-  extractHostnameFromUrl,
 }

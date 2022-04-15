@@ -14,8 +14,7 @@
   },
   "permissions": [
     "alarms",
-    "declarativeContent",
-    "declarativeNetRequest"
+    "declarativeContent"
   ],
   "content_security_policy": {
     "extension_pages": "object-src 'self'; script-src 'self';"

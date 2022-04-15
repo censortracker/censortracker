@@ -1,6 +1,6 @@
+import * as utilities from '@/common/js/utilities'
+
 import {
-  extractHostnameFromUrl,
-  isExtensionUrl,
   proxy,
   registry,
   select,
@@ -140,10 +140,10 @@ import {
     active: true, lastFocusedWindow: true,
   })
 
-  const currentHostname = extractHostnameFromUrl(currentUrl)
+  const currentHostname = utilities.extractHostnameFromUrl(currentUrl)
 
   currentDomainBlocks.forEach((element) => {
-    if (isExtensionUrl(currentUrl)) {
+    if (utilities.isValidURL(currentUrl)) {
       const popupNewTabMessage = currentBrowser.i18n.getMessage('popupNewTabMessage')
 
       element.innerText = popupNewTabMessage

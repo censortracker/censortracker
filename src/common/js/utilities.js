@@ -1,6 +1,6 @@
 import validator from 'validator'
 
-export const isExtensionUrl = (url) => {
+const isExtensionUrl = (url) => {
   return url.startsWith('about:') ||
       url.startsWith('moz-extension:') ||
       url.startsWith('chrome-extension:')
@@ -34,7 +34,7 @@ const extractURLFromQueryParams = (url) => {
     const encodedUrl = searchParams.get('loadFor')
 
     if (encodedUrl) {
-      return window.atob(encodedUrl)
+      return atob(encodedUrl)
     }
   }
   return url
@@ -57,36 +57,6 @@ export const extractHostnameFromUrl = (url) => {
 }
 
 /**
- * Search for target in array using binary search.
- * @param array Array for search.
- * @param target Target.
- * @returns {boolean} true or false
- */
-export const arrayContains = (array, target) => {
-  if (Array.isArray(array)) {
-    array.sort()
-  }
-
-  let left = 0
-  let right = array.length - 1
-
-  while (left <= right) {
-    const mid = left + Math.floor((right - left) / 2)
-
-    if (array[mid] === target) {
-      return true
-    }
-
-    if (array[mid] < target) {
-      left = mid + 1
-    } else {
-      right = mid - 1
-    }
-  }
-  return false
-}
-
-/**
  * Extracts origin decoded URl.
  * @param url Chrome extension URl.
  * @param key Key.
@@ -98,7 +68,7 @@ export const extractDecodedOriginUrl = (url, key = 'originUrl') => {
     const searchParams = new URLSearchParams(params)
     const encodedHostname = searchParams.get(key)
 
-    return window.atob(encodedHostname)
+    return atob(encodedHostname)
   } catch (error) {
     return null
   }

@@ -69,16 +69,6 @@ We've tested CensorTracker on the following versions:
 - Mozilla Firefox 80 or higher
 - Google Chrome 80 or higher
 
-Docker
-------
-
-You can use `docker` to avoid installation of all the requirements globally:
-
-```bash
-~ docker-compose build
-~ docker-compose run ct npm run build:{BROWSER}
-```
-
 Installation
 ------------
 

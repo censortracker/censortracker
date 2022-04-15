@@ -51,14 +51,14 @@ const webpackConfig = {
 
   entry: {
     background: `./src/${BROWSER}/js/background.js`,
-    popup: './src/common/js/ui/popup.js',
-    options: './src/common/js/ui/options.js',
-    advanced_options: './src/common/js/ui/advanced_options.js',
-    proxy_options: './src/common/js/ui/proxy_options.js',
-    proxy_disabled: `./src/${BROWSER}/js/ui/proxy_disabled.js`,
-    ignore_editor: './src/common/js/ui/ignore_editor.js',
-    proxied_websites_editor: './src/common/js/ui/proxied_websites_editor.js',
-    translator: './src/common/js/ui/translator.js',
+    popup: './src/common/js/pages/popup.js',
+    options: './src/common/js/pages/options.js',
+    advanced_options: './src/common/js/pages/advanced_options.js',
+    proxy_options: './src/common/js/pages/proxy_options.js',
+    proxy_disabled: `./src/${BROWSER}/js/pages/proxy_disabled.js`,
+    ignore_editor: './src/common/js/pages/ignore_editor.js',
+    proxied_websites_editor: './src/common/js/pages/proxied_websites_editor.js',
+    translator: './src/common/js/pages/translator.js',
   },
 
   output: {
@@ -194,8 +194,8 @@ const webpackConfig = {
 }
 
 if (isFirefox) {
-  webpackConfig.entry.incognito_required = `./src/${BROWSER}/js/ui/incognito_required.js`
-  webpackConfig.entry.installed = './src/firefox/js/ui/installed.js'
+  webpackConfig.entry.incognito_required = `./src/${BROWSER}/js/pages/incognito_required.js`
+  webpackConfig.entry.installed = './src/firefox/js/pages/installed.js'
   webpackConfig.plugins.push(new HTMLWebpackPlugin({
     title: EXTENSION_NAME,
     filename: 'incognito_required_popup.html',
@@ -231,7 +231,7 @@ if (isFirefox) {
 }
 
 if (isChromium) {
-  webpackConfig.entry.controlled = `./src/${BROWSER}/js/ui/controlled.js`
+  webpackConfig.entry.controlled = `./src/${BROWSER}/js/pages/controlled.js`
   webpackConfig.plugins.push(new HTMLWebpackPlugin({
     title: EXTENSION_NAME,
     filename: 'proxy_options.html',

@@ -1,5 +1,3 @@
-import axios from 'axios'
-
 import { registry, storage } from '.'
 import { Browser } from './browser'
 
@@ -20,14 +18,13 @@ class Proxy extends Browser {
 
   fetchReserveConfig = async () => {
     try {
+      const response = await fetch(PROXY_CONFIG_API_URL)
       const {
-        data: {
-          server,
-          port,
-          pingHost,
-          pingPort,
-        } = {},
-      } = await axios.get(PROXY_CONFIG_API_URL)
+        server,
+        port,
+        pingHost,
+        pingPort,
+      } = await response.json()
 
       if (server && port && pingHost && pingPort) {
         const reserveProxyPingURI = `${pingHost}:${pingPort}`
@@ -219,17 +216,23 @@ class Proxy extends Browser {
   }
 
   ping = async () => {
-    const request = new XMLHttpRequest()
     const { reserveProxyPingURI } = await storage.get({
       reserveProxyPingURI: FALLBACK_PROXY_SERVER_PING_URI,
     })
 
     try {
-      request.open('GET', `http://${reserveProxyPingURI}`, true)
-      request.send(null)
+      await fetch(`http://${reserveProxyPingURI}`, {
+        method: 'POST',
+        headers: {
+          'Content-type': 'application/json; charset=UTF-8',
+        },
+        body: JSON.stringify({
+          type: 'ping',
+        }),
+      })
       console.warn(`Ping ${reserveProxyPingURI}`)
-    } catch (error) {
-      console.log(error)
+    } catch (_error) {
+      console.warn(`Ping ${reserveProxyPingURI} failed!`)
     }
   }
 

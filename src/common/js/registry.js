@@ -1,5 +1,3 @@
-import axios from 'axios'
-
 import storage from './storage'
 import * as utilities from './utilities'
 
@@ -35,9 +33,8 @@ class Registry {
     console.warn(`Fetching registry config from: ${CONFIG_API_URL}`)
 
     try {
-      const { data } = await axios.get(CONFIG_API_URL, {
-        validateStatus: false,
-      })
+      const response = await fetch(CONFIG_API_URL)
+      const data = await response.json()
 
       if (Object.keys(data).length > 0) {
         const {
@@ -106,11 +103,14 @@ class Registry {
     if (apis.length > 0) {
       for (const { storageKey, url } of apis) {
         try {
-          const { data } = await axios.get(url)
+          const response = await fetch(url)
+          const data = await response.json()
 
           console.warn(`${url} -> Fetched!`)
 
-          await storage.set({ [storageKey]: data })
+          await chrome.storage.local.set({ [storageKey]: data })
+
+          // await storage.set({ [storageKey]: data })
         } catch (error) {
           console.error(`Error on fetching data from the API endpoint: ${url}`)
         }

@@ -2,25 +2,8 @@
   "name": "Censor Tracker",
   "description": "Censor Tracker",
   "author": "Roskomsvoboda",
+  "default_locale": "en",
   "homepage_url": "https://censortracker.org/",
-  "permissions": [
-    "tabs",
-    "proxy",
-    "storage",
-    "activeTab",
-    "management",
-    "webRequest",
-    "notifications",
-    "unlimitedStorage",
-    "webRequestBlocking",
-    "<all_urls>"
-  ],
-  "background": {
-    "scripts": [
-      "background.min.js"
-    ],
-    "persistent": true
-  },
   "icons": {
     "16": "images/icons/16x16/default.png",
     "48": "images/icons/48x48/default.png",
@@ -30,6 +13,13 @@
     "page": "options.html",
     "open_in_tab": true
   },
-  "manifest_version": 2,
-  "default_locale": "en"
+  "permissions": [
+    "activeTab",
+    "management",
+    "notifications",
+    "proxy",
+    "storage",
+    "tabs",
+    "unlimitedStorage"
+  ]
 }

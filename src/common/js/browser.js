@@ -1,15 +1,13 @@
-import asynchrome from '@/chrome/js/core/asynchrome'
-
 /**
  * Returns browser API object.
- * @returns {Asynchrome|*}
+ * @returns {chrome|*}
  */
 const getBrowser = () => {
   try {
     browser.runtime.getBrowserInfo()
     return browser
   } catch (error) {
-    return asynchrome
+    return chrome
   }
 }
 

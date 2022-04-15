@@ -7,13 +7,12 @@ import {
   settings,
   storage,
 } from '@/common/js'
-
 import {
   handleCustomProxiedDomainsChange,
   handleIgnoredHostsChange,
   handleProxyError,
   handleStartup,
-} from '../../common/js/handlers'
+} from '@/common/js/handlers'
 
 chrome.runtime.onStartup.addListener(handleStartup)
 chrome.proxy.onProxyError.addListener(handleProxyError)

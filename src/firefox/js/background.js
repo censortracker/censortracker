@@ -7,14 +7,13 @@ import {
   settings,
   storage,
 } from '@/common/js'
-
 import {
   handleCustomProxiedDomainsChange,
   handleIgnoredHostsChange,
   handleProxyError,
   handlerBeforeRequestPing,
   handleStartup,
-} from '../../common/js/handlers'
+} from '@/common/js/handlers'
 
 browser.runtime.onStartup.addListener(handleStartup)
 browser.proxy.onError.addListener(handleProxyError)

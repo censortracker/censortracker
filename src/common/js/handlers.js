@@ -18,7 +18,7 @@ export const handleProxyError = (details) => {
 
 export const handleIgnoredHostsChange = async ({ ignoredHosts }, _areaName) => {
   if (ignoredHosts && ignoredHosts.newValue) {
-    ignore.save()
+    await ignore.save()
     await proxy.setProxy()
   }
 }

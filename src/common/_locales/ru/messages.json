@@ -245,12 +245,6 @@
       }
     }
   },
-  "optionsUseDPIDetection": {
-    "message": "Обнаружение и обход DPI-фильтров"
-  },
-  "optionsUseDPIDetectionDescription": {
-    "message": "Мы поможем вам обойти блокировку некоторых веб-сайтов, заблокированных в обход реестра (экспериментальная функция)."
-  },
   "optionsPageTitle": {
     "message": "Настройки"
   },

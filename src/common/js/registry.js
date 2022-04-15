@@ -11,7 +11,6 @@ class Registry {
   constructor () {
     setInterval(async () => {
       await this.sync()
-      await this.sendReport()
       await this.clear()
     }, SYNC_TIMEOUT)
   }
@@ -218,46 +217,6 @@ class Registry {
       return dataObject
     }
     return {}
-  };
-
-  /**
-   * Sends a report about sites that potentially can be banned by DPI-filters.
-   */
-  sendReport = async () => {
-    const {
-      blockedDomains,
-      alreadyReported,
-      enableExtension,
-      useDPIDetection,
-    } = await storage.get({
-      blockedDomains: [],
-      alreadyReported: [],
-      enableExtension: false,
-      useDPIDetection: false,
-    })
-
-    if (enableExtension && useDPIDetection) {
-      const { reportEndpoint } = await this.getConfig()
-
-      for (const domain of blockedDomains) {
-        if (!alreadyReported.includes(domain)) {
-          const userAgent = navigator.userAgent
-
-          axios.post(
-            reportEndpoint,
-            { domain, userAgent },
-            {
-              headers: {
-                'Content-Type': 'application/json',
-              },
-            },
-          )
-          alreadyReported.push(domain)
-          await storage.set({ alreadyReported })
-          console.warn(`Reported new domain: ${domain}`)
-        }
-      }
-    }
   };
 
   /**

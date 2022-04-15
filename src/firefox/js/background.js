@@ -1,8 +1,5 @@
 import {
-  enforceHttpConnection,
-  errors,
   extractHostnameFromUrl,
-  getRequestFilter,
   ignore,
   isValidURL,
   proxy,
@@ -12,7 +9,6 @@ import {
 } from '@/common/js'
 
 import {
-  handleBeforeRequestRedirectToHttps,
   handleCustomProxiedDomainsChange,
   handleIgnoredHostsChange,
   handleProxyError,
@@ -25,12 +21,6 @@ browser.proxy.onError.addListener(handleProxyError)
 browser.storage.onChanged.addListener(handleIgnoredHostsChange)
 browser.storage.onChanged.addListener(handleCustomProxiedDomainsChange)
 
-browser.webRequest.onBeforeRequest.addListener(
-  handlerBeforeRequestPing,
-  getRequestFilter({ http: true, https: true }),
-  ['blocking'],
-)
-
 const handleBeforeRequestCheckIncognitoAccess = async (_details) => {
   const allowed = await browser.extension.isAllowedIncognitoAccess()
 
@@ -40,73 +30,16 @@ const handleBeforeRequestCheckIncognitoAccess = async (_details) => {
 }
 
 browser.webRequest.onBeforeRequest.addListener(
-  handleBeforeRequestCheckIncognitoAccess,
-  getRequestFilter({ http: true, https: true }),
+  handlerBeforeRequestPing,
+  { urls: ['<all_urls>'] },
   ['blocking'],
 )
 
-/**
- * Fires when a request could not be processed successfully.
- * @param url Current URL address.
- * @param error The error description.
- * @param tabId The ID of the tab in which the request takes place.
- * @returns {undefined} Undefined.
- */
-const handleErrorOccurred = async ({ error, url, tabId }) => {
-  const encodedUrl = window.btoa(url)
-  const foundInRegistry = await registry.contains(url)
-  const proxyingEnabled = await proxy.enabled()
-  const { proxyError, connectionError } = errors.determineError(error)
-  const allowedIncognitoAccess = await browser.extension.isAllowedIncognitoAccess()
-
-  if (ignore.contains(url)) {
-    return
-  }
-
-  if (proxyError) {
-    browser.tabs.update(tabId, {
-      url: browser.runtime.getURL(
-        `proxy_unavailable.html?originUrl=${encodedUrl}`,
-      ),
-    })
-    return
-  }
-
-  if (connectionError) {
-    if (!allowedIncognitoAccess) {
-      browser.tabs.update(tabId, {
-        url: browser.runtime.getURL(
-          `incognito_required_tab.html?originUrl=${encodedUrl}`,
-        ),
-      })
-      return
-    }
-
-    if (!proxyingEnabled) {
-      browser.tabs.update(tabId, {
-        url: browser.runtime.getURL(
-          `proxy_disabled.html?originUrl=${encodedUrl}`,
-        ),
-      })
-      return
-    }
-
-    if (!foundInRegistry) {
-      await registry.add(url)
-      await proxy.setProxy()
-
-      browser.tabs.update(tabId, {
-        url: browser.runtime.getURL(`unavailable.html?originUrl=${encodedUrl}`),
-      })
-      return
-    }
-  }
-
-  await ignore.add(url, { temporary: foundInRegistry })
-  await browser.tabs.update(tabId, {
-    url: enforceHttpConnection(url),
-  })
-}
+browser.webRequest.onBeforeRequest.addListener(
+  handleBeforeRequestCheckIncognitoAccess,
+  { urls: ['<all_urls>'] },
+  ['blocking'],
+)
 
 /**
  * Check if proxy is ready to use.
@@ -245,29 +178,7 @@ browser.runtime.onInstalled.addListener(handleInstalled)
  * @param changes Object describing the change. This contains one property for each key that changed.
  * @param _areaName The name of the storage area ("sync", "local") to which the changes were made.
  */
-const handleStorageChanged = async ({ enableExtension, ignoredHosts, useProxy, useDPIDetection }, _areaName) => {
-  if (useDPIDetection) {
-    const webRequestListenersActivate = browser.webRequest.onErrorOccurred.hasListener(handleErrorOccurred) &&
-      browser.webRequest.onBeforeRequest.hasListener(handleBeforeRequestRedirectToHttps)
-
-    if (useDPIDetection.newValue === true && !webRequestListenersActivate) {
-      browser.webRequest.onErrorOccurred.addListener(
-        handleErrorOccurred, getRequestFilter({ http: true, https: true }),
-      )
-      browser.webRequest.onBeforeRequest.addListener(
-        handleBeforeRequestRedirectToHttps, getRequestFilter({ http: true, https: false }),
-        ['blocking'],
-      )
-      console.warn('WEBREQUEST LISTENERS ENABLED')
-    }
-
-    if (useDPIDetection.newValue === false && webRequestListenersActivate) {
-      browser.webRequest.onErrorOccurred.removeListener(handleErrorOccurred)
-      browser.webRequest.onBeforeRequest.removeListener(handleBeforeRequestRedirectToHttps)
-      console.warn('WEBREQUEST LISTENERS REMOVED')
-    }
-  }
-
+const handleStorageChanged = async ({ enableExtension, ignoredHosts, useProxy }, _areaName) => {
   if (enableExtension) {
     const newValue = enableExtension.newValue
     const oldValue = enableExtension.oldValue
@@ -307,7 +218,6 @@ window.censortracker = {
   registry,
   settings,
   storage,
-  errors,
   ignore,
   extractHostnameFromUrl,
 }

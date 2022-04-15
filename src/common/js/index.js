@@ -8,6 +8,5 @@ export {
   extractHostnameFromUrl,
   isValidURL,
   isExtensionUrl,
-  startsWithHttpHttps,
   extractDecodedOriginUrl,
 } from './utilities'

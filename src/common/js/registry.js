@@ -108,9 +108,7 @@ class Registry {
 
           console.warn(`${url} -> Fetched!`)
 
-          await chrome.storage.local.set({ [storageKey]: data })
-
-          // await storage.set({ [storageKey]: data })
+          await storage.set({ [storageKey]: data })
         } catch (error) {
           console.error(`Error on fetching data from the API endpoint: ${url}`)
         }

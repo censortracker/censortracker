@@ -80,3 +80,14 @@ export const extractDecodedOriginUrl = (url, key = 'originUrl') => {
 export const timestamp = () => {
   return Math.floor(Date.now() / 1000)
 }
+
+/**
+ * Get browser api
+ */
+export const getBrowser = () => {
+  try {
+    return browser
+  } catch (error) {
+    return chrome
+  }
+}

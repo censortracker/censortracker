@@ -1,4 +1,4 @@
-import { translateDocument } from '@/common/scripts'
+import { translateDocument } from '@/common/scripts/utilities'
 
 (() => {
   const howToGrantIncognitoAccess = document.getElementById('howToGrantIncognitoAccess')
@@ -8,6 +8,5 @@ import { translateDocument } from '@/common/scripts'
       url: browser.i18n.getMessage('howToGrantIncognitoAccessLink'),
     })
   })
-
   translateDocument(document)
 })()

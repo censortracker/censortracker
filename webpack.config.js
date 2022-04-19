@@ -83,7 +83,6 @@ const webConfig = {
     options: './src/common/scripts/pages/options.js',
     advanced_options: './src/common/scripts/pages/advanced_options.js',
     proxy_options: './src/common/scripts/pages/proxy_options.js',
-    proxy_disabled: `./src/${BROWSER}/scripts/pages/proxy_disabled.js`,
     ignore_editor: './src/common/scripts/pages/ignore_editor.js',
     proxied_websites_editor: './src/common/scripts/pages/proxied_websites_editor.js',
     translator: './src/common/scripts/pages/translator.js',
@@ -178,13 +177,6 @@ const webConfig = {
       template: 'src/common/pages/proxied_websites_editor.html',
       inject: true,
       chunks: ['proxied_websites_editor'],
-      meta: contentSecurityPolicy,
-    }),
-    new HTMLWebpackPlugin({
-      filename: 'proxy_disabled.html',
-      template: 'src/common/pages/proxy_disabled.html',
-      inject: true,
-      chunks: ['proxy_disabled'],
       meta: contentSecurityPolicy,
     }),
     new HTMLWebpackPlugin({

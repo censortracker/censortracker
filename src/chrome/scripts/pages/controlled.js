@@ -1,4 +1,5 @@
-import { proxy, translateDocument } from '@/common/scripts'
+import proxy from '@/common/scripts/proxy'
+import { translateDocument } from '@/common/scripts/utilities'
 
 (async () => {
   translateDocument(document)

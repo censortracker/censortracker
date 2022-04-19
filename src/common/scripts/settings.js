@@ -1,8 +1,13 @@
-import { Browser } from './browser'
 import * as storage from './storage'
+import * as utilities from './utilities'
 
-class Settings extends Browser {
-  getName = () => this.manifest.name;
+class Settings {
+  constructor () {
+    this.browser = utilities.getBrowser()
+    this.isFirefox = utilities.isFirefox()
+  }
+
+  getName = () => 'CensorTracker';
 
   getDangerIcon = () => this.browser.runtime.getURL('images/icons/128x128/danger.png');
 
@@ -13,7 +18,7 @@ class Settings extends Browser {
   getBlockedIcon = () => this.browser.runtime.getURL('images/icons/128x128/blocked.png');
 
   changePageIcon = (tabId, path) => {
-    const title = `${this.manifest.name} v${this.manifest.version}`
+    const title = this.getName()
 
     if (this.isFirefox) {
       this.browser.browserAction.setIcon({ tabId, path })

@@ -142,8 +142,6 @@ import { registry, settings } from '..'
 
   const currentHostname = extractHostnameFromUrl(currentUrl)
 
-  console.error(currentHostname, isValidURL(currentHostname))
-
   if (isValidURL(currentUrl)) {
     currentDomainHeader.innerText = currentHostname
   } else {

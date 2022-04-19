@@ -12,7 +12,7 @@ import {
 (async () => {
   translateDocument(document)
   const thisIsFirefox = settings.isFirefox
-  const currentBrowser = settings.getBrowser()
+  const currentBrowser = settings.browser
   const uiText = {
     ori: {
       found: {

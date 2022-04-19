@@ -2,7 +2,7 @@ import { proxy, settings, storage, translateDocument } from '@/common/js';
 
 (async () => {
   translateDocument(document)
-  const currentBrowser = settings.getBrowser()
+  const currentBrowser = settings.browser
   const proxyingEnabled = await proxy.enabled()
   const proxyStatus = document.getElementById('proxyStatus')
   const showNotificationsCheckbox = document.getElementById(

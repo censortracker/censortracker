@@ -1,15 +1,11 @@
-/**
- * Returns browser API object.
- * @returns {chrome|*}
- */
 const getBrowser = () => {
-  try {
-    browser.runtime.getBrowserInfo()
+  if (typeof browser !== 'undefined') {
     return browser
-  } catch (error) {
-    return chrome
   }
+  return chrome
 }
+
+const browser = getBrowser()
 
 /**
  * Returns true if browser is Firefox.

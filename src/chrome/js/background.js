@@ -3,7 +3,6 @@ import {
   proxy,
   registry,
   settings,
-  storage,
 } from '@/common/js'
 import {
   handleCustomProxiedDomainsChange,
@@ -12,6 +11,7 @@ import {
   handlerBeforeRequestPing,
   handleStartup,
 } from '@/common/js/handlers'
+import * as storage from '@/common/js/storage'
 import * as utilities from '@/common/js/utilities'
 
 chrome.runtime.onStartup.addListener(handleStartup)

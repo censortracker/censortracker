@@ -1,8 +1,8 @@
 import {
   ignore,
   proxy,
-  storage,
 } from '.'
+import * as storage from './storage'
 
 export const handlerBeforeRequestPing = async (_details) => {
   await proxy.ping()

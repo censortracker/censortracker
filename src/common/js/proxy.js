@@ -1,5 +1,6 @@
-import { registry, storage } from '.'
+import { registry } from '.'
 import { Browser } from './browser'
+import * as storage from './storage'
 
 const PROXY_CONFIG_API_URL = 'https://app.censortracker.org/api/proxy-config/'
 const FALLBACK_PROXY_SERVER_HOST = 'proxy.roskomsvoboda.org'

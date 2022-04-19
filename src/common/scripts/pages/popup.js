@@ -13,35 +13,35 @@ import {
 
 (async () => {
   translateDocument(document)
-  const currentBrowser = getBrowser()
+  const Browser = getBrowser()
   const uiText = {
     ori: {
       found: {
-        title: currentBrowser.i18n.getMessage('distrTitle'),
+        title: Browser.i18n.getMessage('distrTitle'),
         statusIcon: 'images/icons/status/icon_danger.svg',
-        detailsText: currentBrowser.i18n.getMessage('distrDesc'),
+        detailsText: Browser.i18n.getMessage('distrDesc'),
         detailsClasses: ['text-warning'],
         cooperationRefused: {
-          message: currentBrowser.i18n.getMessage('distrCoopRefused'),
+          message: Browser.i18n.getMessage('distrCoopRefused'),
 
         },
       },
       notFound: {
         statusIcon: 'images/icons/status/icon_ok.svg',
-        title: currentBrowser.i18n.getMessage('notDistrTitle'),
-        detailsText: currentBrowser.i18n.getMessage('notDistrDesc'),
+        title: Browser.i18n.getMessage('notDistrTitle'),
+        detailsText: Browser.i18n.getMessage('notDistrDesc'),
       },
     },
     restrictions: {
       true: {
         statusIcon: 'images/icons/status/icon_info.svg',
-        title: currentBrowser.i18n.getMessage('blockedTitle'),
-        detailsText: currentBrowser.i18n.getMessage('blockedDesc'),
+        title: Browser.i18n.getMessage('blockedTitle'),
+        detailsText: Browser.i18n.getMessage('blockedDesc'),
       },
       false: {
         statusIcon: 'images/icons/status/icon_ok.svg',
-        title: currentBrowser.i18n.getMessage('notBlockedTitle'),
-        detailsText: currentBrowser.i18n.getMessage('notBlockedDesc'),
+        title: Browser.i18n.getMessage('notBlockedTitle'),
+        detailsText: Browser.i18n.getMessage('notBlockedDesc'),
       },
     },
   }
@@ -99,7 +99,7 @@ import {
   }
 
   const changeStatusImage = (imageName) => {
-    const imageSrc = currentBrowser.runtime.getURL(`images/icons/512x512/${imageName}.png`)
+    const imageSrc = Browser.runtime.getURL(`images/icons/512x512/${imageName}.png`)
 
     statusImage.setAttribute('src', imageSrc)
   }
@@ -119,14 +119,14 @@ import {
     }
 
     if (event.target.matches('#openOptionsPage')) {
-      await currentBrowser.runtime.openOptionsPage()
+      await Browser.runtime.openOptionsPage()
     }
   })
 
   const extensionEnabled = await settings.extensionEnabled()
 
   if (extensionEnabled && isFirefox()) {
-    const allowedIncognitoAccess = await currentBrowser.extension.isAllowedIncognitoAccess()
+    const allowedIncognitoAccess = await Browser.extension.isAllowedIncognitoAccess()
     const { privateBrowsingPermissionsRequired } = await storage.get({
       privateBrowsingPermissionsRequired: false,
     })
@@ -136,7 +136,7 @@ import {
     }
   }
 
-  const [{ url: currentUrl }] = await currentBrowser.tabs.query({
+  const [{ url: currentUrl }] = await Browser.tabs.query({
     active: true, lastFocusedWindow: true,
   })
 
@@ -145,7 +145,7 @@ import {
   if (isValidURL(currentUrl)) {
     currentDomainHeader.innerText = currentHostname
   } else {
-    const popupNewTabMessage = currentBrowser.i18n.getMessage('popupNewTabMessage')
+    const popupNewTabMessage = Browser.i18n.getMessage('popupNewTabMessage')
 
     currentDomainHeader.innerText = popupNewTabMessage
 
@@ -234,8 +234,8 @@ import {
         descriptionPlaceholder = 'blockedDesc'
       }
 
-      restrictionType.innerText = currentBrowser.i18n.getMessage(titlePlaceholder)
-      restrictionDescription.innerText = currentBrowser.i18n.getMessage(descriptionPlaceholder)
+      restrictionType.innerText = Browser.i18n.getMessage(titlePlaceholder)
+      restrictionDescription.innerText = Browser.i18n.getMessage(descriptionPlaceholder)
     }
   } else {
     changeStatusImage('disabled')

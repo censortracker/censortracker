@@ -1,7 +1,5 @@
-import {
-  ignore,
-  proxy,
-} from '.'
+import ignore from './ignore'
+import proxy from './proxy'
 import * as storage from './storage'
 
 export const handlerBeforeRequestPing = async (_details) => {

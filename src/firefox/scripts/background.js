@@ -1,16 +1,14 @@
 import {
-  ignore,
-  proxy,
-  registry,
-  settings,
-} from '@/common/scripts'
-import {
   handleCustomProxiedDomainsChange,
   handleIgnoredHostsChange,
   handleProxyError,
   handlerBeforeRequestPing,
   handleStartup,
 } from '@/common/scripts/handlers'
+import ignore from '@/common/scripts/ignore'
+import proxy from '@/common/scripts/proxy'
+import registry from '@/common/scripts/registry'
+import settings from '@/common/scripts/settings'
 import * as storage from '@/common/scripts/storage'
 import * as utilities from '@/common/scripts/utilities'
 

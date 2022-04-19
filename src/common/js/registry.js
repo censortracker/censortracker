@@ -13,7 +13,7 @@ class Registry {
     }, SYNC_TIMEOUT)
   }
 
-  configExpired = async () => {
+  async configExpired () {
     const { registryConfigTimestamp } = await storage.get({
       registryConfigTimestamp: utilities.timestamp(),
     })
@@ -21,7 +21,7 @@ class Registry {
     return (utilities.timestamp() - registryConfigTimestamp) >= CONFIG_EXPIRATION_TIME
   }
 
-  getConfig = async () => {
+  async getConfig () {
     const configExpired = await this.configExpired()
     const { registryConfig } = await storage.get(['registryConfig'])
 
@@ -97,7 +97,7 @@ class Registry {
   /**
    * Save JSON data from the remote resources in local storage.
    */
-  sync = async () => {
+  async sync () {
     const { apis } = await this.getConfig()
 
     if (apis.length > 0) {
@@ -125,7 +125,7 @@ class Registry {
   /**
    * Returns unregistered records from our custom registry.
    */
-  getCustomRegistryRecords = async () => {
+  async getCustomRegistryRecords () {
     const { customRegistryRecords } = await storage.get({
       customRegistryRecords: [],
     })
@@ -136,7 +136,7 @@ class Registry {
   /**
    * Return details of unregistered record by URL.
    */
-  getCustomRegistryRecordByURL = async (url) => {
+  async getCustomRegistryRecordByURL (url) {
     const domain = utilities.extractHostnameFromUrl(url)
     const records = await this.getCustomRegistryRecords()
 
@@ -151,7 +151,7 @@ class Registry {
   /**
    * Returns array of banned domains from the registry.
    */
-  getDomains = async () => {
+  async getDomains () {
     const { domains, blockedDomains, ignoredHosts, customProxiedDomains } =
       await storage.get({
         domains: [],
@@ -182,7 +182,7 @@ class Registry {
   /**
    * Checks if the given URL is in the registry of banned websites.
    */
-  contains = async (url) => {
+  async contains (url) {
     const hostname = utilities.extractHostnameFromUrl(url)
     const { domains, ignoredHosts, blockedDomains } = await storage.get({
       domains: [],
@@ -203,7 +203,7 @@ class Registry {
    * Checks if the given URL is in registry of ISO (Information Dissemination Organizer).
    * This method makes sense only for some countries (Russia).
    */
-  retrieveInformationDisseminationOrganizerJSON = async (url) => {
+  async retrieveInformationDisseminationOrganizerJSON (url) {
     const hostname = utilities.extractHostnameFromUrl(url)
     const { distributors } = await storage.get({ distributors: [] })
 
@@ -220,7 +220,7 @@ class Registry {
   /**
    * Clean local registry by schedule.
    */
-  clear = async () => {
+  async clear () {
     const day = new Date().getDate()
 
     if (day % 2 === 0) {
@@ -232,7 +232,7 @@ class Registry {
   /**
    * Adds passed hostname to the local storage of banned domains.
    */
-  add = async (url) => {
+  async add (url) {
     const hostname = utilities.extractHostnameFromUrl(url)
     const { blockedDomains } = await storage.get({ blockedDomains: [] })
 

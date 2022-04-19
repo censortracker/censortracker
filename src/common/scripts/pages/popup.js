@@ -1,4 +1,6 @@
 import proxy from '@/common/scripts/proxy'
+import registry from '@/common/scripts/registry'
+import settings from '@/common/scripts/settings'
 import * as storage from '@/common/scripts/storage'
 import {
   extractHostnameFromUrl,
@@ -8,8 +10,6 @@ import {
   select,
   translateDocument,
 } from '@/common/scripts/utilities'
-
-import { registry, settings } from '..'
 
 (async () => {
   translateDocument(document)

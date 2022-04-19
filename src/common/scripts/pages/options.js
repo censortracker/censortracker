@@ -1,8 +1,10 @@
-import { proxy, settings, storage, translateDocument } from '@/common/scripts';
+import proxy from '@/common/scripts/proxy'
+import storage from '@/common/scripts/storage'
+import { getBrowser, isFirefox, translateDocument } from '@/common/scripts/utilities'
 
 (async () => {
   translateDocument(document)
-  const currentBrowser = settings.browser
+  const currentBrowser = getBrowser()
   const proxyingEnabled = await proxy.enabled()
   const proxyStatus = document.getElementById('proxyStatus')
   const showNotificationsCheckbox = document.getElementById(
@@ -28,7 +30,7 @@ import { proxy, settings, storage, translateDocument } from '@/common/scripts';
     proxyStatus.hidden = false
   }
 
-  if (settings.isFirefox) {
+  if (isFirefox()) {
     const allowedIncognitoAccess =
       await browser.extension.isAllowedIncognitoAccess()
     const { privateBrowsingPermissionsRequired } = await storage.get({
@@ -67,16 +69,16 @@ import { proxy, settings, storage, translateDocument } from '@/common/scripts';
   }
 
   if (showNotificationsCheckbox) {
-    showNotificationsCheckbox.addEventListener(
-      'change',
-      async () => {
-        if (showNotificationsCheckbox.checked) {
-          await settings.enableNotifications()
-        } else {
-          await settings.disableNotifications()
-        }
-      },
-      false,
+    showNotificationsCheckbox.addEventListener('change', async () => {
+      if (showNotificationsCheckbox.checked) {
+        console.log('Notifications enabled.')
+        await storage.set({ showNotifications: true })
+      } else {
+        console.log('Notifications enabled.')
+        await storage.set({ showNotifications: false })
+      }
+    },
+    false,
     )
 
     const { showNotifications } = await storage.get({

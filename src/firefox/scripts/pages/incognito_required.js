@@ -1,5 +1,9 @@
-import { proxy, select, translateDocument } from '@/common/scripts'
-import { extractDecodedOriginUrl } from '@/common/scripts/utilities'
+import proxy from '@/common/scripts/proxy'
+import {
+  extractDecodedOriginUrl,
+  select,
+  translateDocument,
+} from '@/common/scripts/utilities'
 
 (async () => {
   const closeTab = select({ id: 'closeTab' })

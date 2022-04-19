@@ -9,6 +9,7 @@ import {
   handleCustomProxiedDomainsChange,
   handleIgnoredHostsChange,
   handleProxyError,
+  handlerBeforeRequestPing,
   handleStartup,
 } from '@/common/js/handlers'
 import * as utilities from '@/common/js/utilities'
@@ -18,30 +19,12 @@ chrome.proxy.onProxyError.addListener(handleProxyError)
 chrome.storage.onChanged.addListener(handleIgnoredHostsChange)
 chrome.storage.onChanged.addListener(handleCustomProxiedDomainsChange)
 
-const handleNotificationButtonClicked = async (notificationId, buttonIndex) => {
-  if (buttonIndex === 0) {
-    const [tab] = await chrome.tabs.query({
-      active: true,
-      lastFocusedWindow: true,
-    })
-
-    const hostname = utilities.extractHostnameFromUrl(tab.url)
-    const { mutedForever } = await storage.get({ mutedForever: [] })
-
-    if (!mutedForever.find((item) => item === hostname)) {
-      mutedForever.push(hostname)
-
-      try {
-        await storage.set({ mutedForever })
-        console.warn(`We won't notify you about ${hostname} anymore`)
-      } catch (error) {
-        console.error(error)
-      }
-    }
-  }
-}
-
-chrome.notifications.onButtonClicked.addListener(handleNotificationButtonClicked)
+chrome.webNavigation.onBeforeNavigate.addListener(
+  handlerBeforeRequestPing, {
+    urls: ['http://*/*', 'https://*/*'],
+    types: ['main_frame'],
+  },
+)
 
 const handleTabState = async (tabId, changeInfo, tab) => {
   if (changeInfo && changeInfo.status === chrome.tabs.TabStatus.COMPLETE) {

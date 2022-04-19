@@ -1,6 +1,6 @@
-import { Browser } from './browser'
 import registry from './registry'
 import * as storage from './storage'
+import * as utilities from './utilities'
 
 const PROXY_CONFIG_API_URL = 'https://app.censortracker.org/api/proxy-config/'
 const FALLBACK_PROXY_SERVER_HOST = 'proxy.roskomsvoboda.org'
@@ -8,9 +8,9 @@ const FALLBACK_PROXY_SERVER_URL = `${FALLBACK_PROXY_SERVER_HOST}:33333`
 const FALLBACK_PROXY_SERVER_PING_URI = `${FALLBACK_PROXY_SERVER_HOST}:39263`
 const REFRESH_PAC_TIMEOUT = 60 * 10 * 1000 // Every 10 minutes
 
-class Proxy extends Browser {
+class Proxy {
   constructor () {
-    super()
+    this.browser = utilities.getBrowser()
 
     setInterval(async () => {
       await this.setProxy()
@@ -66,7 +66,7 @@ class Proxy extends Browser {
   }
 
   async requestIncognitoAccess () {
-    if (this.isFirefox) {
+    if (utilities.isFirefox()) {
       await this.browser.browserAction.setBadgeText({ text: '✕' })
       await storage.set({ privateBrowsingPermissionsRequired: true })
       console.log('Private browsing permissions requested.')
@@ -74,7 +74,7 @@ class Proxy extends Browser {
   }
 
   async grantIncognitoAccess () {
-    if (this.isFirefox) {
+    if (utilities.isFirefox()) {
       await this.browser.browserAction.setBadgeText({ text: '' })
       await storage.set({ privateBrowsingPermissionsRequired: false })
       console.log('Private browsing permissions granted.')
@@ -93,7 +93,7 @@ class Proxy extends Browser {
         return false
       }
 
-      if (this.isFirefox) {
+      if (utilities.isFirefox()) {
         const blob = new Blob([pacData], {
           type: 'application/x-ns-proxy-autoconfig',
         })

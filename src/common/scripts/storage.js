@@ -1,28 +1,22 @@
-const getBrowser = () => {
-  try {
-    return browser
-  } catch (error) {
-    return chrome
-  }
-}
+import { getBrowser } from '@/common/scripts/utilities'
 
-const currentBrowser = getBrowser()
+const Browser = getBrowser()
 
 export const set = async (keys = {}) => {
-  await currentBrowser.storage.local.set(keys).then()
+  await Browser.storage.local.set(keys).then()
 }
 
 export const get = async (keys = {}) => {
   // eslint-disable-next-line no-return-await
-  return await currentBrowser.storage.local.get(keys)
+  return await Browser.storage.local.get(keys)
 }
 
 export const clear = async () => {
-  await currentBrowser.storage.local.clear()
+  await Browser.storage.local.clear()
 }
 
 export const remove = async (keys = []) => {
-  await currentBrowser.storage.local.remove(keys)
+  await Browser.storage.local.remove(keys)
 }
 
 export default {

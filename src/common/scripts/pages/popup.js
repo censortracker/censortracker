@@ -142,7 +142,9 @@ import {
 
   const currentHostname = extractHostnameFromUrl(currentUrl)
 
-  if (isValidURL(currentUrl)) {
+  console.warn(`Current hostname: ${currentHostname}`)
+
+  if (isValidURL(currentHostname)) {
     currentDomainHeader.innerText = currentHostname
   } else {
     const popupNewTabMessage = Browser.i18n.getMessage('popupNewTabMessage')
@@ -190,9 +192,14 @@ import {
       currentDomainHeader.classList.add('title-ori')
 
       if (cooperationRefused) {
-        oriSiteInfo.innerText = uiText.ori.found.cooperationRefused.message
-        textAboutOri.classList.remove('text-warning')
-        textAboutOri.classList.add('text-normal')
+        if (oriSiteInfo) {
+          oriSiteInfo.innerText = uiText.ori.found.cooperationRefused.message
+        }
+
+        if (textAboutOri) {
+          textAboutOri.classList.remove('text-warning')
+          textAboutOri.classList.add('text-normal')
+        }
         currentDomainHeader.classList.remove('title-ori')
         currentDomainHeader.classList.add('title-normal')
       } else {

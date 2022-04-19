@@ -7,17 +7,27 @@ class Settings {
     this.isFirefox = utilities.isFirefox()
   }
 
-  getName = () => 'CensorTracker';
+  getName () {
+    return 'CensorTracker'
+  }
 
-  getDangerIcon = () => this.browser.runtime.getURL('images/icons/128x128/danger.png');
+  getDangerIcon () {
+    return this.browser.runtime.getURL('images/icons/128x128/danger.png')
+  }
 
-  getDefaultIcon = () => this.browser.runtime.getURL('images/icons/128x128/default.png');
+  getDefaultIcon () {
+    return this.browser.runtime.getURL('images/icons/128x128/default.png')
+  }
 
-  getDisabledIcon = () => this.browser.runtime.getURL('images/icons/128x128/disabled.png');
+  getDisabledIcon () {
+    return this.browser.runtime.getURL('images/icons/128x128/disabled.png')
+  }
 
-  getBlockedIcon = () => this.browser.runtime.getURL('images/icons/128x128/blocked.png');
+  getBlockedIcon () {
+    return this.browser.runtime.getURL('images/icons/128x128/blocked.png')
+  }
 
-  changePageIcon = (tabId, path) => {
+  changePageIcon (tabId, path) {
     const title = this.getName()
 
     if (this.isFirefox) {
@@ -29,23 +39,23 @@ class Settings {
     }
   }
 
-  setDisableIcon = (tabId) => {
+  setDisableIcon (tabId) {
     this.changePageIcon(tabId, this.getDisabledIcon())
   }
 
-  setDefaultIcon = (tabId) => {
+  setDefaultIcon (tabId) {
     this.changePageIcon(tabId, this.getDefaultIcon())
   }
 
-  setDangerIcon = (tabId) => {
+  setDangerIcon (tabId) {
     this.changePageIcon(tabId, this.getDangerIcon())
   }
 
-  setBlockedIcon = (tabId) => {
+  setBlockedIcon (tabId) {
     this.changePageIcon(tabId, this.getBlockedIcon())
   }
 
-  changeExtensionState = async ({ useProxy, enableExtension, showNotifications }) => {
+  async changeExtensionState ({ useProxy, enableExtension, showNotifications }) {
     await storage.set({ useProxy, enableExtension, showNotifications })
     const tabs = await this.browser.tabs.query({})
 
@@ -58,13 +68,13 @@ class Settings {
     }
   }
 
-  extensionEnabled = async () => {
+  async extensionEnabled () {
     const { enableExtension } = await storage.get(['enableExtension'])
 
     return enableExtension
   }
 
-  enableExtension = async () => {
+  async enableExtension () {
     let useProxy = true
 
     if (this.isFirefox) {
@@ -79,7 +89,7 @@ class Settings {
     console.log('Extension enabled')
   }
 
-  disableExtension = async () => {
+  async disableExtension () {
     await this.changeExtensionState({
       useProxy: false,
       enableExtension: false,
@@ -93,21 +103,21 @@ class Settings {
     console.warn('Extension disabled')
   }
 
-  enableNotifications = async () => {
+  async enableNotifications () {
     console.log('Notifications enabled.')
     await storage.set({ showNotifications: true })
   }
 
-  disableNotifications = async () => {
+  async disableNotifications () {
     console.warn('Notifications disabled.')
     await storage.set({ showNotifications: false })
   }
 
-  disableDPIDetection = async () => {
+  async disableDPIDetection () {
     await storage.set({ useDPIDetection: false })
   }
 
-  enableDPIDetection = async () => {
+  async enableDPIDetection () {
     await storage.set({ useDPIDetection: true })
   }
 }

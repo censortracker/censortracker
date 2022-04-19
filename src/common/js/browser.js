@@ -31,7 +31,4 @@ export class Browser {
     this.isChromium = !this.isFirefox
     this.manifest = this.browser.runtime.getManifest()
   }
-
-  getBrowser = () => this.browser
-  getBrowserWrapper = () => this
 }

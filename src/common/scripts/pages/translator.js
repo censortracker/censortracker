@@ -1,4 +1,4 @@
-import { translateDocument } from '@/common/scripts'
+import { translateDocument } from '@/common/scripts/utilities'
 
 (() => {
   translateDocument(document)

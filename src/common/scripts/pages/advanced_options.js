@@ -1,10 +1,8 @@
-import {
-  ignore,
-  proxy,
-  registry,
-  settings,
-  translateDocument,
-} from '@/common/scripts';
+import ignore from '@/common/scripts/ignore'
+import proxy from '@/common/scripts/proxy'
+import registry from '@/common/scripts/registry'
+import settings from '@/common/scripts/settings'
+import { translateDocument } from '@/common/scripts/utilities'
 
 (async () => {
   translateDocument(document)

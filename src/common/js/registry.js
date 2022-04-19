@@ -1,4 +1,4 @@
-import storage from './storage'
+import * as storage from './storage'
 import * as utilities from './utilities'
 
 const CONFIG_API_URL = 'https://app.censortracker.org/api/config/'

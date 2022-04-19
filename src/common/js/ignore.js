@@ -1,4 +1,4 @@
-import storage from './storage'
+import * as storage from './storage'
 import * as utilities from './utilities'
 
 const IGNORE_SAVE_INTERVAL = (60 * 30) * 1000

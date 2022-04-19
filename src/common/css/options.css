@@ -796,3 +796,7 @@ kbd {
   width: 550px;
   height: 350px;
 }
+
+#debugInfoTip {
+  margin-bottom: 28px;
+}

@@ -1,6 +1,6 @@
 import settings from '../settings'
 
-const currentBrowser = settings.getBrowser()
+const currentBrowser = settings.browser
 
 /**
  * Simple element selector.

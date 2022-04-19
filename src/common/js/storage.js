@@ -9,42 +9,20 @@ const getBrowser = () => {
 const currentBrowser = getBrowser()
 
 export const set = async (keys = {}) => {
-  try {
-    await currentBrowser.storage.local.set(keys)
-    return true
-  } catch (error) {
-    console.error(error)
-    return false
-  }
+  await currentBrowser.storage.local.set(keys).then()
 }
 
 export const get = async (keys = {}) => {
-  try {
-    return await currentBrowser.storage.local.get(keys)
-  } catch (error) {
-    console.error(error)
-    return {}
-  }
+  // eslint-disable-next-line no-return-await
+  return await currentBrowser.storage.local.get(keys)
 }
 
 export const clear = async () => {
-  try {
-    await currentBrowser.storage.local.clear()
-    return true
-  } catch (error) {
-    console.error(error)
-    return false
-  }
+  await currentBrowser.storage.local.clear()
 }
 
 export const remove = async (keys = []) => {
-  try {
-    await currentBrowser.storage.local.remove(keys)
-    return true
-  } catch (error) {
-    console.error(error)
-    return false
-  }
+  await currentBrowser.storage.local.remove(keys)
 }
 
 export default {

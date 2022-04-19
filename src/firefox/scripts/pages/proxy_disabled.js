@@ -1,4 +1,4 @@
-import { extractDecodedOriginUrl, proxy, translateDocument } from '@/common/js'
+import { extractDecodedOriginUrl, proxy, translateDocument } from '@/common/scripts'
 
 (async () => {
   const [tab] = await browser.tabs.query({ active: true, lastFocusedWindow: true })

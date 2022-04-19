@@ -1,5 +1,5 @@
-import { proxy, translateDocument } from '@/common/js'
-import * as utilities from '@/common/js/utilities'
+import { proxy, translateDocument } from '@/common/scripts'
+import * as utilities from '@/common/scripts/utilities'
 
 (async () => {
   const originUrl = utilities.extractDecodedOriginUrl(window.location.href)

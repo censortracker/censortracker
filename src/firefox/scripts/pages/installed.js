@@ -1,4 +1,4 @@
-import { translateDocument } from '@/common/js'
+import { translateDocument } from '@/common/scripts'
 
 (() => {
   const howToGrantIncognitoAccess = document.getElementById('howToGrantIncognitoAccess')

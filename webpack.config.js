@@ -30,7 +30,7 @@ const webWorkerConfig = {
   mode: NODE_ENV,
   target: isFirefox ? 'webworker' : 'web',
   entry: {
-    background: './src/chrome/js/background.js',
+    background: './src/chrome/scripts/background.js',
   },
   output: {
     path: resolve(`dist/chrome/${OUTPUT_SUB_DIR}`),
@@ -79,14 +79,14 @@ const webConfig = {
   devtool: 'source-map',
 
   entry: {
-    popup: './src/common/js/pages/popup.js',
-    options: './src/common/js/pages/options.js',
-    advanced_options: './src/common/js/pages/advanced_options.js',
-    proxy_options: './src/common/js/pages/proxy_options.js',
-    proxy_disabled: `./src/${BROWSER}/js/pages/proxy_disabled.js`,
-    ignore_editor: './src/common/js/pages/ignore_editor.js',
-    proxied_websites_editor: './src/common/js/pages/proxied_websites_editor.js',
-    translator: './src/common/js/pages/translator.js',
+    popup: './src/common/scripts/pages/popup.js',
+    options: './src/common/scripts/pages/options.js',
+    advanced_options: './src/common/scripts/pages/advanced_options.js',
+    proxy_options: './src/common/scripts/pages/proxy_options.js',
+    proxy_disabled: `./src/${BROWSER}/scripts/pages/proxy_disabled.js`,
+    ignore_editor: './src/common/scripts/pages/ignore_editor.js',
+    proxied_websites_editor: './src/common/scripts/pages/proxied_websites_editor.js',
+    translator: './src/common/scripts/pages/translator.js',
   },
 
   output: {
@@ -222,9 +222,9 @@ const webConfig = {
 }
 
 if (isFirefox) {
-  webConfig.entry.background = `./src/firefox/js/background.js`
-  webConfig.entry.incognito_required = `./src/${BROWSER}/js/pages/incognito_required.js`
-  webConfig.entry.installed = './src/firefox/js/pages/installed.js'
+  webConfig.entry.background = `./src/firefox/scripts/background.js`
+  webConfig.entry.incognito_required = `./src/${BROWSER}/scripts/pages/incognito_required.js`
+  webConfig.entry.installed = './src/firefox/scripts/pages/installed.js'
   webConfig.plugins.push(new HTMLWebpackPlugin({
     title: EXTENSION_NAME,
     filename: 'incognito_required_popup.html',
@@ -260,7 +260,7 @@ if (isFirefox) {
 }
 
 if (isChromium) {
-  webConfig.entry.controlled = `./src/${BROWSER}/js/pages/controlled.js`
+  webConfig.entry.controlled = `./src/${BROWSER}/scripts/pages/controlled.js`
   webConfig.plugins.push(new HTMLWebpackPlugin({
     title: EXTENSION_NAME,
     filename: 'proxy_options.html',

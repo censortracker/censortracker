@@ -1,4 +1,4 @@
-import * as utilities from '@/common/js/utilities'
+import * as utilities from '@/common/scripts/utilities'
 
 import {
   proxy,

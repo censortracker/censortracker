@@ -1,4 +1,4 @@
-import { proxy, settings, storage, translateDocument } from '@/common/js';
+import { proxy, settings, storage, translateDocument } from '@/common/scripts';
 
 (async () => {
   translateDocument(document)

@@ -3,16 +3,16 @@ import {
   proxy,
   registry,
   settings,
-} from '@/common/js'
+} from '@/common/scripts'
 import {
   handleCustomProxiedDomainsChange,
   handleIgnoredHostsChange,
   handleProxyError,
   handlerBeforeRequestPing,
   handleStartup,
-} from '@/common/js/handlers'
-import * as storage from '@/common/js/storage'
-import * as utilities from '@/common/js/utilities'
+} from '@/common/scripts/handlers'
+import * as storage from '@/common/scripts/storage'
+import * as utilities from '@/common/scripts/utilities'
 
 chrome.runtime.onStartup.addListener(handleStartup)
 chrome.proxy.onProxyError.addListener(handleProxyError)

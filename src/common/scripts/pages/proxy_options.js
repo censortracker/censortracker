@@ -1,6 +1,6 @@
 import validator from 'validator'
 
-import { proxy, registry, storage, translateDocument } from '@/common/js'
+import { proxy, registry, storage, translateDocument } from '@/common/scripts'
 
 (async () => {
   const proxyingEnabled = await proxy.enabled()

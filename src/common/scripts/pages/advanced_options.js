@@ -4,7 +4,7 @@ import {
   registry,
   settings,
   translateDocument,
-} from '@/common/js';
+} from '@/common/scripts';
 
 (async () => {
   translateDocument(document)

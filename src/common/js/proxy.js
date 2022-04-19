@@ -17,7 +17,7 @@ class Proxy extends Browser {
     }, REFRESH_PAC_TIMEOUT)
   }
 
-  fetchReserveConfig = async () => {
+  async fetchReserveConfig () {
     try {
       const response = await fetch(PROXY_CONFIG_API_URL)
       const {
@@ -48,7 +48,7 @@ class Proxy extends Browser {
     return {}
   }
 
-  getProxyServerURI = async () => {
+  async getProxyServerURI () {
     const { reserveProxyServerURI } = await this.fetchReserveConfig()
     const { customProxyServerURI } = await storage.get(['customProxyServerURI'])
 
@@ -65,7 +65,7 @@ class Proxy extends Browser {
     return FALLBACK_PROXY_SERVER_URL
   }
 
-  requestIncognitoAccess = async () => {
+  async requestIncognitoAccess () {
     if (this.isFirefox) {
       await this.browser.browserAction.setBadgeText({ text: '✕' })
       await storage.set({ privateBrowsingPermissionsRequired: true })
@@ -73,7 +73,7 @@ class Proxy extends Browser {
     }
   }
 
-  grantIncognitoAccess = async () => {
+  async grantIncognitoAccess () {
     if (this.isFirefox) {
       await this.browser.browserAction.setBadgeText({ text: '' })
       await storage.set({ privateBrowsingPermissionsRequired: false })
@@ -81,7 +81,7 @@ class Proxy extends Browser {
     }
   }
 
-  setProxy = async () => {
+  async setProxy () {
     const proxyingEnabled = await this.enabled()
 
     if (proxyingEnabled) {
@@ -132,7 +132,7 @@ class Proxy extends Browser {
   /**
    * ATTENTION: DO NOT MODIFY THIS FUNCTION!
    */
-  generateProxyAutoConfigData = async () => {
+  async generateProxyAutoConfigData () {
     const domains = await registry.getDomains()
     const proxyServerURI = await this.getProxyServerURI()
 
@@ -191,32 +191,17 @@ class Proxy extends Browser {
       }`
   }
 
-  removeProxy = async () => {
+  async removeProxy () {
     await storage.set({ useProxy: false })
     await this.browser.proxy.settings.clear({})
     console.warn('PAC data cleaned!')
   }
 
-  alive = async () => {
-    // const { proxyServerURI } = await storage.get('proxyServerURI')
-    //
-    // try {
-    //   const response = await fetch(`https://${proxyServerURI}/`)
-    //   const responseText = await response.text()
-    //   const { err } = JSON.parse(responseText)
-    //
-    //   console.log(`Proxy ${proxyServerURI} is alive!`)
-    //
-    //   return !!err
-    // } catch (error) {
-    //   console.warn(`Proxy ${proxyServerURI} is down!`)
-    //   return false
-    // }
-
+  async alive () {
     return true
   }
 
-  ping = async () => {
+  async ping () {
     const { reserveProxyPingURI } = await storage.get({
       reserveProxyPingURI: FALLBACK_PROXY_SERVER_PING_URI,
     })
@@ -237,35 +222,35 @@ class Proxy extends Browser {
     }
   }
 
-  enabled = async () => {
+  async enabled () {
     const { useProxy } = await storage.get({ useProxy: true })
 
     return useProxy
   }
 
-  enableProxy = async () => {
+  async enableProxy () {
     console.log('Proxying enabled.')
     await storage.set({ useProxy: true })
   }
 
-  disableProxy = async () => {
+  async disableProxy () {
     console.warn('Proxying disabled.')
     await storage.set({ useProxy: false })
   }
 
-  controlledByOtherExtensions = async () => {
+  async controlledByOtherExtensions () {
     const { levelOfControl } = await this.browser.proxy.settings.get({})
 
     return levelOfControl === 'controlled_by_other_extensions'
   }
 
-  controlledByThisExtension = async () => {
+  async controlledByThisExtension () {
     const { levelOfControl } = await this.browser.proxy.settings.get({})
 
     return levelOfControl === 'controlled_by_this_extension'
   }
 
-  debugging = async () => {
+  async debugging () {
     await this.removeProxy()
     console.warn('Debug mode enabled')
   }

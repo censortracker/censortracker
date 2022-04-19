@@ -1,6 +1,6 @@
 const isFirefox = () => typeof browser !== 'undefined'
 
-const getBrowser = () => {
+export const getBrowser = () => {
   if (isFirefox()) {
     return browser
   }

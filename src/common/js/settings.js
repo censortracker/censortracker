@@ -1,5 +1,5 @@
 import { Browser } from './browser'
-import storage from './storage'
+import * as storage from './storage'
 
 class Settings extends Browser {
   getName = () => this.manifest.name;

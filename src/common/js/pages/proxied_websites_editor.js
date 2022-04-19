@@ -4,7 +4,7 @@ import 'codemirror/addon/search/searchcursor'
 
 import CodeMirror from 'codemirror'
 
-import storage from '../storage'
+import * as storage from '../storage'
 import { translateDocument, validateArrayOfURLs } from './ui';
 
 (async () => {

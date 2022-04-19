@@ -1,6 +1,13 @@
 import validator from 'validator'
 
-import { getBrowser } from '@/common/scripts/browser'
+export const isFirefox = () => typeof browser !== 'undefined'
+
+export const getBrowser = () => {
+  if (isFirefox()) {
+    return browser
+  }
+  return chrome
+}
 
 const currentBrowser = getBrowser()
 

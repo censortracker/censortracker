@@ -1,18 +1,19 @@
-import * as utilities from '@/common/scripts/utilities'
-
+import proxy from '@/common/scripts/proxy'
+import * as storage from '@/common/scripts/storage'
 import {
-  proxy,
-  registry,
+  extractHostnameFromUrl,
+  getBrowser,
+  isFirefox,
+  isValidURL,
   select,
-  settings,
-  storage,
   translateDocument,
-} from '..'
+} from '@/common/scripts/utilities'
+
+import { registry, settings } from '..'
 
 (async () => {
   translateDocument(document)
-  const thisIsFirefox = settings.isFirefox
-  const currentBrowser = settings.browser
+  const currentBrowser = getBrowser()
   const uiText = {
     ori: {
       found: {
@@ -51,7 +52,6 @@ import {
   const extensionIsOff = select({ id: 'extensionIsOff' })
   const restrictionType = select({ id: 'restrictionType' })
   const mainPageInfoBlocks = select({ query: '.main-page-info' })
-  const currentDomainBlocks = select({ query: '.current-domain' })
   const popupProxyStatusOk = select({ id: 'popupProxyStatusOk' })
   const popupProxyDisabled = select({ id: 'popupProxyDisabled' })
   const popupProxyStatusError = select({ id: 'popupProxyStatusError' })
@@ -88,7 +88,7 @@ import {
 
   const proxyControlledByOtherExtensions = await proxy.controlledByOtherExtensions()
 
-  if (!thisIsFirefox && proxyControlledByOtherExtensions) {
+  if (!isFirefox() && proxyControlledByOtherExtensions) {
     controlledByOtherExtensionsButton.hidden = false
   }
 
@@ -125,7 +125,7 @@ import {
 
   const extensionEnabled = await settings.extensionEnabled()
 
-  if (extensionEnabled && thisIsFirefox) {
+  if (extensionEnabled && isFirefox()) {
     const allowedIncognitoAccess = await currentBrowser.extension.isAllowedIncognitoAccess()
     const { privateBrowsingPermissionsRequired } = await storage.get({
       privateBrowsingPermissionsRequired: false,
@@ -140,21 +140,21 @@ import {
     active: true, lastFocusedWindow: true,
   })
 
-  const currentHostname = utilities.extractHostnameFromUrl(currentUrl)
+  const currentHostname = extractHostnameFromUrl(currentUrl)
 
-  currentDomainBlocks.forEach((element) => {
-    if (utilities.isValidURL(currentUrl)) {
-      const popupNewTabMessage = currentBrowser.i18n.getMessage('popupNewTabMessage')
+  console.error(currentHostname, isValidURL(currentHostname))
 
-      element.innerText = popupNewTabMessage
+  if (isValidURL(currentUrl)) {
+    currentDomainHeader.innerText = currentHostname
+  } else {
+    const popupNewTabMessage = currentBrowser.i18n.getMessage('popupNewTabMessage')
 
-      if (popupNewTabMessage.length >= 25) {
-        element.style.fontSize = '15px'
-      }
-    } else {
-      element.innerText = currentHostname
+    currentDomainHeader.innerText = popupNewTabMessage
+
+    if (popupNewTabMessage.length >= 25) {
+      currentDomainHeader.style.fontSize = '15px'
     }
-  })
+  }
 
   if (extensionEnabled) {
     changeStatusImage('normal')

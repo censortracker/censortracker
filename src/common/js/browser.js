@@ -1,23 +1,10 @@
+const isFirefox = () => typeof browser !== 'undefined'
+
 const getBrowser = () => {
-  if (typeof browser !== 'undefined') {
+  if (isFirefox()) {
     return browser
   }
   return chrome
-}
-
-const browser = getBrowser()
-
-/**
- * Returns true if browser is Firefox.
- * @returns {boolean}
- */
-const isFirefox = () => {
-  try {
-    browser.runtime.getBrowserInfo()
-    return true
-  } catch (error) {
-    return false
-  }
 }
 
 export class Browser {

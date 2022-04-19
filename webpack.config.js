@@ -28,7 +28,7 @@ const contentSecurityPolicy = {
 
 const webWorkerConfig = {
   mode: NODE_ENV,
-  target: 'webworker',
+  target: isFirefox ? 'webworker' : 'web',
   entry: {
     background: './src/chrome/js/background.js',
   },

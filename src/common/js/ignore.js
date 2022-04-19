@@ -18,7 +18,7 @@ class Ignore {
     }, IGNORE_SAVE_INTERVAL)
   }
 
-  fetch = async () => {
+  async fetch () {
     try {
       const response = await fetch(IGNORE_API_ENDPOINT_URI)
       const { domains } = await response.json()
@@ -35,7 +35,7 @@ class Ignore {
     }
   }
 
-  save = async () => {
+  async save () {
     const { ignoredHosts } = await storage.get({ ignoredHosts: [] })
 
     for (const hostname of ignoredHosts) {
@@ -49,7 +49,7 @@ class Ignore {
     await storage.set({ ignoredHosts: [] })
   }
 
-  add = async (url) => {
+  async add (url) {
     const hostname = utilities.extractHostnameFromUrl(url)
 
     console.warn(`Added to ignore: ${url}`)
@@ -68,7 +68,7 @@ class Ignore {
     await storage.set({ ignoredHosts })
   }
 
-  contains = (url) => {
+  contains (url) {
     const hostname = utilities.extractHostnameFromUrl(url)
 
     if (this._ignoredHosts.has(hostname)) {

@@ -1,5 +1,5 @@
-import { registry } from '.'
 import { Browser } from './browser'
+import registry from './registry'
 import * as storage from './storage'
 
 const PROXY_CONFIG_API_URL = 'https://app.censortracker.org/api/proxy-config/'

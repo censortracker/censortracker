@@ -115,10 +115,10 @@ chrome.runtime.onInstalled.addListener(handleInstalled)
 const handleTabCreate = async ({ id }) => {
   const extensionEnabled = await settings.extensionEnabled()
 
-  if (extensionEnabled === false) {
-    settings.setDisableIcon(id)
-  } else if (extensionEnabled === true) {
+  if (extensionEnabled) {
     settings.setDefaultIcon(id)
+  } else {
+    settings.setDisableIcon(id)
   }
 }
 

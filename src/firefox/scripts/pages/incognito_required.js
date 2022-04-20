@@ -1,9 +1,5 @@
-import proxy from '@/common/scripts/proxy'
-import {
-  extractDecodedOriginUrl,
-  select,
-  translateDocument,
-} from '@/common/scripts/utilities'
+import ProxyManager from '@/common/scripts/proxy'
+import { extractDecodedOriginUrl, select, translateDocument } from '@/common/scripts/utilities'
 
 (async () => {
   const closeTab = select({ id: 'closeTab' })
@@ -37,10 +33,10 @@ import {
 
   if (grantPrivateBrowsingPermissionsButton) {
     grantPrivateBrowsingPermissionsButton.addEventListener('click', async () => {
-      const proxySet = await proxy.setProxy()
+      const proxySet = await ProxyManager.setProxy()
 
       if (proxySet === true) {
-        await proxy.grantIncognitoAccess()
+        await ProxyManager.grantIncognitoAccess()
         window.location.href = browser.runtime.getURL('popup.html')
       }
     })

@@ -1,11 +1,9 @@
-import proxy from '@/common/scripts/proxy'
-import storage from '@/common/scripts/storage'
-import { translateDocument } from '@/common/scripts/utilities'
+import ProxyManager from '@/common/scripts/proxy'
+import * as storage from '@/common/scripts/storage'
 import Browser from '@/common/scripts/webextension';
 
 (async () => {
-  translateDocument(document)
-  const proxyingEnabled = await proxy.enabled()
+  const proxyingEnabled = await ProxyManager.enabled()
   const proxyStatus = document.getElementById('proxyStatus')
   const showNotificationsCheckbox = document.getElementById(
     'showNotificationsCheckbox',
@@ -56,10 +54,10 @@ import Browser from '@/common/scripts/webextension';
         grantPrivateBrowsingPermissionsButton.addEventListener(
           'click',
           async () => {
-            const proxySet = await proxy.setProxy()
+            const proxySet = await ProxyManager.setProxy()
 
             if (proxySet === true) {
-              await proxy.grantIncognitoAccess()
+              await ProxyManager.grantIncognitoAccess()
               privateBrowsingPermissionsRequiredMessage.hidden = true
             }
           },

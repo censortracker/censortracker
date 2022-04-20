@@ -1,17 +1,15 @@
-import proxy from '@/common/scripts/proxy'
-import registry from '@/common/scripts/registry'
-import settings from '@/common/scripts/settings'
+import ProxyManager from '@/common/scripts/proxy'
+import Registry from '@/common/scripts/registry'
+import Settings from '@/common/scripts/settings'
 import * as storage from '@/common/scripts/storage'
 import {
   extractHostnameFromUrl,
   isValidURL,
   select,
-  translateDocument,
 } from '@/common/scripts/utilities'
 import Browser from '@/common/scripts/webextension';
 
 (async () => {
-  translateDocument(document)
   const uiText = {
     ori: {
       found: {
@@ -69,8 +67,8 @@ import Browser from '@/common/scripts/webextension';
     window.location.href = 'controlled.html'
   })
 
-  const proxyIsAlive = await proxy.alive()
-  const proxyingEnabled = await proxy.enabled()
+  const proxyIsAlive = await ProxyManager.alive()
+  const proxyingEnabled = await ProxyManager.enabled()
 
   if (proxyingEnabled) {
     if (proxyIsAlive) {
@@ -84,13 +82,13 @@ import Browser from '@/common/scripts/webextension';
     popupProxyDisabled.hidden = false
   }
 
-  const proxyControlledByOtherExtensions = await proxy.controlledByOtherExtensions()
+  const proxyControlledByOtherExtensions = await ProxyManager.controlledByOtherExtensions()
 
   if (!Browser.isFirefox && proxyControlledByOtherExtensions) {
     controlledByOtherExtensionsButton.hidden = false
   }
 
-  const { countryDetails: { isoA2Code } = {} } = await registry.getConfig()
+  const { countryDetails: { isoA2Code } = {} } = await Registry.getConfig()
 
   if (isoA2Code !== 'RU') {
     document.getElementById('ori').hidden = true
@@ -104,12 +102,12 @@ import Browser from '@/common/scripts/webextension';
 
   document.addEventListener('click', async (event) => {
     if (event.target.matches('#enableExtension')) {
-      await settings.enableExtension()
+      await Settings.enableExtension()
       window.location.reload()
     }
 
     if (event.target.matches('#disableExtension')) {
-      await settings.disableExtension()
+      await Settings.disableExtension()
       mainPageInfoBlocks.forEach((element) => {
         element.hidden = true
       })
@@ -121,7 +119,7 @@ import Browser from '@/common/scripts/webextension';
     }
   })
 
-  const extensionEnabled = await settings.extensionEnabled()
+  const extensionEnabled = await Settings.extensionEnabled()
 
   if (extensionEnabled && Browser.isFirefox) {
     const allowedIncognitoAccess = await Browser.extension.isAllowedIncognitoAccess()
@@ -166,7 +164,7 @@ import Browser from '@/common/scripts/webextension';
     currentDomainHeader.removeAttribute('hidden')
     footerExtensionIsOn.removeAttribute('hidden')
 
-    const restrictionsFound = await registry.contains(currentHostname)
+    const restrictionsFound = await Registry.contains(currentHostname)
 
     select({ query: '#restrictions [data-render-var]' }).forEach((el) => {
       const renderVar = el.dataset.renderVar
@@ -184,7 +182,7 @@ import Browser from '@/common/scripts/webextension';
     })
 
     const { url: disseminatorUrl, cooperationRefused } =
-      await registry.retrieveInformationDisseminationOrganizerJSON(currentHostname)
+      await Registry.retrieveInformationDisseminationOrganizerJSON(currentHostname)
 
     if (disseminatorUrl) {
       currentDomainHeader.classList.add('title-ori')
@@ -223,7 +221,7 @@ import Browser from '@/common/scripts/webextension';
       }
     }
 
-    const { restriction } = await registry.getCustomRegistryRecordByURL(currentHostname)
+    const { restriction } = await Registry.getCustomRegistryRecordByURL(currentHostname)
 
     if (restriction && restriction.code) {
       let titlePlaceholder, descriptionPlaceholder

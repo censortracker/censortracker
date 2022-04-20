@@ -162,7 +162,7 @@ const webConfig = {
       filename: 'popup.html',
       template: 'src/common/pages/popup.html',
       inject: true,
-      chunks: ['popup'],
+      chunks: ['popup', 'translator'],
       meta: contentSecurityPolicy,
     }),
     new HTMLWebpackPlugin({

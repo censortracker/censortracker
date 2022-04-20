@@ -23,6 +23,7 @@ plugins:
   - jest
   - simple-import-sort
 rules:
+  sort-imports: [error, { ignoreCase: false }]
   max-len: off
   jest/no-disabled-tests: warn
   jest/no-focused-tests: error

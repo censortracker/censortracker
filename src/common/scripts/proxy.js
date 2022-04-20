@@ -8,7 +8,7 @@ const FALLBACK_PROXY_SERVER_URL = `${FALLBACK_PROXY_SERVER_HOST}:33333`
 const FALLBACK_PROXY_SERVER_PING_URI = `${FALLBACK_PROXY_SERVER_HOST}:39263`
 const REFRESH_PAC_PERIOD_IN_MINUTES = 60 * 10 * 1000 // Every 10 minutes
 
-class Proxy {
+class ProxyManager {
   constructor () {
     setInterval(async () => {
       await this.setProxy() // TODO; Use alarms instead
@@ -247,4 +247,4 @@ class Proxy {
   }
 }
 
-export default new Proxy()
+export default new ProxyManager()

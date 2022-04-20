@@ -15,10 +15,7 @@
     "release": "web-ext build -o --source-dir=./dist/firefox/prod --artifacts-dir=./releases/firefox && web-ext build -o --source-dir=./dist/chrome/prod --artifacts-dir=./releases/chrome",
     "lint": "eslint --ext=.js ./src/",
     "stylelint": "stylelint ./src/",
-    "lint:fix": "eslint --fix --ext=.js ./src/ tests/",
-    "test": "jest && rm -f key.pem tests/e2e/selenium/extension/dist.crx",
-    "test:unit": "jest tests/unit",
-    "test:e2e": "jest tests/e2e/ && rm -f key.pem tests/e2e/selenium/extension/dist.crx",
+    "lint:fix": "eslint --fix --ext=.js ./src/",
     "clean": " rm -rf dist releases"
   },
   "dependencies": {

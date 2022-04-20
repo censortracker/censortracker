@@ -190,7 +190,7 @@ const webConfig = {
       filename: 'advanced_options.html',
       template: 'src/common/pages/advanced_options.html',
       inject: true,
-      chunks: ['options', 'advanced_options'],
+      chunks: ['options', 'advanced_options', 'translator'],
       meta: contentSecurityPolicy,
     }),
     new MergeJsonWebpackPlugin({

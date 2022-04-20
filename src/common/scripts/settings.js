@@ -1,41 +1,38 @@
 import * as storage from './storage'
 import * as utilities from './utilities'
 
-class Settings {
-  constructor () {
-    this.browser = utilities.getBrowser()
-    this.isFirefox = utilities.isFirefox()
-  }
+const Browser = utilities.getBrowser()
 
+class Settings {
   getName () {
     return 'CensorTracker'
   }
 
   getDangerIcon () {
-    return this.browser.runtime.getURL('images/icons/128x128/danger.png')
+    return Browser.runtime.getURL('images/icons/128x128/danger.png')
   }
 
   getDefaultIcon () {
-    return this.browser.runtime.getURL('images/icons/128x128/default.png')
+    return Browser.runtime.getURL('images/icons/128x128/default.png')
   }
 
   getDisabledIcon () {
-    return this.browser.runtime.getURL('images/icons/128x128/disabled.png')
+    return Browser.runtime.getURL('images/icons/128x128/disabled.png')
   }
 
   getBlockedIcon () {
-    return this.browser.runtime.getURL('images/icons/128x128/blocked.png')
+    return Browser.runtime.getURL('images/icons/128x128/blocked.png')
   }
 
   changePageIcon (tabId, path) {
     const title = this.getName()
 
-    if (this.isFirefox) {
-      this.browser.browserAction.setIcon({ tabId, path })
-      this.browser.browserAction.setTitle({ title, tabId })
+    if (utilities.isFirefox()) {
+      Browser.browserAction.setIcon({ tabId, path })
+      Browser.browserAction.setTitle({ title, tabId })
     } else {
-      this.browser.action.setIcon({ tabId, path })
-      this.browser.action.setTitle({ title, tabId })
+      Browser.action.setIcon({ tabId, path })
+      Browser.action.setTitle({ title, tabId })
     }
   }
 
@@ -57,7 +54,7 @@ class Settings {
 
   async changeExtensionState ({ useProxy, enableExtension, showNotifications }) {
     await storage.set({ useProxy, enableExtension, showNotifications })
-    const tabs = await this.browser.tabs.query({})
+    const tabs = await Browser.tabs.query({})
 
     for (const { id } of tabs) {
       if (enableExtension) {
@@ -77,8 +74,8 @@ class Settings {
   async enableExtension () {
     let useProxy = true
 
-    if (this.isFirefox) {
-      useProxy = await this.browser.extension.isAllowedIncognitoAccess()
+    if (utilities.isFirefox()) {
+      useProxy = await Browser.extension.isAllowedIncognitoAccess()
     }
 
     await this.changeExtensionState({
@@ -96,8 +93,8 @@ class Settings {
       showNotifications: false,
     })
 
-    if (this.isFirefox) {
-      await this.browser.browserAction.setBadgeText({ text: '' })
+    if (utilities.isFirefox()) {
+      await Browser.browserAction.setBadgeText({ text: '' })
     }
 
     console.warn('Extension disabled')

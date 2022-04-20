@@ -2,10 +2,8 @@ import ignore from '@/common/scripts/ignore'
 import proxy from '@/common/scripts/proxy'
 import registry from '@/common/scripts/registry'
 import settings from '@/common/scripts/settings'
-import { translateDocument } from '@/common/scripts/utilities'
 
 (async () => {
-  translateDocument(document)
   const completedConfirmBtn = document.getElementById('completedConfirm')
   const debugInfoOkBtn = document.getElementById('debugInfoOk')
   const confirmResetBtn = document.getElementById('confirmReset')
@@ -56,14 +54,13 @@ import { translateDocument } from '@/common/scripts/utilities'
   })
 
   updateLocalRegistryBtn.addEventListener('click', async (event) => {
+    togglePopup('popupCompletedSuccessfully')
     const synced = await registry.sync()
 
     if (synced) {
       await proxy.setProxy()
-      togglePopup('popupCompletedSuccessfully')
     } else {
       console.error('Error on syncing database')
-      togglePopup('popupCompletedSuccessfully')
     }
   })
 
@@ -81,13 +78,13 @@ import { translateDocument } from '@/common/scripts/utilities'
   })
 
   confirmResetBtn.addEventListener('click', async (event) => {
+    togglePopup('popupConfirmReset')
+    togglePopup('popupCompletedSuccessfully')
     await ignore.clear()
     await registry.clear()
     await registry.sync()
     await proxy.setProxy()
     await settings.enableExtension()
-    togglePopup('popupConfirmReset')
-    togglePopup('popupCompletedSuccessfully')
     console.warn('CensorTracker has been reset to default settings.')
   })
 })()

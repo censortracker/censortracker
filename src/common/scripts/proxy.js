@@ -1,4 +1,4 @@
-import registry from './registry'
+import Registry from './registry'
 import * as storage from './storage'
 import Browser from './webextension'
 
@@ -6,7 +6,7 @@ const PROXY_CONFIG_API_URL = 'https://app.censortracker.org/api/proxy-config/'
 const FALLBACK_PROXY_SERVER_HOST = 'proxy.roskomsvoboda.org'
 const FALLBACK_PROXY_SERVER_URL = `${FALLBACK_PROXY_SERVER_HOST}:33333`
 const FALLBACK_PROXY_SERVER_PING_URI = `${FALLBACK_PROXY_SERVER_HOST}:39263`
-const REFRESH_PAC_PERIOD_IN_MINUTES = 10 // Every 10 minutes
+const REFRESH_PAC_PERIOD_IN_MINUTES = 60 * 10 * 1000 // Every 10 minutes
 
 class Proxy {
   constructor () {
@@ -124,7 +124,7 @@ class Proxy {
    * ATTENTION: DO NOT MODIFY THIS FUNCTION!
    */
   async generateProxyAutoConfigData () {
-    const domains = await registry.getDomains()
+    const domains = await Registry.getDomains()
     const proxyServerURI = await this.getProxyServerURI()
 
     await storage.set({ proxyServerURI })

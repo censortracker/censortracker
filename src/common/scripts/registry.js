@@ -65,7 +65,7 @@ class Registry {
           if (countryDetails.isoA2Code === 'RU') {
             apis.push({
               url: specifics.cooperationRefusedORIUrl,
-              storageKey: 'distributors',
+              storageKey: 'disseminators',
             })
           }
         }
@@ -200,14 +200,14 @@ class Registry {
   };
 
   /**
-   * Checks if the given URL is in registry of ISO (Information Dissemination Organizer).
+   * Checks if the given URL is in registry of IDO (Information Dissemination Organizer).
    * This method makes sense only for some countries (Russia).
    */
   async retrieveInformationDisseminationOrganizerJSON (url) {
     const hostname = utilities.extractHostnameFromUrl(url)
-    const { distributors } = await storage.get({ distributors: [] })
+    const { disseminators } = await storage.get({ disseminators: [] })
 
-    const dataObject = distributors.find(
+    const dataObject = disseminators.find(
       ({ url: innerUrl }) => hostname === innerUrl,
     )
 

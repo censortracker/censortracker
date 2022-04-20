@@ -183,10 +183,10 @@ import Browser from '@/common/scripts/webextension';
       }
     })
 
-    const { url: distributorUrl, cooperationRefused } =
+    const { url: disseminatorUrl, cooperationRefused } =
       await registry.retrieveInformationDisseminationOrganizerJSON(currentHostname)
 
-    if (distributorUrl) {
+    if (disseminatorUrl) {
       currentDomainHeader.classList.add('title-ori')
 
       if (cooperationRefused) {
@@ -217,7 +217,7 @@ import Browser from '@/common/scripts/webextension';
       }
     }
 
-    if (restrictionsFound && distributorUrl) {
+    if (restrictionsFound && disseminatorUrl) {
       if (cooperationRefused === false) {
         changeStatusImage('ori_blocked')
       }

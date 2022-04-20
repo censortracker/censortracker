@@ -67,7 +67,7 @@ const handleTabState = async (tabId, changeInfo, { url: tabUrl }) => {
       await checkProxyReadiness()
 
       const urlBlocked = await registry.contains(tabUrl)
-      const { url: distributorUrl, cooperationRefused } =
+      const { url: disseminatorUrl, cooperationRefused } =
         await registry.retrieveInformationDisseminationOrganizerJSON(tabUrl)
 
       if (proxyingEnabled && urlBlocked) {
@@ -75,7 +75,7 @@ const handleTabState = async (tabId, changeInfo, { url: tabUrl }) => {
         return
       }
 
-      if (distributorUrl) {
+      if (disseminatorUrl) {
         settings.setDangerIcon(tabId)
         if (!cooperationRefused) {
           await showCooperationAcceptedWarning(tabUrl)

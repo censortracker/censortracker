@@ -26,29 +26,26 @@ chrome.webNavigation.onBeforeNavigate.addListener(
   },
 )
 
-const handleTabState = async (tabId, changeInfo, tab) => {
+const handleTabState = async (tabId, changeInfo, { url: tabUrl }) => {
   if (changeInfo && changeInfo.status === chrome.tabs.TabStatus.COMPLETE) {
-    const extensionEnabled = await settings.extensionEnabled()
+    const isNotIgnored = !ignore.contains(tabUrl)
     const proxyingEnabled = await proxy.enabled()
+    const extensionEnabled = await settings.extensionEnabled()
 
-    if (extensionEnabled && utilities.isValidURL(tab.url)) {
-      if (ignore.contains(tab.url)) {
-        return
-      }
-
-      const urlBlocked = await registry.contains(tab.url)
-      const { url: distributorUrl, cooperationRefused } =
-        await registry.retrieveInformationDisseminationOrganizerJSON(tab.url)
+    if (extensionEnabled && isNotIgnored && utilities.isValidURL(tabUrl)) {
+      const urlBlocked = await registry.contains(tabUrl)
+      const { url: disseminatorUrl, cooperationRefused } =
+        await registry.retrieveInformationDisseminationOrganizerJSON(tabUrl)
 
       if (proxyingEnabled && urlBlocked) {
         settings.setBlockedIcon(tabId)
         return
       }
 
-      if (distributorUrl) {
+      if (disseminatorUrl) {
         settings.setDangerIcon(tabId)
         if (!cooperationRefused) {
-          await showCooperationAcceptedWarning(tab.url)
+          await showCooperationAcceptedWarning(tabUrl)
         }
       }
     }

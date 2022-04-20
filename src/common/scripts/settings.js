@@ -1,7 +1,5 @@
 import * as storage from './storage'
-import * as utilities from './utilities'
-
-const Browser = utilities.getBrowser()
+import Browser from './webextension'
 
 class Settings {
   getName () {
@@ -27,7 +25,7 @@ class Settings {
   changePageIcon (tabId, path) {
     const title = this.getName()
 
-    if (utilities.isFirefox()) {
+    if (Browser.isFirefox) {
       Browser.browserAction.setIcon({ tabId, path })
       Browser.browserAction.setTitle({ title, tabId })
     } else {
@@ -74,7 +72,7 @@ class Settings {
   async enableExtension () {
     let useProxy = true
 
-    if (utilities.isFirefox()) {
+    if (Browser.isFirefox) {
       useProxy = await Browser.extension.isAllowedIncognitoAccess()
     }
 
@@ -93,7 +91,7 @@ class Settings {
       showNotifications: false,
     })
 
-    if (utilities.isFirefox()) {
+    if (Browser.isFirefox) {
       await Browser.browserAction.setBadgeText({ text: '' })
     }
 

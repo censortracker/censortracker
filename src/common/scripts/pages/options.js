@@ -1,10 +1,10 @@
 import proxy from '@/common/scripts/proxy'
 import storage from '@/common/scripts/storage'
-import { getBrowser, isFirefox, translateDocument } from '@/common/scripts/utilities'
+import { translateDocument } from '@/common/scripts/utilities'
+import Browser from '@/common/scripts/webextension';
 
 (async () => {
   translateDocument(document)
-  const currentBrowser = getBrowser()
   const proxyingEnabled = await proxy.enabled()
   const proxyStatus = document.getElementById('proxyStatus')
   const showNotificationsCheckbox = document.getElementById(
@@ -26,11 +26,11 @@ import { getBrowser, isFirefox, translateDocument } from '@/common/scripts/utili
     if (proxyingEnabled) {
       proxyStatusMessage = 'optionsProxyStatusTurnedOn'
     }
-    proxyStatus.innerText = currentBrowser.i18n.getMessage(proxyStatusMessage)
+    proxyStatus.innerText = Browser.i18n.getMessage(proxyStatusMessage)
     proxyStatus.hidden = false
   }
 
-  if (isFirefox()) {
+  if (Browser.isFirefox) {
     const allowedIncognitoAccess =
       await browser.extension.isAllowedIncognitoAccess()
     const { privateBrowsingPermissionsRequired } = await storage.get({

@@ -1,26 +1,26 @@
 import {
-  ignore,
-  proxy,
-  registry,
-  settings,
-} from '@/common/scripts'
-import {
+  handleBeforeRequestPing,
   handleCustomProxiedDomainsChange,
   handleIgnoredHostsChange,
+  handleOnAlarm,
   handleProxyError,
-  handlerBeforeRequestPing,
   handleStartup,
 } from '@/common/scripts/handlers'
+import ignore from '@/common/scripts/ignore'
+import proxy from '@/common/scripts/proxy'
+import registry from '@/common/scripts/registry'
+import settings from '@/common/scripts/settings'
 import * as storage from '@/common/scripts/storage'
 import * as utilities from '@/common/scripts/utilities'
 
+chrome.alarms.onAlarm.addListener(handleOnAlarm)
 chrome.runtime.onStartup.addListener(handleStartup)
 chrome.proxy.onProxyError.addListener(handleProxyError)
 chrome.storage.onChanged.addListener(handleIgnoredHostsChange)
 chrome.storage.onChanged.addListener(handleCustomProxiedDomainsChange)
 
 chrome.webNavigation.onBeforeNavigate.addListener(
-  handlerBeforeRequestPing, {
+  handleBeforeRequestPing, {
     urls: ['http://*/*', 'https://*/*'],
     types: ['main_frame'],
   },

@@ -4,16 +4,14 @@ import settings from '@/common/scripts/settings'
 import * as storage from '@/common/scripts/storage'
 import {
   extractHostnameFromUrl,
-  getBrowser,
-  isFirefox,
   isValidURL,
   select,
   translateDocument,
 } from '@/common/scripts/utilities'
+import Browser from '@/common/scripts/webextension';
 
 (async () => {
   translateDocument(document)
-  const Browser = getBrowser()
   const uiText = {
     ori: {
       found: {
@@ -88,7 +86,7 @@ import {
 
   const proxyControlledByOtherExtensions = await proxy.controlledByOtherExtensions()
 
-  if (!isFirefox() && proxyControlledByOtherExtensions) {
+  if (!Browser.isFirefox && proxyControlledByOtherExtensions) {
     controlledByOtherExtensionsButton.hidden = false
   }
 
@@ -125,7 +123,7 @@ import {
 
   const extensionEnabled = await settings.extensionEnabled()
 
-  if (extensionEnabled && isFirefox()) {
+  if (extensionEnabled && Browser.isFirefox) {
     const allowedIncognitoAccess = await Browser.extension.isAllowedIncognitoAccess()
     const { privateBrowsingPermissionsRequired } = await storage.get({
       privateBrowsingPermissionsRequired: false,

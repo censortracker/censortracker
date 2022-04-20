@@ -1,6 +1,4 @@
-import { getBrowser } from '@/common/scripts/utilities'
-
-const Browser = getBrowser()
+import Browser from './webextension'
 
 export const set = async (keys = {}) => {
   await Browser.storage.local.set(keys).then()

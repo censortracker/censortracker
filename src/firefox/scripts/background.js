@@ -1,8 +1,8 @@
 import {
+  handleBeforeRequestPing,
   handleCustomProxiedDomainsChange,
   handleIgnoredHostsChange,
   handleProxyError,
-  handlerBeforeRequestPing,
   handleStartup,
 } from '@/common/scripts/handlers'
 import ignore from '@/common/scripts/ignore'
@@ -26,7 +26,7 @@ const handleBeforeRequestCheckIncognitoAccess = async (_details) => {
 }
 
 browser.webRequest.onBeforeRequest.addListener(
-  handlerBeforeRequestPing,
+  handleBeforeRequestPing,
   { urls: ['<all_urls>'] },
   ['blocking'],
 )

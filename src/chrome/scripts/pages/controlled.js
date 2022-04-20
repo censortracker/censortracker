@@ -1,4 +1,4 @@
-import proxy from '@/common/scripts/proxy'
+import ProxyManager from '@/common/scripts/proxy'
 import { translateDocument } from '@/common/scripts/utilities'
 
 (async () => {
@@ -11,7 +11,7 @@ import { translateDocument } from '@/common/scripts/utilities'
   const controlledByExtensions = document.getElementById('controlledByOtherExtensions')
   const useProxyCheckbox = document.getElementById('useProxyCheckbox')
 
-  const isProxyControlledByOtherExtensions = await proxy.controlledByOtherExtensions()
+  const isProxyControlledByOtherExtensions = await ProxyManager.controlledByOtherExtensions()
 
   if (isProxyControlledByOtherExtensions) {
     const self = await chrome.management.getSelf()
@@ -55,13 +55,13 @@ import { translateDocument } from '@/common/scripts/utilities'
         }
 
         if (currentPage.startsWith('options')) {
-          if (await proxy.controlledByThisExtension()) {
+          if (await ProxyManager.controlledByThisExtension()) {
             useProxyCheckbox.checked = true
             useProxyCheckbox.disabled = false
           }
           element.parentElement.hidden = true
         }
-        await proxy.setProxy()
+        await ProxyManager.setProxy()
         window.location.reload()
       })
     })

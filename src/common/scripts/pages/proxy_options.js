@@ -1,12 +1,12 @@
 import validator from 'validator'
 
-import proxy from '@/common/scripts/proxy'
-import registry from '@/common/scripts/registry'
+import ProxyManager from '@/common/scripts/proxy'
+import Registry from '@/common/scripts/registry'
 import * as storage from '@/common/scripts/storage'
 import { translateDocument } from '@/common/scripts/utilities'
 
 (async () => {
-  const proxyingEnabled = await proxy.enabled()
+  const proxyingEnabled = await ProxyManager.enabled()
   const useProxyCheckbox = document.getElementById('useProxyCheckbox')
   const proxyCustomOptions = document.getElementById('proxyCustomOptions')
   const proxyHostInput = document.getElementById('proxyHostInput')
@@ -14,12 +14,12 @@ import { translateDocument } from '@/common/scripts/utilities'
   const proxyStatusIsDown = document.getElementById('proxyStatusIsDown')
   const proxyOptionsInputs = document.getElementById('proxyOptionsInputs')
   const proxyCustomOptionsRadioGroup = document.getElementById('proxyCustomOptionsRadioGroup')
-  const isProxyControlledByThisExtension = await proxy.controlledByThisExtension()
-  const isProxyControlledByOtherExtensions = await proxy.controlledByOtherExtensions()
+  const isProxyControlledByThisExtension = await ProxyManager.controlledByThisExtension()
+  const isProxyControlledByOtherExtensions = await ProxyManager.controlledByOtherExtensions()
   const useCustomProxyRadioButton = document.getElementById('useCustomProxy')
   const useDefaultProxyRadioButton = document.getElementById('useDefaultProxy')
 
-  const proxyIsAlive = await proxy.alive()
+  const proxyIsAlive = await ProxyManager.alive()
 
   if (!proxyIsAlive) {
     proxyStatusIsDown.hidden = false
@@ -57,7 +57,7 @@ import { translateDocument } from '@/common/scripts/utilities'
         await storage.set({ useCustomChecked: true })
         await storage.set({ customProxyPort: port, customProxyHost: host })
         await storage.set({ customProxyServerURI })
-        await proxy.setProxy()
+        await ProxyManager.setProxy()
 
         proxyHostInput.classList.remove('invalid-input')
         proxyPortInput.classList.remove('invalid-input')
@@ -72,10 +72,10 @@ import { translateDocument } from '@/common/scripts/utilities'
 
   proxyCustomOptionsRadioGroup.addEventListener('change', async (event) => {
     if (event.target.value !== 'default') {
-      await proxy.setProxy()
+      await ProxyManager.setProxy()
       proxyOptionsInputs.classList.remove('hidden')
     } else {
-      await proxy.setProxy()
+      await ProxyManager.setProxy()
       await storage.set({ useCustomChecked: false })
       await storage.remove(['customProxyHost', 'customProxyPort', 'customProxyServerURI'])
       proxyOptionsInputs.classList.add('hidden')
@@ -85,7 +85,7 @@ import { translateDocument } from '@/common/scripts/utilities'
   if (isProxyControlledByOtherExtensions) {
     useProxyCheckbox.checked = false
     useProxyCheckbox.disabled = true
-    await proxy.disableProxy()
+    await ProxyManager.disableProxy()
   }
 
   if (isProxyControlledByThisExtension) {
@@ -93,25 +93,25 @@ import { translateDocument } from '@/common/scripts/utilities'
     useProxyCheckbox.disabled = false
 
     if (!proxyingEnabled) {
-      await proxy.enableProxy()
+      await ProxyManager.enableProxy()
     }
   }
 
   useProxyCheckbox.addEventListener('change', async () => {
     if (useProxyCheckbox.checked) {
-      await proxy.enableProxy()
+      await ProxyManager.enableProxy()
       proxyCustomOptions.hidden = false
       useProxyCheckbox.checked = true
     } else {
-      await proxy.disableProxy()
+      await ProxyManager.disableProxy()
       proxyCustomOptions.hidden = true
       useProxyCheckbox.checked = false
     }
   }, false)
 
-  useProxyCheckbox.checked = await proxy.enabled()
+  useProxyCheckbox.checked = await ProxyManager.enabled()
 
-  const { countryDetails: { name: country } } = await registry.getConfig()
+  const { countryDetails: { name: country } } = await Registry.getConfig()
 
   translateDocument(document, { country })
 })()

@@ -1,4 +1,3 @@
-import * as alarms from './alarms'
 import registry from './registry'
 import * as storage from './storage'
 import Browser from './webextension'
@@ -9,12 +8,13 @@ const FALLBACK_PROXY_SERVER_URL = `${FALLBACK_PROXY_SERVER_HOST}:33333`
 const FALLBACK_PROXY_SERVER_PING_URI = `${FALLBACK_PROXY_SERVER_HOST}:39263`
 const REFRESH_PAC_PERIOD_IN_MINUTES = 10 // Every 10 minutes
 
-alarms.create({
-  name: 'refresh-proxy',
-  periodInMinutes: REFRESH_PAC_PERIOD_IN_MINUTES,
-})
-
 class Proxy {
+  constructor () {
+    setInterval(async () => {
+      await this.setProxy() // TODO; Use alarms instead
+    }, REFRESH_PAC_PERIOD_IN_MINUTES)
+  }
+
   async fetchReserveConfig () {
     try {
       const response = await fetch(PROXY_CONFIG_API_URL)

@@ -183,7 +183,7 @@ const webConfig = {
       filename: 'options.html',
       template: 'src/common/pages/options.html',
       inject: true,
-      chunks: ['options'],
+      chunks: ['options', 'translator'],
       meta: contentSecurityPolicy,
     }),
     new HTMLWebpackPlugin({

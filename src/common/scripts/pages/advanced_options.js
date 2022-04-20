@@ -1,7 +1,7 @@
 import ignore from '@/common/scripts/ignore'
 import proxy from '@/common/scripts/proxy'
 import registry from '@/common/scripts/registry'
-import settings from '@/common/scripts/settings'
+import Settings from '@/common/scripts/settings'
 
 (async () => {
   const completedConfirmBtn = document.getElementById('completedConfirm')
@@ -84,7 +84,7 @@ import settings from '@/common/scripts/settings'
     await registry.clear()
     await registry.sync()
     await proxy.setProxy()
-    await settings.enableExtension()
+    await Settings.enableExtension()
     console.warn('CensorTracker has been reset to default settings.')
   })
 })()

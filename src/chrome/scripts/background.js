@@ -6,10 +6,10 @@ import {
   handleProxyError,
   handleStartup,
 } from '@/common/scripts/handlers'
-import ignore from '@/common/scripts/ignore'
-import proxy from '@/common/scripts/proxy'
-import registry from '@/common/scripts/registry'
-import settings from '@/common/scripts/settings'
+import Ignore from '@/common/scripts/ignore'
+import ProxyManager from '@/common/scripts/proxy'
+import Registry from '@/common/scripts/registry'
+import Settings from '@/common/scripts/settings'
 import * as storage from '@/common/scripts/storage'
 import * as utilities from '@/common/scripts/utilities'
 
@@ -28,22 +28,22 @@ chrome.webNavigation.onBeforeNavigate.addListener(
 
 const handleTabState = async (tabId, changeInfo, tab) => {
   if (changeInfo && changeInfo.status === chrome.tabs.TabStatus.COMPLETE) {
-    const isNotIgnored = !ignore.contains(tab.url)
-    const proxyingEnabled = await proxy.enabled()
-    const extensionEnabled = await settings.extensionEnabled()
+    const isNotIgnored = !Ignore.contains(tab.url)
+    const proxyingEnabled = await ProxyManager.enabled()
+    const extensionEnabled = await Settings.extensionEnabled()
 
     if (extensionEnabled && isNotIgnored && utilities.isValidURL(tab.url)) {
-      const urlBlocked = await registry.contains(tab.url)
+      const urlBlocked = await Registry.contains(tab.url)
       const { url: disseminatorUrl, cooperationRefused } =
-        await registry.retrieveInformationDisseminationOrganizerJSON(tab.url)
+        await Registry.retrieveInformationDisseminationOrganizerJSON(tab.url)
 
       if (proxyingEnabled && urlBlocked) {
-        settings.setBlockedIcon(tabId)
+        Settings.setBlockedIcon(tabId)
         return
       }
 
       if (disseminatorUrl) {
-        settings.setDangerIcon(tabId)
+        Settings.setDangerIcon(tabId)
         if (!cooperationRefused) {
           await showCooperationAcceptedWarning(tab.url)
         }
@@ -66,14 +66,14 @@ const showCooperationAcceptedWarning = async (url) => {
     if (!notifiedHosts.includes(hostname)) {
       await chrome.notifications.create({
         type: 'basic',
-        title: settings.getName(),
+        title: Settings.getName(),
         priority: 2,
         message: chrome.i18n.getMessage('cooperationAcceptedMessage', hostname),
         buttons: [
           { title: chrome.i18n.getMessage('muteNotificationsForThis') },
           { title: chrome.i18n.getMessage('readMoreButton') },
         ],
-        iconUrl: settings.getDangerIcon(),
+        iconUrl: Settings.getDangerIcon(),
       })
 
       try {
@@ -93,28 +93,28 @@ const handleInstalled = async ({ reason }) => {
     })
   }
 
-  await settings.enableExtension()
-  await settings.enableNotifications()
+  await Settings.enableExtension()
+  await Settings.enableNotifications()
 
   if (reason === chrome.runtime.OnInstalledReason.INSTALL) {
-    const synchronized = await registry.sync()
+    const synchronized = await Registry.sync()
 
     if (synchronized) {
-      await proxy.setProxy()
+      await ProxyManager.setProxy()
     }
   }
-  await proxy.ping()
+  await ProxyManager.ping()
 }
 
 chrome.runtime.onInstalled.addListener(handleInstalled)
 
 const handleTabCreate = async ({ id }) => {
-  const extensionEnabled = await settings.extensionEnabled()
+  const extensionEnabled = await Settings.extensionEnabled()
 
   if (extensionEnabled) {
-    settings.setDefaultIcon(id)
+    Settings.setDefaultIcon(id)
   } else {
-    settings.setDisableIcon(id)
+    Settings.setDisableIcon(id)
   }
 }
 
@@ -131,11 +131,11 @@ const handleStorageChanged = async ({ enableExtension, ignoredHosts, useProxy },
     const oldValue = enableExtension.oldValue
 
     if (newValue === true && oldValue === false) {
-      await proxy.setProxy()
+      await ProxyManager.setProxy()
     }
 
     if (newValue === false && oldValue === true) {
-      await proxy.removeProxy()
+      await ProxyManager.removeProxy()
     }
   }
 
@@ -143,15 +143,15 @@ const handleStorageChanged = async ({ enableExtension, ignoredHosts, useProxy },
     const newValue = useProxy.newValue
     const oldValue = useProxy.oldValue
 
-    const extensionEnabled = settings.extensionEnabled()
+    const extensionEnabled = Settings.extensionEnabled()
 
     if (extensionEnabled) {
       if (newValue === true && oldValue === false) {
-        await proxy.setProxy()
+        await ProxyManager.setProxy()
       }
 
       if (newValue === false && oldValue === true) {
-        await proxy.removeProxy()
+        await ProxyManager.removeProxy()
       }
     }
   }

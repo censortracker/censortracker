@@ -5,10 +5,10 @@ import {
   handleProxyError,
   handleStartup,
 } from '@/common/scripts/handlers'
-import ignore from '@/common/scripts/ignore'
-import proxy from '@/common/scripts/proxy'
-import registry from '@/common/scripts/registry'
-import settings from '@/common/scripts/settings'
+import Ignore from '@/common/scripts/ignore'
+import ProxyManager from '@/common/scripts/proxy'
+import Registry from '@/common/scripts/registry'
+import Settings from '@/common/scripts/settings'
 import * as storage from '@/common/scripts/storage'
 import * as utilities from '@/common/scripts/utilities'
 
@@ -21,7 +21,7 @@ const handleBeforeRequestCheckIncognitoAccess = async (_details) => {
   const allowed = await browser.extension.isAllowedIncognitoAccess()
 
   if (!allowed) {
-    await proxy.requestIncognitoAccess()
+    await ProxyManager.requestIncognitoAccess()
   }
 }
 
@@ -43,14 +43,14 @@ browser.webRequest.onBeforeRequest.addListener(
  * @returns {Promise<boolean>}
  */
 const checkProxyReadiness = async () => {
-  const proxyingEnabled = await proxy.enabled()
-  const controlledByThisExtension = await proxy.controlledByThisExtension()
+  const proxyingEnabled = await ProxyManager.enabled()
+  const controlledByThisExtension = await ProxyManager.controlledByThisExtension()
   const allowedIncognitoAccess = await browser.extension.isAllowedIncognitoAccess()
 
   if (proxyingEnabled && allowedIncognitoAccess) {
     if (!controlledByThisExtension) {
-      await proxy.setProxy()
-      await proxy.grantIncognitoAccess()
+      await ProxyManager.setProxy()
+      await ProxyManager.grantIncognitoAccess()
     }
     return true
   }
@@ -59,24 +59,24 @@ const checkProxyReadiness = async () => {
 }
 
 const handleTabState = async (tabId, changeInfo, { url: tabUrl }) => {
-  const proxyingEnabled = await proxy.enabled()
-  const extensionEnabled = await settings.extensionEnabled()
+  const proxyingEnabled = await ProxyManager.enabled()
+  const extensionEnabled = await Settings.extensionEnabled()
 
   if (changeInfo && changeInfo.status === browser.tabs.TabStatus.COMPLETE) {
-    if (extensionEnabled && utilities.isValidURL(tabUrl) && !ignore.contains(tabUrl)) {
+    if (extensionEnabled && utilities.isValidURL(tabUrl) && !Ignore.contains(tabUrl)) {
       await checkProxyReadiness()
 
-      const urlBlocked = await registry.contains(tabUrl)
+      const urlBlocked = await Registry.contains(tabUrl)
       const { url: disseminatorUrl, cooperationRefused } =
-        await registry.retrieveInformationDisseminationOrganizerJSON(tabUrl)
+        await Registry.retrieveInformationDisseminationOrganizerJSON(tabUrl)
 
       if (proxyingEnabled && urlBlocked) {
-        settings.setBlockedIcon(tabId)
+        Settings.setBlockedIcon(tabId)
         return
       }
 
       if (disseminatorUrl) {
-        settings.setDangerIcon(tabId)
+        Settings.setDangerIcon(tabId)
         if (!cooperationRefused) {
           await showCooperationAcceptedWarning(tabUrl)
         }
@@ -89,12 +89,12 @@ browser.tabs.onActivated.addListener(handleTabState)
 browser.tabs.onUpdated.addListener(handleTabState)
 
 const handleTabCreate = async ({ id }) => {
-  const extensionEnabled = await settings.extensionEnabled()
+  const extensionEnabled = await Settings.extensionEnabled()
 
   if (extensionEnabled) {
     await checkProxyReadiness()
   } else {
-    settings.setDisableIcon(id)
+    Settings.setDisableIcon(id)
   }
 }
 
@@ -112,8 +112,8 @@ const showCooperationAcceptedWarning = async (url) => {
       console.log(`Showing notification for ${hostname}`)
       await browser.notifications.create(hostname, {
         type: 'basic',
-        title: settings.getName(),
-        iconUrl: settings.getDangerIcon(),
+        title: Settings.getName(),
+        iconUrl: Settings.getDangerIcon(),
         message: browser.i18n.getMessage('cooperationAcceptedMessage', hostname),
       })
 
@@ -145,11 +145,11 @@ const handleInstalled = async ({ reason }) => {
     })
   }
 
-  await settings.enableExtension()
-  await settings.enableNotifications()
+  await Settings.enableExtension()
+  await Settings.enableNotifications()
 
   if (reasonsForSync.includes(reason)) {
-    const synchronized = await registry.sync()
+    const synchronized = await Registry.sync()
 
     if (synchronized) {
       const allowedIncognitoAccess =
@@ -157,13 +157,13 @@ const handleInstalled = async ({ reason }) => {
 
       if (allowedIncognitoAccess) {
         console.warn('onInstall: incognito access allowed, setting proxy...')
-        await proxy.setProxy()
+        await ProxyManager.setProxy()
       } else {
-        await proxy.requestIncognitoAccess()
+        await ProxyManager.requestIncognitoAccess()
       }
     }
   }
-  await proxy.ping()
+  await ProxyManager.ping()
 }
 
 browser.runtime.onInstalled.addListener(handleInstalled)
@@ -179,11 +179,11 @@ const handleStorageChanged = async ({ enableExtension, ignoredHosts, useProxy },
     const oldValue = enableExtension.oldValue
 
     if (newValue === true && oldValue === false) {
-      await proxy.setProxy()
+      await ProxyManager.setProxy()
     }
 
     if (newValue === false && oldValue === true) {
-      await proxy.removeProxy()
+      await ProxyManager.removeProxy()
     }
   }
 
@@ -191,15 +191,15 @@ const handleStorageChanged = async ({ enableExtension, ignoredHosts, useProxy },
     const newValue = useProxy.newValue
     const oldValue = useProxy.oldValue
 
-    const extensionEnabled = settings.extensionEnabled()
+    const extensionEnabled = Settings.extensionEnabled()
 
     if (extensionEnabled) {
       if (newValue === true && oldValue === false) {
-        await proxy.setProxy()
+        await ProxyManager.setProxy()
       }
 
       if (newValue === false && oldValue === true) {
-        await proxy.removeProxy()
+        await ProxyManager.removeProxy()
       }
     }
   }
@@ -209,9 +209,9 @@ browser.storage.onChanged.addListener(handleStorageChanged)
 
 // Debug namespaces.
 window.censortracker = {
-  proxy,
-  registry,
-  settings,
+  ProxyManager,
+  Registry,
+  Settings,
   storage,
-  ignore,
+  Ignore,
 }

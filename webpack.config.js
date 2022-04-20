@@ -81,10 +81,10 @@ const webConfig = {
   entry: {
     popup: './src/common/scripts/pages/popup.js',
     options: './src/common/scripts/pages/options.js',
-    advanced_options: './src/common/scripts/pages/advanced_options.js',
-    proxy_options: './src/common/scripts/pages/proxy_options.js',
-    ignore_editor: './src/common/scripts/pages/ignore_editor.js',
-    proxied_websites_editor: './src/common/scripts/pages/proxied_websites_editor.js',
+    advanced_options: './src/common/scripts/pages/advanced-options.js',
+    proxy_options: './src/common/scripts/pages/proxy-options.js',
+    ignore_editor: './src/common/scripts/pages/ignore-editor.js',
+    proxied_websites_editor: './src/common/scripts/pages/proxied-websites-editor.js',
     translator: './src/common/scripts/pages/translator.js',
   },
 
@@ -215,7 +215,7 @@ const webConfig = {
 
 if (isFirefox) {
   webConfig.entry.background = `./src/firefox/scripts/background.js`
-  webConfig.entry.incognito_required = `./src/${BROWSER}/scripts/pages/incognito_required.js`
+  webConfig.entry.incognito_required = `./src/${BROWSER}/scripts/pages/incognito-required.js`
   webConfig.entry.installed = './src/firefox/scripts/pages/installed.js'
   webConfig.plugins.push(new HTMLWebpackPlugin({
     title: EXTENSION_NAME,

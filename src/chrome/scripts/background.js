@@ -87,11 +87,7 @@ const showCooperationAcceptedWarning = async (url) => {
 }
 
 const handleInstalled = async ({ reason }) => {
-  const reasonsForSync = [
-    chrome.runtime.OnInstalledReason.INSTALL,
-  ]
-
-  if (reasonsForSync.includes(reason)) {
+  if (reason === chrome.runtime.OnInstalledReason.INSTALL) {
     chrome.tabs.create({
       url: chrome.runtime.getURL('installed.html'),
     })
@@ -100,7 +96,7 @@ const handleInstalled = async ({ reason }) => {
   await settings.enableExtension()
   await settings.enableNotifications()
 
-  if (reasonsForSync.includes(reason)) {
+  if (reason === chrome.runtime.OnInstalledReason.INSTALL) {
     const synchronized = await registry.sync()
 
     if (synchronized) {

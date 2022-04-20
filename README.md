@@ -19,25 +19,9 @@ important:
 
 - Configurable proxy
 - Country-specific proxying
-- Detects [DPI]-filtration
-- Bypass censorship and restrictions
+- Custom proxying list
+- Bypass censorship and restrictions (including [DPI]-filtration)
 - Warns about sites that transfer data to third parties
-
-
-How does DPI-filters detection work?
-====================================
-
-<img src="/.github/media/dpi-diagram.svg" style="width:500px;"/>
-
-
-What about this "Report DPI-filter" thing?
-==========================================
-
-We are collecting anonymized data to check the availability issues of the websites for users from different parts of the country. Such data helps us to extend the list of blocked websites for proxying them and fastly react to new acts of censorship.
-
-Our backend is open source, so you can check how it works: [censortracker_backend](https://github.com/roskomsvoboda/censortracker_backend)
-
-This is an **experimental** feature and can be removed in future releases if it turns out that it is an ineffective way to detect censorship.
 
 Development
 ===========
@@ -52,7 +36,6 @@ Make sure you have required versions of `node` and `npm`, which are:
 
 Optionally, you may like:
 
-- `docker`
 - [`nvm`](https://github.com/nvm-sh/nvm)
 
 
@@ -106,30 +89,6 @@ and for Firefox like this:
     ~ npm run build:firefox:prod
     ~ npm run release:firefox
     ~ cd release/firefox
-
-**Attention**: Webpack automatically increments a key `version` in the `manifest.json` file on *every build*.
-To prevent such behavior you need to add `BUILDUP=0` before the `npm run` command, just like that:
-
-    ~ BUILDUP=0 npm run build:firefox:prod
-
-Testing
--------
-
-
-To run all the kind of tests just run following command:
-
-    ~ npm run test
-
-to run just unit tests:
-
-    ~ npm run test:unit
-
-and to run end-to-end tests you need too add `chromedriver` to your `$PATH` and then run this command:
-
-    ~ npm run test:e2e
-
-**Attention**: e2e tests works only on unix systems and requires OpenSSL for generating chrome extension id.
-
 
 License
 =======

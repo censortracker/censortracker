@@ -2,7 +2,13 @@ import ignore from './ignore'
 import proxy from './proxy'
 import * as storage from './storage'
 
-export const handlerBeforeRequestPing = async (_details) => {
+export const handleOnAlarm = async (alarm) => {
+  if (alarm.name === 'refresh-proxy') {
+    await proxy.setProxy()
+  }
+}
+
+export const handleBeforeRequestPing = async (_details) => {
   await proxy.ping()
 }
 

@@ -1,31 +1,24 @@
+import * as alarms from './alarms'
 import registry from './registry'
 import * as storage from './storage'
-import * as utilities from './utilities'
+import Browser from './webextension'
 
 const PROXY_CONFIG_API_URL = 'https://app.censortracker.org/api/proxy-config/'
 const FALLBACK_PROXY_SERVER_HOST = 'proxy.roskomsvoboda.org'
 const FALLBACK_PROXY_SERVER_URL = `${FALLBACK_PROXY_SERVER_HOST}:33333`
 const FALLBACK_PROXY_SERVER_PING_URI = `${FALLBACK_PROXY_SERVER_HOST}:39263`
-const REFRESH_PAC_TIMEOUT = 60 * 10 * 1000 // Every 10 minutes
+const REFRESH_PAC_PERIOD_IN_MINUTES = 10 // Every 10 minutes
+
+alarms.create({
+  name: 'refresh-proxy',
+  periodInMinutes: REFRESH_PAC_PERIOD_IN_MINUTES,
+})
 
 class Proxy {
-  constructor () {
-    this.browser = utilities.getBrowser()
-
-    setInterval(async () => {
-      await this.setProxy()
-    }, REFRESH_PAC_TIMEOUT)
-  }
-
   async fetchReserveConfig () {
     try {
       const response = await fetch(PROXY_CONFIG_API_URL)
-      const {
-        server,
-        port,
-        pingHost,
-        pingPort,
-      } = await response.json()
+      const { server, port, pingHost, pingPort } = await response.json()
 
       if (server && port && pingHost && pingPort) {
         const reserveProxyPingURI = `${pingHost}:${pingPort}`
@@ -39,10 +32,8 @@ class Proxy {
       }
       console.warn('Reverse proxy is not provided.')
     } catch (error) {
-      const fetchTimeout = new Date(REFRESH_PAC_TIMEOUT)
-
       console.error(
-        `Error on fetching proxy: trying again in ${fetchTimeout.getMinutes()} minutes...`,
+        `Error on fetching proxy: trying again in ${REFRESH_PAC_PERIOD_IN_MINUTES} minutes...`,
       )
     }
     return {}
@@ -66,16 +57,16 @@ class Proxy {
   }
 
   async requestIncognitoAccess () {
-    if (utilities.isFirefox()) {
-      await this.browser.browserAction.setBadgeText({ text: '✕' })
+    if (Browser.isFirefox) {
+      await Browser.browserAction.setBadgeText({ text: '✕' })
       await storage.set({ privateBrowsingPermissionsRequired: true })
       console.log('Private browsing permissions requested.')
     }
   }
 
   async grantIncognitoAccess () {
-    if (utilities.isFirefox()) {
-      await this.browser.browserAction.setBadgeText({ text: '' })
+    if (Browser.isFirefox) {
+      await Browser.browserAction.setBadgeText({ text: '' })
       await storage.set({ privateBrowsingPermissionsRequired: false })
       console.log('Private browsing permissions granted.')
     }
@@ -93,7 +84,7 @@ class Proxy {
         return false
       }
 
-      if (utilities.isFirefox()) {
+      if (Browser.isFirefox) {
         const blob = new Blob([pacData], {
           type: 'application/x-ns-proxy-autoconfig',
         })
@@ -114,7 +105,7 @@ class Proxy {
       }
 
       try {
-        await this.browser.proxy.settings.set(config)
+        await Browser.proxy.settings.set(config)
         await this.enableProxy()
         console.warn('PAC has been generated and set successfully!')
         return true
@@ -193,7 +184,7 @@ class Proxy {
 
   async removeProxy () {
     await storage.set({ useProxy: false })
-    await this.browser.proxy.settings.clear({})
+    await Browser.proxy.settings.clear({})
     console.warn('PAC data cleaned!')
   }
 
@@ -239,13 +230,13 @@ class Proxy {
   }
 
   async controlledByOtherExtensions () {
-    const { levelOfControl } = await this.browser.proxy.settings.get({})
+    const { levelOfControl } = await Browser.proxy.settings.get({})
 
     return levelOfControl === 'controlled_by_other_extensions'
   }
 
   async controlledByThisExtension () {
-    const { levelOfControl } = await this.browser.proxy.settings.get({})
+    const { levelOfControl } = await Browser.proxy.settings.get({})
 
     return levelOfControl === 'controlled_by_this_extension'
   }

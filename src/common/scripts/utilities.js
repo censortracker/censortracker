@@ -1,15 +1,6 @@
 import validator from 'validator'
 
-export const isFirefox = () => typeof browser !== 'undefined'
-
-export const getBrowser = () => {
-  if (isFirefox()) {
-    return browser
-  }
-  return chrome
-}
-
-const currentBrowser = getBrowser()
+import Browser from './webextension'
 
 const isExtensionUrl = (url) => {
   return url.startsWith('about:') ||
@@ -123,10 +114,10 @@ export const translateDocument = (doc, props = {}) => {
     // Extract value with the given name from "props".
     const renderProp = element.getAttribute('data-i18n-render-prop')
 
-    let message = currentBrowser.i18n.getMessage(value)
+    let message = Browser.i18n.getMessage(value)
 
     if (renderProp && Object.hasOwnProperty.call(props, renderProp)) {
-      message = currentBrowser.i18n.getMessage(value, props[renderProp])
+      message = Browser.i18n.getMessage(value, props[renderProp])
     }
 
     if (message) {

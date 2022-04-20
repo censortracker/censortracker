@@ -60,14 +60,12 @@ chrome.tabs.onUpdated.addListener(handleTabState)
 
 const showCooperationAcceptedWarning = async (url) => {
   const hostname = utilities.extractHostnameFromUrl(url)
-  const { notifiedHosts, mutedForever, showNotifications } =
-    await storage.get({
+  const { notifiedHosts, showNotifications } = await storage.get({
       notifiedHosts: [],
-      mutedForever: [],
       showNotifications: true,
     })
 
-  if (showNotifications && !mutedForever.includes(hostname)) {
+  if (showNotifications) {
     if (!notifiedHosts.includes(hostname)) {
       await chrome.notifications.create({
         type: 'basic',

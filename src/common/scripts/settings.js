@@ -112,14 +112,6 @@ class Settings {
     console.warn('Notifications disabled.')
     await storage.set({ showNotifications: false })
   }
-
-  async disableDPIDetection () {
-    await storage.set({ useDPIDetection: false })
-  }
-
-  async enableDPIDetection () {
-    await storage.set({ useDPIDetection: true })
-  }
 }
 
 export default new Settings()

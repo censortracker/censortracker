@@ -86,7 +86,6 @@ import { translateDocument } from '@/common/scripts/utilities'
     await registry.sync()
     await proxy.setProxy()
     await settings.enableExtension()
-    await settings.disableDPIDetection()
     togglePopup('popupConfirmReset')
     togglePopup('popupCompletedSuccessfully')
     console.warn('CensorTracker has been reset to default settings.')

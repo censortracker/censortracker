@@ -7,7 +7,7 @@ const IGNORE_API_ENDPOINT_URI = 'https://app.censortracker.org/api/ignore/'
 
 class Ignore {
   constructor () {
-    this._ignoredHosts = new Set()
+    this._ignoredHosts = new Set() // TODO: Use storage instead
 
     setInterval(async () => {
       await this.fetch()

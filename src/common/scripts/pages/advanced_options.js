@@ -1,6 +1,6 @@
-import ignore from '@/common/scripts/ignore'
-import proxy from '@/common/scripts/proxy'
-import registry from '@/common/scripts/registry'
+import Ignore from '@/common/scripts/ignore'
+import ProxyManager from '@/common/scripts/proxy'
+import Registry from '@/common/scripts/registry'
 import Settings from '@/common/scripts/settings'
 
 (async () => {
@@ -55,10 +55,10 @@ import Settings from '@/common/scripts/settings'
 
   updateLocalRegistryBtn.addEventListener('click', async (event) => {
     togglePopup('popupCompletedSuccessfully')
-    const synced = await registry.sync()
+    const synced = await Registry.sync()
 
     if (synced) {
-      await proxy.setProxy()
+      await ProxyManager.setProxy()
     } else {
       console.error('Error on syncing database')
     }
@@ -67,9 +67,9 @@ import Settings from '@/common/scripts/settings'
   document.addEventListener('keydown', async (event) => {
     if (event.ctrlKey && event.key === 'd') {
       const debugInfoJSON = document.getElementById('debugInfoJSON')
-      const currentConfig = await registry.getConfig()
+      const currentConfig = await Registry.getConfig()
 
-      currentConfig.currentProxyURI = await proxy.getProxyServerURI()
+      currentConfig.currentProxyURI = await ProxyManager.getProxyServerURI()
       debugInfoJSON.innerText = JSON.stringify(currentConfig, undefined, 4)
 
       togglePopup('popupDebugInformation')
@@ -80,10 +80,10 @@ import Settings from '@/common/scripts/settings'
   confirmResetBtn.addEventListener('click', async (event) => {
     togglePopup('popupConfirmReset')
     togglePopup('popupCompletedSuccessfully')
-    await ignore.clear()
-    await registry.clear()
-    await registry.sync()
-    await proxy.setProxy()
+    await Ignore.clear()
+    await Registry.clear()
+    await Registry.sync()
+    await ProxyManager.setProxy()
     await Settings.enableExtension()
     console.warn('CensorTracker has been reset to default settings.')
   })

@@ -173,39 +173,39 @@ browser.runtime.onInstalled.addListener(handleInstalled)
  * @param changes Object describing the change. This contains one property for each key that changed.
  * @param _areaName The name of the storage area ("sync", "local") to which the changes were made.
  */
-// const handleStorageChanged = async ({ enableExtension, ignoredHosts, useProxy }, _areaName) => {
-//   if (enableExtension) {
-//     const newValue = enableExtension.newValue
-//     const oldValue = enableExtension.oldValue
-//
-//     if (newValue === true && oldValue === false) {
-//       await ProxyManager.setProxy()
-//     }
-//
-//     if (newValue === false && oldValue === true) {
-//       await ProxyManager.removeProxy()
-//     }
-//   }
-//
-//   if (useProxy && enableExtension === undefined) {
-//     const newValue = useProxy.newValue
-//     const oldValue = useProxy.oldValue
-//
-//     const extensionEnabled = Settings.extensionEnabled()
-//
-//     if (extensionEnabled) {
-//       if (newValue === true && oldValue === false) {
-//         await ProxyManager.setProxy()
-//       }
-//
-//       if (newValue === false && oldValue === true) {
-//         await ProxyManager.removeProxy()
-//       }
-//     }
-//   }
-// }
+const handleStorageChanged = async ({ enableExtension, ignoredHosts, useProxy }, _areaName) => {
+  if (enableExtension) {
+    const newValue = enableExtension.newValue
+    const oldValue = enableExtension.oldValue
 
-// browser.storage.onChanged.addListener(handleStorageChanged)
+    if (newValue === true && oldValue === false) {
+      await ProxyManager.setProxy()
+    }
+
+    if (newValue === false && oldValue === true) {
+      await ProxyManager.removeProxy()
+    }
+  }
+
+  if (useProxy && enableExtension === undefined) {
+    const newValue = useProxy.newValue
+    const oldValue = useProxy.oldValue
+
+    const extensionEnabled = Settings.extensionEnabled()
+
+    if (extensionEnabled) {
+      if (newValue === true && oldValue === false) {
+        await ProxyManager.setProxy()
+      }
+
+      if (newValue === false && oldValue === true) {
+        await ProxyManager.removeProxy()
+      }
+    }
+  }
+}
+
+browser.storage.onChanged.addListener(handleStorageChanged)
 
 // // Debug namespaces.
 window.censortracker = {

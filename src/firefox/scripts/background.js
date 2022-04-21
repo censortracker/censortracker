@@ -59,11 +59,12 @@ const checkProxyReadiness = async () => {
 }
 
 const handleTabState = async (tabId, changeInfo, { url: tabUrl }) => {
+  const isIgnored = await Ignore.contains(tabUrl)
   const proxyingEnabled = await ProxyManager.enabled()
   const extensionEnabled = await Settings.extensionEnabled()
 
   if (changeInfo && changeInfo.status === browser.tabs.TabStatus.COMPLETE) {
-    if (extensionEnabled && utilities.isValidURL(tabUrl) && !Ignore.contains(tabUrl)) {
+    if (extensionEnabled && !isIgnored && utilities.isValidURL(tabUrl)) {
       await checkProxyReadiness()
 
       const urlBlocked = await Registry.contains(tabUrl)

@@ -28,11 +28,11 @@ chrome.webNavigation.onBeforeNavigate.addListener(
 
 const handleTabState = async (tabId, changeInfo, tab) => {
   if (changeInfo && changeInfo.status === chrome.tabs.TabStatus.COMPLETE) {
-    const isNotIgnored = !Ignore.contains(tab.url)
+    const isIgnored = await Ignore.contains(tab.url)
     const proxyingEnabled = await ProxyManager.enabled()
     const extensionEnabled = await Settings.extensionEnabled()
 
-    if (extensionEnabled && isNotIgnored && utilities.isValidURL(tab.url)) {
+    if (extensionEnabled && !isIgnored && utilities.isValidURL(tab.url)) {
       const urlBlocked = await Registry.contains(tab.url)
       const { url: disseminatorUrl, cooperationRefused } =
         await Registry.retrieveInformationDisseminationOrganizerJSON(tab.url)

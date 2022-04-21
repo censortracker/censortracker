@@ -363,5 +363,14 @@
   },
   "debugInfoTip": {
     "message": "Нажмите комбинацию клавиш <kbd>Control</kbd> + <kbd>D</kbd> чтобы увидеть отладочную информацию."
+  },
+  "appName": {
+    "message": "CensorTracker — Обход блокировок"
+  },
+  "appDesc": {
+    "message": "Расширение для обхода блокировок."
+  },
+  "appAuthor": {
+    "message": "Роскомсвобода"
   }
 }

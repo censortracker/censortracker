@@ -1,7 +1,7 @@
 {
-  "name": "Censor Tracker",
-  "description": "Censor Tracker",
-  "author": "Roskomsvoboda",
+  "name": "__MSG_appName__",
+  "description": "__MSG_appDesc__",
+  "author": "__MSG_appAuthor__",
   "default_locale": "en",
   "homepage_url": "https://censortracker.org/",
   "icons": {

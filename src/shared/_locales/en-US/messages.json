@@ -359,5 +359,14 @@
   },
   "debugInfoTip": {
     "message": "Press <kbd>Control</kbd> + <kbd>D</kbd> to see debugging information."
+  },
+  "appName": {
+    "message": "CensorTracker – Proxy for Privacy & Security"
+  },
+  "appDesc": {
+    "message": "A censorship circumvention extension. Stay safe online with our proxy extension."
+  },
+  "appAuthor": {
+    "message": "Roskomsvoboda"
   }
 }

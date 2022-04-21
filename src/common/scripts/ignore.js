@@ -68,10 +68,11 @@ class Ignore {
     await storage.set({ ignoredHosts })
   }
 
-  contains (url) {
+  async contains (url) {
     const hostname = utilities.extractHostnameFromUrl(url)
+    const { ignoredHosts } = await storage.get({ ignoredHosts: [] })
 
-    if (this._ignoredHosts.has(hostname)) {
+    if (ignoredHosts.includes(hostname)) {
       console.warn(`Ignoring host: ${hostname}`)
       return true
     }

@@ -11,7 +11,7 @@ const REFRESH_PAC_PERIOD_IN_MINUTES = 60 * 10 * 1000 // Every 10 minutes
 class ProxyManager {
   constructor () {
     setInterval(async () => {
-      await this.setProxy() // TODO; Use alarms instead
+      await this.setProxy() // TODO: Use alarms instead
     }, REFRESH_PAC_PERIOD_IN_MINUTES)
   }
 

@@ -60,7 +60,7 @@ class ProxyManager {
     if (Browser.isFirefox) {
       await Browser.browserAction.setBadgeText({ text: '✕' })
       await storage.set({ privateBrowsingPermissionsRequired: true })
-      console.log('Private browsing permissions requested.')
+      console.info('Private browsing permissions requested.')
     }
   }
 
@@ -68,7 +68,7 @@ class ProxyManager {
     if (Browser.isFirefox) {
       await Browser.browserAction.setBadgeText({ text: '' })
       await storage.set({ privateBrowsingPermissionsRequired: false })
-      console.log('Private browsing permissions granted.')
+      console.info('Private browsing permissions granted.')
     }
   }
 

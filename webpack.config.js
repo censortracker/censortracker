@@ -166,15 +166,15 @@ const webConfig = {
       meta: contentSecurityPolicy,
     }),
     new HTMLWebpackPlugin({
-      filename: 'ignore_editor.html',
-      template: 'src/shared/pages/ignore_editor.html',
+      filename: 'ignore-editor.html',
+      template: 'src/shared/pages/ignore-editor.html',
       inject: true,
       chunks: ['ignore_editor', 'translator'],
       meta: contentSecurityPolicy,
     }),
     new HTMLWebpackPlugin({
-      filename: 'proxied_websites_editor.html',
-      template: 'src/shared/pages/proxied_websites_editor.html',
+      filename: 'proxied-websites-editor.html',
+      template: 'src/shared/pages/proxied-websites-editor.html',
       inject: true,
       chunks: ['proxied_websites_editor'],
       meta: contentSecurityPolicy,
@@ -187,8 +187,8 @@ const webConfig = {
       meta: contentSecurityPolicy,
     }),
     new HTMLWebpackPlugin({
-      filename: 'advanced_options.html',
-      template: 'src/shared/pages/advanced_options.html',
+      filename: 'advanced-options.html',
+      template: 'src/shared/pages/advanced-options.html',
       inject: true,
       chunks: ['options', 'advanced_options', 'translator'],
       meta: contentSecurityPolicy,
@@ -219,16 +219,16 @@ if (isFirefox) {
   webConfig.entry.installed = './src/firefox/scripts/pages/installed.js'
   webConfig.plugins.push(new HTMLWebpackPlugin({
     title: EXTENSION_NAME,
-    filename: 'incognito_required_popup.html',
-    template: 'src/firefox/pages/incognito_required_popup.html',
+    filename: 'incognito-required-popup.html',
+    template: 'src/firefox/pages/incognito-required-popup.html',
     inject: true,
     chunks: ['incognito_required'],
     meta: contentSecurityPolicy,
   }))
   webConfig.plugins.push(new HTMLWebpackPlugin({
     title: EXTENSION_NAME,
-    filename: 'proxy_options.html',
-    template: 'src/shared/pages/proxy_options.html',
+    filename: 'proxy-options.html',
+    template: 'src/shared/pages/proxy-options.html',
     inject: true,
     chunks: ['proxy_options'],
     meta: contentSecurityPolicy,
@@ -243,8 +243,8 @@ if (isFirefox) {
   }))
   webConfig.plugins.push(new HTMLWebpackPlugin({
     title: EXTENSION_NAME,
-    filename: 'incognito_required_tab.html',
-    template: 'src/firefox/pages/incognito_required_tab.html',
+    filename: 'incognito-required-tab.html',
+    template: 'src/firefox/pages/incognito-required-tab.html',
     inject: true,
     chunks: ['translator', 'incognito_required'],
     meta: contentSecurityPolicy,
@@ -255,8 +255,8 @@ if (isChromium) {
   webConfig.entry.controlled = `./src/${BROWSER}/scripts/pages/controlled.js`
   webConfig.plugins.push(new HTMLWebpackPlugin({
     title: EXTENSION_NAME,
-    filename: 'proxy_options.html',
-    template: 'src/shared/pages/proxy_options.html',
+    filename: 'proxy-options.html',
+    template: 'src/shared/pages/proxy-options.html',
     inject: true,
     chunks: ['proxy_options', 'controlled'],
     meta: contentSecurityPolicy,

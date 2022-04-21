@@ -98,6 +98,7 @@ class Registry {
    * Save JSON data from the remote resources in local storage.
    */
   async sync () {
+    console.group('Registry.sync()')
     const { apis } = await this.getConfig()
 
     if (apis.length > 0) {
@@ -119,6 +120,7 @@ class Registry {
         'Sync error: API endpoints are not provided for your country.',
       )
     }
+    console.groupEnd()
     return true
   };
 
@@ -215,33 +217,6 @@ class Registry {
       return dataObject
     }
     return {}
-  };
-
-  /**
-   * Clean local registry by schedule.
-   */
-  async clear () {
-    const day = new Date().getDate()
-
-    if (day % 2 === 0) {
-      await storage.set({ blockedDomains: [] })
-      console.warn('Outdated domains has been removed.')
-    }
-  };
-
-  /**
-   * Adds passed hostname to the local storage of banned domains.
-   */
-  async add (url) {
-    const hostname = utilities.extractHostnameFromUrl(url)
-    const { blockedDomains } = await storage.get({ blockedDomains: [] })
-
-    if (!blockedDomains.includes(hostname)) {
-      blockedDomains.push(hostname)
-      console.warn(`Domain ${hostname} added to local registry`)
-    }
-
-    await storage.set({ blockedDomains })
   };
 }
 

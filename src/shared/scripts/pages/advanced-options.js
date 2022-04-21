@@ -81,7 +81,6 @@ import Settings from '@/shared/scripts/settings'
     togglePopup('popupConfirmReset')
     togglePopup('popupCompletedSuccessfully')
     await Ignore.clear()
-    await Registry.clear()
     await Registry.sync()
     await ProxyManager.setProxy()
     await Settings.enableExtension()

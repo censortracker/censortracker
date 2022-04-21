@@ -139,6 +139,8 @@ const handleInstalled = async ({ reason }) => {
   await Settings.enableExtension()
   await Settings.enableNotifications()
 
+  console.group('onInstall')
+
   if (reason === browser.runtime.OnInstalledReason.INSTALL) {
     await browser.tabs.create({ url: 'installed.html' })
 
@@ -149,13 +151,14 @@ const handleInstalled = async ({ reason }) => {
         await browser.extension.isAllowedIncognitoAccess()
 
       if (allowedIncognitoAccess) {
-        console.warn('onInstall: incognito access allowed, setting proxy...')
+        console.warn('Incognito access allowed, setting proxy...')
         await ProxyManager.setProxy()
       } else {
         await ProxyManager.requestIncognitoAccess()
       }
     }
   }
+  console.groupEnd()
   await ProxyManager.ping()
 }
 

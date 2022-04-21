@@ -77,17 +77,15 @@ const webConfig = {
   // Also see: https://webpack.js.org/configuration/devtool/#devtool
   target: 'web',
   devtool: 'source-map',
-
   entry: {
-    popup: './src/shared/scripts/pages/popup.js',
-    options: './src/shared/scripts/pages/options.js',
-    advanced_options: './src/shared/scripts/pages/advanced-options.js',
-    proxy_options: './src/shared/scripts/pages/proxy-options.js',
-    ignore_editor: './src/shared/scripts/pages/ignore-editor.js',
-    proxied_websites_editor: './src/shared/scripts/pages/proxied-websites-editor.js',
-    translator: './src/shared/scripts/pages/translator.js',
+    'popup': './src/shared/scripts/pages/popup.js',
+    'options': './src/shared/scripts/pages/options.js',
+    'advanced-options': './src/shared/scripts/pages/advanced-options.js',
+    'proxy-options': './src/shared/scripts/pages/proxy-options.js',
+    'ignore-editor': './src/shared/scripts/pages/ignore-editor.js',
+    'proxied-websites-editor': './src/shared/scripts/pages/proxied-websites-editor.js',
+    'translator': './src/shared/scripts/pages/translator.js',
   },
-
   output: {
     path: resolve(`dist/${BROWSER}/${OUTPUT_SUB_DIR}`),
     libraryTarget: 'var',
@@ -95,14 +93,12 @@ const webConfig = {
     // filename: `[name]${PRODUCTION ? '.min' : ''}.js`,
     publicPath: PRODUCTION ? '' : '/',
   },
-
   resolve: {
     extensions: ['.js', '.ts', '.json'],
     alias: {
       '@': resolve('src'),
     },
   },
-
   module: {
     rules: [
       {
@@ -169,14 +165,14 @@ const webConfig = {
       filename: 'ignore-editor.html',
       template: 'src/shared/pages/ignore-editor.html',
       inject: true,
-      chunks: ['ignore_editor', 'translator'],
+      chunks: ['ignore-editor', 'translator'],
       meta: contentSecurityPolicy,
     }),
     new HTMLWebpackPlugin({
       filename: 'proxied-websites-editor.html',
       template: 'src/shared/pages/proxied-websites-editor.html',
       inject: true,
-      chunks: ['proxied_websites_editor'],
+      chunks: ['proxied-websites-editor'],
       meta: contentSecurityPolicy,
     }),
     new HTMLWebpackPlugin({
@@ -190,7 +186,7 @@ const webConfig = {
       filename: 'advanced-options.html',
       template: 'src/shared/pages/advanced-options.html',
       inject: true,
-      chunks: ['options', 'advanced_options', 'translator'],
+      chunks: ['options', 'advanced-options', 'translator'],
       meta: contentSecurityPolicy,
     }),
     new MergeJsonWebpackPlugin({
@@ -229,7 +225,7 @@ if (isFirefox) {
     filename: 'proxy-options.html',
     template: 'src/shared/pages/proxy-options.html',
     inject: true,
-    chunks: ['proxy_options'],
+    chunks: ['proxy-options'],
     meta: contentSecurityPolicy,
   }))
   webConfig.plugins.push(new HTMLWebpackPlugin({
@@ -257,7 +253,7 @@ if (isChromium) {
     filename: 'proxy-options.html',
     template: 'src/shared/pages/proxy-options.html',
     inject: true,
-    chunks: ['proxy_options', 'controlled'],
+    chunks: ['proxy-options', 'controlled'],
     meta: contentSecurityPolicy,
   }))
   webConfig.plugins.push(new HTMLWebpackPlugin({

@@ -200,7 +200,6 @@ const webConfig = {
       files: [
         './src/shared/manifest/base.json',
         `./src/${BROWSER}/manifest/${BROWSER}.json`,
-        // `./src/shared/manifest/environments/${NODE_ENV}.json`,
       ],
       output: {
         fileName: 'manifest.json',

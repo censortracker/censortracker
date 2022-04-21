@@ -1,9 +1,9 @@
 import validator from 'validator'
 
-import ProxyManager from '@/common/scripts/proxy'
-import Registry from '@/common/scripts/registry'
-import * as storage from '@/common/scripts/storage'
-import { translateDocument } from '@/common/scripts/utilities'
+import ProxyManager from '@/shared/scripts/proxy'
+import Registry from '@/shared/scripts/registry'
+import * as storage from '@/shared/scripts/storage'
+import { translateDocument } from '@/shared/scripts/utilities'
 
 (async () => {
   const proxyingEnabled = await ProxyManager.enabled()

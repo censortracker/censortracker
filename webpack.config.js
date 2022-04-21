@@ -79,13 +79,13 @@ const webConfig = {
   devtool: 'source-map',
 
   entry: {
-    popup: './src/common/scripts/pages/popup.js',
-    options: './src/common/scripts/pages/options.js',
-    advanced_options: './src/common/scripts/pages/advanced-options.js',
-    proxy_options: './src/common/scripts/pages/proxy-options.js',
-    ignore_editor: './src/common/scripts/pages/ignore-editor.js',
-    proxied_websites_editor: './src/common/scripts/pages/proxied-websites-editor.js',
-    translator: './src/common/scripts/pages/translator.js',
+    popup: './src/shared/scripts/pages/popup.js',
+    options: './src/shared/scripts/pages/options.js',
+    advanced_options: './src/shared/scripts/pages/advanced-options.js',
+    proxy_options: './src/shared/scripts/pages/proxy-options.js',
+    ignore_editor: './src/shared/scripts/pages/ignore-editor.js',
+    proxied_websites_editor: './src/shared/scripts/pages/proxied-websites-editor.js',
+    translator: './src/shared/scripts/pages/translator.js',
   },
 
   output: {
@@ -144,15 +144,15 @@ const webConfig = {
     new CopyWebpackPlugin({
       patterns: [
         {
-          from: resolve('src/common/images'),
+          from: resolve('src/shared/images'),
           to: resolve(`dist/${BROWSER}/${OUTPUT_SUB_DIR}/images`),
         },
         {
-          from: resolve('src/common/css'),
+          from: resolve('src/shared/css'),
           to: resolve(`dist/${BROWSER}/${OUTPUT_SUB_DIR}/css`),
         },
         {
-          from: resolve('src/common/_locales/'),
+          from: resolve('src/shared/_locales/'),
           to: resolve(`dist/${BROWSER}/${OUTPUT_SUB_DIR}/_locales`),
         },
       ],
@@ -160,35 +160,35 @@ const webConfig = {
     new HTMLWebpackPlugin({
       title: EXTENSION_NAME,
       filename: 'popup.html',
-      template: 'src/common/pages/popup.html',
+      template: 'src/shared/pages/popup.html',
       inject: true,
       chunks: ['popup', 'translator'],
       meta: contentSecurityPolicy,
     }),
     new HTMLWebpackPlugin({
       filename: 'ignore_editor.html',
-      template: 'src/common/pages/ignore_editor.html',
+      template: 'src/shared/pages/ignore_editor.html',
       inject: true,
       chunks: ['ignore_editor', 'translator'],
       meta: contentSecurityPolicy,
     }),
     new HTMLWebpackPlugin({
       filename: 'proxied_websites_editor.html',
-      template: 'src/common/pages/proxied_websites_editor.html',
+      template: 'src/shared/pages/proxied_websites_editor.html',
       inject: true,
       chunks: ['proxied_websites_editor'],
       meta: contentSecurityPolicy,
     }),
     new HTMLWebpackPlugin({
       filename: 'options.html',
-      template: 'src/common/pages/options.html',
+      template: 'src/shared/pages/options.html',
       inject: true,
       chunks: ['options', 'translator'],
       meta: contentSecurityPolicy,
     }),
     new HTMLWebpackPlugin({
       filename: 'advanced_options.html',
-      template: 'src/common/pages/advanced_options.html',
+      template: 'src/shared/pages/advanced_options.html',
       inject: true,
       chunks: ['options', 'advanced_options', 'translator'],
       meta: contentSecurityPolicy,
@@ -198,9 +198,9 @@ const webConfig = {
         nosort: false,
       },
       files: [
-        './src/common/manifest/base.json',
+        './src/shared/manifest/base.json',
         `./src/${BROWSER}/manifest/${BROWSER}.json`,
-        // `./src/common/manifest/environments/${NODE_ENV}.json`,
+        // `./src/shared/manifest/environments/${NODE_ENV}.json`,
       ],
       output: {
         fileName: 'manifest.json',
@@ -228,7 +228,7 @@ if (isFirefox) {
   webConfig.plugins.push(new HTMLWebpackPlugin({
     title: EXTENSION_NAME,
     filename: 'proxy_options.html',
-    template: 'src/common/pages/proxy_options.html',
+    template: 'src/shared/pages/proxy_options.html',
     inject: true,
     chunks: ['proxy_options'],
     meta: contentSecurityPolicy,
@@ -256,7 +256,7 @@ if (isChromium) {
   webConfig.plugins.push(new HTMLWebpackPlugin({
     title: EXTENSION_NAME,
     filename: 'proxy_options.html',
-    template: 'src/common/pages/proxy_options.html',
+    template: 'src/shared/pages/proxy_options.html',
     inject: true,
     chunks: ['proxy_options', 'controlled'],
     meta: contentSecurityPolicy,

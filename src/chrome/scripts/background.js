@@ -5,13 +5,13 @@ import {
   handleOnAlarm,
   handleProxyError,
   handleStartup,
-} from '@/common/scripts/handlers'
-import Ignore from '@/common/scripts/ignore'
-import ProxyManager from '@/common/scripts/proxy'
-import Registry from '@/common/scripts/registry'
-import Settings from '@/common/scripts/settings'
-import * as storage from '@/common/scripts/storage'
-import * as utilities from '@/common/scripts/utilities'
+} from '@/shared/scripts/handlers'
+import Ignore from '@/shared/scripts/ignore'
+import ProxyManager from '@/shared/scripts/proxy'
+import Registry from '@/shared/scripts/registry'
+import Settings from '@/shared/scripts/settings'
+import * as storage from '@/shared/scripts/storage'
+import * as utilities from '@/shared/scripts/utilities'
 
 chrome.alarms.onAlarm.addListener(handleOnAlarm)
 chrome.runtime.onStartup.addListener(handleStartup)

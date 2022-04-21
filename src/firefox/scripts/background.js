@@ -162,8 +162,8 @@ const handleInstalled = async ({ reason }) => {
       console.warn('Synchronization failed')
     }
   }
-  console.groupEnd()
   await ProxyManager.ping()
+  console.groupEnd()
 }
 
 browser.runtime.onInstalled.addListener(handleInstalled)

@@ -280,7 +280,7 @@ if (PRODUCTION) {
   webConfig.devtool = 'none'
 
   // See https://webpack.js.org/configuration/optimization/#optimizationminimize
-  webConfig.optimization.minimize = false
+  webConfig.optimization.minimize = true
 
   // See: https://webpack.js.org/plugins/terser-webpack-plugin/
   webConfig.plugins.push(new TerserPlugin({

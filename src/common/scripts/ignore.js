@@ -13,9 +13,9 @@ class Ignore {
 
   async fetch () {
     try {
+      const ignoredHosts = await this.getAll()
       const response = await fetch(IGNORE_API_ENDPOINT_URI)
       const { domains } = await response.json()
-      const { ignoredHosts } = await storage.get({ ignoredHosts: [] })
 
       for (const domain of domains) {
         if (!ignoredHosts.includes(domain)) {
@@ -28,8 +28,14 @@ class Ignore {
     }
   }
 
-  clear = async () => {
+  async clear () {
     await storage.set({ ignoredHosts: [] })
+  }
+
+  async getAll () {
+    const { ignoredHosts } = await storage.get({ ignoredHosts: [] })
+
+    return ignoredHosts
   }
 
   async add (url) {
@@ -45,8 +51,8 @@ class Ignore {
   }
 
   async contains (url) {
+    const ignoredHosts = await this.getAll()
     const hostname = utilities.extractHostnameFromUrl(url)
-    const { ignoredHosts } = await storage.get({ ignoredHosts: [] })
 
     if (ignoredHosts.includes(hostname)) {
       console.warn(`Ignoring host: ${hostname}`)

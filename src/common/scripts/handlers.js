@@ -1,4 +1,3 @@
-import Ignore from './ignore'
 import ProxyManager from './proxy'
 import * as storage from './storage'
 
@@ -22,7 +21,6 @@ export const handleProxyError = (details) => {
 
 export const handleIgnoredHostsChange = async ({ ignoredHosts }, _areaName) => {
   if (ignoredHosts && ignoredHosts.newValue) {
-    await Ignore.save()
     await ProxyManager.setProxy()
   }
 }

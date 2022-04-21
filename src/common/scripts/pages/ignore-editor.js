@@ -4,15 +4,16 @@ import 'codemirror/addon/search/searchcursor'
 
 import CodeMirror from 'codemirror'
 
-import { translateDocument, validateArrayOfURLs } from '@/common/scripts/utilities'
+import {
+  validateArrayOfURLs,
+} from '@/common/scripts/utilities'
 
-import * as storage from '../storage'
+import Ignore from '../ignore'
 
 (async () => {
-  translateDocument(document)
+  const ignoredHosts = await Ignore.getAll()
   const searchInput = document.getElementById('search')
   const ignoredList = document.getElementById('ignoreList')
-  const { ignoredHosts } = await storage.get({ ignoredHosts: [] })
 
   const content = ignoredHosts.join('\n')
   const editor = CodeMirror.fromTextArea(
@@ -30,11 +31,13 @@ import * as storage from '../storage'
 
   document.addEventListener('keydown', async (event) => {
     if ((event.ctrlKey && event.key === 's') || event.keyCode === 13) {
-      const urls = editor.getValue().split('\n')
+      const naughtyUrls = editor.getValue().split('\n')
+      const urls = validateArrayOfURLs(naughtyUrls)
 
-      await storage.set({
-        ignoredHosts: validateArrayOfURLs(urls),
-      })
+      for (const url of urls) {
+        await Ignore.add(url)
+      }
+
       event.preventDefault()
     }
   })

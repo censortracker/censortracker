@@ -47,7 +47,7 @@ const webWorkerConfig = {
   },
 
   optimization: {
-    minimize: false,
+    minimize: true,
     minimizer: [],
   },
 
@@ -169,7 +169,7 @@ const webConfig = {
       filename: 'ignore_editor.html',
       template: 'src/common/pages/ignore_editor.html',
       inject: true,
-      chunks: ['ignore_editor'],
+      chunks: ['ignore_editor', 'translator'],
       meta: contentSecurityPolicy,
     }),
     new HTMLWebpackPlugin({

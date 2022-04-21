@@ -136,10 +136,12 @@ const showCooperationAcceptedWarning = async (url) => {
  * @returns {Promise<void>}
  */
 const handleInstalled = async ({ reason }) => {
+  console.group('onInstall')
+
+  console.group('Settings')
   await Settings.enableExtension()
   await Settings.enableNotifications()
-
-  console.group('onInstall')
+  console.groupEnd()
 
   if (reason === browser.runtime.OnInstalledReason.INSTALL) {
     await browser.tabs.create({ url: 'installed.html' })
@@ -156,6 +158,8 @@ const handleInstalled = async ({ reason }) => {
       } else {
         await ProxyManager.requestIncognitoAccess()
       }
+    } else {
+      console.warn('Synchronization failed')
     }
   }
   console.groupEnd()

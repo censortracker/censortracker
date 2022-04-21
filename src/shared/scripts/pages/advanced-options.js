@@ -1,7 +1,7 @@
-import Ignore from '@/common/scripts/ignore'
-import ProxyManager from '@/common/scripts/proxy'
-import Registry from '@/common/scripts/registry'
-import Settings from '@/common/scripts/settings'
+import Ignore from '@/shared/scripts/ignore'
+import ProxyManager from '@/shared/scripts/proxy'
+import Registry from '@/shared/scripts/registry'
+import Settings from '@/shared/scripts/settings'
 
 (async () => {
   const completedConfirmBtn = document.getElementById('completedConfirm')

@@ -1,13 +1,13 @@
-import ProxyManager from '@/common/scripts/proxy'
-import Registry from '@/common/scripts/registry'
-import Settings from '@/common/scripts/settings'
-import * as storage from '@/common/scripts/storage'
+import ProxyManager from '@/shared/scripts/proxy'
+import Registry from '@/shared/scripts/registry'
+import Settings from '@/shared/scripts/settings'
+import * as storage from '@/shared/scripts/storage'
 import {
   extractHostnameFromUrl,
   isValidURL,
   select,
-} from '@/common/scripts/utilities'
-import Browser from '@/common/scripts/webextension';
+} from '@/shared/scripts/utilities'
+import Browser from '@/shared/scripts/webextension';
 
 (async () => {
   const uiText = {

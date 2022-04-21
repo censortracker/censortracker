@@ -4,37 +4,40 @@ import 'codemirror/addon/search/searchcursor'
 
 import CodeMirror from 'codemirror'
 
-import { translateDocument, validateArrayOfURLs } from '@/common/scripts/utilities'
+import {
+  validateArrayOfURLs,
+} from '@/shared/scripts/utilities'
 
-import * as storage from '../storage'
+import Ignore from '../ignore'
 
 (async () => {
-  translateDocument(document)
+  const ignoredHosts = await Ignore.getAll()
   const searchInput = document.getElementById('search')
-  const domainsList = document.getElementById('domainsList')
-  const { customProxiedDomains } = await storage.get({
-    customProxiedDomains: [],
-  })
+  const ignoredList = document.getElementById('ignoreList')
 
-  const content = customProxiedDomains.join('\n')
-  const editor = CodeMirror.fromTextArea(domainsList, {
-    lineNumbers: true,
-    lineWrapping: true,
-    mode: 'text/x-mysql',
-    styleActiveLine: true,
-    styleActiveSelected: true,
-    disableSpellcheck: true,
-  })
+  const content = ignoredHosts.join('\n')
+  const editor = CodeMirror.fromTextArea(
+    ignoredList, {
+      lineNumbers: true,
+      lineWrapping: true,
+      mode: 'text/x-mysql',
+      styleActiveLine: true,
+      styleActiveSelected: true,
+      disableSpellcheck: true,
+    },
+  )
 
   editor.setValue(content)
 
   document.addEventListener('keydown', async (event) => {
     if ((event.ctrlKey && event.key === 's') || event.keyCode === 13) {
-      const urls = editor.getValue().split('\n')
+      const naughtyUrls = editor.getValue().split('\n')
+      const urls = validateArrayOfURLs(naughtyUrls)
 
-      await storage.set({
-        customProxiedDomains: validateArrayOfURLs(urls),
-      })
+      for (const url of urls) {
+        await Ignore.add(url)
+      }
+
       event.preventDefault()
     }
   })
@@ -50,9 +53,13 @@ import * as storage from '../storage'
 
     while (cursor.findNext()) {
       // Mark a range of text with a specific CSS class name.
-      editor.markText(cursor.from(), cursor.to(), {
-        className: 'highlight',
-      })
+      editor.markText(
+        cursor.from(),
+        cursor.to(),
+        {
+          className: 'highlight',
+        },
+      )
     }
   })
 })()

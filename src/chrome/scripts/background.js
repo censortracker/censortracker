@@ -5,6 +5,7 @@ import {
   handleOnAlarm,
   handleProxyError,
   handleStartup,
+  handleStorageChanged,
 } from '@/shared/scripts/handlers'
 import Ignore from '@/shared/scripts/ignore'
 import ProxyManager from '@/shared/scripts/proxy'
@@ -16,6 +17,7 @@ import * as utilities from '@/shared/scripts/utilities'
 chrome.alarms.onAlarm.addListener(handleOnAlarm)
 chrome.runtime.onStartup.addListener(handleStartup)
 chrome.proxy.onProxyError.addListener(handleProxyError)
+chrome.storage.onChanged.addListener(handleStorageChanged)
 chrome.storage.onChanged.addListener(handleIgnoredHostsChange)
 chrome.storage.onChanged.addListener(handleCustomProxiedDomainsChange)
 
@@ -119,42 +121,3 @@ const handleTabCreate = async ({ id }) => {
 }
 
 chrome.tabs.onCreated.addListener(handleTabCreate)
-
-/**
- * Fired when one or more items change.
- * @param changes Object describing the change. This contains one property for each key that changed.
- * @param _areaName The name of the storage area ("sync", "local") to which the changes were made.
- */
-const handleStorageChanged = async ({ enableExtension, ignoredHosts, useProxy }, _areaName) => {
-  if (enableExtension) {
-    const newValue = enableExtension.newValue
-    const oldValue = enableExtension.oldValue
-
-    if (newValue === true && oldValue === false) {
-      await ProxyManager.setProxy()
-    }
-
-    if (newValue === false && oldValue === true) {
-      await ProxyManager.removeProxy()
-    }
-  }
-
-  if (useProxy && enableExtension === undefined) {
-    const newValue = useProxy.newValue
-    const oldValue = useProxy.oldValue
-
-    const extensionEnabled = Settings.extensionEnabled()
-
-    if (extensionEnabled) {
-      if (newValue === true && oldValue === false) {
-        await ProxyManager.setProxy()
-      }
-
-      if (newValue === false && oldValue === true) {
-        await ProxyManager.removeProxy()
-      }
-    }
-  }
-}
-
-chrome.storage.onChanged.addListener(handleStorageChanged)

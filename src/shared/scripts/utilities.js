@@ -143,3 +143,7 @@ export const validateArrayOfURLs = (urls) => {
   }
   return Array.from(result)
 }
+
+export const getRequestFilter = () => {
+  return { urls: ['http://*/*', 'https://*/*'], types: ['main_frame'] }
+}

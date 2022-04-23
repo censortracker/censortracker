@@ -1,7 +1,7 @@
-import { translateDocument } from '@/shared/scripts/utilities'
+import { select, translateDocument } from '@/shared/scripts/utilities'
 
 (() => {
-  const howToGrantIncognitoAccess = document.getElementById('howToGrantIncognitoAccess')
+  const howToGrantIncognitoAccess = select({ id: 'howToGrantIncognitoAccess' })
 
   howToGrantIncognitoAccess.addEventListener('click', async () => {
     await browser.tabs.create({

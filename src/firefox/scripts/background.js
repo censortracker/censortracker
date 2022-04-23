@@ -136,10 +136,8 @@ const showCooperationAcceptedWarning = async (url) => {
 const handleInstalled = async ({ reason }) => {
   console.group('onInstall')
 
-  console.group('Settings')
   await Settings.enableExtension()
   await Settings.enableNotifications()
-  console.groupEnd()
 
   if (reason === browser.runtime.OnInstalledReason.INSTALL) {
     await browser.tabs.create({ url: 'installed.html' })

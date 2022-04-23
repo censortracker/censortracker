@@ -10,20 +10,9 @@ class Settings {
     return Browser.runtime.getURL('images/icons/128x128/danger.png')
   }
 
-  getDefaultIcon () {
-    return Browser.runtime.getURL('images/icons/128x128/default.png')
-  }
-
-  getDisabledIcon () {
-    return Browser.runtime.getURL('images/icons/128x128/disabled.png')
-  }
-
-  getBlockedIcon () {
-    return Browser.runtime.getURL('images/icons/128x128/blocked.png')
-  }
-
-  changePageIcon (tabId, path) {
+  changePageIcon (tabId, filename) {
     const title = this.getName()
+    const path = Browser.runtime.getURL(`images/icons/128x128/${filename}.png`)
 
     if (Browser.isFirefox) {
       Browser.browserAction.setIcon({ tabId, path })
@@ -35,22 +24,22 @@ class Settings {
   }
 
   setDisableIcon (tabId) {
-    this.changePageIcon(tabId, this.getDisabledIcon())
+    this.changePageIcon(tabId, 'disabled')
     console.warn('Settings.setDisableIcon()')
   }
 
   setDefaultIcon (tabId) {
-    this.changePageIcon(tabId, this.getDefaultIcon())
+    this.changePageIcon(tabId, 'default')
     console.warn('Settings.setDefaultIcon()')
   }
 
   setDangerIcon (tabId) {
-    this.changePageIcon(tabId, this.getDangerIcon())
+    this.changePageIcon(tabId, 'danger')
     console.warn('Settings.setDangerIcon()')
   }
 
   setBlockedIcon (tabId) {
-    this.changePageIcon(tabId, this.getBlockedIcon())
+    this.changePageIcon(tabId, 'blocked')
     console.warn('Settings.setBlockedIcon()')
   }
 

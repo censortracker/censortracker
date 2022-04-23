@@ -89,23 +89,24 @@ const showCooperationAcceptedWarning = async (url) => {
 }
 
 const handleInstalled = async ({ reason }) => {
-  if (reason === chrome.runtime.OnInstalledReason.INSTALL) {
-    chrome.tabs.create({
-      url: chrome.runtime.getURL('installed.html'),
-    })
-  }
+  console.group('onInstall')
 
   await Settings.enableExtension()
   await Settings.enableNotifications()
 
   if (reason === chrome.runtime.OnInstalledReason.INSTALL) {
+    await chrome.tabs.create({ url: 'installed.html' })
+
     const synchronized = await Registry.sync()
 
     if (synchronized) {
+      await ProxyManager.ping()
       await ProxyManager.setProxy()
+    } else {
+      console.warn('Synchronization failed')
     }
   }
-  await ProxyManager.ping()
+  console.groupEnd()
 }
 
 chrome.runtime.onInstalled.addListener(handleInstalled)

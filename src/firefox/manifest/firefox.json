@@ -20,6 +20,6 @@
   "permissions": [
     "<all_urls>",
     "webRequest",
-    "webRequestBlocking"
+    "alarms"
   ]
 }

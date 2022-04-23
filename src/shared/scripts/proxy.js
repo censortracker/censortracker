@@ -197,20 +197,18 @@ class ProxyManager {
       reserveProxyPingURI: FALLBACK_PROXY_SERVER_PING_URI,
     })
 
-    try {
-      await fetch(`http://${reserveProxyPingURI}`, {
-        method: 'POST',
-        headers: {
-          'Content-type': 'application/json; charset=UTF-8',
-        },
-        body: JSON.stringify({
-          type: 'ping',
-        }),
-      })
-      console.warn(`Ping ${reserveProxyPingURI}`)
-    } catch (_error) {
-      console.warn(`Ping ${reserveProxyPingURI} failed!`)
-    }
+    fetch(`http://${reserveProxyPingURI}`, {
+      method: 'POST',
+      headers: {
+        'Content-type': 'application/json; charset=UTF-8',
+      },
+      body: JSON.stringify({
+        type: 'ping',
+      }),
+    }).catch(() => {
+      // We don't care about the result.
+      console.warn(`Pinged ${reserveProxyPingURI}!`)
+    })
   }
 
   async enabled () {

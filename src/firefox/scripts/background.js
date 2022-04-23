@@ -1,9 +1,9 @@
 import {
   handleBeforeRequestPing,
-  //   handleCustomProxiedDomainsChange,
-  //   handleIgnoredHostsChange,
-  //   handleProxyError,
-  //   handleStartup,
+  handleCustomProxiedDomainsChange,
+  handleIgnoredHostsChange,
+  handleProxyError,
+  handleStartup,
   handleStorageChanged,
 } from '@/shared/scripts/handlers'
 import Ignore from '@/shared/scripts/ignore'
@@ -13,11 +13,11 @@ import Settings from '@/shared/scripts/settings'
 import * as storage from '@/shared/scripts/storage'
 import * as utilities from '@/shared/scripts/utilities'
 
-// browser.runtime.onStartup.addListener(handleStartup)
-// browser.proxy.onError.addListener(handleProxyError)
+browser.proxy.onError.addListener(handleProxyError)
+browser.runtime.onStartup.addListener(handleStartup)
 browser.storage.onChanged.addListener(handleStorageChanged)
-// browser.storage.onChanged.addListener(handleIgnoredHostsChange)
-// browser.storage.onChanged.addListener(handleCustomProxiedDomainsChange)
+browser.storage.onChanged.addListener(handleIgnoredHostsChange)
+browser.storage.onChanged.addListener(handleCustomProxiedDomainsChange)
 
 const handleBeforeRequestCheckIncognitoAccess = async (_details) => {
   const allowed = await browser.extension.isAllowedIncognitoAccess()
@@ -28,106 +28,104 @@ const handleBeforeRequestCheckIncognitoAccess = async (_details) => {
 }
 
 browser.webRequest.onBeforeRequest.addListener(
-  handleBeforeRequestPing,
+  handleBeforeRequestCheckIncognitoAccess,
   utilities.getRequestFilter(),
 )
 
 browser.webRequest.onBeforeRequest.addListener(
-  handleBeforeRequestCheckIncognitoAccess,
+  handleBeforeRequestPing,
   utilities.getRequestFilter(),
 )
+
+const handleTabCreate = async ({ id }) => {
+  const extensionEnabled = await Settings.extensionEnabled()
+
+  if (extensionEnabled) {
+    await checkProxyReadiness()
+  } else {
+    Settings.setDisableIcon(id)
+  }
+}
+
+browser.tabs.onCreated.addListener(handleTabCreate)
+
+const handleTabState = async (tabId, changeInfo, { url: tabUrl }) => {
+  const isIgnored = await Ignore.contains(tabUrl)
+  const proxyingEnabled = await ProxyManager.enabled()
+  const extensionEnabled = await Settings.extensionEnabled()
+
+  if (changeInfo && changeInfo.status === browser.tabs.TabStatus.COMPLETE) {
+    if (extensionEnabled && !isIgnored && utilities.isValidURL(tabUrl)) {
+      await checkProxyReadiness()
+
+      const urlBlocked = await Registry.contains(tabUrl)
+      const { url: disseminatorUrl, cooperationRefused } =
+        await Registry.retrieveInformationDisseminationOrganizerJSON(tabUrl)
+
+      if (proxyingEnabled && urlBlocked) {
+        Settings.setBlockedIcon(tabId)
+        return
+      }
+
+      if (disseminatorUrl) {
+        Settings.setDangerIcon(tabId)
+        if (!cooperationRefused) {
+          await showCooperationAcceptedWarning(tabUrl)
+        }
+      }
+    }
+  }
+}
+
+browser.tabs.onActivated.addListener(handleTabState)
+browser.tabs.onUpdated.addListener(handleTabState)
 
 /**
  * Check if proxy is ready to use.
  * Set proxy if proxying enabled and incognito access granted.
  * @returns {Promise<boolean>}
  */
-// const checkProxyReadiness = async () => {
-//   const proxyingEnabled = await ProxyManager.enabled()
-//   const controlledByThisExtension = await ProxyManager.controlledByThisExtension()
-//   const allowedIncognitoAccess = await browser.extension.isAllowedIncognitoAccess()
-//
-//   if (proxyingEnabled && allowedIncognitoAccess) {
-//     if (!controlledByThisExtension) {
-//       await ProxyManager.setProxy()
-//       await ProxyManager.grantIncognitoAccess()
-//     }
-//     return true
-//   }
-//   console.warn('Proxy is not ready to use. Check if private browsing permissions granted.')
-//   return false
-// }
+const checkProxyReadiness = async () => {
+  const proxyingEnabled = await ProxyManager.enabled()
+  const controlledByThisExtension = await ProxyManager.controlledByThisExtension()
+  const allowedIncognitoAccess = await browser.extension.isAllowedIncognitoAccess()
 
-// eslint-disable-next-line no-unused-vars
-// const handleTabState = async (tabId, changeInfo, { url: tabUrl }) => {
-//   const isIgnored = await Ignore.contains(tabUrl)
-//   const proxyingEnabled = await ProxyManager.enabled()
-//   const extensionEnabled = await Settings.extensionEnabled()
-//
-//   if (changeInfo && changeInfo.status === browser.tabs.TabStatus.COMPLETE) {
-//     if (extensionEnabled && !isIgnored && utilities.isValidURL(tabUrl)) {
-//       // await checkProxyReadiness()
-//
-//       const urlBlocked = await Registry.contains(tabUrl)
-//       const { url: disseminatorUrl, cooperationRefused } =
-//         await Registry.retrieveInformationDisseminationOrganizerJSON(tabUrl)
-//
-//       if (proxyingEnabled && urlBlocked) {
-//         Settings.setBlockedIcon(tabId)
-//         return
-//       }
-//
-//       if (disseminatorUrl) {
-//         Settings.setDangerIcon(tabId)
-//         if (!cooperationRefused) {
-//           await showCooperationAcceptedWarning(tabUrl)
-//         }
-//       }
-//     }
-//   }
-// }
+  if (proxyingEnabled && allowedIncognitoAccess) {
+    if (!controlledByThisExtension) {
+      await ProxyManager.setProxy()
+      await ProxyManager.grantIncognitoAccess()
+    }
+  } else {
+    console.warn('Proxy is not ready to use. Check if private browsing permissions granted.')
+  }
+}
 
-// browser.tabs.onActivated.addListener(handleTabState)
-// browser.tabs.onUpdated.addListener(handleTabState)
+const showCooperationAcceptedWarning = async (url) => {
+  const hostname = utilities.extractHostnameFromUrl(url)
+  const { notifiedHosts, showNotifications } = await storage.get({
+    notifiedHosts: new Set(),
+    showNotifications: true,
+  })
 
-// const handleTabCreate = async ({ id }) => {
-//   const extensionEnabled = await Settings.extensionEnabled()
-//
-//   if (extensionEnabled) {
-//     // await checkProxyReadiness()
-//   } else {
-//     Settings.setDisableIcon(id)
-//   }
-// }
+  if (showNotifications) {
+    if (!notifiedHosts.has(hostname)) {
+      console.log(`Showing notification for ${hostname}`)
+      await browser.notifications.create(hostname, {
+        type: 'basic',
+        title: Settings.getName(),
+        iconUrl: Settings.getDangerIcon(),
+        message: browser.i18n.getMessage('cooperationAcceptedMessage', hostname),
+      })
 
-// browser.tabs.onCreated.addListener(handleTabCreate)
-
-// const showCooperationAcceptedWarning = async (url) => {
-//   const hostname = utilities.extractHostnameFromUrl(url)
-//   const { notifiedHosts, showNotifications } = await storage.get({
-//     notifiedHosts: new Set(),
-//     showNotifications: true,
-//   })
-//
-//   if (showNotifications) {
-//     if (!notifiedHosts.has(hostname)) {
-//       console.log(`Showing notification for ${hostname}`)
-//       await browser.notifications.create(hostname, {
-//         type: 'basic',
-//         title: Settings.getName(),
-//         iconUrl: Settings.getDangerIcon(),
-//         message: browser.i18n.getMessage('cooperationAcceptedMessage', hostname),
-//       })
-//
-//       try {
-//         notifiedHosts.add(hostname)
-//         await storage.set({ notifiedHosts })
-//       } catch (error) {
-//         console.error(error)
-//       }
-//     }
-//   }
-// }
+      try {
+        notifiedHosts.add(hostname)
+        await storage.set({ notifiedHosts })
+      } catch (error) {
+        console.error(error)
+      }
+    }
+  }
+}
 
 /**
  * Fired when the extension is first installed, when the extension is

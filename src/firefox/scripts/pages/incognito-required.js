@@ -7,17 +7,20 @@ import { extractDecodedOriginUrl, select, translateDocument } from '@/shared/scr
   const howToGrantIncognitoAccess = select({ id: 'howToGrantIncognitoAccess' })
   const grantPrivateBrowsingPermissionsButton = select({ id: 'grantPrivateBrowsingPermissionsButton' })
 
-  const [tab] = await browser.tabs.query({ active: true, lastFocusedWindow: true })
+  const [tab] = await browser.tabs.query({
+    active: true,
+    lastFocusedWindow: true,
+  })
+  const popupUrl = browser.runtime.getURL('popup.html')
   const allowedIncognitoAccess = await browser.extension.isAllowedIncognitoAccess()
-  const originUrl = extractDecodedOriginUrl(tab.url)
+
+  grantPrivateBrowsingPermissionsButton.hidden = !allowedIncognitoAccess
 
   if (backToPopup) {
     backToPopup.addEventListener('click', () => {
-      window.location.href = browser.runtime.getURL('popup.html')
+      window.location.href = popupUrl
     })
   }
-
-  grantPrivateBrowsingPermissionsButton.hidden = !allowedIncognitoAccess
 
   if (closeTab) {
     closeTab.addEventListener('click', () => {
@@ -35,12 +38,14 @@ import { extractDecodedOriginUrl, select, translateDocument } from '@/shared/scr
     grantPrivateBrowsingPermissionsButton.addEventListener('click', async () => {
       const proxySet = await ProxyManager.setProxy()
 
-      if (proxySet === true) {
+      if (proxySet) {
         await ProxyManager.grantIncognitoAccess()
-        window.location.href = browser.runtime.getURL('popup.html')
+        window.location.href = popupUrl
       }
     })
   }
 
-  translateDocument(document, { url: originUrl })
+  translateDocument(document, {
+    url: extractDecodedOriginUrl(tab.url),
+  })
 })()

@@ -1,5 +1,5 @@
-CensorTracker: Bypass Censorship
-================================
+CensorTracker: Censorship Circumvention Tool
+============================================
 
 [![Logo](/.github/media/censortracker_popup_en.png)](https://github.com/roskomsvoboda/censortracker)
 
@@ -14,8 +14,7 @@ CensorTracker: Bypass Censorship
 Features
 ========
 
-CensorTracker provides a lot of useful features, here are the most
-important:
+CensorTracker provides a lot of useful features, here are the most important:
 
 - Configurable proxy
 - Country-specific proxying
@@ -31,8 +30,8 @@ Prerequisites
 
 Make sure you have required versions of `node` and `npm`, which are:
 
-- `node v15.4.0` or higher
-- `npm 7.6.3` or higher
+- `node v17.4.0` or higher
+- `npm 8.3.1` or higher
 
 Optionally, you may like:
 

@@ -8,7 +8,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 const HTMLWebpackPlugin = require('html-webpack-plugin')
 const MergeJsonWebpackPlugin = require('merge-jsons-webpack-plugin')
 
-const EXTENSION_NAME = 'Censor Tracker'
+const extensionName = 'CensorTracker'
 
 function resolve(dir) {
   return path.join(__dirname, dir)
@@ -154,7 +154,7 @@ const webConfig = {
       ],
     }),
     new HTMLWebpackPlugin({
-      title: EXTENSION_NAME,
+      title: extensionName,
       filename: 'popup.html',
       template: 'src/shared/pages/popup.html',
       inject: true,
@@ -213,7 +213,7 @@ if (isFirefox) {
   webConfig.entry.incognito_required = `./src/${BROWSER}/scripts/pages/incognito-required.js`
   webConfig.entry.installed = './src/firefox/scripts/pages/installed.js'
   webConfig.plugins.push(new HTMLWebpackPlugin({
-    title: EXTENSION_NAME,
+    title: extensionName,
     filename: 'incognito-required-popup.html',
     template: 'src/firefox/pages/incognito-required-popup.html',
     inject: true,
@@ -221,7 +221,7 @@ if (isFirefox) {
     meta: contentSecurityPolicy,
   }))
   webConfig.plugins.push(new HTMLWebpackPlugin({
-    title: EXTENSION_NAME,
+    title: extensionName,
     filename: 'proxy-options.html',
     template: 'src/shared/pages/proxy-options.html',
     inject: true,
@@ -229,7 +229,7 @@ if (isFirefox) {
     meta: contentSecurityPolicy,
   }))
   webConfig.plugins.push(new HTMLWebpackPlugin({
-    title: EXTENSION_NAME,
+    title: extensionName,
     filename: 'installed.html',
     template: 'src/firefox/pages/installed.html',
     inject: true,
@@ -237,7 +237,7 @@ if (isFirefox) {
     meta: contentSecurityPolicy,
   }))
   webConfig.plugins.push(new HTMLWebpackPlugin({
-    title: EXTENSION_NAME,
+    title: extensionName,
     filename: 'incognito-required-tab.html',
     template: 'src/firefox/pages/incognito-required-tab.html',
     inject: true,
@@ -249,7 +249,7 @@ if (isFirefox) {
 if (isChromium) {
   webConfig.entry.controlled = `./src/${BROWSER}/scripts/pages/controlled.js`
   webConfig.plugins.push(new HTMLWebpackPlugin({
-    title: EXTENSION_NAME,
+    title: extensionName,
     filename: 'proxy-options.html',
     template: 'src/shared/pages/proxy-options.html',
     inject: true,
@@ -257,7 +257,7 @@ if (isChromium) {
     meta: contentSecurityPolicy,
   }))
   webConfig.plugins.push(new HTMLWebpackPlugin({
-    title: EXTENSION_NAME,
+    title: extensionName,
     filename: 'controlled.html',
     template: `src/${BROWSER}/pages/controlled.html`,
     inject: true,
@@ -265,7 +265,7 @@ if (isChromium) {
     meta: contentSecurityPolicy,
   }))
   webConfig.plugins.push(new HTMLWebpackPlugin({
-    title: EXTENSION_NAME,
+    title: extensionName,
     filename: 'installed.html',
     template: `src/${BROWSER}/pages/installed.html`,
     inject: true,

@@ -1,3 +1,9 @@
+# 6.0.0.0
+
+- Refactor whole codebase.
+- Fix performance issues and bugs
+- Migrated to Manifest v3 Chromium version.
+
 ### 5.3.1.0
 
 - Fixed duplication in ignore

@@ -12,14 +12,5 @@
   "options_ui": {
     "page": "options.html",
     "open_in_tab": true
-  },
-  "permissions": [
-    "activeTab",
-    "management",
-    "notifications",
-    "proxy",
-    "storage",
-    "tabs",
-    "unlimitedStorage"
-  ]
+  }
 }

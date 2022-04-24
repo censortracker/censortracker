@@ -14,7 +14,14 @@
   },
   "permissions": [
     "alarms",
-    "webNavigation"
+    "webNavigation",
+    "activeTab",
+    "management",
+    "notifications",
+    "proxy",
+    "storage",
+    "tabs",
+    "unlimitedStorage"
   ],
   "content_security_policy": {
     "extension_pages": "object-src 'self'; script-src 'self';"

@@ -20,6 +20,13 @@
   "permissions": [
     "<all_urls>",
     "webRequest",
-    "alarms"
+    "alarms",
+    "activeTab",
+    "management",
+    "notifications",
+    "proxy",
+    "storage",
+    "tabs",
+    "unlimitedStorage"
   ]
 }

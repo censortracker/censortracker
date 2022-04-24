@@ -1,15 +1,15 @@
 import ProxyManager from '@/shared/scripts/proxy'
-import { translateDocument } from '@/shared/scripts/utilities'
+import { select, translateDocument } from '@/shared/scripts/utilities'
 
 (async () => {
   translateDocument(document)
-  const backToPopup = document.getElementById('backToPopup')
-  const disableOtherExtensionsButtons = document.getElementsByClassName('disable-other-extensions__btn')
-  const extensionNameElements = document.getElementsByClassName('extension__name')
-  const extensionsWhichControlsProxy = document.getElementById('extensionsWhichControlsProxy')
-  const controlledByExtension = document.getElementById('controlledByOtherExtension')
-  const controlledByExtensions = document.getElementById('controlledByOtherExtensions')
-  const useProxyCheckbox = document.getElementById('useProxyCheckbox')
+  const backToPopup = select({ id: 'backToPopup' })
+  const disableOtherExtensionsButtons = select({ cls: 'disable-other-extensions__btn' })
+  const extensionNameElements = select({ cls: 'extension__name' })
+  const extensionsWhichControlsProxy = select({ id: 'extensionsWhichControlsProxy' })
+  const controlledByExtension = select({ id: 'controlledByOtherExtension' })
+  const controlledByExtensions = select({ id: 'controlledByOtherExtensions' })
+  const useProxyCheckbox = select({ id: 'useProxyCheckbox' })
 
   const isProxyControlledByOtherExtensions = await ProxyManager.controlledByOtherExtensions()
 
@@ -69,7 +69,7 @@ import { translateDocument } from '@/shared/scripts/utilities'
 
   if (backToPopup) {
     backToPopup.addEventListener('click', () => {
-      window.location.href = chrome.runtime.getURL('popup.html')
+      window.location.href = 'popup.html'
     })
   }
 

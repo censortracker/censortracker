@@ -194,8 +194,8 @@ const webConfig = {
         nosort: false,
       },
       files: [
-        './src/shared/manifest/base.json',
         `./src/${BROWSER}/manifest/${BROWSER}.json`,
+        './src/shared/manifest/base.json',
       ],
       output: {
         fileName: 'manifest.json',

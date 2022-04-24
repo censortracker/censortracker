@@ -2,8 +2,8 @@
     "files.exclude": {
         "**/node_modules": true,
         "**/.idea": true,
-        "**/.github": true,
+        "**/.github": true
     },
     "files.autoSave": "afterDelay",
-    "files.autoSaveDelay": 1000,
+    "files.autoSaveDelay": 1000
 }

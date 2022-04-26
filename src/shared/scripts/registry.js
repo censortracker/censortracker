@@ -41,7 +41,6 @@ class Registry {
           specifics,
           registryUrl,
           countryDetails,
-          reportEndpoint,
           customRegistryUrl,
         } = data
 
@@ -72,7 +71,6 @@ class Registry {
 
         const config = {
           apis,
-          reportEndpoint,
           countryDetails,
         }
 

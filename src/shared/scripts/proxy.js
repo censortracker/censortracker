@@ -1,20 +1,16 @@
 import Registry from './registry'
 import * as storage from './storage'
+import Task from './task'
 import Browser from './webextension'
 
 const PROXY_CONFIG_API_URL = 'https://app.censortracker.org/api/proxy-config/'
 const FALLBACK_PROXY_SERVER_HOST = 'proxy.roskomsvoboda.org'
 const FALLBACK_PROXY_SERVER_URL = `${FALLBACK_PROXY_SERVER_HOST}:33333`
 const FALLBACK_PROXY_SERVER_PING_URI = `${FALLBACK_PROXY_SERVER_HOST}:39263`
-const REFRESH_PAC_PERIOD_IN_MINUTES = 60 * 10 * 1000 // Every 10 minutes
+
+Task.schedule('proxy-setProxy', { minutes: 10 })
 
 class ProxyManager {
-  constructor () {
-    setInterval(async () => {
-      await this.setProxy() // TODO: Use alarms instead
-    }, REFRESH_PAC_PERIOD_IN_MINUTES)
-  }
-
   async fetchReserveConfig () {
     try {
       const response = await fetch(PROXY_CONFIG_API_URL)
@@ -33,7 +29,7 @@ class ProxyManager {
       console.warn('Reverse proxy is not provided.')
     } catch (error) {
       console.error(
-        `Error on fetching proxy: trying again in ${REFRESH_PAC_PERIOD_IN_MINUTES} minutes...`,
+        'Error on fetching proxy: trying again in 10 minutes...',
       )
     }
     return {}

@@ -1,11 +1,25 @@
+import Ignore from './ignore'
 import ProxyManager from './proxy'
+import Registry from './registry'
 import Settings from './settings'
 import * as storage from './storage'
 
-export const handleOnAlarm = async (alarm) => {
-  if (alarm.name === 'refresh-proxy') {
+export const handleOnAlarm = async ({ name }) => {
+  console.groupCollapsed('handleOnAlarm')
+  console.warn(`Alarm received: ${name}`)
+
+  if (name === 'ignore-fetch') {
+    await Ignore.fetch()
+  }
+
+  if (name === 'proxy-setProxy') {
     await ProxyManager.setProxy()
   }
+
+  if (name === 'registry-sync') {
+    await Registry.sync()
+  }
+  console.groupEnd()
 }
 
 export const handleBeforeRequestPing = async (_details) => {
@@ -43,32 +57,15 @@ export const handleCustomProxiedDomainsChange = async ({ customProxiedDomains },
  * @param _areaName The name of the storage area ("sync", "local") to which the changes were made.
  */
 export const handleStorageChanged = async ({ enableExtension, ignoredHosts, useProxy }, _areaName) => {
-  console.group('handleStorageChanged')
+  if (enableExtension || ignoredHosts || useProxy) {
+    console.group('handleStorageChanged')
 
-  if (enableExtension) {
-    const newValue = enableExtension.newValue
-    const oldValue = enableExtension.oldValue
+    if (enableExtension) {
+      const newValue = enableExtension.newValue
+      const oldValue = enableExtension.oldValue
 
-    console.log(`enableExtension: ${oldValue} -> ${newValue}`)
+      console.log(`enableExtension: ${oldValue} -> ${newValue}`)
 
-    if (newValue === true && oldValue === false) {
-      await ProxyManager.setProxy()
-    }
-
-    if (newValue === false && oldValue === true) {
-      await ProxyManager.removeProxy()
-    }
-  }
-
-  if (useProxy && enableExtension === undefined) {
-    const newValue = useProxy.newValue
-    const oldValue = useProxy.oldValue
-
-    console.log(`useProxy: ${oldValue} -> ${newValue}`)
-
-    const extensionEnabled = await Settings.extensionEnabled()
-
-    if (extensionEnabled) {
       if (newValue === true && oldValue === false) {
         await ProxyManager.setProxy()
       }
@@ -77,6 +74,25 @@ export const handleStorageChanged = async ({ enableExtension, ignoredHosts, useP
         await ProxyManager.removeProxy()
       }
     }
+
+    if (useProxy && enableExtension === undefined) {
+      const newValue = useProxy.newValue
+      const oldValue = useProxy.oldValue
+
+      console.log(`useProxy: ${oldValue} -> ${newValue}`)
+
+      const extensionEnabled = await Settings.extensionEnabled()
+
+      if (extensionEnabled) {
+        if (newValue === true && oldValue === false) {
+          await ProxyManager.setProxy()
+        }
+
+        if (newValue === false && oldValue === true) {
+          await ProxyManager.removeProxy()
+        }
+      }
+    }
+    console.groupEnd()
   }
-  console.groupEnd()
 }

@@ -1,16 +1,12 @@
 import * as storage from './storage'
+import Task from './task'
 import * as utilities from './utilities'
 
-const IGNORE_FETCH_INTERVAL = (60 * 15) * 1000
 const IGNORE_API_ENDPOINT_URI = 'https://app.censortracker.org/api/ignore/'
 
-class Ignore {
-  constructor () {
-    setInterval(async () => {
-      await this.fetch() // TODO: Use alarm instead
-    }, IGNORE_FETCH_INTERVAL)
-  }
+Task.schedule('ignore-fetch', { minutes: 15 })
 
+class Ignore {
   async fetch () {
     try {
       const ignoredHosts = await this.getAll()

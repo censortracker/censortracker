@@ -14,7 +14,7 @@ class Task {
   /**
    * Creates a task and schedules it to run every X minutes.
    * @param name Task name.
-   * @param minutes Periodicity in minutes
+   * @param minutes Periodicity in minutes.
    */
   schedule (name, { minutes }) {
     Browser.alarms.get(name).then((alarm = { name }) => {

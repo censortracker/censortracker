@@ -1,6 +1,8 @@
 import 'codemirror/addon/search/search'
 import 'codemirror/addon/search/matchesonscrollbar'
 import 'codemirror/addon/search/searchcursor'
+import 'codemirror/addon/display/autorefresh'
+import 'codemirror/lib/codemirror.css'
 
 import CodeMirror from 'codemirror'
 
@@ -18,6 +20,7 @@ import * as storage from '../storage'
 
   const content = customProxiedDomains.join('\n')
   const editor = CodeMirror.fromTextArea(domainsList, {
+    autorefresh: true,
     lineNumbers: true,
     lineWrapping: true,
     mode: 'text/x-mysql',

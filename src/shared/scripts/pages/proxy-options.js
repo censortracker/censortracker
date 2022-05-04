@@ -1,9 +1,7 @@
-import validator from 'validator'
-
 import ProxyManager from '@/shared/scripts/proxy'
 import Registry from '@/shared/scripts/registry'
 import * as storage from '@/shared/scripts/storage'
-import { translateDocument } from '@/shared/scripts/utilities'
+import { isPort, translateDocument } from '@/shared/scripts/utilities'
 
 (async () => {
   const proxyingEnabled = await ProxyManager.enabled()
@@ -53,7 +51,7 @@ import { translateDocument } from '@/shared/scripts/utilities'
     const customProxyServerURI = `${host}:${port}`
 
     if ((event.ctrlKey && event.key === 's') || event.keyCode === 13) {
-      if (host && validator.isPort(port)) {
+      if (host && isPort(port)) {
         await storage.set({ useCustomChecked: true })
         await storage.set({ customProxyPort: port, customProxyHost: host })
         await storage.set({ customProxyServerURI })

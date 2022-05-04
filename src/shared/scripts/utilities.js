@@ -8,12 +8,10 @@ import Browser from './webextension'
  * @returns {boolean} true if valid, false otherwise.
  */
 export const isPort = (value) => {
-  const portMaxValue = 65535
-
   try {
     const port = parseInt(value, 10)
 
-    return port >= 0 && port <= portMaxValue
+    return port >= 0 && port < (2 ** 16)
   } catch (error) {
     return false
   }

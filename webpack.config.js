@@ -122,14 +122,14 @@ const webConfig = {
         test: /\.(png|jpe?g|gif)$/,
         use: [
           {
-            loader: 'asset/resource',
+            // loader: 'asset/resource',
+            loader: 'file-loader',
             options: {
               name: '[name].[ext]',
               outputPath: `dist/${BROWSER}/${OUTPUT_SUB_DIR}/images/`,
             },
           },
         ],
-        type: 'javascript/auto',
       },
     ],
   },
@@ -277,20 +277,30 @@ if (isChromium) {
 if (PRODUCTION) {
   // See https://git.io/JmiaL
   // See https://webpack.js.org/configuration/devtool/#production
-  webConfig.devtool = 'source-map'
+  webConfig.devtool = 'nosources-source-map'
 
   // See https://webpack.js.org/configuration/optimization/#optimizationminimize
   webConfig.optimization.minimize = true
-
-  // See: https://webpack.js.org/plugins/terser-webpack-plugin/
-  webConfig.plugins.push(new TerserPlugin({
-    terserOptions: {
-      format: {
-        comments: false,
+  webConfig.optimization.minimizer =  [
+    new TerserPlugin({
+      terserOptions: {
+        output: {
+          comments: false,
+        },
       },
-    },
-    extractComments: false,
-  }))
+    }),
+  ]
+  webWorkerConfig.devtool = 'nosources-source-map'
+  webWorkerConfig.optimization.minimize = true
+  webWorkerConfig.optimization.minimizer =  [
+    new TerserPlugin({
+      terserOptions: {
+        output: {
+          comments: false,
+        },
+      },
+    }),
+  ]
 }
 
 module.exports = [webConfig, webWorkerConfig]

@@ -34,7 +34,6 @@ const webWorkerConfig = {
   },
   output: {
     path: resolve(`dist/chrome/${OUTPUT_SUB_DIR}`),
-    libraryTarget: 'var',
     filename: '[name].js',
     publicPath: PRODUCTION ? '' : '/',
   },
@@ -49,6 +48,7 @@ const webWorkerConfig = {
   optimization: {
     minimize: true,
     minimizer: [],
+    moduleIds: 'named',
   },
 
   module: {
@@ -88,7 +88,6 @@ const webConfig = {
   },
   output: {
     path: resolve(`dist/${BROWSER}/${OUTPUT_SUB_DIR}`),
-    libraryTarget: 'var',
     filename: '[name].js',
     // filename: `[name]${PRODUCTION ? '.min' : ''}.js`,
     publicPath: PRODUCTION ? '' : '/',
@@ -123,19 +122,19 @@ const webConfig = {
         test: /\.(png|jpe?g|gif)$/,
         use: [
           {
-            loader: 'file-loader',
+            loader: 'asset/resource',
             options: {
               name: '[name].[ext]',
               outputPath: `dist/${BROWSER}/${OUTPUT_SUB_DIR}/images/`,
             },
           },
         ],
+        type: 'javascript/auto',
       },
     ],
   },
 
   plugins: [
-    new webpack.NamedModulesPlugin(),
     new webpack.HotModuleReplacementPlugin(),
     new CopyWebpackPlugin({
       patterns: [
@@ -205,6 +204,7 @@ const webConfig = {
   optimization: {
     minimize: false,
     minimizer: [],
+    moduleIds: 'named',
   },
 }
 
@@ -277,7 +277,7 @@ if (isChromium) {
 if (PRODUCTION) {
   // See https://git.io/JmiaL
   // See https://webpack.js.org/configuration/devtool/#production
-  webConfig.devtool = 'none'
+  webConfig.devtool = 'source-map'
 
   // See https://webpack.js.org/configuration/optimization/#optimizationminimize
   webConfig.optimization.minimize = true
@@ -285,7 +285,6 @@ if (PRODUCTION) {
   // See: https://webpack.js.org/plugins/terser-webpack-plugin/
   webConfig.plugins.push(new TerserPlugin({
     terserOptions: {
-      parallel: true,
       format: {
         comments: false,
       },

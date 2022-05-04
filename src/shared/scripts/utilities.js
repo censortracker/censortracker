@@ -17,6 +17,11 @@ export const isPort = (value) => {
   }
 }
 
+/**
+ * Checks if passed value is a extension URL.
+ * @param url URL to check.
+ * @returns {boolean} true if valid, false otherwise.
+ */
 const isExtensionUrl = (url) => {
   return url.startsWith('about:') ||
     url.startsWith('moz-extension:') ||
@@ -25,7 +30,7 @@ const isExtensionUrl = (url) => {
 
 /**
  * Validate passed URL using regex.
- * @param url URL
+ * @param url URL to check.
  * @returns {boolean} true if valid otherwise false
  */
 export const isValidURL = (url) => {
@@ -74,8 +79,8 @@ export const extractHostnameFromUrl = (url) => {
 }
 
 /**
- * Extracts origin decoded URl.
- * @param url Chrome extension URl.
+ * Extracts origin decoded URL.
+ * @param url Chrome extension URL.
  * @param key Key.
  * @returns {string|*}
  */
@@ -92,7 +97,7 @@ export const extractDecodedOriginUrl = (url, key = 'originUrl') => {
 }
 
 /**
- * Get UNIX timestamp
+ * Returns UNIX timestamp.
  */
 export const timestamp = () => {
   return Math.floor(Date.now() / 1000)
@@ -159,6 +164,15 @@ export const validateArrayOfURLs = (urls) => {
   return Array.from(result)
 }
 
+/**
+ * Returns request filter
+ * @returns {Object}
+ */
 export const getRequestFilter = () => {
-  return { urls: ['http://*/*', 'https://*/*'], types: ['main_frame'] }
+  return {
+    urls: [
+      'http://*/*', 'https://*/*',
+    ],
+    types: ['main_frame'],
+  }
 }

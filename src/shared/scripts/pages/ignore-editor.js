@@ -1,6 +1,8 @@
 import 'codemirror/addon/search/search'
 import 'codemirror/addon/search/matchesonscrollbar'
 import 'codemirror/addon/search/searchcursor'
+import 'codemirror/addon/display/autorefresh'
+import 'codemirror/lib/codemirror.css'
 
 import CodeMirror from 'codemirror'
 
@@ -18,6 +20,7 @@ import Ignore from '../ignore'
   const content = ignoredHosts.join('\n')
   const editor = CodeMirror.fromTextArea(
     ignoredList, {
+      autorefresh: true,
       lineNumbers: true,
       lineWrapping: true,
       mode: 'text/x-mysql',
@@ -37,7 +40,7 @@ import Ignore from '../ignore'
       for (const url of urls) {
         await Ignore.add(url)
       }
-
+      console.warn('Ignore list updated')
       event.preventDefault()
     }
   })
@@ -50,6 +53,8 @@ import Ignore from '../ignore'
 
     const value = searchInput.value
     const cursor = editor.getSearchCursor(value)
+
+    console.log(`Searching for: ${value}...`)
 
     while (cursor.findNext()) {
       // Mark a range of text with a specific CSS class name.

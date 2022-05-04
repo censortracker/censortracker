@@ -38,6 +38,7 @@ import * as storage from '../storage'
       await storage.set({
         customProxiedDomains: validateArrayOfURLs(urls),
       })
+      console.warn('Ignore list updated')
       event.preventDefault()
     }
   })
@@ -50,6 +51,8 @@ import * as storage from '../storage'
 
     const value = searchInput.value
     const cursor = editor.getSearchCursor(value)
+
+    console.log(`Searching for: ${value}...`)
 
     while (cursor.findNext()) {
       // Mark a range of text with a specific CSS class name.

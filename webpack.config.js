@@ -93,13 +93,25 @@ const webConfig = {
     publicPath: PRODUCTION ? '' : '/',
   },
   resolve: {
-    extensions: ['.js', '.ts', '.json'],
+    extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
     alias: {
       '@': resolve('src'),
     },
   },
   module: {
     rules: [
+      { test: /\.css$/, use: ['style-loader', 'css-loader']},
+      {
+        test: /\.svg$/,
+        use: [
+          {
+            loader: 'svg-url-loader',
+            options: {
+              noquotes: true,
+            },
+          },
+        ],
+      },
       {
         test: /\.js$/,
         use: 'eslint-loader',
@@ -107,12 +119,21 @@ const webConfig = {
         enforce: 'pre',
       },
       {
-        test: /\.js$/,
-        use: 'babel-loader',
+        test: /\.(js|jsx)$/,
+        use: [
+          {
+            loader: 'babel-loader',
+          }
+        ],
         exclude: /node_modules/,
         include: [
           resolve('src'),
         ],
+      },
+      {
+        test: /\.(ts|tsx)$/,
+        loader: 'ts-loader',
+        exclude: /node_modules/,
       },
       {
         test: /\.svg$/,
@@ -122,8 +143,7 @@ const webConfig = {
         test: /\.(png|jpe?g|gif)$/,
         use: [
           {
-            // loader: 'asset/resource',
-            loader: 'file-loader',
+            loader: 'asset/resource',
             options: {
               name: '[name].[ext]',
               outputPath: `dist/${BROWSER}/${OUTPUT_SUB_DIR}/images/`,
@@ -281,7 +301,7 @@ if (PRODUCTION) {
 
   // See https://webpack.js.org/configuration/optimization/#optimizationminimize
   webConfig.optimization.minimize = true
-  webConfig.optimization.minimizer =  [
+  webConfig.optimization.minimizer = [
     new TerserPlugin({
       terserOptions: {
         output: {
@@ -292,7 +312,7 @@ if (PRODUCTION) {
   ]
   webWorkerConfig.devtool = 'nosources-source-map'
   webWorkerConfig.optimization.minimize = true
-  webWorkerConfig.optimization.minimizer =  [
+  webWorkerConfig.optimization.minimizer = [
     new TerserPlugin({
       terserOptions: {
         output: {

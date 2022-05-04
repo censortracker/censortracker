@@ -3,6 +3,8 @@
 - Refactor whole codebase.
 - Fix performance issues and bugs
 - Migrated to Manifest v3 Chromium version.
+- Add ``chrome.alarms`` and ``browser.alarms`` support.
+- Fix config caching issues.
 
 ### 5.3.1.0
 

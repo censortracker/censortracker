@@ -2,6 +2,23 @@ import validator from 'validator'
 
 import Browser from './webextension'
 
+/**
+ * Checks if passed value is a valid port number.
+ * @param value Port number to check.
+ * @returns {boolean} true if valid, false otherwise.
+ */
+export const isPort = (value) => {
+  const portMaxValue = 65535
+
+  try {
+    const port = parseInt(value, 10)
+
+    return port >= 0 && port <= portMaxValue
+  } catch (error) {
+    return false
+  }
+}
+
 const isExtensionUrl = (url) => {
   return url.startsWith('about:') ||
     url.startsWith('moz-extension:') ||

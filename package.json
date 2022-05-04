@@ -19,8 +19,8 @@
     "clean": " rm -rf dist releases"
   },
   "dependencies": {
-    "codemirror": "^5.60.0",
-    "validator": "^13.6.0"
+    "validator": "^13.6.0",
+    "codemirror": "^5.60.0"
   },
   "devDependencies": {
     "@atomix/eslint-config": "^7.0.0-next.1",

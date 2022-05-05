@@ -6,25 +6,29 @@ class Task {
    * @param name Task name.
    * @param minutes Delay in minutes.
    */
-  delay (name, { minutes }) {
+  async delay (name, { minutes }) {
     Browser.alarms.create(name, { delayInMinutes: minutes })
-    console.warn(`Task.delay('${name}', { minutes: ${minutes} })`)
+    console.log(`Task.delay('${name}', { minutes: ${minutes} })`)
   }
 
   /**
    * Creates a task and schedules it to run every X minutes.
-   * @param name Task name.
-   * @param minutes Periodicity in minutes.
+   * @param tasks Array of tasks.
+   * @type tasks Array<{ name: string, minutes: number }>.
    */
-  schedule (name, { minutes }) {
-    Browser.alarms.get(name).then((alarm = { name }) => {
-      if (!name) {
-        Browser.alarms.create(name, { periodInMinutes: minutes })
-        console.warn(`Task.schedule('${name}', { minutes: ${minutes} })`)
+  async schedule (tasks = []) {
+    console.group('Task.schedule(tasks)')
+    for (const { name, minutes } of tasks) {
+      const alarm = await Browser.alarms.get(name)
+
+      if (alarm) {
+        console.warn(`Task «${name}» already scheduled!`)
       } else {
-        console.warn(`Task('${name}') already scheduled!`)
+        Browser.alarms.create(name, { periodInMinutes: minutes })
+        console.log(`Scheduled task «${name}» to run every ${minutes} minutes`)
       }
-    })
+    }
+    console.groupEnd()
   }
 }
 

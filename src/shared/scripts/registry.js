@@ -1,11 +1,8 @@
 import * as storage from './storage'
-import Task from './task'
 import * as utilities from './utilities'
 
 const CONFIG_API_URL = 'https://app.censortracker.org/api/config/'
 const CONFIG_EXPIRATION_TIME = 60 * 60 * 3000 // 3 Hours
-
-Task.schedule('registry-sync', { minutes: 30 })
 
 class Registry {
   async configExpired () {

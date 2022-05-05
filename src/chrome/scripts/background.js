@@ -12,6 +12,7 @@ import ProxyManager from '@/shared/scripts/proxy'
 import Registry from '@/shared/scripts/registry'
 import Settings from '@/shared/scripts/settings'
 import * as storage from '@/shared/scripts/storage'
+import Task from '@/shared/scripts/task'
 import * as utilities from '@/shared/scripts/utilities'
 
 chrome.alarms.onAlarm.addListener(handleOnAlarm)
@@ -96,6 +97,12 @@ const handleInstalled = async ({ reason }) => {
 
   if (reason === chrome.runtime.OnInstalledReason.INSTALL) {
     await chrome.tabs.create({ url: 'installed.html' })
+
+    await Task.schedule([
+      { name: 'ignore-fetch', minutes: 15 },
+      { name: 'registry-sync', minutes: 30 },
+      { name: 'proxy-setProxy', minutes: 10 },
+    ])
 
     const synchronized = await Registry.sync()
 

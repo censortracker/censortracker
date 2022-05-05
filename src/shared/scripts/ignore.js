@@ -1,12 +1,9 @@
 import * as storage from './storage'
-import Task from './task'
 import * as utilities from './utilities'
 
 const IGNORE_API_ENDPOINT_URI = 'https://app.censortracker.org/api/ignore/'
 
-Task.schedule('ignore-fetch', { minutes: 15 })
-
-class Ignore {
+export class Ignore {
   async fetch () {
     try {
       const ignoredHosts = await this.getAll()

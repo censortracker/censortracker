@@ -4,6 +4,9 @@ import * as utilities from './utilities'
 const IGNORE_API_ENDPOINT_URI = 'https://app.censortracker.org/api/ignore/'
 
 export class Ignore {
+  /**
+   * Fetches ignored domains from the API endpoint.
+   */
   async fetch () {
     try {
       const ignoredHosts = await this.getAll()
@@ -22,16 +25,26 @@ export class Ignore {
     }
   }
 
+  /**
+   * Clears the list of ignored domains.
+   */
   async clear () {
     await storage.set({ ignoredHosts: [] })
   }
 
+  /**
+   * Returns the list of all ignored domains.
+   */
   async getAll () {
     const { ignoredHosts } = await storage.get({ ignoredHosts: [] })
 
     return ignoredHosts
   }
 
+  /**
+   * Adds a given URL to the list of ignored.
+   * @param url URL to ignore.
+   */
   async add (url) {
     const { ignoredHosts } = await storage.get({ ignoredHosts: [] })
 
@@ -43,6 +56,10 @@ export class Ignore {
     await storage.set({ ignoredHosts })
   }
 
+  /**
+   * Checks if a given URL is ignored..
+   * @param url URL.
+   */
   async contains (url) {
     const ignoredHosts = await this.getAll()
     const hostname = utilities.extractHostnameFromUrl(url)

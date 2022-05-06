@@ -144,7 +144,7 @@ const handleInstalled = async ({ reason }) => {
     await browser.tabs.create({ url: 'installed.html' })
 
     await Task.schedule([
-      { name: 'ignore-fetch', minutes: 15 },
+      { name: 'ignore-fetch', minutes: 10 },
       { name: 'registry-sync', minutes: 30 },
       { name: 'proxy-setProxy', minutes: 10 },
     ])

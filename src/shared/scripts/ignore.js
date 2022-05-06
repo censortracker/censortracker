@@ -16,6 +16,7 @@ export class Ignore {
         }
       }
       await storage.set({ ignoredHosts })
+      console.log('Remote ignored domains fetched!')
     } catch (error) {
       console.warn('Fetching ignored domains...')
     }

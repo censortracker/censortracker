@@ -25,22 +25,22 @@ class Settings {
 
   setDisableIcon (tabId) {
     this.changePageIcon(tabId, 'disabled')
-    console.warn('Settings.setDisableIcon()')
+    console.log('Settings.setDisableIcon()')
   }
 
   setDefaultIcon (tabId) {
     this.changePageIcon(tabId, 'default')
-    console.warn('Settings.setDefaultIcon()')
+    console.log('Settings.setDefaultIcon()')
   }
 
   setDangerIcon (tabId) {
     this.changePageIcon(tabId, 'danger')
-    console.warn('Settings.setDangerIcon()')
+    console.log('Settings.setDangerIcon()')
   }
 
   setBlockedIcon (tabId) {
     this.changePageIcon(tabId, 'blocked')
-    console.warn('Settings.setBlockedIcon()')
+    console.log('Settings.setBlockedIcon()')
   }
 
   async changeExtensionState ({ useProxy, enableExtension, showNotifications }) {
@@ -88,7 +88,7 @@ class Settings {
       await Browser.browserAction.setBadgeText({ text: '' })
     }
 
-    console.warn('Settings.disableExtension()')
+    console.log('Settings.disableExtension()')
   }
 
   async enableNotifications () {
@@ -98,7 +98,7 @@ class Settings {
 
   async disableNotifications () {
     await storage.set({ showNotifications: false })
-    console.warn('Settings.disableNotifications()')
+    console.log('Settings.disableNotifications()')
   }
 }
 

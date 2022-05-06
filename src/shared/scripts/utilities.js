@@ -146,9 +146,15 @@ export const translateDocument = (doc, props = {}) => {
   }
 }
 
-export const validateArrayOfURLs = (urls) => {
+/**
+ * Validate given array of URLs.
+ * @param urls Array of urls.
+ * @returns {Array[string]} Array of valid URLs.
+ */
+export const validateUrls = (urls) => {
   const result = new Set()
 
+  // TODO: Refactor this.
   for (const url of urls) {
     if (url !== '' && url.indexOf('.') !== -1) {
       let domain = url.replace(/^https?:\/\//, '').replace('www.', '')

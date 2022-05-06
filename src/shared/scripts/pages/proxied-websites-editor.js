@@ -6,7 +6,7 @@ import 'codemirror/lib/codemirror.css'
 
 import CodeMirror from 'codemirror'
 
-import { translateDocument, validateArrayOfURLs } from '@/shared/scripts/utilities'
+import { translateDocument, validateUrls } from '@/shared/scripts/utilities'
 
 import * as storage from '../storage'
 
@@ -36,7 +36,7 @@ import * as storage from '../storage'
       const urls = editor.getValue().split('\n')
 
       await storage.set({
-        customProxiedDomains: validateArrayOfURLs(urls),
+        customProxiedDomains: validateUrls(urls),
       })
       console.warn('Ignore list updated')
       event.preventDefault()

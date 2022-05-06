@@ -6,11 +6,8 @@ import 'codemirror/lib/codemirror.css'
 
 import CodeMirror from 'codemirror'
 
-import {
-  validateArrayOfURLs,
-} from '@/shared/scripts/utilities'
-
 import Ignore from '../ignore'
+import { validateUrls } from '../utilities'
 
 (async () => {
   const ignoredHosts = await Ignore.getAll()
@@ -34,12 +31,17 @@ import Ignore from '../ignore'
 
   document.addEventListener('keydown', async (event) => {
     if ((event.ctrlKey && event.key === 's') || event.keyCode === 13) {
-      const naughtyUrls = editor.getValue().split('\n')
-      const urls = validateArrayOfURLs(naughtyUrls)
+      const editorContent = editor.getValue().trim()
 
-      for (const url of urls) {
-        await Ignore.add(url)
-      }
+      Ignore.clear().then(async () => {
+        const urls = editorContent.split('\n')
+        const validUrls = validateUrls(urls)
+
+        for (const url of validUrls) {
+          await Ignore.add(url)
+        }
+      })
+
       console.warn('Ignore list updated')
       event.preventDefault()
     }

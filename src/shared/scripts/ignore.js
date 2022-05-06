@@ -32,12 +32,11 @@ export class Ignore {
   }
 
   async add (url) {
-    const hostname = utilities.extractHostnameFromUrl(url)
     const { ignoredHosts } = await storage.get({ ignoredHosts: [] })
 
-    if (!ignoredHosts.includes(hostname)) {
-      ignoredHosts.push(hostname)
-      console.warn(`Adding ${hostname} to ignore`)
+    if (!ignoredHosts.includes(url)) {
+      ignoredHosts.push(url)
+      console.warn(`Adding ${url} to ignore`)
     }
 
     await storage.set({ ignoredHosts })

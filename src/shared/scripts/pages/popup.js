@@ -13,19 +13,18 @@ import Browser from '@/shared/scripts/webextension';
   const uiText = {
     ori: {
       found: {
-        title: Browser.i18n.getMessage('distrTitle'),
+        title: Browser.i18n.getMessage('disseminatorTitle'),
         statusIcon: 'images/icons/status/icon_danger.svg',
-        detailsText: Browser.i18n.getMessage('distrDesc'),
+        detailsText: Browser.i18n.getMessage('disseminatorDesc'),
         detailsClasses: ['text-warning'],
         cooperationRefused: {
-          message: Browser.i18n.getMessage('distrCoopRefused'),
-
+          message: Browser.i18n.getMessage('disseminatorCoopRefused'),
         },
       },
       notFound: {
         statusIcon: 'images/icons/status/icon_ok.svg',
-        title: Browser.i18n.getMessage('notDistrTitle'),
-        detailsText: Browser.i18n.getMessage('notDistrDesc'),
+        title: Browser.i18n.getMessage('notDisseminatorTitle'),
+        detailsText: Browser.i18n.getMessage('notDisseminatorDesc'),
       },
     },
     restrictions: {
@@ -42,8 +41,6 @@ import Browser from '@/shared/scripts/webextension';
     },
   }
   const statusImage = select({ id: 'statusImage' })
-  const oriSiteInfo = select({ id: 'oriSiteInfo' })
-  const textAboutOri = select({ id: 'textAboutOri' })
   const detailsText = select({ query: '.details-text' })
   const extensionIsOff = select({ id: 'extensionIsOff' })
   const restrictionType = select({ id: 'restrictionType' })
@@ -184,23 +181,15 @@ import Browser from '@/shared/scripts/webextension';
     const { url: disseminatorUrl, cooperationRefused } =
       await Registry.retrieveInformationDisseminationOrganizerJSON(currentHostname)
 
+    console.log(`Disseminator URL: ${disseminatorUrl}`)
+    console.log(`Disseminator Cooperation Refused: ${cooperationRefused}`)
+
     if (disseminatorUrl) {
-      currentDomainHeader.classList.add('title-ori')
-
-      if (cooperationRefused) {
-        if (oriSiteInfo) {
-          oriSiteInfo.innerText = uiText.ori.found.cooperationRefused.message
-        }
-
-        if (textAboutOri) {
-          textAboutOri.classList.remove('text-warning')
-          textAboutOri.classList.add('text-normal')
-        }
-        currentDomainHeader.classList.remove('title-ori')
-        currentDomainHeader.classList.add('title-normal')
-      } else {
+      if (!cooperationRefused) {
         changeStatusImage('ori')
-        select({ query: '#ori [data-render-var]' }).forEach((element) => {
+        currentDomainHeader.classList.add('title-ori')
+
+        for (const element of select({ query: '#ori [data-render-var]' })) {
           const renderVar = element.dataset.renderVar
           const value = uiText.ori.found[renderVar]
 
@@ -211,7 +200,13 @@ import Browser from '@/shared/scripts/webextension';
           } else {
             element.innerText = value
           }
-        })
+        }
+      } else {
+        const [disseminatorDetailsText] = select({ query: '#ori [data-render-var="detailsText"]' })
+
+        disseminatorDetailsText.innerText = uiText.ori.found.cooperationRefused.message
+
+        changeStatusImage('normal')
       }
     }
 

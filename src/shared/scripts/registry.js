@@ -26,56 +26,59 @@ class Registry {
 
     try {
       const response = await fetch(CONFIG_API_URL)
-      const data = await response.json()
 
-      if (Object.keys(data).length > 0) {
-        const {
-          specifics,
-          registryUrl,
-          countryDetails,
-          customRegistryUrl,
-        } = data
+      if (response.ok) {
+        const data = await response.json()
 
-        const apis = []
+        if (Object.keys(data).length > 0) {
+          const {
+            specifics,
+            registryUrl,
+            countryDetails,
+            customRegistryUrl,
+          } = data
 
-        if (registryUrl) {
-          apis.push({
-            url: registryUrl,
-            storageKey: 'domains',
-          })
-        }
+          const apis = []
 
-        if (customRegistryUrl) {
-          apis.push({
-            url: customRegistryUrl,
-            storageKey: 'customRegistryRecords',
-          })
-        }
-
-        if (specifics) {
-          if (countryDetails.isoA2Code === 'RU') {
+          if (registryUrl) {
             apis.push({
-              url: specifics.cooperationRefusedORIUrl,
-              storageKey: 'disseminators',
+              url: registryUrl,
+              storageKey: 'domains',
             })
           }
+
+          if (customRegistryUrl) {
+            apis.push({
+              url: customRegistryUrl,
+              storageKey: 'customRegistryRecords',
+            })
+          }
+
+          if (specifics) {
+            if (countryDetails.isoA2Code === 'RU') {
+              apis.push({
+                url: specifics.cooperationRefusedORIUrl,
+                storageKey: 'disseminators',
+              })
+            }
+          }
+
+          const config = {
+            apis,
+            countryDetails,
+          }
+
+          await storage.set({
+            countryDetails,
+            registryConfig: config,
+            registryConfigTimestamp: utilities.timestamp(),
+          })
+
+          console.warn('Registry config cached successfully.')
+          return config
         }
-
-        const config = {
-          apis,
-          countryDetails,
-        }
-
-        await storage.set({ countryDetails }) // FIXME
-        await storage.set({
-          registryConfig: config,
-          registryConfigTimestamp: utilities.timestamp(),
-        })
-
-        console.warn('Registry config cached successfully.')
-
-        return config
       }
+
       console.warn('CensorTracker do not support your country.')
       return {}
     } catch (error) {
@@ -204,6 +207,7 @@ class Registry {
     )
 
     if (dataObject) {
+      console.warn(`Found IDO data for ${hostname}`)
       return dataObject
     }
     return {}

@@ -1,18 +1,18 @@
 {
-  "distrTitle": {
+  "disseminatorTitle": {
     "message": "Is the information dissemination organizer"
   },
-  "notDistrTitle": {
+  "notDisseminatorTitle": {
     "message": "Is not the information dissemination organizer"
   },
-  "notDistrDesc": {
+  "notDisseminatorDesc": {
     "message": "Services from the IDO (information dissemination organizers) registry may automatically transmit your personal data, including messages and all traffic, to government authorities. This service is not in the IDO registry."
   },
-  "distrDesc": {
+  "disseminatorDesc": {
     "message": "The Service may transfer your personal data, including messages and all traffic to government authorities automatically."
   },
-  "distrCoopRefused": {
-    "message": "The service claimed that they do not transmit traffic to government agencies automatically."
+  "disseminatorCoopRefused": {
+    "message": "The service claimed that they do not transmit traffic to third parties."
   },
   "blockedTitle": {
     "message": "Is banned."

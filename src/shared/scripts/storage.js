@@ -1,7 +1,7 @@
 import Browser from './webextension'
 
 export const set = async (keys = {}) => {
-  await Browser.storage.local.set(keys).then()
+  await Browser.storage.local.set(keys)
 }
 
 export const get = async (keys = {}) => {

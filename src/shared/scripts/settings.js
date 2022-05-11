@@ -44,8 +44,13 @@ class Settings {
   }
 
   async changeExtensionState ({ useProxy, enableExtension, showNotifications }) {
-    await storage.set({ useProxy, enableExtension, showNotifications })
     const tabs = await Browser.tabs.query({})
+
+    await storage.set({
+      useProxy,
+      enableExtension,
+      showNotifications,
+    })
 
     for (const { id } of tabs) {
       if (enableExtension) {
@@ -72,7 +77,6 @@ class Settings {
     await this.changeExtensionState({
       useProxy,
       enableExtension: true,
-      showNotifications: true,
     })
     console.log('Settings.enableExtension()')
   }

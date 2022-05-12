@@ -3,6 +3,7 @@ import ProxyManager from './proxy'
 import Registry from './registry'
 import Settings from './settings'
 import * as storage from './storage'
+import Task from './task'
 import * as utilities from './utilities'
 import Browser from './webextension'
 
@@ -125,4 +126,49 @@ export const handleStorageChanged = async ({ enableExtension, ignoredHosts, useP
     }
     console.groupEnd()
   }
+}
+
+/**
+ * Fired when the extension is first installed, when the extension is
+ * updated to a new version, and when the browser is updated to a new version.
+ * @param reason The reason that the runtime.onInstalled event is being dispatched.
+ * @returns {Promise<void>}
+ */
+export const handleInstalled = async ({ reason }) => {
+  console.group('onInstall')
+
+  await Settings.enableExtension()
+  await Settings.enableNotifications()
+
+  if (reason === Browser.runtime.OnInstalledReason.INSTALL) {
+    await Browser.tabs.create({ url: 'installed.html' })
+
+    await Task.schedule([
+      { name: 'ignore-fetch', minutes: 10 },
+      { name: 'registry-sync', minutes: 30 },
+      { name: 'proxy-setProxy', minutes: 10 },
+    ])
+
+    const synchronized = await Registry.sync()
+
+    if (synchronized) {
+      // Incognito access granted in Chrome by default.
+      let allowedIncognitoAccess = true
+
+      if (Browser.isFirefox) {
+        allowedIncognitoAccess = await Browser.extension.isAllowedIncognitoAccess()
+      }
+
+      if (allowedIncognitoAccess) {
+        console.warn('Incognito access allowed, setting proxy...')
+        await ProxyManager.ping()
+        await ProxyManager.setProxy()
+      } else {
+        await ProxyManager.requestIncognitoAccess()
+      }
+    } else {
+      console.warn('Synchronization failed')
+    }
+  }
+  console.groupEnd()
 }

@@ -53,7 +53,14 @@ export const handleOnAlarm = async ({ name }) => {
   console.groupEnd()
 }
 
-export const handleBeforeRequestPing = async (_details) => {
+export const handleBeforeRequest = async (_details) => {
+  if (Browser.isFirefox) {
+    const allowed = await browser.extension.isAllowedIncognitoAccess()
+
+    if (!allowed) {
+      await ProxyManager.requestIncognitoAccess()
+    }
+  }
   await ProxyManager.ping()
 }
 

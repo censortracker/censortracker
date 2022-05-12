@@ -1,5 +1,5 @@
 import {
-  handleBeforeRequestPing,
+  handleBeforeRequest,
   handleCustomProxiedDomainsChange,
   handleIgnoredHostsChange,
   handleInformationDisseminationOrganizer,
@@ -12,7 +12,7 @@ import Ignore from '@/shared/scripts/ignore'
 import ProxyManager from '@/shared/scripts/proxy'
 import Registry from '@/shared/scripts/registry'
 import Settings from '@/shared/scripts/settings'
-import * as utilities from '@/shared/scripts/utilities'
+import { getRequestFilter, isValidURL } from '@/shared/scripts/utilities'
 
 browser.proxy.onError.addListener(handleProxyError)
 browser.runtime.onStartup.addListener(handleStartup)
@@ -21,23 +21,29 @@ browser.storage.onChanged.addListener(handleStorageChanged)
 browser.storage.onChanged.addListener(handleIgnoredHostsChange)
 browser.storage.onChanged.addListener(handleCustomProxiedDomainsChange)
 
-const handleBeforeRequestCheckIncognitoAccess = async (_details) => {
-  const allowed = await browser.extension.isAllowedIncognitoAccess()
+browser.webRequest.onBeforeRequest.addListener(
+  handleBeforeRequest,
+  getRequestFilter(),
+)
 
-  if (!allowed) {
-    await ProxyManager.requestIncognitoAccess()
+/**
+ * Check if proxy is ready to use.
+ * Set proxy if proxying enabled and incognito access granted.
+ */
+const checkProxyReadiness = async () => {
+  const proxyingEnabled = await ProxyManager.enabled()
+  const controlledByThisExtension = await ProxyManager.controlledByThisExtension()
+  const allowedIncognitoAccess = await browser.extension.isAllowedIncognitoAccess()
+
+  if (proxyingEnabled && allowedIncognitoAccess) {
+    if (!controlledByThisExtension) {
+      await ProxyManager.setProxy()
+      await ProxyManager.grantIncognitoAccess()
+    }
+  } else {
+    console.warn('Proxy is not ready to use. Check if private browsing permissions granted.')
   }
 }
-
-browser.webRequest.onBeforeRequest.addListener(
-  handleBeforeRequestCheckIncognitoAccess,
-  utilities.getRequestFilter(),
-)
-
-browser.webRequest.onBeforeRequest.addListener(
-  handleBeforeRequestPing,
-  utilities.getRequestFilter(),
-)
 
 const handleTabCreate = async ({ id }) => {
   const extensionEnabled = await Settings.extensionEnabled()
@@ -57,7 +63,7 @@ const handleTabState = async (tabId, changeInfo, { url: tabUrl }) => {
   const extensionEnabled = await Settings.extensionEnabled()
 
   if (changeInfo && changeInfo.status === browser.tabs.TabStatus.COMPLETE) {
-    if (extensionEnabled && !isIgnored && utilities.isValidURL(tabUrl)) {
+    if (extensionEnabled && !isIgnored && isValidURL(tabUrl)) {
       await checkProxyReadiness()
 
       const urlBlocked = await Registry.contains(tabUrl)
@@ -81,23 +87,3 @@ const handleTabState = async (tabId, changeInfo, { url: tabUrl }) => {
 
 browser.tabs.onActivated.addListener(handleTabState)
 browser.tabs.onUpdated.addListener(handleTabState)
-
-/**
- * Check if proxy is ready to use.
- * Set proxy if proxying enabled and incognito access granted.
- * @returns {Promise<boolean>}
- */
-const checkProxyReadiness = async () => {
-  const proxyingEnabled = await ProxyManager.enabled()
-  const controlledByThisExtension = await ProxyManager.controlledByThisExtension()
-  const allowedIncognitoAccess = await browser.extension.isAllowedIncognitoAccess()
-
-  if (proxyingEnabled && allowedIncognitoAccess) {
-    if (!controlledByThisExtension) {
-      await ProxyManager.setProxy()
-      await ProxyManager.grantIncognitoAccess()
-    }
-  } else {
-    console.warn('Proxy is not ready to use. Check if private browsing permissions granted.')
-  }
-}

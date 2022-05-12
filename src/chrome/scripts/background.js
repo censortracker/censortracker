@@ -1,5 +1,5 @@
 import {
-  handleBeforeRequestPing,
+  handleBeforeRequest,
   handleCustomProxiedDomainsChange,
   handleIgnoredHostsChange,
   handleInformationDisseminationOrganizer,
@@ -13,7 +13,7 @@ import Ignore from '@/shared/scripts/ignore'
 import ProxyManager from '@/shared/scripts/proxy'
 import Registry from '@/shared/scripts/registry'
 import Settings from '@/shared/scripts/settings'
-import * as utilities from '@/shared/scripts/utilities'
+import { getRequestFilter, isValidURL } from '@/shared/scripts/utilities'
 
 chrome.alarms.onAlarm.addListener(handleOnAlarm)
 chrome.runtime.onStartup.addListener(handleStartup)
@@ -24,10 +24,8 @@ chrome.storage.onChanged.addListener(handleIgnoredHostsChange)
 chrome.storage.onChanged.addListener(handleCustomProxiedDomainsChange)
 
 chrome.webNavigation.onBeforeNavigate.addListener(
-  handleBeforeRequestPing, {
-    urls: ['http://*/*', 'https://*/*'],
-    types: ['main_frame'],
-  },
+  handleBeforeRequest,
+  getRequestFilter(),
 )
 
 const handleTabState = async (tabId, changeInfo, tab) => {
@@ -36,7 +34,7 @@ const handleTabState = async (tabId, changeInfo, tab) => {
     const proxyingEnabled = await ProxyManager.enabled()
     const extensionEnabled = await Settings.extensionEnabled()
 
-    if (extensionEnabled && !isIgnored && utilities.isValidURL(tab.url)) {
+    if (extensionEnabled && !isIgnored && isValidURL(tab.url)) {
       const urlBlocked = await Registry.contains(tab.url)
       const { url: disseminatorUrl, cooperationRefused } =
         await Registry.retrieveInformationDisseminationOrganizerJSON(tab.url)

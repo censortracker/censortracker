@@ -2,6 +2,7 @@ import {
   handleBeforeRequestPing,
   handleCustomProxiedDomainsChange,
   handleIgnoredHostsChange,
+  handleInformationDisseminationOrganizer,
   handleOnAlarm,
   handleProxyError,
   handleStartup,
@@ -11,7 +12,6 @@ import Ignore from '@/shared/scripts/ignore'
 import ProxyManager from '@/shared/scripts/proxy'
 import Registry from '@/shared/scripts/registry'
 import Settings from '@/shared/scripts/settings'
-import * as storage from '@/shared/scripts/storage'
 import Task from '@/shared/scripts/task'
 import * as utilities from '@/shared/scripts/utilities'
 
@@ -48,7 +48,7 @@ const handleTabState = async (tabId, changeInfo, tab) => {
       if (disseminatorUrl) {
         Settings.setDangerIcon(tabId)
         if (!cooperationRefused) {
-          await showCooperationAcceptedWarning(tab.url)
+          await handleInformationDisseminationOrganizer(tab.url)
         }
       }
     }
@@ -57,37 +57,6 @@ const handleTabState = async (tabId, changeInfo, tab) => {
 
 chrome.tabs.onActivated.addListener(handleTabState)
 chrome.tabs.onUpdated.addListener(handleTabState)
-
-const showCooperationAcceptedWarning = async (url) => {
-  const hostname = utilities.extractHostnameFromUrl(url)
-  const { notifiedHosts, showNotifications } = await storage.get({
-    notifiedHosts: [],
-    showNotifications: true,
-  })
-
-  if (showNotifications) {
-    if (!notifiedHosts.includes(hostname)) {
-      await chrome.notifications.create({
-        type: 'basic',
-        title: Settings.getName(),
-        priority: 2,
-        message: chrome.i18n.getMessage('cooperationAcceptedMessage', hostname),
-        buttons: [
-          { title: chrome.i18n.getMessage('muteNotificationsForThis') },
-          { title: chrome.i18n.getMessage('readMoreButton') },
-        ],
-        iconUrl: Settings.getDangerIcon(),
-      })
-
-      try {
-        notifiedHosts.push(hostname)
-        await storage.set({ notifiedHosts })
-      } catch (error) {
-        console.error(error)
-      }
-    }
-  }
-}
 
 const handleInstalled = async ({ reason }) => {
   console.group('onInstall')

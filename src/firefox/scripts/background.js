@@ -2,6 +2,7 @@ import {
   handleBeforeRequestPing,
   handleCustomProxiedDomainsChange,
   handleIgnoredHostsChange,
+  handleInformationDisseminationOrganizer,
   handleProxyError,
   handleStartup,
   handleStorageChanged,
@@ -10,7 +11,6 @@ import Ignore from '@/shared/scripts/ignore'
 import ProxyManager from '@/shared/scripts/proxy'
 import Registry from '@/shared/scripts/registry'
 import Settings from '@/shared/scripts/settings'
-import * as storage from '@/shared/scripts/storage'
 import Task from '@/shared/scripts/task'
 import * as utilities from '@/shared/scripts/utilities'
 
@@ -71,7 +71,7 @@ const handleTabState = async (tabId, changeInfo, { url: tabUrl }) => {
       if (disseminatorUrl) {
         Settings.setDangerIcon(tabId)
         if (!cooperationRefused) {
-          await showCooperationAcceptedWarning(tabUrl)
+          await handleInformationDisseminationOrganizer(tabUrl)
         }
       }
     }
@@ -98,33 +98,6 @@ const checkProxyReadiness = async () => {
     }
   } else {
     console.warn('Proxy is not ready to use. Check if private browsing permissions granted.')
-  }
-}
-
-const showCooperationAcceptedWarning = async (url) => {
-  const hostname = utilities.extractHostnameFromUrl(url)
-  const { notifiedHosts, showNotifications } = await storage.get({
-    notifiedHosts: new Set(),
-    showNotifications: true,
-  })
-
-  if (showNotifications) {
-    if (!notifiedHosts.has(hostname)) {
-      console.log(`Showing notification for ${hostname}`)
-      await browser.notifications.create(hostname, {
-        type: 'basic',
-        title: Settings.getName(),
-        iconUrl: Settings.getDangerIcon(),
-        message: browser.i18n.getMessage('cooperationAcceptedMessage', hostname),
-      })
-
-      try {
-        notifiedHosts.add(hostname)
-        await storage.set({ notifiedHosts })
-      } catch (error) {
-        console.error(error)
-      }
-    }
   }
 }
 
@@ -170,12 +143,3 @@ const handleInstalled = async ({ reason }) => {
 }
 
 browser.runtime.onInstalled.addListener(handleInstalled)
-
-// // Debug namespaces.
-window.censortracker = {
-  ProxyManager,
-  Registry,
-  Settings,
-  storage,
-  Ignore,
-}

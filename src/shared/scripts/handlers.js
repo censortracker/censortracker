@@ -3,6 +3,36 @@ import ProxyManager from './proxy'
 import Registry from './registry'
 import Settings from './settings'
 import * as storage from './storage'
+import * as utilities from './utilities'
+import Browser from './webextension'
+
+export const handleInformationDisseminationOrganizer = async (url) => {
+  const hostname = utilities.extractHostnameFromUrl(url)
+  const { notifiedHosts, showNotifications } = await storage.get({
+    notifiedHosts: [],
+    showNotifications: true,
+  })
+
+  if (showNotifications) {
+    if (!notifiedHosts.includes(hostname)) {
+      console.log(`Showing notification for ${hostname}`)
+
+      await Browser.notifications.create(hostname, {
+        type: 'basic',
+        title: Settings.getName(),
+        iconUrl: Settings.getDangerIcon(),
+        message: Browser.i18n.getMessage('cooperationAcceptedMessage', hostname),
+      })
+
+      try {
+        notifiedHosts.push(hostname)
+        await storage.set({ notifiedHosts })
+      } catch (error) {
+        console.error(error)
+      }
+    }
+  }
+}
 
 export const handleOnAlarm = async ({ name }) => {
   console.groupCollapsed('handleOnAlarm')

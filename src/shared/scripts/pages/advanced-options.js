@@ -74,6 +74,7 @@ import Settings from '@/shared/scripts/settings'
 
       togglePopup('popupDebugInformation')
       event.preventDefault()
+      event.stopPropagation()
     }
   })
 

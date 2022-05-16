@@ -367,6 +367,6 @@
     "message": "proxying is disabled"
   },
   "debugInfoTip": {
-    "message": "Press <kbd>Control</kbd> + <kbd>D</kbd> to see debugging information."
+    "message": "Press <kbd>Fn</kbd> + <kbd>Control</kbd> + <kbd>D</kbd> to see debugging information."
   }
 }

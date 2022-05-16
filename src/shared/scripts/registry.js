@@ -55,6 +55,7 @@ class Registry {
           }
 
           if (specifics) {
+            // There are specific data for Russia.
             if (countryDetails.isoA2Code === 'RU') {
               apis.push({
                 url: specifics.cooperationRefusedORIUrl,
@@ -73,8 +74,6 @@ class Registry {
             registryConfig: config,
             registryConfigTimestamp: utilities.timestamp(),
           })
-
-          console.warn('Registry config cached successfully.')
           return config
         }
       }

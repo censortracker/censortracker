@@ -23,6 +23,10 @@ class Settings {
     }
   }
 
+  async showInstalledPage (tabId) {
+    await Browser.tabs.create({ url: 'installed.html' })
+  }
+
   setDisableIcon (tabId) {
     this.changePageIcon(tabId, 'disabled')
     console.log('Settings.setDisableIcon()')

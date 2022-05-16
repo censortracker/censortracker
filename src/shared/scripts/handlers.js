@@ -36,7 +36,6 @@ export const handleInformationDisseminationOrganizer = async (url) => {
 }
 
 export const handleOnAlarm = async ({ name }) => {
-  console.groupCollapsed('handleOnAlarm')
   console.warn(`Alarm received: ${name}`)
 
   if (name === 'ignore-fetch') {
@@ -50,7 +49,6 @@ export const handleOnAlarm = async ({ name }) => {
   if (name === 'registry-sync') {
     await Registry.sync()
   }
-  console.groupEnd()
 }
 
 export const handleBeforeRequest = async (_details) => {
@@ -142,40 +140,33 @@ export const handleStorageChanged = async ({ enableExtension, ignoredHosts, useP
  * @returns {Promise<void>}
  */
 export const handleInstalled = async ({ reason }) => {
-  console.group('onInstall')
-
-  await Settings.enableExtension()
-  await Settings.enableNotifications()
-
   if (reason === Browser.runtime.OnInstalledReason.INSTALL) {
-    await Browser.tabs.create({ url: 'installed.html' })
+    console.group('onInstall')
+
+    await Settings.enableExtension()
+    await Settings.enableNotifications()
+    await Settings.showInstalledPage()
 
     await Task.schedule([
       { name: 'ignore-fetch', minutes: 10 },
-      { name: 'registry-sync', minutes: 30 },
+      { name: 'registry-sync', minutes: 20 },
       { name: 'proxy-setProxy', minutes: 10 },
     ])
 
     const synchronized = await Registry.sync()
 
     if (synchronized) {
-      // Incognito access granted in Chrome by default.
-      let allowedIncognitoAccess = true
+      const allowedIncognitoAccess =
+        await Browser.extension.isAllowedIncognitoAccess()
 
-      if (Browser.isFirefox) {
-        allowedIncognitoAccess = await Browser.extension.isAllowedIncognitoAccess()
-      }
-
-      if (allowedIncognitoAccess) {
-        console.warn('Incognito access allowed, setting proxy...')
-        await ProxyManager.ping()
-        await ProxyManager.setProxy()
-      } else {
+      if (!allowedIncognitoAccess) {
         await ProxyManager.requestIncognitoAccess()
       }
+      await ProxyManager.ping()
+      await ProxyManager.setProxy()
     } else {
       console.warn('Synchronization failed')
     }
+    console.groupEnd()
   }
-  console.groupEnd()
 }

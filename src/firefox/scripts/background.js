@@ -3,7 +3,7 @@ import {
   handleCustomProxiedDomainsChange,
   handleIgnoredHostsChange,
   handleInformationDisseminationOrganizer,
-  handleInstalled,
+  handleInstalled, handleOnAlarm,
   handleProxyError,
   handleStartup,
   handleStorageChanged,
@@ -14,6 +14,7 @@ import Registry from '@/shared/scripts/registry'
 import Settings from '@/shared/scripts/settings'
 import { getRequestFilter, isValidURL } from '@/shared/scripts/utilities'
 
+browser.alarms.onAlarm.addListener(handleOnAlarm)
 browser.proxy.onError.addListener(handleProxyError)
 browser.runtime.onStartup.addListener(handleStartup)
 browser.runtime.onInstalled.addListener(handleInstalled)
@@ -41,7 +42,7 @@ const checkProxyReadiness = async () => {
       await ProxyManager.grantIncognitoAccess()
     }
   } else {
-    console.warn('Proxy is not ready to use. Check if private browsing permissions granted.')
+    await ProxyManager.requestIncognitoAccess()
   }
 }
 

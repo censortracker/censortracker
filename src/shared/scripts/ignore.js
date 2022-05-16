@@ -11,7 +11,7 @@ export class Ignore {
     try {
       const ignoredHosts = await this.getAll()
       const response = await fetch(IGNORE_API_ENDPOINT_URI)
-      const { domains } = await response.json()
+      const domains = await response.json()
 
       for (const domain of domains) {
         if (!ignoredHosts.includes(domain)) {

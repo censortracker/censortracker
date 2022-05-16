@@ -231,11 +231,6 @@ class ProxyManager {
 
     return levelOfControl === 'controlled_by_this_extension'
   }
-
-  async debugging () {
-    await this.removeProxy()
-    console.warn('Debug mode enabled')
-  }
 }
 
 export default new ProxyManager()

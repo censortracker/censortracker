@@ -368,5 +368,11 @@
   },
   "debugInfoTip": {
     "message": "Press <kbd>Fn</kbd> + <kbd>Control</kbd> + <kbd>D</kbd> to see debugging information."
+  },
+  "parentalControlTitle": {
+    "message": "«Parental» Control"
+  },
+  "parentalControlDesc": {
+    "message": "Make your parents think when they visit state-affiliated propaganda websites."
   }
 }

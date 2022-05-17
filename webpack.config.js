@@ -172,7 +172,7 @@ const webConfig = {
         },
         {
           from: resolve('src/shared/scripts/content-scripts'),
-          to: resolve(`dist/${BROWSER}/${OUTPUT_SUB_DIR}/`),
+          to: resolve(`dist/${BROWSER}/${OUTPUT_SUB_DIR}/content-scripts`),
         },
       ],
     }),

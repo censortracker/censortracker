@@ -2,6 +2,7 @@ import Ignore from '@/shared/scripts/ignore'
 import ProxyManager from '@/shared/scripts/proxy'
 import Registry from '@/shared/scripts/registry'
 import Settings from '@/shared/scripts/settings'
+import * as storage from '@/shared/scripts/storage';
 
 (async () => {
   const completedConfirmBtn = document.getElementById('completedConfirm')
@@ -15,6 +16,16 @@ import Settings from '@/shared/scripts/settings'
   const resetSettingsToDefaultBtn = document.getElementById(
     'resetSettingsToDefault',
   )
+  const parentalControlCheckbox = document.getElementById(
+    'parentalControlCheckbox',
+  )
+
+  parentalControlCheckbox.addEventListener('change', async () => {
+    await storage.set({
+      parentalControl: parentalControlCheckbox.checked,
+    })
+    console.log(`Parental control: ${parentalControlCheckbox.checked}`)
+  }, false)
 
   const togglePopup = (id) => {
     const showPopupClass = 'popup_show'
@@ -87,4 +98,10 @@ import Settings from '@/shared/scripts/settings'
     await Settings.enableExtension()
     console.warn('CensorTracker has been reset to default settings.')
   })
+
+  const { parentalControl } = await storage.get({
+    parentalControl: false,
+  })
+
+  parentalControlCheckbox.checked = parentalControl
 })()

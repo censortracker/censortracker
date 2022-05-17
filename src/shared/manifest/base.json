@@ -15,8 +15,24 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://censortracker.org/*"],
-      "js": ["parental-control.js"]
+      "matches": [
+        "*://*.rt.com/*",
+        "*://*.1tv.ru/*",
+        "*://*.ntv.ru/*",
+        "*://ren.tv/*",
+        "*://topspb.tv/*",
+        "*://*.5-tv.ru/*",
+        "*://78.ru/*",
+        "*://*.interfax.ru/*",
+        "*://tass.ru/*",
+        "*://ria.ru/*",
+        "*://*.gazeta.ru/*",
+        "*://lenta.ru/*",
+        "*://iz.ru/*",
+        "*://vgtrk.ru/*"
+      ],
+      "css": ["css/parental-control.css"],
+      "js": ["content-scripts/parental-control.js"]
     }
   ]
 }

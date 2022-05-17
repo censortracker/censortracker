@@ -3,7 +3,9 @@ import {
   handleCustomProxiedDomainsChange,
   handleIgnoredHostsChange,
   handleInformationDisseminationOrganizer,
-  handleInstalled, handleOnAlarm,
+  handleInstalled,
+  handleOnAlarm,
+  handleOnConnect,
   handleProxyError,
   handleStartup,
   handleStorageChanged,
@@ -17,6 +19,7 @@ import { getRequestFilter, isValidURL } from '@/shared/scripts/utilities'
 browser.alarms.onAlarm.addListener(handleOnAlarm)
 browser.proxy.onError.addListener(handleProxyError)
 browser.runtime.onStartup.addListener(handleStartup)
+browser.runtime.onConnect.addListener(handleOnConnect)
 browser.runtime.onInstalled.addListener(handleInstalled)
 browser.storage.onChanged.addListener(handleStorageChanged)
 browser.storage.onChanged.addListener(handleIgnoredHostsChange)

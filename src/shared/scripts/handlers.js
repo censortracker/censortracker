@@ -7,6 +7,20 @@ import Task from './task'
 import * as utilities from './utilities'
 import Browser from './webextension'
 
+export const handleOnConnect = (port) => {
+  if (port.name === 'censortracker') {
+    port.onMessage.addListener((message) => {
+      if (message.parentalControl === '?') {
+        storage.get({ parentalControl: false }).then(
+          ({ parentalControl }) => {
+            port.postMessage({ parentalControl })
+          },
+        )
+      }
+    })
+  }
+}
+
 export const handleInformationDisseminationOrganizer = async (url) => {
   const hostname = utilities.extractHostnameFromUrl(url)
   const { notifiedHosts, showNotifications } = await storage.get({

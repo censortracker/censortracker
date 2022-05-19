@@ -1,10 +1,15 @@
 {
   "compilerOptions": {
+    "baseUrl": "./",
     "outDir": "./dist/",
     "noImplicitAny": true,
     "module": "es6",
     "target": "es5",
     "allowJs": true,
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "typeRoots": ["node_modules/@types", "node_modules/web-ext-types"],
+    "paths": {
+      "@/*": ["src/*"]
+    }
   }
 }

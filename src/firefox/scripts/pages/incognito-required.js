@@ -36,6 +36,7 @@ import { extractDecodedOriginUrl, select, translateDocument } from '@/shared/scr
 
   if (grantPrivateBrowsingPermissionsButton) {
     grantPrivateBrowsingPermissionsButton.addEventListener('click', async () => {
+      await ProxyManager.enableProxy()
       const proxySet = await ProxyManager.setProxy()
 
       if (proxySet) {

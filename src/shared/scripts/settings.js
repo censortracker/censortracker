@@ -108,6 +108,14 @@ class Settings {
     await storage.set({ showNotifications: false })
     console.log('Settings.disableNotifications()')
   }
+
+  async enableParentalControl () {
+    await storage.set({ parentalControl: true })
+  }
+
+  async disableParentalControl () {
+    await storage.set({ parentalControl: false })
+  }
 }
 
 export default new Settings()

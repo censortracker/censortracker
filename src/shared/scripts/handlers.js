@@ -77,7 +77,15 @@ export const handleBeforeRequest = async (_details) => {
 }
 
 export const handleStartup = async () => {
+  await Ignore.fetch()
+  await Registry.sync()
   await ProxyManager.setProxy()
+
+  await Task.schedule([
+    { name: 'ignore-fetch', minutes: 10 },
+    { name: 'registry-sync', minutes: 20 },
+    { name: 'proxy-setProxy', minutes: 10 },
+  ])
 }
 
 export const handleProxyError = (details) => {
@@ -154,18 +162,27 @@ export const handleStorageChanged = async ({ enableExtension, ignoredHosts, useP
  * @returns {Promise<void>}
  */
 export const handleInstalled = async ({ reason }) => {
-  if (reason === Browser.runtime.OnInstalledReason.INSTALL) {
-    console.group('onInstall')
+  const UPDATED = reason === Browser.runtime.OnInstalledReason.UPDATE
+  const INSTALLED = reason === Browser.runtime.OnInstalledReason.INSTALL
 
+  console.groupCollapsed('onInstall')
+  // In Firefox, the update can be caused after granting incognito access.
+  if (UPDATED && Browser.isFirefox) {
+    const controlledByThisExtension = await ProxyManager.controlledByThisExtension()
+    const isAllowedIncognitoAccess = await Browser.extension.isAllowedIncognitoAccess()
+
+    if (isAllowedIncognitoAccess && !controlledByThisExtension) {
+      console.warn('Incognito access granted, setting proxy...')
+      await ProxyManager.enableProxy()
+      await ProxyManager.setProxy()
+    }
+  }
+
+  if (INSTALLED) {
     await Settings.enableExtension()
     await Settings.enableNotifications()
     await Settings.showInstalledPage()
-
-    await Task.schedule([
-      { name: 'ignore-fetch', minutes: 10 },
-      { name: 'registry-sync', minutes: 20 },
-      { name: 'proxy-setProxy', minutes: 10 },
-    ])
+    await ProxyManager.enableProxy()
 
     const synchronized = await Registry.sync()
 
@@ -181,8 +198,16 @@ export const handleInstalled = async ({ reason }) => {
     } else {
       console.warn('Synchronization failed')
     }
-    console.groupEnd()
   }
+
+  if (UPDATED || INSTALLED) {
+    await Task.schedule([
+      { name: 'ignore-fetch', minutes: 10 },
+      { name: 'registry-sync', minutes: 20 },
+      { name: 'proxy-setProxy', minutes: 10 },
+    ])
+  }
+  console.groupEnd()
 }
 
 /**

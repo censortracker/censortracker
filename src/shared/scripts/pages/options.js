@@ -28,7 +28,7 @@ import Browser from '@/shared/scripts/webextension';
     proxyStatus.hidden = false
   }
 
-  if (Browser.isFirefox) {
+  if (Browser.IS_FIREFOX) {
     const allowedIncognitoAccess =
       await browser.extension.isAllowedIncognitoAccess()
     const { privateBrowsingPermissionsRequired } = await storage.get({

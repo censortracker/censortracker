@@ -66,7 +66,7 @@ export const handleOnAlarm = async ({ name }) => {
 }
 
 export const handleBeforeRequest = async (_details) => {
-  if (Browser.isFirefox) {
+  if (Browser.IS_FIREFOX) {
     const allowed = await Browser.extension.isAllowedIncognitoAccess()
 
     if (!allowed) {
@@ -167,7 +167,7 @@ export const handleInstalled = async ({ reason }) => {
 
   console.groupCollapsed('onInstall')
   // In Firefox, the update can be caused after granting incognito access.
-  if (UPDATED && Browser.isFirefox) {
+  if (UPDATED && Browser.IS_FIREFOX) {
     const controlledByThisExtension = await ProxyManager.controlledByThisExtension()
     const isAllowedIncognitoAccess = await Browser.extension.isAllowedIncognitoAccess()
 
@@ -236,7 +236,7 @@ export const handleTabState = async (tabId, changeInfo, tab) => {
     const extensionEnabled = await Settings.extensionEnabled()
 
     if (extensionEnabled && !isIgnored && utilities.isValidURL(tab.url)) {
-      if (Browser.isFirefox) {
+      if (Browser.IS_FIREFOX) {
         await checkProxyReadiness()
       }
 
@@ -263,7 +263,7 @@ export const handleTabCreate = async ({ id }) => {
   const extensionEnabled = await Settings.extensionEnabled()
 
   if (extensionEnabled) {
-    if (Browser.isFirefox) {
+    if (Browser.IS_FIREFOX) {
       await checkProxyReadiness()
     } else {
       Settings.setDefaultIcon(id)

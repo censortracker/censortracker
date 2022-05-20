@@ -81,7 +81,7 @@ import Browser from '@/shared/scripts/webextension';
 
   const proxyControlledByOtherExtensions = await ProxyManager.controlledByOtherExtensions()
 
-  if (!Browser.isFirefox && proxyControlledByOtherExtensions) {
+  if (!Browser.IS_FIREFOX && proxyControlledByOtherExtensions) {
     controlledByOtherExtensionsButton.hidden = false
   }
 
@@ -118,7 +118,7 @@ import Browser from '@/shared/scripts/webextension';
 
   const extensionEnabled = await Settings.extensionEnabled()
 
-  if (extensionEnabled && Browser.isFirefox) {
+  if (extensionEnabled && Browser.IS_FIREFOX) {
     const allowedIncognitoAccess = await Browser.extension.isAllowedIncognitoAccess()
     const { privateBrowsingPermissionsRequired } = await storage.get({
       privateBrowsingPermissionsRequired: false,

@@ -166,7 +166,7 @@ export const handleInstalled = async ({ reason }) => {
   const INSTALLED = reason === Browser.runtime.OnInstalledReason.INSTALL
 
   console.groupCollapsed('onInstall')
-  // In Firefox, the update can be caused after granting incognito access.
+  // In Firefox, the UPDATE can be caused after granting incognito access.
   if (UPDATED && Browser.IS_FIREFOX) {
     const controlledByThisExtension = await ProxyManager.controlledByThisExtension()
     const isAllowedIncognitoAccess = await Browser.extension.isAllowedIncognitoAccess()

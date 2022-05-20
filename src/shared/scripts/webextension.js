@@ -1,9 +1,9 @@
 const getBrowser = () => {
   if (typeof browser !== 'undefined') {
-    browser.isFirefox = true
+    browser.IS_FIREFOX = true
     return browser
   }
-  chrome.isFirefox = false
+  chrome.IS_FIREFOX = false
   return chrome
 }
 

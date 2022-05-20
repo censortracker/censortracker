@@ -14,7 +14,7 @@ class Settings {
     const title = this.getName()
     const path = Browser.runtime.getURL(`images/icons/128x128/${filename}.png`)
 
-    if (Browser.isFirefox) {
+    if (Browser.IS_FIREFOX) {
       Browser.browserAction.setIcon({ tabId, path })
       Browser.browserAction.setTitle({ title, tabId })
     } else {
@@ -74,7 +74,7 @@ class Settings {
   async enableExtension () {
     let useProxy = true
 
-    if (Browser.isFirefox) {
+    if (Browser.IS_FIREFOX) {
       useProxy = await Browser.extension.isAllowedIncognitoAccess()
     }
 
@@ -92,7 +92,7 @@ class Settings {
       showNotifications: false,
     })
 
-    if (Browser.isFirefox) {
+    if (Browser.IS_FIREFOX) {
       await Browser.browserAction.setBadgeText({ text: '' })
     }
 

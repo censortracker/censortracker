@@ -50,7 +50,7 @@ class ProxyManager {
   }
 
   async requestIncognitoAccess () {
-    if (Browser.isFirefox) {
+    if (Browser.IS_FIREFOX) {
       await Browser.browserAction.setBadgeText({ text: '✕' })
       await storage.set({ privateBrowsingPermissionsRequired: true })
       console.info('Private browsing permissions requested.')
@@ -58,7 +58,7 @@ class ProxyManager {
   }
 
   async grantIncognitoAccess () {
-    if (Browser.isFirefox) {
+    if (Browser.IS_FIREFOX) {
       await Browser.browserAction.setBadgeText({ text: '' })
       await storage.set({ privateBrowsingPermissionsRequired: false })
       console.info('Private browsing permissions granted.')
@@ -77,7 +77,7 @@ class ProxyManager {
         return false
       }
 
-      if (Browser.isFirefox) {
+      if (Browser.IS_FIREFOX) {
         const blob = new Blob([pacData], {
           type: 'application/x-ns-proxy-autoconfig',
         })

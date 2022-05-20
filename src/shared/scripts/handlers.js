@@ -67,7 +67,7 @@ export const handleOnAlarm = async ({ name }) => {
 
 export const handleBeforeRequest = async (_details) => {
   if (Browser.isFirefox) {
-    const allowed = await browser.extension.isAllowedIncognitoAccess()
+    const allowed = await Browser.extension.isAllowedIncognitoAccess()
 
     if (!allowed) {
       await ProxyManager.requestIncognitoAccess()
@@ -192,7 +192,7 @@ export const handleInstalled = async ({ reason }) => {
 const checkProxyReadiness = async () => {
   const proxyingEnabled = await ProxyManager.enabled()
   const controlledByThisExtension = await ProxyManager.controlledByThisExtension()
-  const allowedIncognitoAccess = await browser.extension.isAllowedIncognitoAccess()
+  const allowedIncognitoAccess = await Browser.extension.isAllowedIncognitoAccess()
 
   if (proxyingEnabled && allowedIncognitoAccess) {
     if (!controlledByThisExtension) {

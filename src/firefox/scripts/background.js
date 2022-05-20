@@ -27,6 +27,6 @@ browser.webRequest.onBeforeRequest.addListener(
   getRequestFilter(),
 )
 
+browser.tabs.onUpdated.addListener(handleTabState)
 browser.tabs.onCreated.addListener(handleTabCreate)
 browser.tabs.onActivated.addListener(handleTabState)
-browser.tabs.onUpdated.addListener(handleTabState)

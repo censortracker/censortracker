@@ -26,6 +26,6 @@ chrome.webNavigation.onBeforeNavigate.addListener(
   getRequestFilter(),
 )
 
-chrome.tabs.onActivated.addListener(handleTabState)
 chrome.tabs.onUpdated.addListener(handleTabState)
 chrome.tabs.onCreated.addListener(handleTabCreate)
+chrome.tabs.onActivated.addListener(handleTabState)

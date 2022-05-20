@@ -184,3 +184,66 @@ export const handleInstalled = async ({ reason }) => {
     console.groupEnd()
   }
 }
+
+/**
+ * Check if proxy is ready to use.
+ * Set proxy if proxying enabled and incognito access granted.
+ */
+const checkProxyReadiness = async () => {
+  const proxyingEnabled = await ProxyManager.enabled()
+  const controlledByThisExtension = await ProxyManager.controlledByThisExtension()
+  const allowedIncognitoAccess = await browser.extension.isAllowedIncognitoAccess()
+
+  if (proxyingEnabled && allowedIncognitoAccess) {
+    if (!controlledByThisExtension) {
+      await ProxyManager.setProxy()
+      await ProxyManager.grantIncognitoAccess()
+    }
+  } else {
+    await ProxyManager.requestIncognitoAccess()
+  }
+}
+
+export const handleTabState = async (tabId, changeInfo, tab) => {
+  if (changeInfo && changeInfo.status === Browser.tabs.TabStatus.COMPLETE) {
+    const isIgnored = await Ignore.contains(tab.url)
+    const proxyingEnabled = await ProxyManager.enabled()
+    const extensionEnabled = await Settings.extensionEnabled()
+
+    if (extensionEnabled && !isIgnored && utilities.isValidURL(tab.url)) {
+      if (Browser.isFirefox) {
+        await checkProxyReadiness()
+      }
+
+      const urlBlocked = await Registry.contains(tab.url)
+      const { url: disseminatorUrl, cooperationRefused } =
+        await Registry.retrieveInformationDisseminationOrganizerJSON(tab.url)
+
+      if (proxyingEnabled && urlBlocked) {
+        Settings.setBlockedIcon(tabId)
+        return
+      }
+
+      if (disseminatorUrl) {
+        Settings.setDangerIcon(tabId)
+        if (!cooperationRefused) {
+          await handleInformationDisseminationOrganizer(tab.url)
+        }
+      }
+    }
+  }
+}
+
+export const handleTabCreate = async ({ id }) => {
+  const extensionEnabled = await Settings.extensionEnabled()
+
+  if (extensionEnabled) {
+    if (Browser.isFirefox) {
+      await checkProxyReadiness()
+    } else {
+      Settings.setDefaultIcon(id)
+    }
+  } else {
+    Settings.setDisableIcon(id)
+  }
+}

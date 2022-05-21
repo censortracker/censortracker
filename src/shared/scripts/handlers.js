@@ -124,34 +124,34 @@ export const handleStorageChanged = async ({ enableExtension, ignoredHosts, useP
     console.group('handleStorageChanged')
 
     if (enableExtension) {
-      const newValue = enableExtension.newValue
-      const oldValue = enableExtension.oldValue
+      const enableExtensionNewValue = enableExtension.newValue
+      const enableExtensionOldValue = enableExtension.oldValue
 
-      console.log(`enableExtension: ${oldValue} -> ${newValue}`)
+      console.log(`enableExtension: ${enableExtensionOldValue} -> ${enableExtensionNewValue}`)
 
-      if (newValue === true && oldValue === false) {
+      if (enableExtensionNewValue === true && enableExtensionOldValue === false) {
         await ProxyManager.setProxy()
       }
 
-      if (newValue === false && oldValue === true) {
+      if (enableExtensionNewValue === false && enableExtensionOldValue === true) {
         await ProxyManager.removeProxy()
       }
     }
 
     if (useProxy && enableExtension === undefined) {
-      const newValue = useProxy.newValue
-      const oldValue = useProxy.oldValue
+      const useProxyNewValue = useProxy.newValue
+      const useProxyOldValue = useProxy.oldValue
 
-      console.log(`useProxy: ${oldValue} -> ${newValue}`)
+      console.log(`useProxy: ${useProxyOldValue} -> ${useProxyNewValue}`)
 
       const extensionEnabled = await Settings.extensionEnabled()
 
       if (extensionEnabled) {
-        if (newValue === true && oldValue === false) {
+        if (useProxyNewValue === true && useProxyOldValue === false) {
           await ProxyManager.setProxy()
         }
 
-        if (newValue === false && oldValue === true) {
+        if (useProxyNewValue === false && useProxyOldValue === true) {
           await ProxyManager.removeProxy()
         }
       }
@@ -209,7 +209,7 @@ export const handleInstalled = async ({ reason }) => {
   console.groupEnd()
 }
 
-export const handleTabState = async (tabId, { status = 'loading' }, tab) => {
+export const handleTabState = async (tabId, { status = 'loading' } = {}, tab) => {
   if (status === Browser.tabs.TabStatus.LOADING) {
     const isIgnored = await Ignore.contains(tab.url)
     const extensionEnabled = await Settings.extensionEnabled()

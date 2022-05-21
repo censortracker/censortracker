@@ -28,4 +28,3 @@ chrome.webNavigation.onBeforeNavigate.addListener(
 
 chrome.tabs.onUpdated.addListener(handleTabState)
 chrome.tabs.onCreated.addListener(handleTabCreate)
-chrome.tabs.onActivated.addListener(handleTabState)

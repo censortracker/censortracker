@@ -29,4 +29,3 @@ browser.webRequest.onBeforeRequest.addListener(
 
 browser.tabs.onUpdated.addListener(handleTabState)
 browser.tabs.onCreated.addListener(handleTabCreate)
-browser.tabs.onActivated.addListener(handleTabState)

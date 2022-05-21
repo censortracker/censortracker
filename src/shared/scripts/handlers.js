@@ -11,17 +11,16 @@ export const handleOnConnect = (port) => {
   if (port.name === 'censortracker') {
     port.onMessage.addListener((message) => {
       if (message.parentalControl === '?') {
-        storage.get({ parentalControl: false }).then(
-          ({ parentalControl }) => {
+        storage.get({ parentalControl: false })
+          .then(({ parentalControl }) => {
             port.postMessage({ parentalControl })
-          },
-        )
+          })
       }
     })
   }
 }
 
-export const handleInformationDisseminationOrganizer = async (url) => {
+export const warnAboutInformationDisseminationOrganizer = async (url) => {
   const hostname = utilities.extractHostnameFromUrl(url)
   const { notifiedHosts, showNotifications } = await storage.get({
     notifiedHosts: [],
@@ -57,7 +56,11 @@ export const handleOnAlarm = async ({ name }) => {
   }
 
   if (name === 'proxy-setProxy') {
-    await ProxyManager.setProxy()
+    const proxyingEnabled = await ProxyManager.enabled()
+
+    if (proxyingEnabled) {
+      await ProxyManager.setProxy()
+    }
   }
 
   if (name === 'registry-sync') {
@@ -66,18 +69,27 @@ export const handleOnAlarm = async ({ name }) => {
 }
 
 export const handleBeforeRequest = async (_details) => {
-  if (Browser.isFirefox) {
-    const allowed = await browser.extension.isAllowedIncognitoAccess()
-
-    if (!allowed) {
-      await ProxyManager.requestIncognitoAccess()
-    }
-  }
+  await ProxyManager.requestIncognitoAccess()
   await ProxyManager.ping()
 }
 
 export const handleStartup = async () => {
-  await ProxyManager.setProxy()
+  console.groupCollapsed('onStartup')
+  await Ignore.fetch()
+  await Registry.sync()
+
+  const proxyingEnabled = await ProxyManager.enabled()
+
+  if (proxyingEnabled) {
+    await ProxyManager.setProxy()
+  }
+
+  await Task.schedule([
+    { name: 'ignore-fetch', minutes: 10 },
+    { name: 'registry-sync', minutes: 20 },
+    { name: 'proxy-setProxy', minutes: 10 },
+  ])
+  console.groupEnd()
 }
 
 export const handleProxyError = (details) => {
@@ -91,10 +103,11 @@ export const handleIgnoredHostsChange = async ({ ignoredHosts }, _areaName) => {
 }
 
 export const handleCustomProxiedDomainsChange = async ({ customProxiedDomains }, _areaName) => {
-  const { enableExtension } = await storage.get({ enableExtension: false })
+  const proxyingEnabled = await ProxyManager.enabled()
+  const enableExtension = await Settings.extensionEnabled()
 
   if (customProxiedDomains && customProxiedDomains.newValue) {
-    if (enableExtension) {
+    if (enableExtension && proxyingEnabled) {
       await ProxyManager.setProxy()
       console.warn('Updated custom proxied domains.')
     }
@@ -154,33 +167,76 @@ export const handleStorageChanged = async ({ enableExtension, ignoredHosts, useP
  * @returns {Promise<void>}
  */
 export const handleInstalled = async ({ reason }) => {
-  if (reason === Browser.runtime.OnInstalledReason.INSTALL) {
-    console.group('onInstall')
+  const UPDATED = reason === Browser.runtime.OnInstalledReason.UPDATE
+  const INSTALLED = reason === Browser.runtime.OnInstalledReason.INSTALL
 
+  console.groupCollapsed('onInstall')
+  // In Firefox, the UPDATE can be caused after granting incognito access.
+  if (UPDATED && Browser.IS_FIREFOX) {
+    const controlledByThisExtension = await ProxyManager.controlledByThisExtension()
+    const isAllowedIncognitoAccess = await Browser.extension.isAllowedIncognitoAccess()
+
+    if (isAllowedIncognitoAccess && !controlledByThisExtension) {
+      console.warn('Incognito access granted, setting proxy...')
+      await ProxyManager.setProxy()
+    }
+  }
+
+  if (INSTALLED) {
     await Settings.enableExtension()
     await Settings.enableNotifications()
     await Settings.showInstalledPage()
-
-    await Task.schedule([
-      { name: 'ignore-fetch', minutes: 10 },
-      { name: 'registry-sync', minutes: 20 },
-      { name: 'proxy-setProxy', minutes: 10 },
-    ])
+    await ProxyManager.enableProxy()
 
     const synchronized = await Registry.sync()
 
     if (synchronized) {
-      const allowedIncognitoAccess =
-        await Browser.extension.isAllowedIncognitoAccess()
-
-      if (!allowedIncognitoAccess) {
-        await ProxyManager.requestIncognitoAccess()
-      }
+      await ProxyManager.requestIncognitoAccess()
       await ProxyManager.ping()
       await ProxyManager.setProxy()
     } else {
       console.warn('Synchronization failed')
     }
-    console.groupEnd()
+  }
+
+  if (UPDATED || INSTALLED) {
+    await Task.schedule([
+      { name: 'ignore-fetch', minutes: 10 },
+      { name: 'registry-sync', minutes: 20 },
+      { name: 'proxy-setProxy', minutes: 10 },
+    ])
+  }
+  console.groupEnd()
+}
+
+export const handleTabState = async (tabId, { status = 'loading' }, tab) => {
+  if (status === Browser.tabs.TabStatus.LOADING) {
+    const isIgnored = await Ignore.contains(tab.url)
+    const extensionEnabled = await Settings.extensionEnabled()
+
+    if (extensionEnabled && !isIgnored && utilities.isValidURL(tab.url)) {
+      const blocked = await Registry.contains(tab.url)
+      const { url: disseminatorUrl, cooperationRefused } =
+        await Registry.retrieveInformationDisseminationOrganizerJSON(tab.url)
+
+      if (blocked) {
+        Settings.setBlockedIcon(tabId)
+      } else if (disseminatorUrl) {
+        Settings.setDangerIcon(tabId)
+        if (!cooperationRefused) {
+          await warnAboutInformationDisseminationOrganizer(tab.url)
+        }
+      }
+    }
+  }
+}
+
+export const handleTabCreate = async (tab) => {
+  const extensionEnabled = await Settings.extensionEnabled()
+
+  if (extensionEnabled) {
+    Settings.setDefaultIcon(tab.id)
+  } else {
+    Settings.setDisableIcon(tab.id)
   }
 }

@@ -11,11 +11,10 @@ export const handleOnConnect = (port) => {
   if (port.name === 'censortracker') {
     port.onMessage.addListener((message) => {
       if (message.parentalControl === '?') {
-        storage.get({ parentalControl: false }).then(
-          ({ parentalControl }) => {
+        storage.get({ parentalControl: false })
+          .then(({ parentalControl }) => {
             port.postMessage({ parentalControl })
-          },
-        )
+          })
       }
     })
   }
@@ -57,7 +56,11 @@ export const handleOnAlarm = async ({ name }) => {
   }
 
   if (name === 'proxy-setProxy') {
-    await ProxyManager.setProxy()
+    const proxyingEnabled = await ProxyManager.enabled()
+
+    if (proxyingEnabled) {
+      await ProxyManager.setProxy()
+    }
   }
 
   if (name === 'registry-sync') {

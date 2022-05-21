@@ -102,7 +102,7 @@ export const handleIgnoredHostsChange = async ({ ignoredHosts }, _areaName) => {
 }
 
 export const handleCustomProxiedDomainsChange = async ({ customProxiedDomains }, _areaName) => {
-  const { enableExtension } = await storage.get({ enableExtension: false })
+  const enableExtension = await Settings.extensionEnabled()
 
   if (customProxiedDomains && customProxiedDomains.newValue) {
     if (enableExtension) {

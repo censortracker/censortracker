@@ -66,49 +66,43 @@ class ProxyManager {
   }
 
   async setProxy () {
-    const proxyingEnabled = await this.enabled()
+    const config = {}
+    const pacData = await this.generateProxyAutoConfigData()
 
-    if (proxyingEnabled) {
-      const config = {}
-      const pacData = await this.generateProxyAutoConfigData()
+    if (!pacData) {
+      console.warn('Cannot set proxy: local database is empty')
+      return false
+    }
 
-      if (!pacData) {
-        console.warn('Cannot set proxy: local database is empty')
-        return false
-      }
+    if (Browser.IS_FIREFOX) {
+      const blob = new Blob([pacData], {
+        type: 'application/x-ns-proxy-autoconfig',
+      })
 
-      if (Browser.IS_FIREFOX) {
-        const blob = new Blob([pacData], {
-          type: 'application/x-ns-proxy-autoconfig',
-        })
-
-        config.value = {
-          proxyType: 'autoConfig',
-          autoConfigUrl: URL.createObjectURL(blob),
-        }
-      } else {
-        config.scope = 'regular'
-        config.value = {
-          mode: 'pac_script',
-          pacScript: {
-            data: pacData,
-            mandatory: false,
-          },
-        }
-      }
-
-      try {
-        await Browser.proxy.settings.set(config)
-        await this.enableProxy()
-        console.warn('PAC has been generated and set successfully!')
-        return true
-      } catch (error) {
-        await this.disableProxy()
-        await this.requestIncognitoAccess()
-        return false
+      config.value = {
+        proxyType: 'autoConfig',
+        autoConfigUrl: URL.createObjectURL(blob),
       }
     } else {
-      console.warn('Cannot set proxy: proxying is disabled')
+      config.scope = 'regular'
+      config.value = {
+        mode: 'pac_script',
+        pacScript: {
+          data: pacData,
+          mandatory: false,
+        },
+      }
+    }
+
+    try {
+      await Browser.proxy.settings.set(config)
+      await this.enableProxy()
+      await this.grantIncognitoAccess()
+      console.warn('PAC has been generated and set successfully!')
+      return true
+    } catch (error) {
+      await this.disableProxy()
+      await this.requestIncognitoAccess()
       return false
     }
   }

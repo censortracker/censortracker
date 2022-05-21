@@ -20,7 +20,7 @@ export const handleOnConnect = (port) => {
   }
 }
 
-export const handleInformationDisseminationOrganizer = async (url) => {
+export const warnAboutInformationDisseminationOrganizer = async (url) => {
   const hostname = utilities.extractHostnameFromUrl(url)
   const { notifiedHosts, showNotifications } = await storage.get({
     notifiedHosts: [],
@@ -80,15 +80,22 @@ export const handleBeforeRequest = async (_details) => {
 }
 
 export const handleStartup = async () => {
+  console.groupCollapsed('onStartup')
   await Ignore.fetch()
   await Registry.sync()
-  await ProxyManager.setProxy()
+
+  const proxyingEnabled = await ProxyManager.enabled()
+
+  if (proxyingEnabled) {
+    await ProxyManager.setProxy()
+  }
 
   await Task.schedule([
     { name: 'ignore-fetch', minutes: 10 },
     { name: 'registry-sync', minutes: 20 },
     { name: 'proxy-setProxy', minutes: 10 },
   ])
+  console.groupEnd()
 }
 
 export const handleProxyError = (details) => {
@@ -102,10 +109,11 @@ export const handleIgnoredHostsChange = async ({ ignoredHosts }, _areaName) => {
 }
 
 export const handleCustomProxiedDomainsChange = async ({ customProxiedDomains }, _areaName) => {
+  const proxyingEnabled = await ProxyManager.enabled()
   const enableExtension = await Settings.extensionEnabled()
 
   if (customProxiedDomains && customProxiedDomains.newValue) {
-    if (enableExtension) {
+    if (enableExtension && proxyingEnabled) {
       await ProxyManager.setProxy()
       console.warn('Updated custom proxied domains.')
     }
@@ -176,7 +184,6 @@ export const handleInstalled = async ({ reason }) => {
 
     if (isAllowedIncognitoAccess && !controlledByThisExtension) {
       console.warn('Incognito access granted, setting proxy...')
-      await ProxyManager.enableProxy()
       await ProxyManager.setProxy()
     }
   }
@@ -213,65 +220,34 @@ export const handleInstalled = async ({ reason }) => {
   console.groupEnd()
 }
 
-/**
- * Check if proxy is ready to use.
- * Set proxy if proxying enabled and incognito access granted.
- */
-const checkProxyReadiness = async () => {
-  const proxyingEnabled = await ProxyManager.enabled()
-  const controlledByThisExtension = await ProxyManager.controlledByThisExtension()
-  const allowedIncognitoAccess = await Browser.extension.isAllowedIncognitoAccess()
-
-  if (proxyingEnabled && allowedIncognitoAccess) {
-    if (!controlledByThisExtension) {
-      await ProxyManager.setProxy()
-      await ProxyManager.grantIncognitoAccess()
-    }
-  } else {
-    await ProxyManager.requestIncognitoAccess()
-  }
-}
-
-export const handleTabState = async (tabId, changeInfo, tab) => {
-  if (changeInfo && changeInfo.status === Browser.tabs.TabStatus.COMPLETE) {
+export const handleTabState = async (tabId, { status = 'loading' }, tab) => {
+  if (status === Browser.tabs.TabStatus.LOADING) {
     const isIgnored = await Ignore.contains(tab.url)
-    const proxyingEnabled = await ProxyManager.enabled()
     const extensionEnabled = await Settings.extensionEnabled()
 
     if (extensionEnabled && !isIgnored && utilities.isValidURL(tab.url)) {
-      if (Browser.IS_FIREFOX) {
-        await checkProxyReadiness()
-      }
-
-      const urlBlocked = await Registry.contains(tab.url)
+      const blocked = await Registry.contains(tab.url)
       const { url: disseminatorUrl, cooperationRefused } =
         await Registry.retrieveInformationDisseminationOrganizerJSON(tab.url)
 
-      if (proxyingEnabled && urlBlocked) {
+      if (blocked) {
         Settings.setBlockedIcon(tabId)
-        return
-      }
-
-      if (disseminatorUrl) {
+      } else if (disseminatorUrl) {
         Settings.setDangerIcon(tabId)
         if (!cooperationRefused) {
-          await handleInformationDisseminationOrganizer(tab.url)
+          await warnAboutInformationDisseminationOrganizer(tab.url)
         }
       }
     }
   }
 }
 
-export const handleTabCreate = async ({ id }) => {
+export const handleTabCreate = async (tab) => {
   const extensionEnabled = await Settings.extensionEnabled()
 
   if (extensionEnabled) {
-    if (Browser.IS_FIREFOX) {
-      await checkProxyReadiness()
-    } else {
-      Settings.setDefaultIcon(id)
-    }
+    Settings.setDefaultIcon(tab.id)
   } else {
-    Settings.setDisableIcon(id)
+    Settings.setDisableIcon(tab.id)
   }
 }

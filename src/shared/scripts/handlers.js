@@ -69,13 +69,7 @@ export const handleOnAlarm = async ({ name }) => {
 }
 
 export const handleBeforeRequest = async (_details) => {
-  if (Browser.IS_FIREFOX) {
-    const allowed = await Browser.extension.isAllowedIncognitoAccess()
-
-    if (!allowed) {
-      await ProxyManager.requestIncognitoAccess()
-    }
-  }
+  await ProxyManager.requestIncognitoAccess()
   await ProxyManager.ping()
 }
 
@@ -197,12 +191,7 @@ export const handleInstalled = async ({ reason }) => {
     const synchronized = await Registry.sync()
 
     if (synchronized) {
-      const allowedIncognitoAccess =
-        await Browser.extension.isAllowedIncognitoAccess()
-
-      if (!allowedIncognitoAccess) {
-        await ProxyManager.requestIncognitoAccess()
-      }
+      await ProxyManager.requestIncognitoAccess()
       await ProxyManager.ping()
       await ProxyManager.setProxy()
     } else {

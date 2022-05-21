@@ -51,9 +51,16 @@ class ProxyManager {
 
   async requestIncognitoAccess () {
     if (Browser.IS_FIREFOX) {
-      await Browser.browserAction.setBadgeText({ text: '✕' })
-      await storage.set({ privateBrowsingPermissionsRequired: true })
-      console.info('Private browsing permissions requested.')
+      const isAllowedIncognitoAccess =
+        await Browser.extension.isAllowedIncognitoAccess()
+
+      if (!isAllowedIncognitoAccess) {
+        await Browser.browserAction.setBadgeText({ text: '✕' })
+        await storage.set({ privateBrowsingPermissionsRequired: true })
+        console.info('Private browsing permissions requested.')
+      } else {
+        console.log('Private browsing permissions already granted.')
+      }
     }
   }
 

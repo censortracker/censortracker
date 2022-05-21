@@ -56,7 +56,7 @@ export const handleOnAlarm = async ({ name }) => {
   }
 
   if (name === 'proxy-setProxy') {
-    const proxyingEnabled = await ProxyManager.enabled()
+    const proxyingEnabled = await ProxyManager.isEnabled()
 
     if (proxyingEnabled) {
       await ProxyManager.setProxy()
@@ -78,7 +78,7 @@ export const handleStartup = async () => {
   await Ignore.fetch()
   await Registry.sync()
 
-  const proxyingEnabled = await ProxyManager.enabled()
+  const proxyingEnabled = await ProxyManager.isEnabled()
 
   if (proxyingEnabled) {
     await ProxyManager.setProxy()
@@ -103,7 +103,7 @@ export const handleIgnoredHostsChange = async ({ ignoredHosts }, _areaName) => {
 }
 
 export const handleCustomProxiedDomainsChange = async ({ customProxiedDomains }, _areaName) => {
-  const proxyingEnabled = await ProxyManager.enabled()
+  const proxyingEnabled = await ProxyManager.isEnabled()
   const enableExtension = await Settings.extensionEnabled()
 
   if (customProxiedDomains && customProxiedDomains.newValue) {

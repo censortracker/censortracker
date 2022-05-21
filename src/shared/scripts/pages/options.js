@@ -3,7 +3,7 @@ import * as storage from '@/shared/scripts/storage'
 import Browser from '@/shared/scripts/webextension';
 
 (async () => {
-  const proxyingEnabled = await ProxyManager.enabled()
+  const proxyingEnabled = await ProxyManager.isEnabled()
   const proxyStatus = document.getElementById('proxyStatus')
   const showNotificationsCheckbox = document.getElementById(
     'showNotificationsCheckbox',
@@ -69,10 +69,10 @@ import Browser from '@/shared/scripts/webextension';
   if (showNotificationsCheckbox) {
     showNotificationsCheckbox.addEventListener('change', async () => {
       if (showNotificationsCheckbox.checked) {
-        console.log('Notifications enabled.')
+        console.log('Notifications isEnabled.')
         await storage.set({ showNotifications: true })
       } else {
-        console.log('Notifications enabled.')
+        console.log('Notifications isEnabled.')
         await storage.set({ showNotifications: false })
       }
     },

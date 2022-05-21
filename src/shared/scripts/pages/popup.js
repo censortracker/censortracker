@@ -65,7 +65,7 @@ import Browser from '@/shared/scripts/webextension';
   })
 
   const proxyIsAlive = await ProxyManager.alive()
-  const proxyingEnabled = await ProxyManager.enabled()
+  const proxyingEnabled = await ProxyManager.isEnabled()
 
   if (proxyingEnabled) {
     if (proxyIsAlive) {

@@ -4,7 +4,7 @@ import * as storage from '@/shared/scripts/storage'
 import { isPort, translateDocument } from '@/shared/scripts/utilities'
 
 (async () => {
-  const proxyingEnabled = await ProxyManager.enabled()
+  const proxyingEnabled = await ProxyManager.isEnabled()
   const useProxyCheckbox = document.getElementById('useProxyCheckbox')
   const proxyCustomOptions = document.getElementById('proxyCustomOptions')
   const proxyHostInput = document.getElementById('proxyHostInput')
@@ -107,7 +107,7 @@ import { isPort, translateDocument } from '@/shared/scripts/utilities'
     }
   }, false)
 
-  useProxyCheckbox.checked = await ProxyManager.enabled()
+  useProxyCheckbox.checked = await ProxyManager.isEnabled()
 
   const { countryDetails: { name: country } } = await Registry.getConfig()
 

@@ -1,8 +1,8 @@
 (() => {
   const baseUrl = 'https://raw.githubusercontent.com/roskomsvoboda/' +
-    'censortracker/gh-pages/static/img/parental-control/'
-  const randomInteger = () => Math.floor(Math.random() * 5) + 1
+    'censortracker/gh-pages/static/img/pc/'
 
+  const randomInteger = () => Math.floor(Math.random() * 5) + 1
   const port = chrome.runtime.connect({ name: 'censortracker' })
 
   // Ask if parental control is isEnabled.

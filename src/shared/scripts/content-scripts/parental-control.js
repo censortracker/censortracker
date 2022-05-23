@@ -11,10 +11,8 @@
     if (message.parentalControl) {
       const overlay = document.createElement('div')
 
-      overlay.style.backgroundImage = `url(${baseUrl}${randomInteger(1, 5)}.svg)`
-
       overlay.id = 'overlay'
-
+      overlay.style.backgroundImage = `url(${baseUrl}${randomInteger(1, 5)}.svg)`
       document.body.prepend(overlay)
     }
   })

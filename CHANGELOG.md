@@ -5,6 +5,7 @@
 - Add ``chrome.alarms`` and ``browser.alarms`` support.
 - Fix config caching issues.
 - Add "Parental Control" feature.
+- Automatically setting proxy in Firefox when private browsing access granted.
 
 ### 5.3.1.0
 

@@ -1,6 +1,6 @@
-import ProxyManager from '@/shared/js/background/proxy'
-import * as storage from '@/shared/js/background/storage'
-import Browser from '@/shared/js/background/webextension';
+import ProxyManager from 'Background/proxy'
+import * as storage from 'Background/storage'
+import Browser from 'Background/webextension';
 
 (async () => {
   const proxyingEnabled = await ProxyManager.isEnabled()

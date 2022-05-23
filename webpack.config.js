@@ -42,6 +42,7 @@ const webWorkerConfig = {
     extensions: ['.js', '.ts', '.json'],
     alias: {
       '@': resolve('src'),
+      'Background': resolve('src/shared/js/background'),
     },
   },
 
@@ -89,13 +90,13 @@ const webConfig = {
   output: {
     path: resolve(`dist/${BROWSER}/${OUTPUT_SUB_DIR}`),
     filename: '[name].js',
-    // filename: `[name]${PRODUCTION ? '.min' : ''}.js`,
     publicPath: PRODUCTION ? '' : '/',
   },
   resolve: {
     extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
     alias: {
       '@': resolve('src'),
+      'Background': resolve('src/shared/js/background'),
     },
   },
   module: {

@@ -1,8 +1,8 @@
-import Ignore from '@/shared/js/background/ignore'
-import ProxyManager from '@/shared/js/background/proxy'
-import Registry from '@/shared/js/background/registry'
-import Settings from '@/shared/js/background/settings'
-import * as storage from '@/shared/js/background/storage';
+import Ignore from 'Background/ignore'
+import ProxyManager from 'Background/proxy'
+import Registry from 'Background/registry'
+import Settings from 'Background/settings'
+import * as storage from 'Background/storage';
 
 (async () => {
   const completedConfirmBtn = document.getElementById('completedConfirm')

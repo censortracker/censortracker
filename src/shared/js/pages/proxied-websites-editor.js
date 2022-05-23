@@ -4,11 +4,9 @@ import 'codemirror/addon/search/searchcursor'
 import 'codemirror/addon/display/autorefresh'
 import 'codemirror/lib/codemirror.css'
 
+import * as storage from 'Background/storage'
+import { translateDocument, validateUrls } from 'Background/utilities'
 import CodeMirror from 'codemirror'
-
-import { translateDocument, validateUrls } from '@/shared/js/background/utilities'
-
-import * as storage from '../background/storage'
 
 (async () => {
   translateDocument(document)

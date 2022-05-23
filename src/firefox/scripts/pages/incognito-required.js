@@ -1,5 +1,5 @@
-import ProxyManager from '@/shared/js/background/proxy'
-import { extractDecodedOriginUrl, select, translateDocument } from '@/shared/js/background/utilities'
+import ProxyManager from 'Background/proxy'
+import { extractDecodedOriginUrl, select, translateDocument } from 'Background/utilities'
 
 (async () => {
   const closeTab = select({ id: 'closeTab' })

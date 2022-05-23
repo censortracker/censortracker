@@ -1,13 +1,13 @@
-import ProxyManager from '@/shared/js/background/proxy'
-import Registry from '@/shared/js/background/registry'
-import Settings from '@/shared/js/background/settings'
-import * as storage from '@/shared/js/background/storage'
+import ProxyManager from 'Background/proxy'
+import Registry from 'Background/registry'
+import Settings from 'Background/settings'
+import * as storage from 'Background/storage'
 import {
   extractHostnameFromUrl,
   isValidURL,
   select,
-} from '@/shared/js/background/utilities'
-import Browser from '@/shared/js/background/webextension';
+} from 'Background/utilities'
+import Browser from 'Background/webextension';
 
 (async () => {
   const uiText = {

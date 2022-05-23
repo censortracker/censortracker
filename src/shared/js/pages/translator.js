@@ -1,4 +1,4 @@
-import { translateDocument } from '@/shared/js/background/utilities'
+import { translateDocument } from 'Background/utilities'
 
 (() => {
   translateDocument(document)

@@ -10,8 +10,8 @@ import {
   handleStorageChanged,
   handleTabCreate,
   handleTabState,
-} from '@/shared/js/background/handlers'
-import { getRequestFilter } from '@/shared/js/background/utilities'
+} from 'Background/handlers'
+import { getRequestFilter } from 'Background/utilities'
 
 browser.alarms.onAlarm.addListener(handleOnAlarm)
 browser.proxy.onError.addListener(handleProxyError)

@@ -4,10 +4,9 @@ import 'codemirror/addon/search/searchcursor'
 import 'codemirror/addon/display/autorefresh'
 import 'codemirror/lib/codemirror.css'
 
+import Ignore from 'Background/ignore'
+import { validateUrls } from 'Background/utilities'
 import CodeMirror from 'codemirror'
-
-import Ignore from '../background/ignore'
-import { validateUrls } from '../background/utilities'
 
 (async () => {
   const ignoredHosts = await Ignore.getAll()

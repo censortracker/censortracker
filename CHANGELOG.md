@@ -4,8 +4,8 @@
 - Migrated to Manifest v3 for Chromium version.
 - Add ``chrome.alarms`` and ``browser.alarms`` support.
 - Fix config caching issues.
-- Add "Parental Control" feature.
-- Automatically setting proxy in Firefox when private browsing access granted.
+- Add `Parental Control` feature.
+- Fixed [#382](https://github.com/roskomsvoboda/censortracker/issues/382).
 
 ### 5.3.1.0
 

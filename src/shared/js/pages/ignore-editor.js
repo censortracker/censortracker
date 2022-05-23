@@ -6,38 +6,42 @@ import 'codemirror/lib/codemirror.css'
 
 import CodeMirror from 'codemirror'
 
-import { translateDocument, validateUrls } from '@/shared/scripts/utilities'
-
-import * as storage from '../storage'
+import Ignore from '../background/ignore'
+import { validateUrls } from '../background/utilities'
 
 (async () => {
-  translateDocument(document)
+  const ignoredHosts = await Ignore.getAll()
   const searchInput = document.getElementById('search')
-  const domainsList = document.getElementById('domainsList')
-  const { customProxiedDomains } = await storage.get({
-    customProxiedDomains: [],
-  })
+  const ignoredList = document.getElementById('ignoreList')
 
-  const content = customProxiedDomains.join('\n')
-  const editor = CodeMirror.fromTextArea(domainsList, {
-    autorefresh: true,
-    lineNumbers: true,
-    lineWrapping: true,
-    mode: 'text/x-mysql',
-    styleActiveLine: true,
-    styleActiveSelected: true,
-    disableSpellcheck: true,
-  })
+  const content = ignoredHosts.join('\n')
+  const editor = CodeMirror.fromTextArea(
+    ignoredList, {
+      autorefresh: true,
+      lineNumbers: true,
+      lineWrapping: true,
+      mode: 'text/x-mysql',
+      styleActiveLine: true,
+      styleActiveSelected: true,
+      disableSpellcheck: true,
+    },
+  )
 
   editor.setValue(content)
 
   document.addEventListener('keydown', async (event) => {
     if ((event.ctrlKey && event.key === 's') || event.keyCode === 13) {
-      const urls = editor.getValue().split('\n')
+      const editorContent = editor.getValue().trim()
 
-      await storage.set({
-        customProxiedDomains: validateUrls(urls),
+      Ignore.clear().then(async () => {
+        const urls = editorContent.split('\n')
+        const validUrls = validateUrls(urls)
+
+        for (const url of validUrls) {
+          await Ignore.add(url)
+        }
       })
+
       console.warn('Ignore list updated')
       event.preventDefault()
     }
@@ -56,9 +60,13 @@ import * as storage from '../storage'
 
     while (cursor.findNext()) {
       // Mark a range of text with a specific CSS class name.
-      editor.markText(cursor.from(), cursor.to(), {
-        className: 'highlight',
-      })
+      editor.markText(
+        cursor.from(),
+        cursor.to(),
+        {
+          className: 'highlight',
+        },
+      )
     }
   })
 })()

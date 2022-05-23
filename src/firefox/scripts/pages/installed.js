@@ -1,4 +1,4 @@
-import { select, translateDocument } from '@/shared/scripts/utilities'
+import { select, translateDocument } from '@/shared/js/background/utilities'
 
 (() => {
   const howToGrantIncognitoAccess = select({ id: 'howToGrantIncognitoAccess' })

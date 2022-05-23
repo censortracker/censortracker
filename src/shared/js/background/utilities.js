@@ -1,4 +1,4 @@
-import validator from 'validator'
+import isURL from 'validator/lib/isURL'
 
 import Browser from './webextension'
 
@@ -38,7 +38,7 @@ export const isValidURL = (url) => {
     if (isExtensionUrl(url)) {
       return false
     }
-    return validator.isURL(url, { protocols: ['http', 'https'], validate_length: true })
+    return isURL(url, { protocols: ['http', 'https'], validate_length: true })
   } catch (error) {
     return false
   }

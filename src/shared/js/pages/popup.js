@@ -1,20 +1,20 @@
-import ProxyManager from '@/shared/scripts/proxy'
-import Registry from '@/shared/scripts/registry'
-import Settings from '@/shared/scripts/settings'
-import * as storage from '@/shared/scripts/storage'
+import ProxyManager from '@/shared/js/background/proxy'
+import Registry from '@/shared/js/background/registry'
+import Settings from '@/shared/js/background/settings'
+import * as storage from '@/shared/js/background/storage'
 import {
   extractHostnameFromUrl,
   isValidURL,
   select,
-} from '@/shared/scripts/utilities'
-import Browser from '@/shared/scripts/webextension';
+} from '@/shared/js/background/utilities'
+import Browser from '@/shared/js/background/webextension';
 
 (async () => {
   const uiText = {
     ori: {
       found: {
         title: Browser.i18n.getMessage('disseminatorTitle'),
-        statusIcon: 'images/icons/status/icon_danger.svg',
+        statusIcon: 'images/popup/status/danger.svg',
         detailsText: Browser.i18n.getMessage('disseminatorDesc'),
         detailsClasses: ['text-warning'],
         cooperationRefused: {
@@ -22,19 +22,19 @@ import Browser from '@/shared/scripts/webextension';
         },
       },
       notFound: {
-        statusIcon: 'images/icons/status/icon_ok.svg',
+        statusIcon: 'images/popup/status/ok.svg',
         title: Browser.i18n.getMessage('notDisseminatorTitle'),
         detailsText: Browser.i18n.getMessage('notDisseminatorDesc'),
       },
     },
     restrictions: {
       true: {
-        statusIcon: 'images/icons/status/icon_info.svg',
+        statusIcon: 'images/popup/status/info.svg',
         title: Browser.i18n.getMessage('blockedTitle'),
         detailsText: Browser.i18n.getMessage('blockedDesc'),
       },
       false: {
-        statusIcon: 'images/icons/status/icon_ok.svg',
+        statusIcon: 'images/popup/status/ok.svg',
         title: Browser.i18n.getMessage('notBlockedTitle'),
         detailsText: Browser.i18n.getMessage('notBlockedDesc'),
       },

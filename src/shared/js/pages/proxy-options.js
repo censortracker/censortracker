@@ -1,7 +1,7 @@
-import ProxyManager from '@/shared/scripts/proxy'
-import Registry from '@/shared/scripts/registry'
-import * as storage from '@/shared/scripts/storage'
-import { isPort, translateDocument } from '@/shared/scripts/utilities'
+import ProxyManager from '@/shared/js/background/proxy'
+import Registry from '@/shared/js/background/registry'
+import * as storage from '@/shared/js/background/storage'
+import { isPort, translateDocument } from '@/shared/js/background/utilities'
 
 (async () => {
   const proxyingEnabled = await ProxyManager.isEnabled()

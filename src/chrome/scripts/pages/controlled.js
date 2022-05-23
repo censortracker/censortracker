@@ -1,5 +1,5 @@
-import ProxyManager from '@/shared/scripts/proxy'
-import { select, translateDocument } from '@/shared/scripts/utilities'
+import ProxyManager from '@/shared/js/background/proxy'
+import { select, translateDocument } from '@/shared/js/background/utilities'
 
 (async () => {
   translateDocument(document)

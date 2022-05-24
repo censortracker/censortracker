@@ -11,7 +11,7 @@
     if (message.parentalControl) {
       const overlay = document.createElement('div')
 
-      overlay.id = 'overlay'
+      overlay.id = 'ct-parental-control-overlay'
       overlay.style.backgroundImage = `url(${baseUrl}${randomInteger(1, 5)}.svg)`
       document.body.prepend(overlay)
     }

@@ -243,26 +243,32 @@ import Browser from 'Background/webextension';
     })
   }
 
-  for (const button of whatThisMeanButtons) {
-    button.addEventListener('click', () => {
-      detailsText.forEach((element) => {
-        element.style.display = 'none'
-      })
+  const hideDetails = () => {
+    detailsText.forEach((element) => {
+      element.style.display = 'none'
+    })
+  }
 
-      button.style.display = 'none'
-      button.nextElementSibling.style.display = 'block'
+  const showWhatThisMeanButtons = () => {
+    whatThisMeanButtons.forEach((btn) => {
+      btn.style.display = 'flex'
+    })
+  }
+
+  for (const whatThisMeanButton of whatThisMeanButtons) {
+    whatThisMeanButton.addEventListener('click', () => {
+      hideDetails()
+      showWhatThisMeanButtons()
+
+      whatThisMeanButton.style.display = 'none'
+      whatThisMeanButton.nextElementSibling.style.display = 'block'
     })
   }
 
   for (const closeButton of closeDetailsButtons) {
     closeButton.addEventListener('click', () => {
-      detailsText.forEach((block) => {
-        block.style.display = 'none'
-      })
-
-      whatThisMeanButtons.forEach((button) => {
-        button.style.display = 'flex'
-      })
+      hideDetails()
+      showWhatThisMeanButtons()
     })
   }
 

@@ -212,7 +212,7 @@ class ProxyManager {
   }
 
   async enableProxy () {
-    console.log('Proxying isEnabled.')
+    console.log('Proxying enabled.')
     await storage.set({ useProxy: true })
   }
 

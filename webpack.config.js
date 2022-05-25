@@ -30,7 +30,7 @@ const webWorkerConfig = {
   mode: NODE_ENV,
   target: isFirefox ? 'webworker' : 'web',
   entry: {
-    background: './src/chrome/scripts/background.js',
+    background: './src/chrome/js/background.js',
   },
   output: {
     path: resolve(`dist/chrome/${OUTPUT_SUB_DIR}`),
@@ -234,9 +234,9 @@ const webConfig = {
 }
 
 if (isFirefox) {
-  webConfig.entry.background = `./src/firefox/scripts/background.js`
-  webConfig.entry.incognito_required = `./src/${BROWSER}/scripts/pages/incognito-required.js`
-  webConfig.entry.installed = './src/firefox/scripts/pages/installed.js'
+  webConfig.entry.background = `./src/firefox/js/background.js`
+  webConfig.entry.incognito_required = `./src/firefox/js/pages/incognito-required.js`
+  webConfig.entry.installed = './src/firefox/js/pages/installed.js'
   webConfig.plugins.push(new HTMLWebpackPlugin({
     title: extensionName,
     filename: 'incognito-required-popup.html',
@@ -272,7 +272,7 @@ if (isFirefox) {
 }
 
 if (isChromium) {
-  webConfig.entry.controlled = `./src/${BROWSER}/scripts/pages/controlled.js`
+  webConfig.entry.controlled = `./src/${BROWSER}/js/pages/controlled.js`
   webConfig.plugins.push(new HTMLWebpackPlugin({
     title: extensionName,
     filename: 'proxy-options.html',

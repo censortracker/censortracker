@@ -101,23 +101,6 @@
   "shareFeedback": {
     "message": "Got issues or suggestions? Let us know!"
   },
-  "unavailableOrBlocked": {
-    "message": "The site is unavailable or blocked"
-  },
-  "proxyDisabledDesc": {
-    "message": "You have disabled site block crawling with Censor Tracker, but <b>$details$</b> is unavailable. Try opening it through the Censor Tracker?",
-    "placeholders": {
-      "details": {
-        "content": "$1"
-      }
-    }
-  },
-  "openThroughProxyButton": {
-    "message": "Open through proxy"
-  },
-  "doNotAskAnymoreButton": {
-    "message": "Do not offer any more"
-  },
   "useProxy": {
     "message": "Use proxy"
   },
@@ -174,23 +157,6 @@
   },
   "closeTab": {
     "message": "Close tab"
-  },
-  "tryAgain": {
-    "message": "Try again"
-  },
-  "siteUnavailableTitle": {
-    "message": "The site is unavailable or blocked in your country"
-  },
-  "siteUnavailableDesc": {
-    "message": "Unable to open the site <b>$url$</b>. try opening it through the Censor Tracker proxy?",
-    "placeholders": {
-      "url": {
-        "content": "$1"
-      }
-    }
-  },
-  "openThroughProxy": {
-    "message": "Open through proxy"
   },
   "controlledPageDisableExtension": {
     "message": "Disable"
@@ -279,14 +245,6 @@
   },
   "proxyUnavailablePageTitle": {
     "message": "Proxy is Unavailable"
-  },
-  "proxyPageMetaInfo": {
-    "message": "Currently using PAC file for $COUNTRY$.",
-    "placeholders": {
-      "country": {
-        "content": "$1"
-      }
-    }
   },
   "proxiedWebsitesEditorPageTitle": {
     "message": "Proxied Websites"

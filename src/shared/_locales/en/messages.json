@@ -144,17 +144,6 @@
   "disableAll": {
     "message": "Disable all"
   },
-  "proxyUnavailable": {
-    "message": "Unable to open the site through the Censor Tracker proxy. "
-  },
-  "proxyUnavailableDesc": {
-    "message": "Unable to open the site <b>$URL$</b>. We are working on fixing the problem, please try to open the site later.",
-    "placeholders": {
-      "url": {
-        "content": "$1"
-      }
-    }
-  },
   "closeTab": {
     "message": "Close tab"
   },
@@ -242,9 +231,6 @@
   },
   "proxyDisabledPageTitle": {
     "message": "Proxying Disabled"
-  },
-  "proxyUnavailablePageTitle": {
-    "message": "Proxy is Unavailable"
   },
   "proxiedWebsitesEditorPageTitle": {
     "message": "Proxied Websites"

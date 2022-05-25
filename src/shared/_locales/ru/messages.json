@@ -144,17 +144,6 @@
   "disableAll": {
     "message": "Отключить все"
   },
-  "proxyUnavailable": {
-    "message": "Не удалось открыть сайт через прокси Censor Tracker"
-  },
-  "proxyUnavailableDesc": {
-    "message": "Не удалось открыть сайт <b>$url$</b>. Мы работаем над исправлением проблемы, попробуйте открыть сайт позже.",
-    "placeholders": {
-      "url": {
-        "content": "$1"
-      }
-    }
-  },
   "closeTab": {
     "message": "Закрыть вкладку"
   },
@@ -246,9 +235,6 @@
   },
   "proxyDisabledPageTitle": {
     "message": "Проксирование Отключено"
-  },
-  "proxyUnavailablePageTitle": {
-    "message": "Прокси Недоступен"
   },
   "proxiedWebsitesEditorPageTitle": {
     "message": "Проксируемые Сайты"

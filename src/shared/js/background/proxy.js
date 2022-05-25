@@ -4,7 +4,7 @@ import Browser from './webextension'
 
 const PROXY_CONFIG_API_URL = 'https://app.censortracker.org/api/proxy-config/'
 const FALLBACK_PROXY_SERVER_HOST = 'proxy.roskomsvoboda.org'
-const FALLBACK_PROXY_SERVER_URL = `${FALLBACK_PROXY_SERVER_HOST}:33333`
+const FALLBACK_PROXY_SERVER_URI = `${FALLBACK_PROXY_SERVER_HOST}:33333`
 const FALLBACK_PROXY_SERVER_PING_URI = `${FALLBACK_PROXY_SERVER_HOST}:39263`
 
 class ProxyManager {
@@ -46,7 +46,7 @@ class ProxyManager {
       return reserveProxyServerURI
     }
     console.log('Using fallback proxy for PAC.')
-    return FALLBACK_PROXY_SERVER_URL
+    return FALLBACK_PROXY_SERVER_URI
   }
 
   async requestIncognitoAccess () {

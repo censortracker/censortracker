@@ -183,7 +183,10 @@ class ProxyManager {
   }
 
   async alive () {
-    return true
+    const { proxyIsAlive } =
+      await storage.get({ proxyIsAlive: true })
+
+    return proxyIsAlive
   }
 
   async ping () {
@@ -213,7 +216,7 @@ class ProxyManager {
 
   async enableProxy () {
     console.log('Proxying enabled.')
-    await storage.set({ useProxy: true })
+    await storage.set({ useProxy: true, proxyIsAlive: true })
   }
 
   async disableProxy () {

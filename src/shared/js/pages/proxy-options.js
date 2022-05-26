@@ -9,19 +9,15 @@ import { isPort, translateDocument } from 'Background/utilities'
   const proxyCustomOptions = document.getElementById('proxyCustomOptions')
   const proxyHostInput = document.getElementById('proxyHostInput')
   const proxyPortInput = document.getElementById('proxyPortInput')
-  const proxyStatusIsDown = document.getElementById('proxyStatusIsDown')
+  const proxyIsDown = document.getElementById('proxyIsDown')
   const proxyOptionsInputs = document.getElementById('proxyOptionsInputs')
   const proxyCustomOptionsRadioGroup = document.getElementById('proxyCustomOptionsRadioGroup')
-  const isProxyControlledByThisExtension = await ProxyManager.controlledByThisExtension()
-  const isProxyControlledByOtherExtensions = await ProxyManager.controlledByOtherExtensions()
   const useCustomProxyRadioButton = document.getElementById('useCustomProxy')
   const useDefaultProxyRadioButton = document.getElementById('useDefaultProxy')
 
-  const proxyIsAlive = await ProxyManager.alive()
-
-  if (!proxyIsAlive) {
-    proxyStatusIsDown.hidden = false
-  }
+  ProxyManager.alive().then((alive) => {
+    proxyIsDown.hidden = alive
+  })
 
   proxyCustomOptions.hidden = !proxyingEnabled
 
@@ -33,8 +29,8 @@ import { isPort, translateDocument } from 'Background/utilities'
     useCustomProxyRadioButton.checked = true
     proxyOptionsInputs.classList.remove('hidden')
   } else {
-    proxyOptionsInputs.classList.add('hidden')
     useDefaultProxyRadioButton.checked = true
+    proxyOptionsInputs.classList.add('hidden')
   }
 
   if (customProxyHost) {
@@ -52,9 +48,12 @@ import { isPort, translateDocument } from 'Background/utilities'
 
     if ((event.ctrlKey && event.key === 's') || event.keyCode === 13) {
       if (host && isPort(port)) {
-        await storage.set({ useCustomChecked: true })
-        await storage.set({ customProxyPort: port, customProxyHost: host })
-        await storage.set({ customProxyServerURI })
+        await storage.set({
+          useCustomChecked: true,
+          customProxyPort: port,
+          customProxyHost: host,
+          customProxyServerURI,
+        })
         await ProxyManager.setProxy()
 
         proxyHostInput.classList.remove('invalid-input')
@@ -70,44 +69,51 @@ import { isPort, translateDocument } from 'Background/utilities'
 
   proxyCustomOptionsRadioGroup.addEventListener('change', async (event) => {
     if (event.target.value !== 'default') {
-      await ProxyManager.setProxy()
       proxyOptionsInputs.classList.remove('hidden')
+      await ProxyManager.setProxy()
     } else {
+      proxyOptionsInputs.classList.add('hidden')
       await ProxyManager.setProxy()
       await storage.set({ useCustomChecked: false })
       await storage.remove(['customProxyHost', 'customProxyPort', 'customProxyServerURI'])
-      proxyOptionsInputs.classList.add('hidden')
     }
   })
 
-  if (isProxyControlledByOtherExtensions) {
-    useProxyCheckbox.checked = false
-    useProxyCheckbox.disabled = true
-    await ProxyManager.disableProxy()
-  }
+  ProxyManager.controlledByThisExtension()
+    .then(async (controlledByThisExtension) => {
+      useProxyCheckbox.checked = true
+      useProxyCheckbox.disabled = false
 
-  if (isProxyControlledByThisExtension) {
-    useProxyCheckbox.checked = true
-    useProxyCheckbox.disabled = false
+      if (!proxyingEnabled) {
+        await ProxyManager.enableProxy()
+      }
+    })
 
-    if (!proxyingEnabled) {
-      await ProxyManager.enableProxy()
-    }
-  }
+  ProxyManager.controlledByOtherExtensions()
+    .then(async (controlledByOtherExtensions) => {
+      if (controlledByOtherExtensions) {
+        useProxyCheckbox.checked = false
+        useProxyCheckbox.disabled = true
+        await ProxyManager.disableProxy()
+      }
+    })
 
   useProxyCheckbox.addEventListener('change', async () => {
     if (useProxyCheckbox.checked) {
-      await ProxyManager.enableProxy()
       proxyCustomOptions.hidden = false
       useProxyCheckbox.checked = true
+      await ProxyManager.enableProxy()
     } else {
-      await ProxyManager.disableProxy()
       proxyCustomOptions.hidden = true
       useProxyCheckbox.checked = false
+      proxyIsDown.hidden = true
+      await ProxyManager.disableProxy()
     }
   }, false)
 
-  useProxyCheckbox.checked = await ProxyManager.isEnabled()
+  await ProxyManager.isEnabled().then((isEnabled) => {
+    useProxyCheckbox.checked = isEnabled
+  })
 
   const { countryDetails: { name: country } } = await Registry.getConfig()
 

@@ -11,6 +11,7 @@ import {
   handleTabCreate,
   handleTabState,
 } from 'Background/handlers'
+import * as storage from 'Background/storage'
 import { getRequestFilter } from 'Background/utilities'
 
 chrome.alarms.onAlarm.addListener(handleOnAlarm)
@@ -28,3 +29,10 @@ chrome.webNavigation.onBeforeNavigate.addListener(
 
 chrome.tabs.onUpdated.addListener(handleTabState)
 chrome.tabs.onCreated.addListener(handleTabCreate)
+
+chrome.proxy.onProxyError.addListener(async ({ error, fatal }) => {
+  if (error === 'net::ERR_PROXY_CONNECTION_FAILED' && fatal) {
+    await storage.set({ proxyIsAlive: false })
+    console.error(`Proxy connection failed: ${error}`)
+  }
+})

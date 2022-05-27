@@ -64,26 +64,29 @@ import Browser from 'Background/webextension';
     window.location.href = 'controlled.html'
   })
 
-  const proxyIsAlive = await ProxyManager.alive()
   const proxyingEnabled = await ProxyManager.isEnabled()
+  const extensionEnabled = await Settings.extensionEnabled()
 
-  if (proxyingEnabled) {
-    if (proxyIsAlive) {
-      popupProxyStatusOk.hidden = false
-      popupProxyStatusError.hidden = true
+  ProxyManager.alive().then((alive) => {
+    if (proxyingEnabled) {
+      if (alive) {
+        popupProxyStatusOk.hidden = false
+        popupProxyStatusError.hidden = true
+      } else {
+        popupProxyStatusOk.hidden = true
+        popupProxyStatusError.hidden = false
+      }
     } else {
-      popupProxyStatusOk.hidden = true
-      popupProxyStatusError.hidden = false
+      popupProxyDisabled.hidden = false
     }
-  } else {
-    popupProxyDisabled.hidden = false
-  }
+  })
 
-  const proxyControlledByOtherExtensions = await ProxyManager.controlledByOtherExtensions()
-
-  if (!Browser.IS_FIREFOX && proxyControlledByOtherExtensions) {
-    controlledByOtherExtensionsButton.hidden = false
-  }
+  ProxyManager.controlledByOtherExtensions()
+    .then((controlledByOtherExtensions) => {
+      if (!Browser.IS_FIREFOX && controlledByOtherExtensions) {
+        controlledByOtherExtensionsButton.hidden = false
+      }
+    })
 
   const { countryDetails: { isoA2Code } = {} } = await Registry.getConfig()
 
@@ -116,17 +119,16 @@ import Browser from 'Background/webextension';
     }
   })
 
-  const extensionEnabled = await Settings.extensionEnabled()
-
   if (extensionEnabled && Browser.IS_FIREFOX) {
-    const allowedIncognitoAccess = await Browser.extension.isAllowedIncognitoAccess()
-    const { privateBrowsingPermissionsRequired } = await storage.get({
-      privateBrowsingPermissionsRequired: false,
-    })
-
-    if (!allowedIncognitoAccess || privateBrowsingPermissionsRequired) {
-      privateBrowsingPermissionsRequiredButton.hidden = false
-    }
+    Browser.extension.isAllowedIncognitoAccess()
+      .then((allowedIncognitoAccess) => {
+        storage.get({ privateBrowsingPermissionsRequired: false })
+          .then(({ privateBrowsingPermissionsRequired }) => {
+            if (!allowedIncognitoAccess || privateBrowsingPermissionsRequired) {
+              privateBrowsingPermissionsRequiredButton.hidden = false
+            }
+          })
+      })
   }
 
   const [{ url: currentUrl }] = await Browser.tabs.query({
@@ -216,25 +218,26 @@ import Browser from 'Background/webextension';
       }
     }
 
-    const { restriction } = await Registry.getCustomRegistryRecordByURL(currentHostname)
+    Registry.getCustomRegistryRecordByURL(currentHostname)
+      .then(({ restriction }) => {
+        if (restriction && restriction.code) {
+          let titlePlaceholder, descriptionPlaceholder
 
-    if (restriction && restriction.code) {
-      let titlePlaceholder, descriptionPlaceholder
+          const isBanned = restriction.code === 'ban'
+          const isShaped = restriction.code === 'shaping'
 
-      const isBanned = restriction.code === 'ban'
-      const isShaped = restriction.code === 'shaping'
+          if (isShaped) {
+            titlePlaceholder = 'trafficShapingTitle'
+            descriptionPlaceholder = 'trafficShapingDescription'
+          } else if (isBanned) {
+            titlePlaceholder = 'blockedTitle'
+            descriptionPlaceholder = 'blockedDesc'
+          }
 
-      if (isShaped) {
-        titlePlaceholder = 'trafficShapingTitle'
-        descriptionPlaceholder = 'trafficShapingDescription'
-      } else if (isBanned) {
-        titlePlaceholder = 'blockedTitle'
-        descriptionPlaceholder = 'blockedDesc'
-      }
-
-      restrictionType.innerText = Browser.i18n.getMessage(titlePlaceholder)
-      restrictionDescription.innerText = Browser.i18n.getMessage(descriptionPlaceholder)
-    }
+          restrictionType.innerText = Browser.i18n.getMessage(titlePlaceholder)
+          restrictionDescription.innerText = Browser.i18n.getMessage(descriptionPlaceholder)
+        }
+      })
   } else {
     changeStatusImage('disabled')
     extensionIsOff.hidden = false

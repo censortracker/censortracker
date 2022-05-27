@@ -29,8 +29,8 @@ import { isPort, translateDocument } from 'Background/utilities'
     useCustomProxyRadioButton.checked = true
     proxyOptionsInputs.classList.remove('hidden')
   } else {
-    useDefaultProxyRadioButton.checked = true
     proxyOptionsInputs.classList.add('hidden')
+    useDefaultProxyRadioButton.checked = true
   }
 
   if (customProxyHost) {
@@ -73,22 +73,23 @@ import { isPort, translateDocument } from 'Background/utilities'
       await ProxyManager.setProxy()
     } else {
       proxyOptionsInputs.classList.add('hidden')
-      await ProxyManager.setProxy()
       await storage.set({ useCustomChecked: false })
       await storage.remove(['customProxyHost', 'customProxyPort', 'customProxyServerURI'])
+      await ProxyManager.setProxy()
     }
   })
 
   ProxyManager.controlledByThisExtension()
     .then(async (controlledByThisExtension) => {
-      useProxyCheckbox.checked = true
-      useProxyCheckbox.disabled = false
+      if (controlledByThisExtension) {
+        useProxyCheckbox.checked = true
+        useProxyCheckbox.disabled = false
 
-      if (!proxyingEnabled) {
-        await ProxyManager.enableProxy()
+        if (!proxyingEnabled) {
+          await ProxyManager.enableProxy()
+        }
       }
     })
-
   ProxyManager.controlledByOtherExtensions()
     .then(async (controlledByOtherExtensions) => {
       if (controlledByOtherExtensions) {

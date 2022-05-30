@@ -170,9 +170,6 @@
       }
     }
   },
-  "muteNotificationsForThis": {
-    "message": "Не показывать для этого сайта."
-  },
   "turnOnExtensionToCheckWebsite": {
     "message": "Включите, чтобы получить доступ заблокированным сайтам."
   },

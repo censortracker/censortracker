@@ -15,25 +15,25 @@
     "message": "Is not the information dissemination organizer"
   },
   "notDisseminatorDesc": {
-    "message": "Services from the IDO (information dissemination organizers) registry may automatically transmit your personal data, including messages and all traffic, to government authorities. This service is not in the IDO registry."
+    "message": "The services from the IDO (information dissemination organizers) registry may automatically transmit your personal data (including messages and all traffic) to government authorities. This service is not in the IDO registry."
   },
   "disseminatorDesc": {
-    "message": "The Service may transfer your personal data, including messages and all traffic to government authorities automatically."
+    "message": "This service may transfer your personal data (including messages and all traffic) to government authorities."
   },
   "disseminatorCoopRefused": {
-    "message": "The service claimed that they do not transmit traffic to third parties."
+    "message": "This service claimed that they do not transmit personal data to third parties."
   },
   "blockedTitle": {
-    "message": "Is banned."
+    "message": "Blocked"
   },
   "notBlockedTitle": {
-    "message": "Is not banned."
+    "message": "Restrictions not found"
   },
   "blockedDesc": {
-    "message": "Access to the site is banned, but Censor Tracker gives you access to it through a reliable proxy."
+    "message": "Access to the site is blocked, but Censor Tracker gives you access to it through a reliable proxy."
   },
   "notBlockedDesc": {
-    "message": "If access to the site is banned, then Censor Tracker will offer to open the site through a reliable proxy."
+    "message": "If access to the site is blocked, then Censor Tracker will offer to open the site through a reliable proxy."
   },
   "popupNewTabMessage": {
     "message": "New Tab"
@@ -48,7 +48,7 @@
     "message": "what does it mean"
   },
   "extensionDisabledTitle": {
-    "message": "Censor Tracker disabled"
+    "message": "CensorTracker disabled"
   },
   "extensionEnabledTitle": {
     "message": "enabled"
@@ -63,31 +63,31 @@
     "message": "Ignored Websites"
   },
   "ignoredSitesDesc": {
-    "message": "Addresses that will always be ignored by the Censor Tracker. It can help if there are problems with opening the site. Each address starts with a new line."
+    "message": "Hosts that will always be ignored by the CensorTracker. It can help if there are problems with opening the site. Each host starts with a new line."
   },
   "autosaveTip": {
-    "message": "Changes will be automatically applied when <kbd>Enter</kbd> or <kbd>Control</kbd> + <kbd>S</kbd> is pressed."
+    "message": "Changes will be automatically applied when <kbd>Enter</kbd> or <kbd>Control</kbd> + <kbd>S</kbd> are pressed."
   },
   "optionsTitle": {
-    "message": "Censor Tracker Settings"
+    "message": "CensorTracker Settings"
   },
   "proxySettings": {
     "message": "Proxy Settings"
   },
   "optionsProxyDesc": {
-    "message": "If the site is blocked, the Censor Tracker will grant access to it. Disable this setting if you use another service to bypass blocking (for example, a VPN) to increase the connection speed."
+    "message": "If the site is blocked, the CensorTracker will grant access to it. Disable this setting if you use another service to bypass blocking (for example, a VPN) to increase the connection speed."
   },
   "privateBrowsingRequired": {
     "message": "Allow the Extension to Work in Private Windows."
   },
   "privateBrowsingRequiredDesc": {
-    "message": "So that we can open blocked websites for you through a proxy. In Firefox, there is no way without it."
+    "message": "So that we can open blocked websites for you through our proxy. There is no another way to make proxy work in Firefox."
   },
   "howToGrantIncognitoAccess": {
     "message": "How to do it"
   },
   "grantPrivateBrowsingPermissions": {
-    "message": "I allowed, enable proxy. "
+    "message": "I allowed, enable proxy"
   },
   "optionsIgnoredWebsitesDesc": {
     "message": "Addresses for which the proxy will always be disabled. It can help if there are problems with opening the site."
@@ -108,10 +108,10 @@
     "message": "Use own proxy"
   },
   "useProxyDesc": {
-    "message": "If the site is blocked, the Censor Tracker will grant access to it. Disable this setting if you use another service to bypass blocking (for example, a VPN) to increase the connection speed."
+    "message": "If the site is blocked, the CensorTracker will grant access to it. Disable this setting if you use another service to bypass blocking (for example, a VPN) to increase the connection speed."
   },
   "useDefaultProxy": {
-    "message": "Proxy Censor Tracker"
+    "message": "Proxy CensorTracker"
   },
   "proxyHost": {
     "message": "Proxy server address"
@@ -120,7 +120,7 @@
     "message": "Port"
   },
   "controlledByOtherExtensionTitle": {
-    "message": "Now another extension &laquo;<div class=\"extension__name\">$name$</div>&raquo; is controlling your proxy settings",
+    "message": "Another extension &laquo;<div class=\"extension__name\">$name$</div>&raquo; is controlling your proxy settings right now."
     "placeholders": {
       "name": {
         "content": "$1"
@@ -136,10 +136,10 @@
     }
   },
   "controlledByOtherExtensions": {
-    "message": "Other extensions control your proxy settings in browser."
+    "message": "Other extensions control your proxy right now."
   },
   "controlledByOtherExtensionsDesc": {
-    "message": "For normal use of CensorTracker, disable the following extensions in browser settings:"
+    "message": "To use CensorTracker, disable the following extensions in browser settings:"
   },
   "disableAll": {
     "message": "Disable all"
@@ -154,7 +154,7 @@
     "message": "Thank you!"
   },
   "extensionInstalledDesc": {
-    "message": "Pin the extension in browser panel in two clicks to always be aware which websites can transfer your messages, personal data and all traffic to third parties."
+    "message": "Pin the CensorTracker in the browser panel in two clicks to always be aware of which websites may transmit your personal data to third parties."
   },
   "thankYou": {
     "message": "Thank you!"
@@ -167,9 +167,6 @@
       }
     }
   },
-  "muteNotificationsForThis": {
-    "message": "Do not show for this website"
-  },
   "turnOnExtensionToCheckWebsite": {
     "message": "Enable to access blocked websites."
   },
@@ -180,10 +177,10 @@
     "message": "Traffic shaping"
   },
   "trafficShapingDescription": {
-    "message": "Traffic shaping detected: connection to the site is slowed down. Censor Tracker gives you access to the site at a normal speed."
+    "message": "Traffic shaping detected: connection to the site is slowed down. CensorTracker gives you access to the site at a normal speed."
   },
   "installedAllowIncognitoTitle": {
-    "message": "Allow Censor Tracker incognito access"
+    "message": "Allow CensorTracker to work in private mode."
   },
   "installedAllowIncognitoDescription": {
     "message": "This permission is required so that CensorTracker can open blocked websites for you through a proxy. In Firefox, there is no other way."
@@ -195,7 +192,7 @@
     "message": "After that, open the popup of CensorTracker and confirm that the permissions are granted."
   },
   "incognitoAccessRequiredTitle": {
-    "message": "The site is unavailable or blocked. Allow Censor Tracker incognito access to open such websites."
+    "message": "The site is unavailable or blocked. Allow CensorTracker incognito access to open such websites."
   },
   "incognitoAccessRequiredDescription": {
     "message": "To open <b>$hostname$</b> through a proxy in Firefox, you need permission to work in private windows. Otherwise, the proxy will not work.",
@@ -266,7 +263,7 @@
     "message": "Are you sure you want to reset all settings?"
   },
   "areYouSureYouWantToResetSettingsDesc": {
-    "message": "Regenerate the PAC file for your current region and reset the settings to factory default."
+    "message": "Regenerate the PAC file for your current region and reset the settings to the defaults."
   },
   "confirmPopupResetSettings": {
     "message": "Yes, I'm sure!"

@@ -55,13 +55,10 @@ class Registry {
           }
 
           if (specifics) {
-            // There are specific data for Russia.
-            if (countryDetails.isoA2Code === 'RU') {
-              apis.push({
-                url: specifics.cooperationRefusedORIUrl,
-                storageKey: 'disseminators',
-              })
-            }
+            apis.push({
+              url: specifics.cooperationRefusedORIUrl,
+              storageKey: 'disseminators',
+            })
           }
 
           const config = {

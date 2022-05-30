@@ -88,12 +88,6 @@ import Browser from 'Background/webextension';
       }
     })
 
-  const { countryDetails: { isoA2Code } = {} } = await Registry.getConfig()
-
-  if (isoA2Code !== 'RU') {
-    document.getElementById('ori').hidden = true
-  }
-
   const changeStatusImage = (imageName) => {
     const imageSrc = Browser.runtime.getURL(`images/icons/512x512/${imageName}.png`)
 

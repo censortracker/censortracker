@@ -5,33 +5,27 @@ import Settings from 'Background/settings'
 import * as storage from 'Background/storage'
 
 (async () => {
-  const completedConfirmBtn = document.getElementById('completedConfirm')
   const debugInfoOkBtn = document.getElementById('debugInfoOk')
   const confirmResetBtn = document.getElementById('confirmReset')
   const closeDebugInfoBtn = document.getElementById('closeDebugInfo')
   const closePopupResetBtn = document.getElementById('closePopupReset')
+  const completedConfirmBtn = document.getElementById('completedConfirm')
   const cancelPopupResetBtn = document.getElementById('cancelPopupReset')
   const closePopupConfirmBtn = document.getElementById('closePopupConfirm')
   const updateLocalRegistryBtn = document.getElementById('updateLocalRegistry')
   const emergencyConfigCheckbox = document.getElementById('emergencyConfigCheckbox')
-  const resetSettingsToDefaultBtn = document.getElementById(
-    'resetSettingsToDefault',
-  )
-  const parentalControlCheckbox = document.getElementById(
-    'parentalControlCheckbox',
-  )
+  const resetSettingsToDefaultBtn = document.getElementById('resetSettingsToDefault')
+  const parentalControlCheckbox = document.getElementById('parentalControlCheckbox')
 
-  storage.get({ useEmergencyConfig: false })
-    .then(({ useEmergencyConfig }) => {
-      emergencyConfigCheckbox.checked = useEmergencyConfig
+  await storage.get({ parentalControl: false, emergencyMode: false })
+    .then(({ emergencyMode, parentalControl }) => {
+      emergencyConfigCheckbox.checked = emergencyMode
+      parentalControlCheckbox.checked = parentalControl
     })
 
   emergencyConfigCheckbox.addEventListener('change', async (event) => {
-    if (event.target.checked) {
-      await storage.set({ useEmergencyConfig: true })
-    } else {
-      await storage.set({ useEmergencyConfig: false })
-    }
+    await storage.set({ emergencyMode: event.target.checked })
+    console.log(`Emergency mode: ${event.target.checked}`)
   }, false)
 
   parentalControlCheckbox.addEventListener('change', async (event) => {
@@ -110,10 +104,4 @@ import * as storage from 'Background/storage'
     await Settings.enableExtension()
     console.warn('CensorTracker has been reset to default settings.')
   })
-
-  const { parentalControl } = await storage.get({
-    parentalControl: false,
-  })
-
-  parentalControlCheckbox.checked = parentalControl
 })()

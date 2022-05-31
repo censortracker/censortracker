@@ -241,7 +241,7 @@
   "optionsProxiedWebsitesEditorDesc": {
     "message": "You can manually manage the list of domains that will be proxied by the extension."
   },
-  "optionsProxyStatusTurnedOn" : {
+  "optionsProxyStatusTurnedOn": {
     "message": "Turned on"
   },
   "optionsProxyStatusTurnedOff": {
@@ -292,7 +292,7 @@
   "doneDescription": {
     "message": "Operation completed successfully."
   },
-  "popupProxyStatusOk" : {
+  "popupProxyStatusOk": {
     "message": "proxy is working fine"
   },
   "popupProxyStatusError": {
@@ -315,5 +315,11 @@
   },
   "parentalControlDesc": {
     "message": "Protect your parents from propaganda."
+  },
+  "emergencyConfigTitle": {
+    "message": "Emergency mode"
+  },
+  "emergencyConfigDesc": {
+    "message": "Allows CensorTracker to work even in conditions of complete blocking of all our IP addresses and domains."
   }
 }

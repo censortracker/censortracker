@@ -2,7 +2,7 @@ import Ignore from 'Background/ignore'
 import ProxyManager from 'Background/proxy'
 import Registry from 'Background/registry'
 import Settings from 'Background/settings'
-import * as storage from 'Background/storage';
+import * as storage from 'Background/storage'
 
 (async () => {
   const completedConfirmBtn = document.getElementById('completedConfirm')
@@ -12,7 +12,9 @@ import * as storage from 'Background/storage';
   const closePopupResetBtn = document.getElementById('closePopupReset')
   const cancelPopupResetBtn = document.getElementById('cancelPopupReset')
   const closePopupConfirmBtn = document.getElementById('closePopupConfirm')
+  const emergencyConfigInput = document.getElementById('emergencyConfigInput')
   const updateLocalRegistryBtn = document.getElementById('updateLocalRegistry')
+  const emergencyConfigCheckbox = document.getElementById('emergencyConfigCheckbox')
   const resetSettingsToDefaultBtn = document.getElementById(
     'resetSettingsToDefault',
   )
@@ -20,11 +22,23 @@ import * as storage from 'Background/storage';
     'parentalControlCheckbox',
   )
 
-  parentalControlCheckbox.addEventListener('change', async () => {
-    await storage.set({
-      parentalControl: parentalControlCheckbox.checked,
-    })
-    console.log(`Parental control: ${parentalControlCheckbox.checked}`)
+  const { useEmergencyConfig } = await storage.get({ useEmergencyConfig: false })
+
+  emergencyConfigCheckbox.checked = useEmergencyConfig
+
+  emergencyConfigCheckbox.addEventListener('change', async (event) => {
+    if (event.target.checked) {
+      emergencyConfigInput.classList.remove('hidden')
+      await storage.set({ useEmergencyConfig: true })
+    } else {
+      emergencyConfigInput.classList.add('hidden')
+      await storage.set({ useEmergencyConfig: false })
+    }
+  }, false)
+
+  parentalControlCheckbox.addEventListener('change', async (event) => {
+    await storage.set({ parentalControl: event.target.checked })
+    console.log(`Parental control: ${event.target.checked}`)
   }, false)
 
   const togglePopup = (id) => {

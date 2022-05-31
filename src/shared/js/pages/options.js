@@ -3,6 +3,7 @@ import * as storage from 'Background/storage'
 import Browser from 'Background/webextension';
 
 (async () => {
+  const currentUrl = window.location.href
   const proxyingEnabled = await ProxyManager.isEnabled()
   const proxyStatus = document.getElementById('proxyStatus')
   const showNotificationsCheckbox = document.getElementById(
@@ -17,6 +18,17 @@ import Browser from 'Background/webextension';
   const privateBrowsingPermissionsRequiredMessage = document.getElementById(
     'privateBrowsingPermissionsRequiredMessage',
   )
+
+  if (currentUrl.indexOf('emergencyConfig') !== -1) {
+    const emergencyConfigBase64 = currentUrl.split('emergencyConfig=').slice(-1)
+    const emergencyConfigJSON = JSON.parse(atob(emergencyConfigBase64))
+
+    const { emergencyProxyConfig, emergencyRegistryConfig } = emergencyConfigJSON
+
+    if (emergencyProxyConfig && emergencyRegistryConfig) {
+      console.log(emergencyConfigJSON)
+    }
+  }
 
   if (proxyStatus) {
     let proxyStatusMessage = 'optionsProxyStatusTurnedOff'

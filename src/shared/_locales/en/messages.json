@@ -120,7 +120,7 @@
     "message": "Port"
   },
   "controlledByOtherExtensionTitle": {
-    "message": "Another extension &laquo;<div class=\"extension__name\">$name$</div>&raquo; is controlling your proxy settings right now."
+    "message": "Another extension &laquo;<div class=\"extension__name\">$name$</div>&raquo; is controlling your proxy settings right now.",
     "placeholders": {
       "name": {
         "content": "$1"

@@ -9,11 +9,8 @@ import { validateUrls } from 'Background/utilities'
 import CodeMirror from 'codemirror'
 
 (async () => {
-  const ignoredHosts = await Ignore.getAll()
   const searchInput = document.getElementById('search')
   const ignoredList = document.getElementById('ignoreList')
-
-  const content = ignoredHosts.join('\n')
   const editor = CodeMirror.fromTextArea(
     ignoredList, {
       autorefresh: true,
@@ -26,7 +23,11 @@ import CodeMirror from 'codemirror'
     },
   )
 
-  editor.setValue(content)
+  Ignore.getAll().then((ignoredHosts) => {
+    const content = ignoredHosts.join('\n')
+
+    editor.setValue(content)
+  })
 
   document.addEventListener('keydown', async (event) => {
     if ((event.ctrlKey && event.key === 's') || event.keyCode === 13) {

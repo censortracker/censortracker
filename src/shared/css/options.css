@@ -191,6 +191,10 @@ a {
   background: linear-gradient(319.24deg, #3ca55c 0%, #b5ac49 100%), #fff;
 }
 
+.emergency:checked {
+  background: linear-gradient(319.24deg, #e57373 0%, #e75565 100%), #fff;
+}
+
 .use_proxy__link {
   color: #5173d3;
 }

@@ -12,7 +12,6 @@ import * as storage from 'Background/storage'
   const closePopupResetBtn = document.getElementById('closePopupReset')
   const cancelPopupResetBtn = document.getElementById('cancelPopupReset')
   const closePopupConfirmBtn = document.getElementById('closePopupConfirm')
-  const emergencyConfigInput = document.getElementById('emergencyConfigInput')
   const updateLocalRegistryBtn = document.getElementById('updateLocalRegistry')
   const emergencyConfigCheckbox = document.getElementById('emergencyConfigCheckbox')
   const resetSettingsToDefaultBtn = document.getElementById(
@@ -22,16 +21,15 @@ import * as storage from 'Background/storage'
     'parentalControlCheckbox',
   )
 
-  const { useEmergencyConfig } = await storage.get({ useEmergencyConfig: false })
-
-  emergencyConfigCheckbox.checked = useEmergencyConfig
+  storage.get({ useEmergencyConfig: false })
+    .then(({ useEmergencyConfig }) => {
+      emergencyConfigCheckbox.checked = useEmergencyConfig
+    })
 
   emergencyConfigCheckbox.addEventListener('change', async (event) => {
     if (event.target.checked) {
-      emergencyConfigInput.classList.remove('hidden')
       await storage.set({ useEmergencyConfig: true })
     } else {
-      emergencyConfigInput.classList.add('hidden')
       await storage.set({ useEmergencyConfig: false })
     }
   }, false)

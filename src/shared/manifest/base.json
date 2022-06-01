@@ -18,6 +18,7 @@
       "matches": [
         "*://*.rt.com/*",
         "*://*.1tv.ru/*",
+        "*://*.1tv.com/*",
         "*://*.ntv.ru/*",
         "*://ren.tv/*",
         "*://topspb.tv/*",

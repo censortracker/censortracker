@@ -1,8 +1,8 @@
 import * as storage from './storage'
 import * as utilities from './utilities'
 
-const CONFIG_API_URL = 'https://app.censortracker.org/api/config/'
-const CONFIG_EXPIRATION_TIME = 60 * 60 * 3000 // 3 Hours
+const API_URL = 'https://app.censortracker.org/api/config/'
+const EXPIRATION_TIME = 60 * 60 * 3000 // 3 Hours
 
 class Registry {
   async configExpired () {
@@ -10,7 +10,7 @@ class Registry {
       registryConfigTimestamp: utilities.timestamp(),
     })
 
-    return (utilities.timestamp() - registryConfigTimestamp) >= CONFIG_EXPIRATION_TIME
+    return (utilities.timestamp() - registryConfigTimestamp) >= EXPIRATION_TIME
   }
 
   async getConfig () {
@@ -22,10 +22,10 @@ class Registry {
       return registryConfig
     }
 
-    console.warn(`Fetching registry config from: ${CONFIG_API_URL}`)
+    console.warn(`Fetching registry config from: ${API_URL}`)
 
     try {
-      const response = await fetch(CONFIG_API_URL)
+      const response = await fetch(API_URL)
 
       if (response.ok) {
         const data = await response.json()

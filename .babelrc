@@ -3,21 +3,16 @@
     [
       "@babel/preset-env",
       {
-        "targets": "> 0.25%, not dead"
+        "targets": {
+          "chrome": "94",
+          "firefox": "98"
+        }
       }
     ],
     "@babel/preset-react",
     "@babel/preset-typescript"
   ],
   "plugins": [
-    ["@babel/plugin-transform-runtime",
-      {
-        "regenerator": true
-      }
-    ],
-    "@babel/plugin-transform-regenerator",
-    "@babel/plugin-proposal-class-properties",
-    "@babel/plugin-proposal-object-rest-spread",
-    "@babel/plugin-proposal-export-namespace-from"
+    "@babel/plugin-transform-runtime"
   ]
 }

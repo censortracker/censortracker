@@ -43,7 +43,7 @@ class Registry {
               storageKey: 'disseminators',
             })
           }
-
+          await storage.set({ countryDetails })
           return {
             apis,
             countryDetails,

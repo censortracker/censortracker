@@ -47,8 +47,8 @@ so make sure you're using the latest ones.
 
 We've tested CensorTracker on the following versions:
 
-- Mozilla Firefox 80 or higher
-- Google Chrome 90 or higher
+- Mozilla Firefox 98 or higher
+- Google Chrome 94 or higher
 
 Installation
 ------------

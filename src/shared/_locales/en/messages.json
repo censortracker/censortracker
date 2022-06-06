@@ -320,6 +320,6 @@
     "message": "Emergency Mode"
   },
   "emergencyConfigDesc": {
-    "message": "Allows to work even in conditions of complete blocking of all our IP addresses and hosts. Do not enable this mode if there is not real need."
+    "message": "Allows you to work even in conditions of complete blocking of all our IP addresses and hosts. Do not enable this mode unless there are availability issues."
   }
 }

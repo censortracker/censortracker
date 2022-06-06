@@ -87,7 +87,7 @@ import * as storage from 'Background/storage'
     const currentConfig = await Registry.getConfig({ debug: true })
 
     currentConfig.currentProxyURI = await ProxyManager.getProxyServerURI()
-    debugInfoJSON.innerText = JSON.stringify(currentConfig, undefined, 4)
+    debugInfoJSON.innerText = JSON.stringify(currentConfig)
 
     togglePopup('popupDebugInformation')
   })

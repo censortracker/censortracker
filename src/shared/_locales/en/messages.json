@@ -257,7 +257,7 @@
     "message": "Reset to default"
   },
   "resetToDefaultDesc": {
-    "message": "Regenerate the PAC file for your current region and update the settings."
+    "message": "Reset all the settings to default and generate PAC file for your current region. This option is your choice if there are blocked websites availability problems."
   },
   "areYouSureYouWantToResetSettingsTitle": {
     "message": "Are you sure you want to reset all settings?"

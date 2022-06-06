@@ -251,7 +251,7 @@
     "message": "Force update of the extension's local database"
   },
   "updateLocalRegistryDesc": {
-    "message": "Update the local database of the restricted websites for your region."
+    "message": "Update the local database of the blocked websites for your region."
   },
   "resetToDefaultTitle": {
     "message": "Reset to default"

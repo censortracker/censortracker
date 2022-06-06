@@ -801,6 +801,7 @@ kbd {
   height: 350px;
 }
 
-#debugInfoTip {
+#showDebugInfo {
+  cursor: pointer;
   margin-bottom: 28px;
 }

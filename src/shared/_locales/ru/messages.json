@@ -312,7 +312,7 @@
     "message": "прокси выключен"
   },
   "debugInfoTip": {
-    "message": "Нажмите комбинацию клавиш <kbd>Fn</kbd> + <kbd>Control</kbd> + <kbd>D</kbd> чтобы увидеть отладочную информацию."
+    "message": "Кликните тут чтобы увидеть отладочную информацию."
   },
   "parentalControlTitle": {
     "message": "«Родительский» контроль"

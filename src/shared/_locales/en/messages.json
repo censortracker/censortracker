@@ -308,7 +308,7 @@
     "message": "proxying is disabled"
   },
   "debugInfoTip": {
-    "message": "Press <kbd>Fn</kbd> + <kbd>Control</kbd> + <kbd>D</kbd> to see debugging information."
+    "message": "Click here to see debug information."
   },
   "parentalControlTitle": {
     "message": "«Parental» Control"

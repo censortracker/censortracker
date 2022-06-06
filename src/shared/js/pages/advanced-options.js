@@ -6,6 +6,7 @@ import * as storage from 'Background/storage'
 
 (async () => {
   const debugInfoOkBtn = document.getElementById('debugInfoOk')
+  const showDebugInfo = document.getElementById('showDebugInfo')
   const confirmResetBtn = document.getElementById('confirmReset')
   const closeDebugInfoBtn = document.getElementById('closeDebugInfo')
   const closePopupResetBtn = document.getElementById('closePopupReset')
@@ -81,18 +82,14 @@ import * as storage from 'Background/storage'
     }
   })
 
-  document.addEventListener('keydown', async (event) => {
-    if (event.ctrlKey && event.key === 'd') {
-      const debugInfoJSON = document.getElementById('debugInfoJSON')
-      const currentConfig = await Registry.getConfig()
+  showDebugInfo.addEventListener('click', async (event) => {
+    const debugInfoJSON = document.getElementById('debugInfoJSON')
+    const currentConfig = await Registry.getConfig({ debug: true })
 
-      currentConfig.currentProxyURI = await ProxyManager.getProxyServerURI()
-      debugInfoJSON.innerText = JSON.stringify(currentConfig, undefined, 4)
+    currentConfig.currentProxyURI = await ProxyManager.getProxyServerURI()
+    debugInfoJSON.innerText = JSON.stringify(currentConfig, undefined, 4)
 
-      togglePopup('popupDebugInformation')
-      event.preventDefault()
-      event.stopPropagation()
-    }
+    togglePopup('popupDebugInformation')
   })
 
   confirmResetBtn.addEventListener('click', async (event) => {

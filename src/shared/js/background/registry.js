@@ -4,8 +4,14 @@ import * as utilities from './utilities'
 const API_URL = 'https://app.censortracker.org/api/config/'
 
 class Registry {
-  async getConfig () {
+  async getConfig (props = {}) {
     console.warn(`Fetching registry config from: ${API_URL}`)
+
+    if (props.debug) {
+      const { registryConfig } = await storage.get({ registryConfig: {} })
+
+      return registryConfig
+    }
 
     try {
       const response = await fetch(API_URL)
@@ -14,6 +20,7 @@ class Registry {
         const data = await response.json()
 
         if (Object.keys(data).length > 0) {
+          await storage.set({ registryConfig: data })
           const {
             specifics,
             registryUrl,
@@ -43,7 +50,6 @@ class Registry {
               storageKey: 'disseminators',
             })
           }
-          await storage.set({ countryDetails })
           return {
             apis,
             countryDetails,

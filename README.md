@@ -91,7 +91,7 @@ and for Firefox like this:
 License
 =======
 
-Censor Tracker is licensed under the MIT License. See [LICENSE] for more
+CensorTracker is licensed under the MIT License. See [LICENSE] for more
 information.
 
   [DPI]: https://en.wikipedia.org/wiki/Deep_packet_inspection

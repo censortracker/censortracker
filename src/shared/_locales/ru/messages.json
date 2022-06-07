@@ -48,7 +48,7 @@
     "message": "что это значит"
   },
   "extensionDisabledTitle": {
-    "message": "CensorTracker выключен"
+    "message": "Censor Tracker выключен"
   },
   "extensionEnabledTitle": {
     "message": "включен"
@@ -196,7 +196,7 @@
     "message": "После этого откройте расширение и подтвердите, что права даны."
   },
   "incognitoAccessRequiredTitle": {
-    "message": "Сайт недоступен или заблокирован. Разрешите CensorTracker работать в приватных окнах, чтобы открывать такие сайты"
+    "message": "Сайт недоступен или заблокирован. Разрешите Censor Tracker работать в приватных окнах, чтобы открывать такие сайты"
   },
   "incognitoAccessRequiredDescription": {
     "message": "Чтобы открыть <b>$hostname$</b> через прокси в Firefox требуется разрешение на работу в приватных окнах. Иначе прокси не работает.",
@@ -210,7 +210,7 @@
     "message": "Настройки"
   },
   "installedPageTitle": {
-    "message": "CensorTracker Установлен"
+    "message": "Censor Tracker Установлен"
   },
   "incognitoRequiredPageTitle": {
     "message": "Требуется разрешение для работы в приватных окнах"

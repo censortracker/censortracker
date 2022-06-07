@@ -1,6 +1,6 @@
 {
   "appName": {
-    "message": "CensorTracker – Proxy for Privacy & Security"
+    "message": "Censor Tracker – Proxy for Privacy & Security"
   },
   "appDesc": {
     "message": "A censorship circumvention extension. Stay safe online with our proxy extension."
@@ -30,10 +30,10 @@
     "message": "Restrictions not found"
   },
   "blockedDesc": {
-    "message": "Access to the website is blocked, but CensorTracker provides you access to it through a reliable proxy."
+    "message": "Access to the website is blocked, but Censor Tracker provides you access to it through a reliable proxy."
   },
   "notBlockedDesc": {
-    "message": "If access to the website is blocked, CensorTracker will offer to load it through a reliable proxy."
+    "message": "If access to the website is blocked, Censor Tracker will offer to load it through a reliable proxy."
   },
   "popupNewTabMessage": {
     "message": "New Tab"
@@ -63,19 +63,19 @@
     "message": "Ignored Websites"
   },
   "ignoredSitesDesc": {
-    "message": "Hosts that will always be ignored by CensorTracker. If there are problems with opening the website, this list may help. Each host starts with a new line."
+    "message": "Hosts that will always be ignored by Censor Tracker. If there are problems with opening the website, this list may help. Each host starts with a new line."
   },
   "autosaveTip": {
     "message": "Changes will be automatically applied upon pressing <kbd>Enter</kbd> or <kbd>Control</kbd> + <kbd>S</kbd>."
   },
   "optionsTitle": {
-    "message": "CensorTracker Settings"
+    "message": "Censor Tracker Settings"
   },
   "proxySettings": {
     "message": "Proxy Settings"
   },
   "optionsProxyDesc": {
-    "message": "If a website is blocked, CensorTracker will bypass restrictions to give you access to it. Disable this setting if you use another service to bypass censorship (for example, a VPN) to increase connection speed."
+    "message": "If a website is blocked, Censor Tracker will bypass restrictions to give you access to it. Disable this setting if you use another service to bypass censorship (for example, a VPN) to increase connection speed."
   },
   "privateBrowsingRequired": {
     "message": "Allow the Extension to Work in Private Windows."
@@ -108,10 +108,10 @@
     "message": "Use your own proxy"
   },
   "useProxyDesc": {
-    "message": "If a website is blocked, CensorTracker will bypass restrictions to give you access to it. Disable this setting if you use another service to bypass censorship (for example, a VPN) to increase connection speed."
+    "message": "If a website is blocked, Censor Tracker will bypass restrictions to give you access to it. Disable this setting if you use another service to bypass censorship (for example, a VPN) to increase connection speed."
   },
   "useDefaultProxy": {
-    "message": "Proxy CensorTracker"
+    "message": "Proxy Censor Tracker"
   },
   "proxyHost": {
     "message": "Proxy Server address"
@@ -128,7 +128,7 @@
     }
   },
   "controlledByOtherExtensionDesc": {
-    "message": "To use CensorTracker, disable &laquo;<div class=\"extension__name\">$name$</div>&raquo; in browser settings.",
+    "message": "To use Censor Tracker, disable &laquo;<div class=\"extension__name\">$name$</div>&raquo; in browser settings.",
     "placeholders": {
       "name": {
         "content": "$1"
@@ -139,7 +139,7 @@
     "message": "Other extensions are controlling your proxy."
   },
   "controlledByOtherExtensionsDesc": {
-    "message": "To use CensorTracker, disable the following extensions in browser settings:"
+    "message": "To use Censor Tracker, disable the following extensions in browser settings:"
   },
   "disableAll": {
     "message": "Disable all"
@@ -154,7 +154,7 @@
     "message": "Thank you!"
   },
   "extensionInstalledDesc": {
-    "message": "Pin CensorTracker in the browser panel in two clicks to always be aware of websites that may transmit your personal data to third parties."
+    "message": "Pin Censor Tracker in the browser panel in two clicks to always be aware of websites that may transmit your personal data to third parties."
   },
   "thankYou": {
     "message": "Thank you!"
@@ -177,22 +177,22 @@
     "message": "Traffic shaping"
   },
   "trafficShapingDescription": {
-    "message": "Traffic shaping detected: connection to this website is throttled. CensorTracker gives you access to it at a normal speed."
+    "message": "Traffic shaping detected: connection to this website is throttled. Censor Tracker gives you access to it at a normal speed."
   },
   "installedAllowIncognitoTitle": {
-    "message": "Allow CensorTracker to work in Private Mode."
+    "message": "Allow Censor Tracker to work in Private Mode."
   },
   "installedAllowIncognitoDescription": {
-    "message": "This permission is required for CensorTracker to open blocked websites for you through a proxy. In Firefox, there is no other way."
+    "message": "This permission is required for Censor Tracker to open blocked websites for you through a proxy. In Firefox, there is no other way."
   },
   "howToGrantIncognitoAccessBtnTitle": {
     "message": "How to grant the permission"
   },
   "installedAllowIncognitoDescriptionThen": {
-    "message": "After that, open the CensorTracker's popup and confirm the permissions are granted."
+    "message": "After that, open the Censor Tracker's popup and confirm the permissions are granted."
   },
   "incognitoAccessRequiredTitle": {
-    "message": "The website is unavailable or blocked. Allow CensorTracker incognito access to open such websites."
+    "message": "The website is unavailable or blocked. Allow Censor Tracker incognito access to open such websites."
   },
   "incognitoAccessRequiredDescription": {
     "message": "To open <b>$hostname$</b> through a proxy in Firefox, you need permission to work in Private Windows. Otherwise, our proxy will not work.",
@@ -206,7 +206,7 @@
     "message": "Options"
   },
   "installedPageTitle": {
-    "message": "CensorTracker Installed"
+    "message": "Censor Tracker Installed"
   },
   "incognitoRequiredPageTitle": {
     "message": "Private Browsing Permission Required"
@@ -218,7 +218,7 @@
     "message": "Advanced Options"
   },
   "advancedOptionsDesc": {
-    "message": "You can manually update the local database of blocked websites, update the config of CensorTracker and manage other advanced options."
+    "message": "You can manually update the local database of blocked websites, update the config of Censor Tracker and manage other advanced options."
   },
   "optionsConfirmResetMessage": {
     "message": "All your settings will be removed. Are you sure you want to do this?"

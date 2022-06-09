@@ -43,6 +43,11 @@ import { fetchEmergencyAPIEndpoints } from 'Background/utilities'
       }
     } else {
       await storage.set({ emergencyMode: false })
+      await storage.remove([
+        'proxyAPIEndpoint',
+        'ignoreAPIEndpoint',
+        'registryAPIEndpoint',
+      ])
     }
     console.log(`Emergency mode: ${event.target.checked}`)
   }, false)

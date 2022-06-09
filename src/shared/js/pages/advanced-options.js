@@ -3,6 +3,7 @@ import ProxyManager from 'Background/proxy'
 import Registry from 'Background/registry'
 import Settings from 'Background/settings'
 import * as storage from 'Background/storage'
+import { fetchEmergencyAPIEndpoints } from 'Background/utilities'
 
 (async () => {
   const debugInfoOkBtn = document.getElementById('debugInfoOk')
@@ -17,23 +18,6 @@ import * as storage from 'Background/storage'
   const emergencyConfigCheckbox = document.getElementById('emergencyConfigCheckbox')
   const resetSettingsToDefaultBtn = document.getElementById('resetSettingsToDefault')
   const parentalControlCheckbox = document.getElementById('parentalControlCheckbox')
-
-  const fetchEmergencyAPIEndpoints = async () => {
-    const emergencyHosts = [
-      'https://censortracker.netlify.app/',
-      'https://roskomsvoboda.github.io/ctconf/endpoints.json',
-    ]
-    const index = Math.floor(Math.random() * emergencyHosts.length)
-    const emergencyEndpoints = emergencyHosts[index]
-    const response = await fetch(emergencyEndpoints)
-
-    if (response && response.ok) {
-      const { ignore, proxy, registry } = await response.json()
-
-      return { ignore, proxy, registry }
-    }
-    return {}
-  }
 
   storage.get({
     emergencyMode: false,

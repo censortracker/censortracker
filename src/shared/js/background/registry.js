@@ -1,12 +1,10 @@
 import * as storage from './storage'
 import * as utilities from './utilities'
 
-const API_URL = 'https://app.censortracker.org/api/config/'
+const REGISTRY_API_ENDPOINT = 'https://app.censortracker.org/api/config/'
 
 class Registry {
   async getConfig (props = {}) {
-    console.warn(`Fetching registry config from: ${API_URL}`)
-
     if (props.debug) {
       const { registryConfig } = await storage.get({ registryConfig: {} })
 
@@ -14,7 +12,12 @@ class Registry {
     }
 
     try {
-      const response = await fetch(API_URL)
+      const { registryAPIEndpoint } = await storage.get({
+        registryAPIEndpoint: REGISTRY_API_ENDPOINT,
+      })
+
+      console.warn(`Fetching registry config from: ${REGISTRY_API_ENDPOINT}`)
+      const response = await fetch(registryAPIEndpoint)
 
       if (response.ok) {
         const data = await response.json()

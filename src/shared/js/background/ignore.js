@@ -1,7 +1,7 @@
 import * as storage from './storage'
 import * as utilities from './utilities'
 
-const IGNORE_API_URL = 'https://app.censortracker.org/api/ignore/'
+const IGNORE_API_ENDPOINT = 'https://app.censortracker.org/api/ignore/'
 
 export class Ignore {
   /**
@@ -9,8 +9,11 @@ export class Ignore {
    */
   async fetch () {
     try {
+      const { ignoreAPIEndpoint } = await storage.get({
+        ignoreAPIEndpoint: IGNORE_API_ENDPOINT,
+      })
       const ignoredHosts = await this.getAll()
-      const response = await fetch(IGNORE_API_URL)
+      const response = await fetch(ignoreAPIEndpoint)
       const domains = await response.json()
 
       for (const domain of domains) {

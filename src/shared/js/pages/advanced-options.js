@@ -50,11 +50,9 @@ import * as storage from 'Background/storage'
       if (ignore && proxy && registry) {
         await storage.set({
           emergencyMode: true,
-          emergencyEndpoints: {
-            proxy,
-            ignore,
-            registry,
-          },
+          proxyAPIEndpoint: proxy,
+          ignoreAPIEndpoint: ignore,
+          registryAPIEndpoint: registry,
         })
       } else {
         console.error('Failed to fetch emergency API endpoints')

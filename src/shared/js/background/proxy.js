@@ -2,7 +2,7 @@ import Registry from './registry'
 import * as storage from './storage'
 import Browser from './webextension'
 
-const PROXY_CONFIG_API_URL = 'https://app.censortracker.org/api/proxy-config/'
+const PROXY_CONFIG_API_ENDPOINT = 'https://app.censortracker.org/api/proxy-config/'
 const FALLBACK_PROXY_SERVER_HOST = 'proxy.roskomsvoboda.org'
 const FALLBACK_PROXY_SERVER_URI = `${FALLBACK_PROXY_SERVER_HOST}:33333`
 const FALLBACK_PROXY_SERVER_PING_URI = `${FALLBACK_PROXY_SERVER_HOST}:39263`
@@ -10,7 +10,10 @@ const FALLBACK_PROXY_SERVER_PING_URI = `${FALLBACK_PROXY_SERVER_HOST}:39263`
 class ProxyManager {
   async fetchReserveConfig () {
     try {
-      const response = await fetch(PROXY_CONFIG_API_URL)
+      const { proxyAPIEndpoint } = await storage.get({
+        proxyAPIEndpoint: PROXY_CONFIG_API_ENDPOINT,
+      })
+      const response = await fetch(proxyAPIEndpoint)
       const { server, port, pingHost, pingPort } = await response.json()
 
       if (server && port && pingHost && pingPort) {

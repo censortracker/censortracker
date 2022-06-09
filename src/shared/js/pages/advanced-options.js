@@ -26,9 +26,13 @@ import * as storage from 'Background/storage'
     const index = Math.floor(Math.random() * emergencyHosts.length)
     const emergencyEndpoints = emergencyHosts[index]
     const response = await fetch(emergencyEndpoints)
-    const { ignore, proxy, registry } = await response.json()
 
-    return { ignore, proxy, registry }
+    if (response && response.ok) {
+      const { ignore, proxy, registry } = await response.json()
+
+      return { ignore, proxy, registry }
+    }
+    return {}
   }
 
   storage.get({

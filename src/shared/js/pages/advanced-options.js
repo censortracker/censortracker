@@ -18,14 +18,46 @@ import * as storage from 'Background/storage'
   const resetSettingsToDefaultBtn = document.getElementById('resetSettingsToDefault')
   const parentalControlCheckbox = document.getElementById('parentalControlCheckbox')
 
-  await storage.get({ parentalControl: false, emergencyMode: false })
-    .then(({ emergencyMode, parentalControl }) => {
-      emergencyConfigCheckbox.checked = emergencyMode
-      parentalControlCheckbox.checked = parentalControl
-    })
+  const fetchEmergencyAPIEndpoints = async () => {
+    const emergencyHosts = [
+      'https://censortracker.netlify.app/',
+      'https://roskomsvoboda.github.io/ctconf/endpoints.json',
+    ]
+    const index = Math.floor(Math.random() * emergencyHosts.length)
+    const emergencyEndpoints = emergencyHosts[index]
+    const response = await fetch(emergencyEndpoints)
+    const { ignore, proxy, registry } = await response.json()
+
+    return { ignore, proxy, registry }
+  }
+
+  storage.get({
+    emergencyMode: false,
+    parentalControl: false,
+  }).then(({ emergencyMode, parentalControl }) => {
+    emergencyConfigCheckbox.checked = emergencyMode
+    parentalControlCheckbox.checked = parentalControl
+  })
 
   emergencyConfigCheckbox.addEventListener('change', async (event) => {
-    await storage.set({ emergencyMode: event.target.checked })
+    if (event.target.checked) {
+      const { ignore, proxy, registry } = await fetchEmergencyAPIEndpoints()
+
+      if (ignore && proxy && registry) {
+        await storage.set({
+          emergencyMode: true,
+          emergencyEndpoints: {
+            proxy,
+            ignore,
+            registry,
+          },
+        })
+      } else {
+        console.error('Failed to fetch emergency API endpoints')
+      }
+    } else {
+      await storage.set({ emergencyMode: false })
+    }
     console.log(`Emergency mode: ${event.target.checked}`)
   }, false)
 

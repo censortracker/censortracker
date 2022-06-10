@@ -78,7 +78,7 @@
     "message": "If a website is blocked, Censor Tracker will bypass restrictions to give you access to it. Disable this setting if you use another service to bypass censorship (for example, a VPN) to increase connection speed."
   },
   "privateBrowsingRequired": {
-    "message": "Allow the Extension to Work in Private Windows."
+    "message": "Allow the extension to work in private windows."
   },
   "privateBrowsingRequiredDesc": {
     "message": "So that we can open blocked websites for you through our proxy. There is no another way to make proxy work in Firefox."

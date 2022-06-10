@@ -184,22 +184,10 @@ export const getRequestFilter = () => {
 }
 
 /**
- * Returns emergency API endpoints.
- * @returns {Promise<{}|{proxy: *, registry: *, ignore: *}>}
+ * Returns random element of a given array.
+ * @param array Array.
+ * @returns {*} Random element of array.
  */
-export const fetchEmergencyAPIEndpoints = async () => {
-  const emergencyHosts = [
-    'https://censortracker.netlify.app/',
-    'https://roskomsvoboda.github.io/ctconf/endpoints.json',
-  ]
-  const index = Math.floor(Math.random() * emergencyHosts.length)
-  const emergencyEndpoints = emergencyHosts[index]
-  const response = await fetch(emergencyEndpoints)
-
-  if (response.ok) {
-    const { ignore, proxy, registry } = await response.json()
-
-    return { ignore, proxy, registry }
-  }
-  return {}
+export const choice = (array) => {
+  return array[Math.floor(Math.random() * array.length)]
 }

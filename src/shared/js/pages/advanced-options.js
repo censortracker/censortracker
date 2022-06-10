@@ -3,21 +3,37 @@ import ProxyManager from 'Background/proxy'
 import Registry from 'Background/registry'
 import Settings from 'Background/settings'
 import * as storage from 'Background/storage'
-import { fetchEmergencyAPIEndpoints } from 'Background/utilities'
+import { choice, select } from 'Background/utilities'
 
 (async () => {
-  const debugInfoOkBtn = document.getElementById('debugInfoOk')
-  const showDebugInfo = document.getElementById('showDebugInfo')
-  const confirmResetBtn = document.getElementById('confirmReset')
-  const closeDebugInfoBtn = document.getElementById('closeDebugInfo')
-  const closePopupResetBtn = document.getElementById('closePopupReset')
-  const completedConfirmBtn = document.getElementById('completedConfirm')
-  const cancelPopupResetBtn = document.getElementById('cancelPopupReset')
-  const closePopupConfirmBtn = document.getElementById('closePopupConfirm')
-  const updateLocalRegistryBtn = document.getElementById('updateLocalRegistry')
-  const emergencyConfigCheckbox = document.getElementById('emergencyConfigCheckbox')
-  const resetSettingsToDefaultBtn = document.getElementById('resetSettingsToDefault')
-  const parentalControlCheckbox = document.getElementById('parentalControlCheckbox')
+  const debugInfoOkBtn = select({ id: 'debugInfoOk' })
+  const showDebugInfo = select({ id: 'showDebugInfo' })
+  const confirmResetBtn = select({ id: 'confirmReset' })
+  const closeDebugInfoBtn = select({ id: 'closeDebugInfo' })
+  const closePopupResetBtn = select({ id: 'closePopupReset' })
+  const completedConfirmBtn = select({ id: 'completedConfirm' })
+  const cancelPopupResetBtn = select({ id: 'cancelPopupReset' })
+  const closePopupConfirmBtn = select({ id: 'closePopupConfirm' })
+  const updateLocalRegistryBtn = select({ id: 'updateLocalRegistry' })
+  const emergencyConfigCheckbox = select({ id: 'emergencyConfigCheckbox' })
+  const resetSettingsToDefaultBtn = select({ id: 'resetSettingsToDefault' })
+  const parentalControlCheckbox = select({ id: 'parentalControlCheckbox' })
+
+  const fetchEmergencyAPIEndpoints = async () => {
+    const apiURL = choice([
+      'https://censortracker.netlify.app/',
+      'https://roskomsvoboda.github.io/ctconf/endpoints.json',
+    ])
+
+    try {
+      const response = await fetch(apiURL)
+
+      return await response.json()
+    } catch (error) {
+      console.error('Error on fetching emergency API endpoints:', error)
+      return {}
+    }
+  }
 
   storage.get({
     emergencyMode: false,
@@ -28,15 +44,21 @@ import { fetchEmergencyAPIEndpoints } from 'Background/utilities'
   })
 
   emergencyConfigCheckbox.addEventListener('change', async (event) => {
-    if (event.target.checked) {
-      const { ignore, proxy, registry } = await fetchEmergencyAPIEndpoints()
+    const emergencyMode = event.target.checked
 
-      if (ignore && proxy && registry) {
+    if (emergencyMode) {
+      const {
+        proxy: proxyAPIEndpoint,
+        ignore: ignoreAPIEndpoint,
+        registry: registryAPIEndpoint,
+      } = await fetchEmergencyAPIEndpoints()
+
+      if (ignoreAPIEndpoint && proxyAPIEndpoint && registryAPIEndpoint) {
         await storage.set({
           emergencyMode: true,
-          proxyAPIEndpoint: proxy,
-          ignoreAPIEndpoint: ignore,
-          registryAPIEndpoint: registry,
+          proxyAPIEndpoint,
+          ignoreAPIEndpoint,
+          registryAPIEndpoint,
         })
       } else {
         console.error('Failed to fetch emergency API endpoints')
@@ -49,7 +71,7 @@ import { fetchEmergencyAPIEndpoints } from 'Background/utilities'
         'registryAPIEndpoint',
       ])
     }
-    console.log(`Emergency mode: ${event.target.checked}`)
+    console.log(`Emergency mode: ${emergencyMode}`)
   }, false)
 
   parentalControlCheckbox.addEventListener('change', async (event) => {

@@ -752,40 +752,40 @@ kbd {
   display: none;
 }
 
-.popup.popup_show {
+.popup.popup-show {
   display: block;
 }
 
-.popup .popup_content {
+.popup .popup-content {
   max-width: 567px;
   margin: 140px auto;
 }
 
-.popup .popup_content .popup_title {
+.popup .popup-content .popup-title {
   margin-bottom: 10px;
 }
-.popup .popup_content .popup_text {
+.popup .popup-content .popup-text {
   font-weight: 400;
   margin-bottom: 40px;
   font-weight: 30px;
 }
 
 
-.popup .popup_content .close_popup {
+.popup .popup-content .close-popup {
   position: absolute;
   top: 25px;
   right: 25px;
 }
 
-.popup .popup_content .close_popup path{
+.popup .popup-content .close-popup path{
   stroke: #3B332B;
 }
 
-.popup .popup_content .close_popup:hover{
+.popup .popup-content .close-popup:hover{
   cursor: pointer;
 }
 
-.popup .popup_content .close_popup:hover path {
+.popup .popup-content .close-popup:hover path {
   stroke: #625C55;
 }
 

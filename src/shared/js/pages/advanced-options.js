@@ -80,7 +80,7 @@ import { choice, select } from 'Background/utilities'
   }, false)
 
   const togglePopup = (id) => {
-    const showPopupClass = 'popup_show'
+    const showPopupClass = 'popup-show'
     const popup = document.getElementById(id)
 
     if (popup) {
@@ -124,6 +124,14 @@ import { choice, select } from 'Background/utilities'
       await ProxyManager.setProxy()
     } else {
       console.error('Error on syncing database')
+    }
+  })
+
+  document.addEventListener('keydown', async (event) => {
+    if (event.key === 'Escape') {
+      for (const popup of select({ cls: 'popup-show' })) {
+        popup.classList.remove('popup-show')
+      }
     }
   })
 

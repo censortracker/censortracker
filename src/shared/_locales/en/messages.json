@@ -9,13 +9,13 @@
     "message": "Roskomsvoboda"
   },
   "disseminatorTitle": {
-    "message": "Is an information dissemination organizer"
+    "message": "May transmit your data to government authorities."
   },
   "notDisseminatorTitle": {
-    "message": "Is not an information dissemination organizer"
+    "message": "Information about data transmission was not found."
   },
   "notDisseminatorDesc": {
-    "message": "Services from the IDO (Information Dissemination Organizers) registry may automatically transmit your personal data (including messages and all traffic) to government authorities. This service is not in the IDO registry."
+    "message": "Some websites may transmit your personal data to government authorities, but we have no such information about this website."
   },
   "disseminatorDesc": {
     "message": "This service may transfer your personal data (including messages and all traffic) to government authorities."
@@ -154,7 +154,7 @@
     "message": "Thank you!"
   },
   "extensionInstalledDesc": {
-    "message": "Pin Censor Tracker in the browser panel in two clicks to always be aware of websites that may transmit your personal data to third parties."
+    "message": "Pin the Censor Tracker in the browser panel in two clicks to always be aware of websites that may transmit your personal data to third parties."
   },
   "thankYou": {
     "message": "Thank you!"

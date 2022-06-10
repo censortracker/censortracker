@@ -413,7 +413,7 @@ a {
   font-weight: 500;
 }
 
-.input_search {
+.input-search {
   border: 1px solid #c4c2bf;
   box-sizing: border-box;
   border-radius: 4px;
@@ -424,8 +424,8 @@ a {
   color: #6d675f;
 }
 
-.input_search:focus,
-.input_search:active {
+.input-search:focus,
+.input-search:active {
   outline: none;
   border: 1px solid #2a251f !important;
 }

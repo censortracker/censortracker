@@ -1,6 +1,6 @@
 {
   "appName": {
-    "message": "CensorTracker — Обход блокировок"
+    "message": "Censor Tracker — Обход блокировок"
   },
   "appDesc": {
     "message": "Расширение для обхода блокировок."
@@ -111,7 +111,7 @@
     "message": "Если сайт заблокирован, то Censor Tracker предоставит к нему доступ. Отключите эту настройку, если вы пользуетесь другим сервисом для обхода блокировок (например, VPN), чтобы увеличить скорость соединения."
   },
   "useDefaultProxy": {
-    "message": "Прокси CensorTracker"
+    "message": "Прокси Censor Tracker"
   },
   "proxyHost": {
     "message": "Адрес прокси-сервера"
@@ -128,7 +128,7 @@
     }
   },
   "controlledByOtherExtensionDesc": {
-    "message": "Для нормальной работы CensorTracker, отключите &laquo;<div class=\"extension__name\">$NAME$</div>&raquo; в настройках браузера.",
+    "message": "Для нормальной работы Censor Tracker, отключите &laquo;<div class=\"extension__name\">$NAME$</div>&raquo; в настройках браузера.",
     "placeholders": {
       "name": {
         "content": "$1"
@@ -139,7 +139,7 @@
     "message": "Другие расширения контролируют ваши настройки прокси в браузере"
   },
   "controlledByOtherExtensionsDesc": {
-    "message": "Для нормальной работы CensorTracker, отключите следующие расширения в настройках браузера:"
+    "message": "Для нормальной работы Censor Tracker, отключите следующие расширения в настройках браузера:"
   },
   "disableAll": {
     "message": "Отключить все"
@@ -180,7 +180,7 @@
     "message": "Шейпинг"
   },
   "trafficShapingDescription": {
-    "message": "Скорость соединения с сайтом замедляется государством. Censor Tracker даёт доступ к сайту с обычной скоростью."
+    "message": "Скорость соединения с сайтом замедляется государством. CensorTracker даёт доступ к сайту с обычной скоростью."
   },
 
   "installedAllowIncognitoTitle": {
@@ -210,7 +210,7 @@
     "message": "Настройки"
   },
   "installedPageTitle": {
-    "message": "CensorTracker Установлен"
+    "message": "Censor Tracker Установлен"
   },
   "incognitoRequiredPageTitle": {
     "message": "Требуется разрешение для работы в приватных окнах"
@@ -222,7 +222,7 @@
     "message": "Продвинутые Настройки"
   },
   "advancedOptionsDesc": {
-    "message": "Вы можете вручную обновить локальную базу данных заблокированных веб-сайтов, обновить конфигурацию CensorTracker и управлять другими расширенными параметрами."
+    "message": "Вы можете вручную обновить локальную базу данных заблокированных веб-сайтов, обновить конфигурацию Censor Tracker и управлять другими расширенными параметрами."
   },
   "optionsConfirmResetMessage": {
     "message": "Все ваши настройки будут удалены. Вы уверены, что хотите это сделать?"

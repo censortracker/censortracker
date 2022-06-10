@@ -1,6 +1,6 @@
 {
   "appName": {
-    "message": "CensorTracker – Proxy for Privacy & Security"
+    "message": "Censor Tracker – Proxy for Privacy & Security"
   },
   "appDesc": {
     "message": "A censorship circumvention extension. Stay safe online with our proxy extension."
@@ -9,13 +9,13 @@
     "message": "Roskomsvoboda"
   },
   "disseminatorTitle": {
-    "message": "Is the information dissemination organizer"
+    "message": "Is an information dissemination organizer"
   },
   "notDisseminatorTitle": {
-    "message": "Is not the information dissemination organizer"
+    "message": "Is not an information dissemination organizer"
   },
   "notDisseminatorDesc": {
-    "message": "The services from the IDO (information dissemination organizers) registry may automatically transmit your personal data (including messages and all traffic) to government authorities. This service is not in the IDO registry."
+    "message": "Services from the IDO (Information Dissemination Organizers) registry may automatically transmit your personal data (including messages and all traffic) to government authorities. This service is not in the IDO registry."
   },
   "disseminatorDesc": {
     "message": "This service may transfer your personal data (including messages and all traffic) to government authorities."
@@ -30,19 +30,19 @@
     "message": "Restrictions not found"
   },
   "blockedDesc": {
-    "message": "Access to the site is blocked, but Censor Tracker gives you access to it through a reliable proxy."
+    "message": "Access to the website is blocked, but Censor Tracker provides you access to it through a reliable proxy."
   },
   "notBlockedDesc": {
-    "message": "If access to the site is blocked, then Censor Tracker will offer to open the site through a reliable proxy."
+    "message": "If access to the website is blocked, Censor Tracker will offer to load it through a reliable proxy."
   },
   "popupNewTabMessage": {
     "message": "New Tab"
   },
   "controlledByOtherExtensionsMessage": {
-    "message": "Another extension controls the proxy. More detailed →"
+    "message": "Another extension controls the proxy. More details →"
   },
   "privateBrowsingPermissionsRequiredMessage": {
-    "message": "Proxy disabled. Private windows browsing permissions required →"
+    "message": "Proxy disabled. Private Window browsing permissions required →"
   },
   "whatThisMean": {
     "message": "what does it mean"
@@ -63,19 +63,19 @@
     "message": "Ignored Websites"
   },
   "ignoredSitesDesc": {
-    "message": "Hosts that will always be ignored by the CensorTracker. It can help if there are problems with opening the site. Each host starts with a new line."
+    "message": "Hosts that will always be ignored by Censor Tracker. If there are problems with opening the website, this list may help. Each host starts with a new line."
   },
   "autosaveTip": {
-    "message": "Changes will be automatically applied when <kbd>Enter</kbd> or <kbd>Control</kbd> + <kbd>S</kbd> are pressed."
+    "message": "Changes will be automatically applied upon pressing <kbd>Enter</kbd> or <kbd>Control</kbd> + <kbd>S</kbd>."
   },
   "optionsTitle": {
-    "message": "CensorTracker Settings"
+    "message": "Censor Tracker Settings"
   },
   "proxySettings": {
     "message": "Proxy Settings"
   },
   "optionsProxyDesc": {
-    "message": "If the site is blocked, the CensorTracker will grant access to it. Disable this setting if you use another service to bypass blocking (for example, a VPN) to increase the connection speed."
+    "message": "If a website is blocked, Censor Tracker will bypass restrictions to give you access to it. Disable this setting if you use another service to bypass censorship (for example, a VPN) to increase connection speed."
   },
   "privateBrowsingRequired": {
     "message": "Allow the Extension to Work in Private Windows."
@@ -87,16 +87,16 @@
     "message": "How to do it"
   },
   "grantPrivateBrowsingPermissions": {
-    "message": "I allowed, enable proxy"
+    "message": "Done, enable proxy"
   },
   "optionsIgnoredWebsitesDesc": {
-    "message": "Addresses for which the proxy will always be disabled. It can help if there are problems with opening the site."
+    "message": "Addresses for which proxy will always be disabled. If there are problems with opening certain websites, this list may help."
   },
   "showNotificationsTitle": {
     "message": "Show System Notifications"
   },
   "showNotificationsDesc": {
-    "message": "We will warn you when a site transmits your messages, personal data and all traffic to third parties automatically."
+    "message": "We will warn you when you visit a service that transmits your messages, personal data, and all traffic to third parties automatically."
   },
   "shareFeedback": {
     "message": "Got issues or suggestions? Let us know!"
@@ -105,22 +105,22 @@
     "message": "Use proxy"
   },
   "useOwnProxy": {
-    "message": "Use own proxy"
+    "message": "Use your own proxy"
   },
   "useProxyDesc": {
-    "message": "If the site is blocked, the CensorTracker will grant access to it. Disable this setting if you use another service to bypass blocking (for example, a VPN) to increase the connection speed."
+    "message": "If a website is blocked, Censor Tracker will bypass restrictions to give you access to it. Disable this setting if you use another service to bypass censorship (for example, a VPN) to increase connection speed."
   },
   "useDefaultProxy": {
-    "message": "Proxy CensorTracker"
+    "message": "Proxy Censor Tracker"
   },
   "proxyHost": {
-    "message": "Proxy server address"
+    "message": "Proxy Server address"
   },
   "proxyPort": {
     "message": "Port"
   },
   "controlledByOtherExtensionTitle": {
-    "message": "Another extension &laquo;<div class=\"extension__name\">$name$</div>&raquo; is controlling your proxy settings right now.",
+    "message": "Another extension &laquo;<div class=\"extension__name\">$name$</div>&raquo; is controlling your proxy settings.",
     "placeholders": {
       "name": {
         "content": "$1"
@@ -128,7 +128,7 @@
     }
   },
   "controlledByOtherExtensionDesc": {
-    "message": "For normal use of CensorTracker, disable &laquo;<div class=\"extension__name\">$name$</div>&raquo; in browser settings.",
+    "message": "To use Censor Tracker, disable &laquo;<div class=\"extension__name\">$name$</div>&raquo; in browser settings.",
     "placeholders": {
       "name": {
         "content": "$1"
@@ -136,10 +136,10 @@
     }
   },
   "controlledByOtherExtensions": {
-    "message": "Other extensions control your proxy right now."
+    "message": "Other extensions are controlling your proxy."
   },
   "controlledByOtherExtensionsDesc": {
-    "message": "To use CensorTracker, disable the following extensions in browser settings:"
+    "message": "To use Censor Tracker, disable the following extensions in browser settings:"
   },
   "disableAll": {
     "message": "Disable all"
@@ -154,7 +154,7 @@
     "message": "Thank you!"
   },
   "extensionInstalledDesc": {
-    "message": "Pin the CensorTracker in the browser panel in two clicks to always be aware of which websites may transmit your personal data to third parties."
+    "message": "Pin Censor Tracker in the browser panel in two clicks to always be aware of websites that may transmit your personal data to third parties."
   },
   "thankYou": {
     "message": "Thank you!"
@@ -177,25 +177,25 @@
     "message": "Traffic shaping"
   },
   "trafficShapingDescription": {
-    "message": "Traffic shaping detected: connection to the site is slowed down. CensorTracker gives you access to the site at a normal speed."
+    "message": "Traffic shaping detected: connection to this website is throttled. Censor Tracker gives you access to it at a normal speed."
   },
   "installedAllowIncognitoTitle": {
-    "message": "Allow CensorTracker to work in private mode."
+    "message": "Allow Censor Tracker to work in Private Mode."
   },
   "installedAllowIncognitoDescription": {
-    "message": "This permission is required so that CensorTracker can open blocked websites for you through a proxy. In Firefox, there is no other way."
+    "message": "This permission is required for Censor Tracker to open blocked websites for you through a proxy. In Firefox, there is no other way."
   },
   "howToGrantIncognitoAccessBtnTitle": {
-    "message": "How to grant permission"
+    "message": "How to grant the permission"
   },
   "installedAllowIncognitoDescriptionThen": {
-    "message": "After that, open the popup of CensorTracker and confirm that the permissions are granted."
+    "message": "After that, open the Censor Tracker's popup and confirm the permissions are granted."
   },
   "incognitoAccessRequiredTitle": {
-    "message": "The site is unavailable or blocked. Allow CensorTracker incognito access to open such websites."
+    "message": "The website is unavailable or blocked. Allow Censor Tracker incognito access to open such websites."
   },
   "incognitoAccessRequiredDescription": {
-    "message": "To open <b>$hostname$</b> through a proxy in Firefox, you need permission to work in private windows. Otherwise, the proxy will not work.",
+    "message": "To open <b>$hostname$</b> through a proxy in Firefox, you need permission to work in Private Windows. Otherwise, our proxy will not work.",
     "placeholders": {
       "hostname": {
         "content": "$1"
@@ -206,7 +206,7 @@
     "message": "Options"
   },
   "installedPageTitle": {
-    "message": "CensorTracker Installed"
+    "message": "Censor Tracker Installed"
   },
   "incognitoRequiredPageTitle": {
     "message": "Private Browsing Permission Required"
@@ -218,7 +218,7 @@
     "message": "Advanced Options"
   },
   "advancedOptionsDesc": {
-    "message": "You can manually update the local database of blocked websites, update the config of CensorTracker and manage other advanced options."
+    "message": "You can manually update the local database of blocked websites, update the config of Censor Tracker and manage other advanced options."
   },
   "optionsConfirmResetMessage": {
     "message": "All your settings will be removed. Are you sure you want to do this?"
@@ -248,7 +248,7 @@
     "message": "Turned off"
   },
   "updateLocalRegistryTitle": {
-    "message": "Force update of the extension's local database"
+    "message": "Force update the extension's local database."
   },
   "updateLocalRegistryDesc": {
     "message": "Update the local database of the blocked websites for your region."
@@ -263,7 +263,7 @@
     "message": "Are you sure you want to reset all settings?"
   },
   "areYouSureYouWantToResetSettingsDesc": {
-    "message": "Regenerate the PAC file for your current region and reset the settings to the defaults."
+    "message": "Regenerate the PAC file for your current region and reset the settings."
   },
   "confirmPopupResetSettings": {
     "message": "Yes, I'm sure!"
@@ -272,7 +272,7 @@
     "message": "Cancel"
   },
   "updateTakesTime": {
-    "message": "The database update will take some time."
+    "message": "Database update will take some time."
   },
   "youCanCloseThisWindow": {
     "message": "You can close this window"

@@ -1,5 +1,4 @@
 import ProxyManager from 'Background/proxy'
-import Registry from 'Background/registry'
 import * as storage from 'Background/storage'
 import { isPort, translateDocument } from 'Background/utilities'
 
@@ -116,7 +115,5 @@ import { isPort, translateDocument } from 'Background/utilities'
     useProxyCheckbox.checked = isEnabled
   })
 
-  const { countryDetails: { name: country } } = await Registry.getConfig()
-
-  translateDocument(document, { country })
+  translateDocument(document)
 })()

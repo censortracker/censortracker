@@ -46,6 +46,7 @@ rules:
   no-console: off
   no-continue: off
   no-magic-numbers: off
+  no-restricted-globals: off
   new-cap: off
   brace-style:
     - 2

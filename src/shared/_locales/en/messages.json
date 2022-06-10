@@ -248,16 +248,16 @@
     "message": "Turned off"
   },
   "updateLocalRegistryTitle": {
-    "message": "Force-update the extension's local database"
+    "message": "Force update the extension's local database."
   },
   "updateLocalRegistryDesc": {
-    "message": "Update the local database of restricted websites for your region."
+    "message": "Update the local database of the blocked websites for your region."
   },
   "resetToDefaultTitle": {
     "message": "Reset to default"
   },
   "resetToDefaultDesc": {
-    "message": "Regenerate the PAC file for your current region and update the settings."
+    "message": "Reset all the settings to default and generate PAC file for your current region. This option is your choice if there are blocked websites availability problems."
   },
   "areYouSureYouWantToResetSettingsTitle": {
     "message": "Are you sure you want to reset all settings?"
@@ -308,7 +308,7 @@
     "message": "proxying is disabled"
   },
   "debugInfoTip": {
-    "message": "Press <kbd>Fn</kbd> + <kbd>Control</kbd> + <kbd>D</kbd> to see debugging information."
+    "message": "Click here to see debug information."
   },
   "parentalControlTitle": {
     "message": "«Parental» Control"
@@ -320,6 +320,6 @@
     "message": "Emergency Mode"
   },
   "emergencyConfigDesc": {
-    "message": "Allows our proxy service work in case of all our IP addresses and hosts being blocked. Do not enable this mode if there is no real need."
+    "message": "Allows you to work even in conditions of complete blocking of all our IP addresses and hosts. Do not enable this mode unless there are availability issues."
   }
 }

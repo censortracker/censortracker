@@ -54,15 +54,7 @@ class Settings {
   }
 
   async enableExtension () {
-    let useProxy = true
-
-    if (Browser.IS_FIREFOX) {
-      useProxy = await Browser.extension.isAllowedIncognitoAccess()
-    }
-    await storage.set({
-      useProxy,
-      enableExtension: true,
-    })
+    await storage.set({ enableExtension: true })
     console.log('Settings.enableExtension()')
   }
 

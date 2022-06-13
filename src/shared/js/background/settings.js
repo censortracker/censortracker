@@ -48,21 +48,11 @@ class Settings {
   }
 
   async changeExtensionState ({ useProxy, enableExtension, showNotifications }) {
-    const tabs = await Browser.tabs.query({})
-
     await storage.set({
       useProxy,
       enableExtension,
       showNotifications,
     })
-
-    for (const { id } of tabs) {
-      if (enableExtension) {
-        this.setDefaultIcon(id)
-      } else {
-        this.setDisableIcon(id)
-      }
-    }
   }
 
   async extensionEnabled () {

@@ -129,6 +129,16 @@ export const handleStorageChanged = async ({ enableExtension, ignoredHosts, useP
 
       console.log(`enableExtension: ${enableExtensionOldValue} -> ${enableExtensionNewValue}`)
 
+      Browser.tabs.query({}).then((tabs) => {
+        for (const { id } of tabs) {
+          if (enableExtensionNewValue) {
+            Settings.setDefaultIcon(id)
+          } else {
+            Settings.setDisableIcon(id)
+          }
+        }
+      })
+
       if (enableExtensionNewValue === true && enableExtensionOldValue === false) {
         await ProxyManager.setProxy()
       }

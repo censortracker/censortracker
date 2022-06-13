@@ -47,14 +47,6 @@ class Settings {
     console.log('Settings.setBlockedIcon()')
   }
 
-  async changeExtensionState ({ useProxy, enableExtension, showNotifications }) {
-    await storage.set({
-      useProxy,
-      enableExtension,
-      showNotifications,
-    })
-  }
-
   async extensionEnabled () {
     const { enableExtension } = await storage.get({ enableExtension: false })
 
@@ -67,8 +59,7 @@ class Settings {
     if (Browser.IS_FIREFOX) {
       useProxy = await Browser.extension.isAllowedIncognitoAccess()
     }
-
-    await this.changeExtensionState({
+    await storage.set({
       useProxy,
       enableExtension: true,
     })
@@ -76,7 +67,7 @@ class Settings {
   }
 
   async disableExtension () {
-    await this.changeExtensionState({
+    await storage.set({
       useProxy: false,
       enableExtension: false,
       showNotifications: false,

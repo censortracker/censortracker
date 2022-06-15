@@ -3,7 +3,7 @@ import Browser from './webextension'
 
 class Settings {
   getName () {
-    return 'CensorTracker'
+    return 'Censor Tracker'
   }
 
   getDangerIcon () {

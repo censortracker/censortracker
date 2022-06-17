@@ -899,10 +899,10 @@ kbd {
   transition: 0.2s background-color ease-in-out;
 }
 
-#selectDatabaseRegion {
-  margin-top: 25px;
+#options-region-title {
+  margin-bottom: 28px;
 }
 
-#optionsRegionTitle {
-  margin-bottom: 28px !important;
+#select-region {
+  margin-top: 25px;
 }

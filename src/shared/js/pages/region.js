@@ -1,37 +1,25 @@
-import Registry from 'Background/registry'
-import { translateDocument } from 'Background/utilities'
-
 (async () => {
-  const { countryDetails: { name: country } } = await Registry.getConfig()
-
-  translateDocument(document, { country })
-
-  document.addEventListener('click', (event) => {
-    if (!event.target.closest('.select')) {
-      document.querySelectorAll('.select-show')
-        .forEach((select) => {
-          select.classList.remove('select-show')
-        })
-    }
-  })
-
-  const CLASS_NAME_SELECTED = 'option-selected'
-  const SELECTOR_OPTION_SELECTED = '.option-selected'
-  const SELECTOR_DATA_TOGGLE = '[data-select="toggle"]'
-  const dropdown = document.getElementById('select-toggle')
-
-  const selected = document.querySelector(SELECTOR_OPTION_SELECTED)
   const select = document.querySelector('.select')
+  const dropdown = document.getElementById('select-toggle')
+  const selected = document.querySelector('.option-selected')
   const options = document.querySelectorAll('.select-option')
-  const elToggle = document.querySelector(SELECTOR_DATA_TOGGLE)
+  const elToggle = document.querySelector('[data-select="toggle"]')
 
   dropdown.addEventListener('click', (event) => {
     select.classList.toggle('select-show')
   })
 
+  document.addEventListener('click', (event) => {
+    if (!event.target.closest('.select')) {
+      for (const element of document.querySelectorAll('.select-show')) {
+        element.classList.remove('select-show')
+      }
+    }
+  })
+
   options.forEach((item, i) => {
     item.addEventListener('click', (event) => {
-      if (item.classList.contains(CLASS_NAME_SELECTED)) {
+      if (item.classList.contains('option-selected')) {
         return
       }
       update(item)
@@ -41,16 +29,16 @@ import { translateDocument } from 'Background/utilities'
 
   function update (option) {
     options.forEach((item, i) => {
-      item.classList.remove(CLASS_NAME_SELECTED)
+      item.classList.remove('option-selected')
     })
 
     option = option.closest('.select-option')
     if (selected) {
-      selected.classList.remove(CLASS_NAME_SELECTED)
+      selected.classList.remove('option-selected')
     }
-    option.classList.add(CLASS_NAME_SELECTED)
-    elToggle.textContent = option.textContent
+    option.classList.add('option-selected')
     elToggle.value = option.dataset.value
+    elToggle.textContent = option.textContent
     elToggle.dataset.index = option.dataset.index
 
     return option.dataset.value

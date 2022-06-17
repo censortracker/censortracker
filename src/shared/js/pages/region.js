@@ -38,7 +38,7 @@ import Browser from 'Background/webextension'
   const CLASS_NAME_SELECTED = 'option-selected'
   const SELECTOR_OPTION_SELECTED = '.option-selected'
   const SELECTOR_DATA_TOGGLE = '[data-select="toggle"]'
-  const dropdown = document.getElementById('select_toggle')
+  const dropdown = document.getElementById('select-toggle')
 
   const selected = document.querySelector(SELECTOR_OPTION_SELECTED)
   const select = document.querySelector('.select')

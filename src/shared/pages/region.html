@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8"/>
-  <title data-i18n-key="proxyOptionsPageTitle">
+  <title data-i18n-key="regionOptionsPageTitle">
     <%= htmlWebpackPlugin.options.title %>
   </title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -27,25 +27,31 @@
           </svg>
         </a>
       </div>
-      <div class="main-page__title" id="optionsRegionTitle" data-i18n-key="optionsRegionTitle"></div> <!-- TODO: Use better key -->
-      <div class="main-page__about" data-i18n-key="optionsRegionDesc"></div> <!-- TODO: Use better key -->
+      <div class="main-page__title" id="optionsRegionTitle" data-i18n-key="optionsRegionTitle"></div>
+      <div class="main-page__about" data-i18n-key="optionsRegionDesc"></div>
 
-      <div id="selectDatabaseRegion">
+      <div>
         <div class="title">Регион, для обхода специфичесих блокировок</div>
-
         <div class="select">
-          <button type="button" class="select-toggle" name="region" value="auto" data-select="toggle" data-index="0"
-                  id="select_toggle">Определять автоматически
-          </button>
+          <button type="button"
+                  class="select-toggle"
+                  name="region"
+                  value="auto"
+                  data-select="toggle"
+                  data-index="0"
+                  id="select-toggle">Определять автоматически</button>
           <div class="select-dropdown">
             <ul class="select-options" id="availableCountries">
               <li class="select-option option-selected" data-select="option" data-value="auto" data-index="0">
                 Определять автоматически
               </li>
-              <li class="select-option" data-select="option" data-value="auto" data-index="0">Russia</li>
-              <li class="select-option" data-select="option" data-value="auto" data-index="1">Belarus</li>
-              <li class="select-option" data-select="option" data-value="auto" data-index="2">Turkey</li>
-              <li class="select-option" data-select="option" data-value="auto" data-index="3">Germany</li>
+              <li class="select-option" data-select="option" data-value="auto" data-index="1">Russia</li>
+              <li class="select-option" data-select="option" data-value="auto" data-index="2">Belarus</li>
+              <li class="select-option" data-select="option" data-value="auto" data-index="3">Turkey</li>
+              <li class="select-option" data-select="option" data-value="auto" data-index="4">Germany</li>
+              <li class="select-option" data-select="option" data-value="auto" data-index="5">Iran</li>
+              <li class="select-option" data-select="option" data-value="auto" data-index="6">China</li>
+              <li class="select-option" data-select="option" data-value="auto" data-index="7">Kazakhstan</li>
             </ul>
           </div>
         </div>

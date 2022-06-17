@@ -1,9 +1,9 @@
 (async () => {
   const select = document.querySelector('.select')
   const dropdown = document.getElementById('select-toggle')
-  const selected = document.querySelector('.option-selected')
+  const selectedOption = document.querySelector('.option-selected')
   const options = document.querySelectorAll('.select-option')
-  const elToggle = document.querySelector('[data-select="toggle"]')
+  const currentOption = document.querySelector('[data-select="toggle"]')
 
   dropdown.addEventListener('click', (event) => {
     select.classList.toggle('select-show')
@@ -17,34 +17,25 @@
     }
   })
 
-  options.forEach((item, i) => {
-    item.addEventListener('click', (event) => {
-      if (item.classList.contains('option-selected')) {
-        return
+  for (const option of options) {
+    option.addEventListener('click', (event) => {
+      if (!option.classList.contains('option-selected')) {
+        options.forEach((item) => {
+          item.classList.remove('option-selected')
+        })
+
+        if (selectedOption) {
+          selectedOption.classList.remove('option-selected')
+        }
+
+        const thisOption = option.closest('.select-option')
+
+        thisOption.classList.add('option-selected')
+        currentOption.value = option.dataset.value
+        currentOption.textContent = option.textContent
+        currentOption.dataset.index = option.dataset.index
+        select.classList.remove('select-show')
       }
-      update(item)
-      hide()
     })
-  })
-
-  function update (option) {
-    options.forEach((item, i) => {
-      item.classList.remove('option-selected')
-    })
-
-    option = option.closest('.select-option')
-    if (selected) {
-      selected.classList.remove('option-selected')
-    }
-    option.classList.add('option-selected')
-    elToggle.value = option.dataset.value
-    elToggle.textContent = option.textContent
-    elToggle.dataset.index = option.dataset.index
-
-    return option.dataset.value
-  }
-
-  function hide () {
-    select.classList.remove('select-show')
   }
 })()

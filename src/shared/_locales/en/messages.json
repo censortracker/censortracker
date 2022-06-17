@@ -323,15 +323,9 @@
     "message": "Allows you to work even in conditions of complete blocking of all our IP addresses and hosts. Do not enable this mode unless there are availability issues."
   },
   "optionsRegionTitle": {
-    "message": "Database"
+    "message": "Region"
   },
   "optionsRegionDesc": {
-    "message": "You can configure the database of blocked websites you want to use."
-  },
-  "regionPageTitle": {
-    "message": "Your Region"
-  },
-  "regionPageDesc": {
-    "message": "Select the region you are in."
+    "message": "You can select a region to circumvent country-specific censorship."
   }
 }

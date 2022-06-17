@@ -83,6 +83,7 @@ const webConfig = {
     'options': './src/shared/js/pages/options.js',
     'advanced-options': './src/shared/js/pages/advanced-options.js',
     'proxy-options': './src/shared/js/pages/proxy-options.js',
+    'database-options': './src/shared/js/pages/database-options.js',
     'ignore-editor': './src/shared/js/pages/ignore-editor.js',
     'proxied-websites-editor': './src/shared/js/pages/proxied-websites-editor.js',
     'translator': './src/shared/js/pages/translator.js',
@@ -197,6 +198,14 @@ const webConfig = {
       template: 'src/shared/pages/proxied-websites-editor.html',
       inject: true,
       chunks: ['proxied-websites-editor'],
+      meta: contentSecurityPolicy,
+    }),
+    new HTMLWebpackPlugin({
+      title: extensionName,
+      filename: 'database-options.html',
+      template: 'src/shared/pages/database-options.html',
+      inject: true,
+      chunks: ['database-options', 'translator'],
       meta: contentSecurityPolicy,
     }),
     new HTMLWebpackPlugin({

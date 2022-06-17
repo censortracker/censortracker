@@ -100,6 +100,13 @@ a {
   font-weight: 500;
 }
 
+.title {
+  font-size: 16px;
+  line-height: 20px;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
 .disclaimer__text {
   font-weight: 400;
   font-size: 14px;
@@ -644,7 +651,7 @@ kbd {
   width: 100%;
 }
 
-.select__toggle {
+.select-toggle {
   display: flex;
   background-color: #fff;
   border: 1px solid #C4C2BF;
@@ -661,9 +668,12 @@ kbd {
   font-family: inherit;
 }
 
+.selectRegistryRegion.title {
+  margin-bottom: 25px;
+}
 
 
-.select__toggle::after {
+.select-toggle::after {
   content: '';
   width: 12px;
   height: 8px;
@@ -675,23 +685,23 @@ kbd {
 
 }
 
-.select__toggle:focus {
+.select-toggle:focus {
   outline: none;
   border: 1px solid #767676;
 
 }
 
 
-.select__toggle:hover {
+.select-toggle:hover {
   border: 1px solid #767676;
 
 }
 
-.select_show .select__toggle::after {
+.select_show .select-toggle::after {
   transform: rotate(360deg);
 }
 
-.select__dropdown {
+.select-dropdown {
   display: none;
   position: absolute;
   top: 2.5rem;
@@ -709,32 +719,32 @@ kbd {
   line-height: 24px;
 }
 
-.select_show .select__dropdown {
+.select_show .select-dropdown {
   display: block;
 }
 
-.select_show .select__backdrop {
+.select_show {
   display: block;
 }
 
-.select__options {
+.select-options {
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.select__option {
+.select-option {
   padding: 3px 15px;
 }
 
-.select__option_selected {
+.option-selected {
   background-color: #EDF2F7;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.select__option:hover {
+.select-option:hover {
   background-color: #f5f5f5;
   cursor: pointer;
   transition: 0.2s background-color ease-in-out;
@@ -767,7 +777,6 @@ kbd {
 .popup .popup-content .popup-text {
   font-weight: 400;
   margin-bottom: 40px;
-  font-weight: 30px;
 }
 
 
@@ -804,4 +813,111 @@ kbd {
 #showDebugInfo {
   cursor: pointer;
   margin-bottom: 28px;
+}
+
+/* Region Select */
+
+.select {
+  width: 100%;
+  position: relative;
+}
+
+.select-toggle {
+  display: flex;
+  background-color: #fff;
+  border: 1px solid #C4C2BF;
+  border-radius: 4px;
+  cursor: pointer;
+  align-items: center;
+  width: 100%;
+  font-size: 14px;
+  padding: 3px 15px;
+  line-height: 24px;
+  user-select: none;
+  justify-content: space-between;
+  color: #3B332B;
+  font-family: inherit;
+}
+
+.select-toggle::after {
+  content: '';
+  width: 12px;
+  height: 8px;
+  flex-shrink: 0;
+  margin-left: 1rem;
+  background-size: cover;
+  background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" height="8" width="12"%3E%3Cpath d="M6.58301 1.08366L11.333 5.75033C11.6663 6.08366 11.6663 6.58366 11.333 6.91699C10.9997 7.25033 10.4997 7.25033 10.1663 6.91699L6.08301 2.83366L1.99967 6.91699C1.83301 7.08366 1.66634 7.16699 1.41634 7.16699C0.916341 7.16699 0.583008 6.83366 0.583008 6.33366C0.583008 6.08366 0.66634 5.91699 0.833007 5.75033L5.58301 1.00033C5.74967 0.750325 6.24967 0.750326 6.58301 1.08366Z"/%3E%3C/svg%3E');
+  transform: rotate(180deg);
+
+}
+
+.select-toggle:focus {
+  outline: none;
+  border: 1px solid #767676;
+}
+
+
+.select-toggle:hover {
+  border: 1px solid #767676;
+}
+
+.select_show .select-toggle::after {
+  transform: rotate(360deg);
+}
+
+.select-dropdown {
+  display: none;
+  position: absolute;
+  top: 2.5rem;
+  left: 0;
+  right: 0;
+  border: 1px solid #C4C2BF;
+  max-height: 10rem;
+  overflow-y: auto;
+  border-radius: 4px;
+  z-index: 2;
+  background-color: #fff;
+  font-size: 14px;
+  font-family: inherit;
+  font-weight: 400;
+  line-height: 24px;
+}
+
+.select_show .select-dropdown {
+  display: block;
+}
+
+.select_show {
+  display: block;
+}
+
+.select-options {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.select-option {
+  padding: 3px 15px;
+}
+
+.option-selected {
+  background-color: #EDF2F7;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.select-option:hover {
+  cursor: pointer;
+  background-color: #f5f5f5;
+  transition: 0.2s background-color ease-in-out;
+}
+
+#selectDatabaseRegion {
+  margin-top: 25px;
+}
+
+#optionsRegionTitle {
+  margin-bottom: 28px !important;
 }

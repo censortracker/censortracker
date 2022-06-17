@@ -60,7 +60,7 @@ class Registry {
         }
       }
 
-      console.warn('CensorTracker does not support your country.')
+      console.warn('Censor Tracker does not support your country.')
       return {}
     } catch (error) {
       console.error(error)

@@ -97,6 +97,8 @@ import Browser from 'Background/webextension';
   document.addEventListener('click', async (event) => {
     if (event.target.matches('#enableExtension')) {
       await Settings.enableExtension()
+      await Settings.enableNotifications()
+      await ProxyManager.enableProxy()
       window.location.reload()
     }
 

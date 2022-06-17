@@ -41,6 +41,23 @@ a {
   background-color: #3b332b;
 }
 
+.icon__donate {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin-right: 28px;
+  width: 18px;
+  height: 18px;
+  mask: url(../images/settings/donate.svg) no-repeat center / contain;
+  -webkit-mask: url(../images/settings/donate.svg) no-repeat center / contain;
+  background-color: #6C9E2C;
+}
+
+.icon__donate:hover {
+  cursor: pointer;
+  filter: contrast(200%);
+}
+
 .icon__settings:hover {
   cursor: pointer;
   filter: contrast(300%);

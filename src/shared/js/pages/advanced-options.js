@@ -152,6 +152,6 @@ import { choice, select } from 'Background/utilities'
     await Registry.sync()
     await ProxyManager.setProxy()
     await Settings.enableExtension()
-    console.warn('CensorTracker has been reset to default settings.')
+    console.warn('Censor Tracker has been reset to default settings.')
   })
 })()

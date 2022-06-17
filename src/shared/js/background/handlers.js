@@ -27,23 +27,21 @@ export const warnAboutInformationDisseminationOrganizer = async (url) => {
     showNotifications: true,
   })
 
-  if (showNotifications) {
-    if (!notifiedHosts.includes(hostname)) {
-      console.log(`Showing notification for ${hostname}`)
+  if (showNotifications && !notifiedHosts.includes(hostname)) {
+    console.log(`Showing notification for ${hostname}`)
 
-      await Browser.notifications.create(hostname, {
-        type: 'basic',
-        title: Settings.getName(),
-        iconUrl: Settings.getDangerIcon(),
-        message: Browser.i18n.getMessage('cooperationAcceptedMessage', hostname),
-      })
+    await Browser.notifications.create(hostname, {
+      type: 'basic',
+      title: Settings.getName(),
+      iconUrl: Settings.getDangerIcon(),
+      message: Browser.i18n.getMessage('cooperationAcceptedMessage', hostname),
+    })
 
-      try {
-        notifiedHosts.push(hostname)
-        await storage.set({ notifiedHosts })
-      } catch (error) {
-        console.error(error)
-      }
+    try {
+      notifiedHosts.push(hostname)
+      await storage.set({ notifiedHosts })
+    } catch (error) {
+      console.error(error)
     }
   }
 }
@@ -69,8 +67,8 @@ export const handleOnAlarm = async ({ name }) => {
 }
 
 export const handleBeforeRequest = async (_details) => {
-  await ProxyManager.requestIncognitoAccess()
   await ProxyManager.ping()
+  await ProxyManager.requestIncognitoAccess()
 }
 
 export const handleStartup = async () => {
@@ -128,6 +126,16 @@ export const handleStorageChanged = async ({ enableExtension, ignoredHosts, useP
       const enableExtensionOldValue = enableExtension.oldValue
 
       console.log(`enableExtension: ${enableExtensionOldValue} -> ${enableExtensionNewValue}`)
+
+      Browser.tabs.query({}).then((tabs) => {
+        for (const { id } of tabs) {
+          if (enableExtensionNewValue) {
+            Settings.setDefaultIcon(id)
+          } else {
+            Settings.setDisableIcon(id)
+          }
+        }
+      })
 
       if (enableExtensionNewValue === true && enableExtensionOldValue === false) {
         await ProxyManager.setProxy()

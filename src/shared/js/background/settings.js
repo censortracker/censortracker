@@ -3,7 +3,7 @@ import Browser from './webextension'
 
 class Settings {
   getName () {
-    return 'CensorTracker'
+    return 'Censor Tracker'
   }
 
   getDangerIcon () {
@@ -47,24 +47,6 @@ class Settings {
     console.log('Settings.setBlockedIcon()')
   }
 
-  async changeExtensionState ({ useProxy, enableExtension, showNotifications }) {
-    const tabs = await Browser.tabs.query({})
-
-    await storage.set({
-      useProxy,
-      enableExtension,
-      showNotifications,
-    })
-
-    for (const { id } of tabs) {
-      if (enableExtension) {
-        this.setDefaultIcon(id)
-      } else {
-        this.setDisableIcon(id)
-      }
-    }
-  }
-
   async extensionEnabled () {
     const { enableExtension } = await storage.get({ enableExtension: false })
 
@@ -72,21 +54,12 @@ class Settings {
   }
 
   async enableExtension () {
-    let useProxy = true
-
-    if (Browser.IS_FIREFOX) {
-      useProxy = await Browser.extension.isAllowedIncognitoAccess()
-    }
-
-    await this.changeExtensionState({
-      useProxy,
-      enableExtension: true,
-    })
+    await storage.set({ enableExtension: true })
     console.log('Settings.enableExtension()')
   }
 
   async disableExtension () {
-    await this.changeExtensionState({
+    await storage.set({
       useProxy: false,
       enableExtension: false,
       showNotifications: false,

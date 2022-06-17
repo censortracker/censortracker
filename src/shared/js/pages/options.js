@@ -69,10 +69,10 @@ import Browser from 'Background/webextension';
   if (showNotificationsCheckbox) {
     showNotificationsCheckbox.addEventListener('change', async () => {
       if (showNotificationsCheckbox.checked) {
-        console.log('Notifications isEnabled.')
+        console.log('Notifications enabled.')
         await storage.set({ showNotifications: true })
       } else {
-        console.log('Notifications isEnabled.')
+        console.log('Notifications disabled.')
         await storage.set({ showNotifications: false })
       }
     },

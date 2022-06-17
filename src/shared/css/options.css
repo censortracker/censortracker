@@ -672,7 +672,6 @@ kbd {
   margin-bottom: 25px;
 }
 
-
 .select-toggle::after {
   content: '';
   width: 12px;
@@ -691,14 +690,8 @@ kbd {
 
 }
 
-
 .select-toggle:hover {
   border: 1px solid #767676;
-
-}
-
-.select_show .select-toggle::after {
-  transform: rotate(360deg);
 }
 
 .select-dropdown {
@@ -717,14 +710,6 @@ kbd {
   font-family: inherit;
   font-weight: 400;
   line-height: 24px;
-}
-
-.select_show .select-dropdown {
-  display: block;
-}
-
-.select_show {
-  display: block;
 }
 
 .select-options {
@@ -861,7 +846,7 @@ kbd {
   border: 1px solid #767676;
 }
 
-.select_show .select-toggle::after {
+.select-show .select-toggle::after {
   transform: rotate(360deg);
 }
 
@@ -883,11 +868,11 @@ kbd {
   line-height: 24px;
 }
 
-.select_show .select-dropdown {
+.select-show .select-dropdown {
   display: block;
 }
 
-.select_show {
+.select-show {
   display: block;
 }
 

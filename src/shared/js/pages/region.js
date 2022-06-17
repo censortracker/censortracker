@@ -1,6 +1,5 @@
 import Registry from 'Background/registry'
 import { translateDocument } from 'Background/utilities'
-import Browser from 'Background/webextension'
 
 (async () => {
   const { countryDetails: { name: country } } = await Registry.getConfig()
@@ -9,31 +8,12 @@ import Browser from 'Background/webextension'
 
   document.addEventListener('click', (event) => {
     if (!event.target.closest('.select')) {
-      document.querySelectorAll('.select_show')
+      document.querySelectorAll('.select-show')
         .forEach((select) => {
-          select.classList.remove('select_show')
+          select.classList.remove('select-show')
         })
     }
   })
-
-  const availableCountries = document.getElementById('availableCountries')
-
-  for (const { name, isoA2Code } of []) {
-    const li = document.createElement('li')
-
-    try {
-      li.innerText = Browser.i18n.getMessage(`countryName${isoA2Code}`)
-    } catch (error) {
-      li.innerText = name
-    }
-
-    li.classList.add('select-option')
-    li.setAttribute('data-select', 'option')
-    li.setAttribute('data-value', isoA2Code)
-    li.setAttribute('data-index', 1)
-
-    availableCountries.append(li)
-  }
 
   const CLASS_NAME_SELECTED = 'option-selected'
   const SELECTOR_OPTION_SELECTED = '.option-selected'
@@ -46,7 +26,7 @@ import Browser from 'Background/webextension'
   const elToggle = document.querySelector(SELECTOR_DATA_TOGGLE)
 
   dropdown.addEventListener('click', (event) => {
-    select.classList.toggle('select_show')
+    select.classList.toggle('select-show')
   })
 
   options.forEach((item, i) => {
@@ -77,6 +57,6 @@ import Browser from 'Background/webextension'
   }
 
   function hide () {
-    select.classList.remove('select_show')
+    select.classList.remove('select-show')
   }
 })()

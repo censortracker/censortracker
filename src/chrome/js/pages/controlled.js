@@ -3,14 +3,13 @@ import { translateDocument } from 'Background/utilities'
 import Browser from 'Background/webextension'
 
 (async () => {
-  translateDocument(document)
+  const i18nPageProps = {}
   const backToPopup = document.querySelector('#backToPopup')
   const useProxyCheckbox = document.querySelector('#useProxyCheckbox')
   const controlledByExtension = document.querySelector('#controlledByOtherExtension')
   const controlledByExtensions = document.querySelector('#controlledByOtherExtensions')
   const disableOtherExtensionsButtons = document.querySelectorAll('.disable-other-extensions')
   const extensionsWhichControlsProxy = document.querySelector('#extensionsWhichControlsProxy')
-
   const isProxyControlledByOtherExtensions = await ProxyManager.controlledByOtherExtensions()
 
   if (isProxyControlledByOtherExtensions) {
@@ -24,9 +23,7 @@ import Browser from 'Background/webextension'
     if (extensionsWithProxyPermissions.length === 1) {
       controlledByExtension.hidden = false
 
-      const [{ name }] = extensionsWithProxyPermissions
-
-      translateDocument(document, { extensionName: name })
+      i18nPageProps.extensionName = extensionsWithProxyPermissions[0].name
     } else if (extensionsWithProxyPermissions.length > 1) {
       for (const { name, shortName } of extensionsWithProxyPermissions) {
         const item = document.createElement('li')
@@ -37,32 +34,28 @@ import Browser from 'Background/webextension'
       }
       controlledByExtensions.hidden = false
     }
+  }
 
-    Array.from(disableOtherExtensionsButtons).forEach((element) => {
-      console.log(element)
-      element.addEventListener('click', async () => {
-        const currentPage = window.location.pathname.split('/').pop()
+  for (const disableButton of disableOtherExtensionsButtons) {
+    disableButton.addEventListener('click', async () => {
+      const currentPage = window.location.pathname.split('/').pop()
 
-        console.log(`Clicked: ${currentPage}`)
+      await ProxyManager.takeControl()
+      await ProxyManager.setProxy()
 
-        for (const { id } of extensionsWithProxyPermissions) {
-          await Browser.management.setEnabled(id, false)
+      if (currentPage.startsWith('controlled')) {
+        window.location.href = 'popup.html'
+      }
+
+      if (currentPage.startsWith('proxy-options')) {
+        if (await ProxyManager.controlledByThisExtension()) {
+          useProxyCheckbox.checked = true
+          useProxyCheckbox.disabled = false
         }
+        disableButton.parentElement.hidden = true
+      }
 
-        if (currentPage.startsWith('controlled')) {
-          window.location.href = 'popup.html'
-        }
-
-        if (currentPage.startsWith('options')) {
-          if (await ProxyManager.controlledByThisExtension()) {
-            useProxyCheckbox.checked = true
-            useProxyCheckbox.disabled = false
-          }
-          element.parentElement.hidden = true
-        }
-        await ProxyManager.setProxy()
-        window.location.reload()
-      })
+      window.location.reload()
     })
   }
 
@@ -76,5 +69,6 @@ import Browser from 'Background/webextension'
     document.documentElement.style.visibility = 'initial'
   }
 
+  translateDocument(document, i18nPageProps)
   setTimeout(show, 100)
 })()

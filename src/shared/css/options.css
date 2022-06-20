@@ -18,13 +18,13 @@ a {
 }
 
 .options-body {
-  background-color: #FAFAFA;
+  background-color: #fafafa;
 }
 .options-page-card {
   padding: 20px 30px;
   width: 100%;
-  background: #FFFFFF;
-  border-bottom: 1px solid #F1F1F1;
+  background: #FFF;
+  border-bottom: 1px solid #f1f1f1;
   border-radius: 10px;
   filter: drop-shadow(0px 2.01027px 11.8382px rgba(15, 13, 11, 0.055)) drop-shadow(0px 1.12694px 6.63642px rgba(15, 13, 11, 0.0655718)) drop-shadow(0px 0.598509px 3.52455px rgba(15, 13, 11, 0.079074));
   margin-bottom: 20px;
@@ -36,14 +36,14 @@ a {
 .options-page-card .block__title {
   font-size: 16px;
   line-height: 20px;
-  color: #3B332B;
+  color: #3b332b;
   opacity: 0.5;
 }
 
 .options-page-card .options-hr {
   width: calc(100% + 60px);
   height: 1px;
-  background-color: #F1F1F1;
+  background-color: #f1f1f1;
   margin: 20px 0 20px -30px;
 }
 
@@ -705,7 +705,7 @@ kbd {
   line-height: 24px;
   user-select: none;
   justify-content: space-between;
-  color: #3B332B;
+  color: #3b332b;
   font-family: inherit;
 }
 
@@ -764,7 +764,7 @@ kbd {
 }
 
 .option-selected {
-  background-color: #EDF2F7;
+  background-color: #edf2f7;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -851,7 +851,7 @@ kbd {
 .select-toggle {
   display: flex;
   background-color: #fff;
-  border: 1px solid #C4C2BF;
+  border: 1px solid #c4c2bf;
   border-radius: 4px;
   cursor: pointer;
   align-items: center;
@@ -861,7 +861,7 @@ kbd {
   line-height: 24px;
   user-select: none;
   justify-content: space-between;
-  color: #3B332B;
+  color: #3b332b;
   font-family: inherit;
 }
 
@@ -874,7 +874,6 @@ kbd {
   background-size: cover;
   background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" height="8" width="12"%3E%3Cpath d="M6.58301 1.08366L11.333 5.75033C11.6663 6.08366 11.6663 6.58366 11.333 6.91699C10.9997 7.25033 10.4997 7.25033 10.1663 6.91699L6.08301 2.83366L1.99967 6.91699C1.83301 7.08366 1.66634 7.16699 1.41634 7.16699C0.916341 7.16699 0.583008 6.83366 0.583008 6.33366C0.583008 6.08366 0.66634 5.91699 0.833007 5.75033L5.58301 1.00033C5.74967 0.750325 6.24967 0.750326 6.58301 1.08366Z"/%3E%3C/svg%3E');
   transform: rotate(180deg);
-
 }
 
 .select-toggle:focus {
@@ -928,7 +927,7 @@ kbd {
 }
 
 .option-selected {
-  background-color: #EDF2F7;
+  background-color: #edf2f7;
   display: flex;
   align-items: center;
   justify-content: space-between;

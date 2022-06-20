@@ -13,7 +13,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  text-shadow: rgba(0, 0, 0, 0.2) 0 0 1px;
+  text-shadow: rgba(0, 0, 0, 20%) 0 0 1px;
 }
 
 a {
@@ -339,7 +339,7 @@ a {
 
 .censor-tracker__btn:active {
   cursor: pointer;
-  box-shadow: 0 1px 4px rgba(15, 13, 11, 0.1), 0 0 2px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 4px rgba(15, 13, 11, 0.1), 0 0 2px rgba(0, 0, 0, 10%);
 }
 
 .btn-on {

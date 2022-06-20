@@ -267,7 +267,7 @@ if (isFirefox) {
     filename: 'installed.html',
     template: 'src/firefox/pages/installed.html',
     inject: true,
-    chunks: ['translator', 'installed'],
+    chunks: ['installed', 'translator'],
     meta: contentSecurityPolicy,
   }))
   webConfig.plugins.push(new HTMLWebpackPlugin({

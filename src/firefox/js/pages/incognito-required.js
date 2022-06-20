@@ -1,11 +1,11 @@
 import ProxyManager from 'Background/proxy'
-import { extractDecodedOriginUrl, select, translateDocument } from 'Background/utilities'
+import { extractDecodedOriginUrl, translateDocument } from 'Background/utilities'
 
 (async () => {
-  const closeTab = select({ id: 'closeTab' })
-  const backToPopup = select({ id: 'backToPopup' })
-  const howToGrantIncognitoAccess = select({ id: 'howToGrantIncognitoAccess' })
-  const grantPrivateBrowsingPermissionsButton = select({ id: 'grantPrivateBrowsingPermissionsButton' })
+  const closeTab = document.querySelector('#closeTab')
+  const backToPopup = document.querySelector('#backToPopup')
+  const howToGrantIncognitoAccess = document.querySelector('#howToGrantIncognitoAccess')
+  const grantPrivateBrowsingPermissionsButton = document.querySelector('#grantPrivateBrowsingPermissionsButton')
 
   const [tab] = await browser.tabs.query({
     active: true,

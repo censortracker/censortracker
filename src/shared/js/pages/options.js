@@ -51,16 +51,14 @@ import Browser from 'Background/webextension';
       privateBrowsingPermissionsRequiredMessage.hidden = false
 
       if (grantPrivateBrowsingPermissionsButton) {
-        grantPrivateBrowsingPermissionsButton.addEventListener(
-          'click',
-          async () => {
-            const proxySet = await ProxyManager.setProxy()
+        grantPrivateBrowsingPermissionsButton.addEventListener('click', async () => {
+          const proxySet = await ProxyManager.setProxy()
 
-            if (proxySet === true) {
-              await ProxyManager.grantIncognitoAccess()
-              privateBrowsingPermissionsRequiredMessage.hidden = true
-            }
-          },
+          if (proxySet === true) {
+            await ProxyManager.grantIncognitoAccess()
+            privateBrowsingPermissionsRequiredMessage.hidden = true
+          }
+        },
         )
       }
     }

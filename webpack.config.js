@@ -197,7 +197,7 @@ const webConfig = {
       filename: 'proxied-websites-editor.html',
       template: 'src/shared/pages/proxied-websites-editor.html',
       inject: true,
-      chunks: ['proxied-websites-editor'],
+      chunks: ['proxied-websites-editor', 'translator'],
       meta: contentSecurityPolicy,
     }),
     new HTMLWebpackPlugin({

@@ -17,7 +17,7 @@ a {
   color: #3b332b;
 }
 
-.page_options {
+.options-body {
   background-color: #FAFAFA;
 }
 .options-page-card {
@@ -51,7 +51,7 @@ a {
   margin-bottom: 0;
 }
 
-.page_options .main-page__image {
+.options-body .main-page__image {
   position: sticky;
   height: 200px;
   display: block;

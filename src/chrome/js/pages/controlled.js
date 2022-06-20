@@ -1,23 +1,24 @@
 import ProxyManager from 'Background/proxy'
-import { select, translateDocument } from 'Background/utilities'
+import { translateDocument } from 'Background/utilities'
+import Browser from 'Background/webextension'
 
 (async () => {
   translateDocument(document)
-  const backToPopup = select({ id: 'backToPopup' })
-  const disableOtherExtensionsButtons = select({ cls: 'disable-other-extensions__btn' })
-  const extensionNameElements = select({ cls: 'extension__name' })
-  const extensionsWhichControlsProxy = select({ id: 'extensionsWhichControlsProxy' })
-  const controlledByExtension = select({ id: 'controlledByOtherExtension' })
-  const controlledByExtensions = select({ id: 'controlledByOtherExtensions' })
-  const useProxyCheckbox = select({ id: 'useProxyCheckbox' })
+  const backToPopup = document.querySelector('#backToPopup')
+  const useProxyCheckbox = document.querySelector('#useProxyCheckbox')
+  const extensionNameElements = document.querySelector('.extension__name')
+  const controlledByExtension = document.querySelector('#controlledByOtherExtension')
+  const controlledByExtensions = document.querySelector('#controlledByOtherExtensions')
+  const disableOtherExtensionsButtons = document.querySelector('.disable-other-extensions')
+  const extensionsWhichControlsProxy = document.querySelector('#extensionsWhichControlsProxy')
 
   const isProxyControlledByOtherExtensions = await ProxyManager.controlledByOtherExtensions()
 
   if (isProxyControlledByOtherExtensions) {
-    const self = await chrome.management.getSelf()
-    const extensions = await chrome.management.getAll()
+    const self = await Browser.management.getSelf()
+    const installedExtensions = await Browser.management.getAll()
 
-    const extensionsWithProxyPermissions = extensions.filter(({ name, permissions }) => {
+    const extensionsWithProxyPermissions = installedExtensions.filter(({ name, permissions }) => {
       return permissions.includes('proxy') && name !== self.name
     })
 
@@ -47,7 +48,7 @@ import { select, translateDocument } from 'Background/utilities'
         const currentPage = window.location.pathname.split('/').pop()
 
         for (const { id } of extensionsWithProxyPermissions) {
-          await chrome.management.setEnabled(id, false)
+          await Browser.management.setEnabled(id, false)
         }
 
         if (currentPage.startsWith('controlled')) {

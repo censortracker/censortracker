@@ -44,7 +44,7 @@ import Browser from 'Background/webextension'
       await ProxyManager.setProxy()
 
       if (currentPage.startsWith('controlled')) {
-        window.location.href = 'popup.html'
+        window.close()
       }
 
       if (currentPage.startsWith('proxy-options')) {

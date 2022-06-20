@@ -10,9 +10,9 @@ import Browser from 'Background/webextension'
   const controlledByExtensions = document.querySelector('#controlledByOtherExtensions')
   const disableOtherExtensionsButtons = document.querySelectorAll('.disable-other-extensions')
   const extensionsWhichControlsProxy = document.querySelector('#extensionsWhichControlsProxy')
-  const isProxyControlledByOtherExtensions = await ProxyManager.controlledByOtherExtensions()
+  const proxyControlledByOtherExtensions = await ProxyManager.controlledByOtherExtensions()
 
-  if (isProxyControlledByOtherExtensions) {
+  if (proxyControlledByOtherExtensions) {
     const self = await Browser.management.getSelf()
     const installedExtensions = await Browser.management.getAll()
 

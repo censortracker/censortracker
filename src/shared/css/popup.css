@@ -36,8 +36,8 @@ a {
   right: 0;
   width: 16px;
   height: 16px;
-  mask: url(../images/settings/cog.svg) no-repeat center / contain;
-  -webkit-mask: url(../images/settings/cog.svg) no-repeat center / contain;
+  mask: url("../images/settings/cog.svg") no-repeat center / contain;
+  -webkit-mask: url("../images/settings/cog.svg") no-repeat center / contain;
   background-color: #3b332b;
 }
 
@@ -48,8 +48,8 @@ a {
   margin-right: 28px;
   width: 18px;
   height: 18px;
-  mask: url(../images/settings/donate.svg) no-repeat center / contain;
-  -webkit-mask: url(../images/settings/donate.svg) no-repeat center / contain;
+  mask: url("../images/settings/donate.svg") no-repeat center / contain;
+  -webkit-mask: url("../images/settings/donate.svg") no-repeat center / contain;
   background-color: #6C9E2C;
 }
 

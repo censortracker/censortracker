@@ -6,10 +6,9 @@ import Browser from 'Background/webextension'
   translateDocument(document)
   const backToPopup = document.querySelector('#backToPopup')
   const useProxyCheckbox = document.querySelector('#useProxyCheckbox')
-  const extensionNameElements = document.querySelector('.extension__name')
   const controlledByExtension = document.querySelector('#controlledByOtherExtension')
   const controlledByExtensions = document.querySelector('#controlledByOtherExtensions')
-  const disableOtherExtensionsButtons = document.querySelector('.disable-other-extensions')
+  const disableOtherExtensionsButtons = document.querySelectorAll('.disable-other-extensions')
   const extensionsWhichControlsProxy = document.querySelector('#extensionsWhichControlsProxy')
 
   const isProxyControlledByOtherExtensions = await ProxyManager.controlledByOtherExtensions()
@@ -22,7 +21,13 @@ import Browser from 'Background/webextension'
       return permissions.includes('proxy') && name !== self.name
     })
 
-    if (extensionsWithProxyPermissions.length > 1) {
+    if (extensionsWithProxyPermissions.length === 1) {
+      controlledByExtension.hidden = false
+
+      const [{ name }] = extensionsWithProxyPermissions
+
+      translateDocument(document, { extensionName: name })
+    } else if (extensionsWithProxyPermissions.length > 1) {
       for (const { name, shortName } of extensionsWithProxyPermissions) {
         const item = document.createElement('li')
 
@@ -31,21 +36,14 @@ import Browser from 'Background/webextension'
         extensionsWhichControlsProxy.append(item)
       }
       controlledByExtensions.hidden = false
-    } else if (extensionsWithProxyPermissions.length === 1) {
-      controlledByExtension.hidden = false
-
-      const [{ shortName, name }] = extensionsWithProxyPermissions
-
-      translateDocument(document, { extensionName: shortName })
-
-      Array.from(extensionNameElements).forEach((element) => {
-        element.innerText = shortName || name
-      })
     }
 
     Array.from(disableOtherExtensionsButtons).forEach((element) => {
+      console.log(element)
       element.addEventListener('click', async () => {
         const currentPage = window.location.pathname.split('/').pop()
+
+        console.log(`Clicked: ${currentPage}`)
 
         for (const { id } of extensionsWithProxyPermissions) {
           await Browser.management.setEnabled(id, false)

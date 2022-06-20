@@ -1,6 +1,6 @@
 import ProxyManager from 'Background/proxy'
 import * as storage from 'Background/storage'
-import { isPort, select, translateDocument } from 'Background/utilities'
+import { isPort, select } from 'Background/utilities'
 
 (async () => {
   const proxyingEnabled = await ProxyManager.isEnabled()
@@ -114,6 +114,4 @@ import { isPort, select, translateDocument } from 'Background/utilities'
   await ProxyManager.isEnabled().then((isEnabled) => {
     useProxyCheckbox.checked = isEnabled
   })
-
-  translateDocument(document)
 })()

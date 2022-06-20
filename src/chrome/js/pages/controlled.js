@@ -23,15 +23,15 @@ import Browser from 'Background/webextension'
     })
 
     if (extensionsWithProxyPermissions.length > 1) {
-      controlledByExtensions.hidden = false
-
-      let result = ''
-
       for (const { name, shortName } of extensionsWithProxyPermissions) {
-        result += `<li>${shortName || name}</li>`
+        const item = document.createElement('li')
+
+        item.textContent = `${shortName || name}`
+
+        extensionsWhichControlsProxy.append(item)
       }
-      extensionsWhichControlsProxy.innerHTML = result
-    } else {
+      controlledByExtensions.hidden = false
+    } else if (extensionsWithProxyPermissions.length === 1) {
       controlledByExtension.hidden = false
 
       const [{ shortName, name }] = extensionsWithProxyPermissions

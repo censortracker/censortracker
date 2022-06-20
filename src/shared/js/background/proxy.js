@@ -238,6 +238,21 @@ class ProxyManager {
 
     return levelOfControl === 'controlled_by_this_extension'
   }
+
+  async takeControl () {
+    const self = await Browser.management.getSelf()
+    const extensions = await Browser.management.getAll()
+
+    console.group('Taking control of proxy settings.')
+
+    for (const { id, name, permissions } of extensions) {
+      if (permissions.includes('proxy') && name !== self.name) {
+        console.warn(`Disabling ${name}...`)
+        await Browser.management.setEnabled(id, false)
+      }
+    }
+    console.groupEnd()
+  }
 }
 
 export default new ProxyManager()

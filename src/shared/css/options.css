@@ -40,7 +40,7 @@ a {
   opacity: 0.5;
 }
 
-.options-page-card .block__border {
+.options-page-card .options-hr {
   width: calc(100% + 60px);
   height: 1px;
   background-color: #F1F1F1;

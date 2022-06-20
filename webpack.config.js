@@ -87,6 +87,7 @@ const webConfig = {
     'ignore-editor': './src/shared/js/pages/ignore-editor.js',
     'proxied-websites-editor': './src/shared/js/pages/proxied-websites-editor.js',
     'translator': './src/shared/js/pages/translator.js',
+    'controlled': `./src/shared/js/pages/controlled.js`
   },
   output: {
     path: resolve(`dist/${BROWSER}/${OUTPUT_SUB_DIR}`),
@@ -222,6 +223,22 @@ const webConfig = {
       chunks: ['options', 'advanced-options', 'translator'],
       meta: contentSecurityPolicy,
     }),
+    new HTMLWebpackPlugin({
+      title: extensionName,
+      filename: 'proxy-options.html',
+      template: 'src/shared/pages/proxy-options.html',
+      inject: true,
+      chunks: ['proxy-options', 'controlled'],
+      meta: contentSecurityPolicy,
+    }),
+    new HTMLWebpackPlugin({
+      title: extensionName,
+      filename: 'controlled.html',
+      template: `src/shared/pages/controlled.html`,
+      inject: true,
+      chunks: ['controlled'],
+      meta: contentSecurityPolicy,
+    }),
     new MergeJsonWebpackPlugin({
       globOptions: {
         nosort: false,
@@ -256,14 +273,6 @@ if (isFirefox) {
   }))
   webConfig.plugins.push(new HTMLWebpackPlugin({
     title: extensionName,
-    filename: 'proxy-options.html',
-    template: 'src/shared/pages/proxy-options.html',
-    inject: true,
-    chunks: ['proxy-options'],
-    meta: contentSecurityPolicy,
-  }))
-  webConfig.plugins.push(new HTMLWebpackPlugin({
-    title: extensionName,
     filename: 'installed.html',
     template: 'src/firefox/pages/installed.html',
     inject: true,
@@ -281,23 +290,6 @@ if (isFirefox) {
 }
 
 if (isChromium) {
-  webConfig.entry.controlled = `./src/${BROWSER}/js/pages/controlled.js`
-  webConfig.plugins.push(new HTMLWebpackPlugin({
-    title: extensionName,
-    filename: 'proxy-options.html',
-    template: 'src/shared/pages/proxy-options.html',
-    inject: true,
-    chunks: ['proxy-options', 'controlled'],
-    meta: contentSecurityPolicy,
-  }))
-  webConfig.plugins.push(new HTMLWebpackPlugin({
-    title: extensionName,
-    filename: 'controlled.html',
-    template: `src/${BROWSER}/pages/controlled.html`,
-    inject: true,
-    chunks: ['controlled'],
-    meta: contentSecurityPolicy,
-  }))
   webConfig.plugins.push(new HTMLWebpackPlugin({
     title: extensionName,
     filename: 'installed.html',

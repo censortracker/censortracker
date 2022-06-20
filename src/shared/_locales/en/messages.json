@@ -69,7 +69,7 @@
     "message": "Changes will be automatically applied upon pressing <kbd>Enter</kbd> or <kbd>Control</kbd> + <kbd>S</kbd>."
   },
   "optionsTitle": {
-    "message": "Censor Tracker Settings"
+    "message": "Censor Tracker's Options"
   },
   "proxySettings": {
     "message": "Proxy Settings"
@@ -327,5 +327,14 @@
   },
   "optionsRegionDesc": {
     "message": "You can select a region to circumvent country-specific censorship."
+  },
+  "censorshipCircumventionBlockTitle": {
+    "message": "Censorship Circumvention"
+  },
+  "notificationsBlockTitle": {
+    "message": "Notifications"
+  },
+  "extraBlockTitle": {
+    "message": "Extra"
   }
 }

@@ -325,5 +325,14 @@
   },
   "emergencyConfigDesc": {
     "message": "Позволяет обходить блокировки даже в условиях полной блокировки всех наших IP-адресов и хостов. Не включайте этот режим, если в этом нет реальной необходимости."
+  },
+  "censorshipCircumventionBlockTitle": {
+    "message": "Обход Блокировок"
+  },
+  "notificationsBlockTitle": {
+    "message": "Уведомления"
+  },
+  "extraBlockTitle": {
+    "message": "Дополнительно"
   }
 }

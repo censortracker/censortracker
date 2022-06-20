@@ -17,6 +17,47 @@ a {
   color: #3b332b;
 }
 
+.page_options {
+  background-color: #FAFAFA;
+}
+.options-page-card {
+  padding: 20px 30px;
+  width: 100%;
+  background: #FFFFFF;
+  border-bottom: 1px solid #F1F1F1;
+  border-radius: 10px;
+  filter: drop-shadow(0px 2.01027px 11.8382px rgba(15, 13, 11, 0.055)) drop-shadow(0px 1.12694px 6.63642px rgba(15, 13, 11, 0.0655718)) drop-shadow(0px 0.598509px 3.52455px rgba(15, 13, 11, 0.079074));
+  margin-bottom: 20px;
+
+}
+.options-page-card:last-child {
+  margin-bottom: 0;
+}
+.options-page-card .block__title {
+  font-size: 16px;
+  line-height: 20px;
+  color: #3B332B;
+  opacity: 0.5;
+}
+
+.options-page-card .block__border {
+  width: calc(100% + 60px);
+  height: 1px;
+  background-color: #F1F1F1;
+  margin: 20px 0 20px -30px;
+}
+
+.options-page-card .checkbox__group:last-child {
+  margin-bottom: 0;
+}
+
+.page_options .main-page__image {
+  position: sticky;
+  height: 200px;
+  display: block;
+  top: 0;
+}
+
 .main-container {
   width: 100%;
   margin: 30px auto;

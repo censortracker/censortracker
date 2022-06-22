@@ -1,131 +1,48 @@
 {
-  "appName": {
-    "message": "Censor Tracker – Proxy for Privacy & Security"
+  "advancedOptionsDesc": {
+    "message": "You can manually update the local database of blocked websites, update the config of Censor Tracker and manage other advanced options."
   },
-  "appDesc": {
-    "message": "A censorship circumvention extension. Stay safe online with our proxy extension."
+  "advancedOptionsPageTitle": {
+    "message": "Advanced Options"
+  },
+  "advancedOptionsTitle": {
+    "message": "Advanced Options"
   },
   "appAuthor": {
     "message": "Roskomsvoboda"
   },
-  "disseminatorTitle": {
-    "message": "May transmit your data to government authorities."
+  "appDesc": {
+    "message": "A censorship circumvention extension. Stay safe online with our proxy extension."
   },
-  "notDisseminatorTitle": {
-    "message": "Information about data transmission was not found."
+  "appName": {
+    "message": "Censor Tracker – Proxy for Privacy & Security"
   },
-  "notDisseminatorDesc": {
-    "message": "Some websites may transmit your personal data to government authorities, but we have no such information about this website."
+  "areYouSureYouWantToResetSettingsDesc": {
+    "message": "Regenerate the PAC file for your current region and reset the settings."
   },
-  "disseminatorDesc": {
-    "message": "This service may transfer your personal data (including messages and all traffic) to government authorities."
-  },
-  "disseminatorCoopRefused": {
-    "message": "This service claimed that they do not transmit personal data to third parties."
-  },
-  "blockedTitle": {
-    "message": "Blocked"
-  },
-  "notBlockedTitle": {
-    "message": "Restrictions not found"
-  },
-  "blockedDesc": {
-    "message": "Access to the website is blocked, but Censor Tracker provides you access to it through a reliable proxy."
-  },
-  "notBlockedDesc": {
-    "message": "If access to the website is blocked, Censor Tracker will offer to load it through a reliable proxy."
-  },
-  "popupNewTabMessage": {
-    "message": "New Tab"
-  },
-  "controlledByOtherExtensionsMessage": {
-    "message": "Another extension controls the proxy. More details →"
-  },
-  "privateBrowsingPermissionsRequiredMessage": {
-    "message": "Proxy disabled. Private Window browsing permissions required →"
-  },
-  "whatThisMean": {
-    "message": "what does it mean"
-  },
-  "extensionDisabledTitle": {
-    "message": "Censor Tracker disabled"
-  },
-  "extensionEnabledTitle": {
-    "message": "enabled"
-  },
-  "okayButton": {
-    "message": "OK"
-  },
-  "readMoreButton": {
-    "message": "Read More →"
-  },
-  "ignoredSitesTitle": {
-    "message": "Ignored Websites"
-  },
-  "ignoredSitesDesc": {
-    "message": "Hosts that will always be ignored by Censor Tracker. If there are problems with opening the website, this list may help. Each host starts with a new line."
+  "areYouSureYouWantToResetSettingsTitle": {
+    "message": "Are you sure you want to reset all settings?"
   },
   "autosaveTip": {
     "message": "Changes will be automatically applied upon pressing <kbd>Enter</kbd>."
   },
-  "optionsTitle": {
-    "message": "Censor Tracker's Options"
+  "blockedDesc": {
+    "message": "Access to the website is blocked, but Censor Tracker provides you access to it through a reliable proxy."
   },
-  "proxySettings": {
-    "message": "Proxy Settings"
+  "blockedTitle": {
+    "message": "Blocked"
   },
-  "optionsProxyDesc": {
-    "message": "If a website is blocked, Censor Tracker will bypass restrictions to give you access to it. Disable this setting if you use another service to bypass censorship (for example, a VPN) to increase connection speed."
+  "cancel": {
+    "message": "Cancel"
   },
-  "privateBrowsingRequired": {
-    "message": "Allow the extension to work in private windows."
+  "censorshipCircumventionBlockTitle": {
+    "message": "Censorship Circumvention"
   },
-  "privateBrowsingRequiredDesc": {
-    "message": "So that we can open blocked websites for you through our proxy. There is no another way to make proxy work in Firefox."
+  "closeTab": {
+    "message": "Close tab"
   },
-  "howToGrantIncognitoAccess": {
-    "message": "How to do it"
-  },
-  "grantPrivateBrowsingPermissions": {
-    "message": "Done, enable proxy"
-  },
-  "optionsIgnoredWebsitesDesc": {
-    "message": "Addresses for which proxy will always be disabled. If there are problems with opening certain websites, this list may help."
-  },
-  "showNotificationsTitle": {
-    "message": "Show System Notifications"
-  },
-  "showNotificationsDesc": {
-    "message": "We will warn you when you visit a service that transmits your messages, personal data, and all traffic to third parties automatically."
-  },
-  "shareFeedback": {
-    "message": "Got issues or suggestions? Let us know!"
-  },
-  "useProxy": {
-    "message": "Use proxy"
-  },
-  "useOwnProxy": {
-    "message": "Use your own proxy"
-  },
-  "useProxyDesc": {
-    "message": "If a website is blocked, Censor Tracker will bypass restrictions to give you access to it. Disable this setting if you use another service to bypass censorship (for example, a VPN) to increase connection speed."
-  },
-  "useDefaultProxy": {
-    "message": "Proxy Censor Tracker"
-  },
-  "proxyHost": {
-    "message": "Proxy Server address"
-  },
-  "proxyPort": {
-    "message": "Port"
-  },
-  "controlledByOtherExtensionTitle": {
-    "message": "Another extension &laquo;<div class=\"extension__name\">$name$</div>&raquo; is controlling your proxy settings.",
-    "placeholders": {
-      "name": {
-        "content": "$1"
-      }
-    }
+  "confirmPopupResetSettings": {
+    "message": "Yes, I'm sure!"
   },
   "controlledByOtherExtensionDesc": {
     "message": "To use Censor Tracker, disable &laquo;<div class=\"extension__name\">$name$</div>&raquo; in browser settings.",
@@ -141,23 +58,19 @@
   "controlledByOtherExtensionsDesc": {
     "message": "To use Censor Tracker, disable the following extensions in browser settings:"
   },
-  "disableAll": {
-    "message": "Disable all"
+  "controlledByOtherExtensionsMessage": {
+    "message": "Another extension controls the proxy. More details →"
   },
-  "closeTab": {
-    "message": "Close tab"
+  "controlledByOtherExtensionTitle": {
+    "message": "Another extension &laquo;<div class=\"extension__name\">$name$</div>&raquo; is controlling your proxy settings.",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
   },
   "controlledPageDisableExtension": {
     "message": "Disable"
-  },
-  "installedGratitude": {
-    "message": "Thank you!"
-  },
-  "extensionInstalledDesc": {
-    "message": "Pin the Censor Tracker in the browser panel in two clicks to always be aware of websites that may transmit your personal data to third parties."
-  },
-  "thankYou": {
-    "message": "Thank you!"
   },
   "cooperationAcceptedMessage": {
     "message": "$hostname$ may share your data with third parties.",
@@ -167,32 +80,83 @@
       }
     }
   },
-  "turnOnExtensionToCheckWebsite": {
-    "message": "Enable to access blocked websites."
+  "countryAUTO": {
+    "message": "Auto"
   },
-  "howToGrantIncognitoAccessLink": {
-    "message": "https://support.mozilla.org/en-US/kb/extensions-private-browsing"
+  "countryAZ": {
+    "message": "Azerbaijan"
   },
-  "trafficShapingTitle": {
-    "message": "Traffic shaping"
+  "countryBY": {
+    "message": "Belarus"
   },
-  "trafficShapingDescription": {
-    "message": "Traffic shaping detected: connection to this website is throttled. Censor Tracker gives you access to it at a normal speed."
+  "countryRU": {
+    "message": "Russia"
   },
-  "installedAllowIncognitoTitle": {
-    "message": "Allow Censor Tracker to work in Private Mode."
+  "countryUA": {
+    "message": "Ukraine"
   },
-  "installedAllowIncognitoDescription": {
-    "message": "This permission is required for Censor Tracker to open blocked websites for you through a proxy. In Firefox, there is no other way."
+  "debugInfoTip": {
+    "message": "Click here to see debug information."
+  },
+  "disableAll": {
+    "message": "Disable all"
+  },
+  "disseminatorCoopRefused": {
+    "message": "This service claimed that they do not transmit personal data to third parties."
+  },
+  "disseminatorDesc": {
+    "message": "This service may transfer your personal data (including messages and all traffic) to government authorities."
+  },
+  "disseminatorTitle": {
+    "message": "May transmit your data to government authorities."
+  },
+  "done": {
+    "message": "Done!"
+  },
+  "doneDescription": {
+    "message": "Operation completed successfully."
+  },
+  "emergencyConfigDesc": {
+    "message": "Allows you to work even in conditions of complete blocking of all our IP addresses and hosts. Do not enable this mode unless there are availability issues."
+  },
+  "emergencyConfigTitle": {
+    "message": "Emergency Mode"
+  },
+  "extensionDisabledTitle": {
+    "message": "Censor Tracker disabled"
+  },
+  "extensionEnabledTitle": {
+    "message": "enabled"
+  },
+  "extensionInstalledDesc": {
+    "message": "Pin the Censor Tracker in the browser panel in two clicks to always be aware of websites that may transmit your personal data to third parties."
+  },
+  "extraBlockTitle": {
+    "message": "Extra"
+  },
+  "good": {
+    "message": "Okay"
+  },
+  "grantPrivateBrowsingPermissions": {
+    "message": "Done, enable proxy"
+  },
+  "howToGrantIncognitoAccess": {
+    "message": "How to do it"
   },
   "howToGrantIncognitoAccessBtnTitle": {
     "message": "How to grant the permission"
   },
-  "installedAllowIncognitoDescriptionThen": {
-    "message": "After that, open the Censor Tracker's popup and confirm the permissions are granted."
+  "howToGrantIncognitoAccessLink": {
+    "message": "https://support.mozilla.org/en-US/kb/extensions-private-browsing"
   },
-  "incognitoAccessRequiredTitle": {
-    "message": "The website is unavailable or blocked. Allow Censor Tracker incognito access to open such websites."
+  "ignoredSitesDesc": {
+    "message": "Hosts that will always be ignored by Censor Tracker. If there are problems with opening the website, this list may help. Each host starts with a new line."
+  },
+  "ignoredSitesTitle": {
+    "message": "Ignored Websites"
+  },
+  "ignoreEditorPageTitle": {
+    "message": "Ignored Websites"
   },
   "incognitoAccessRequiredDescription": {
     "message": "To open <b>$hostname$</b> through a proxy in Firefox, you need permission to work in Private Windows. Otherwise, our proxy will not work.",
@@ -202,157 +166,193 @@
       }
     }
   },
-  "optionsPageTitle": {
-    "message": "Options"
-  },
-  "installedPageTitle": {
-    "message": "Censor Tracker Installed"
+  "incognitoAccessRequiredTitle": {
+    "message": "The website is unavailable or blocked. Allow Censor Tracker incognito access to open such websites."
   },
   "incognitoRequiredPageTitle": {
     "message": "Private Browsing Permission Required"
   },
-  "ignoreEditorPageTitle": {
-    "message": "Ignored Websites"
+  "installedAllowIncognitoDescription": {
+    "message": "This permission is required for Censor Tracker to open blocked websites for you through a proxy. In Firefox, there is no other way."
   },
-  "advancedOptionsTitle": {
-    "message": "Advanced Options"
+  "installedAllowIncognitoDescriptionThen": {
+    "message": "After that, open the Censor Tracker's popup and confirm the permissions are granted."
   },
-  "advancedOptionsDesc": {
-    "message": "You can manually update the local database of blocked websites, update the config of Censor Tracker and manage other advanced options."
+  "installedAllowIncognitoTitle": {
+    "message": "Allow Censor Tracker to work in Private Mode."
   },
-  "optionsConfirmResetMessage": {
-    "message": "All your settings will be removed. Are you sure you want to do this?"
+  "installedGratitude": {
+    "message": "Thank you!"
   },
-  "advancedOptionsPageTitle": {
-    "message": "Advanced Options"
-  },
-  "proxyDisabledPageTitle": {
-    "message": "Proxying Disabled"
-  },
-  "proxiedWebsitesEditorPageTitle": {
-    "message": "Proxied Websites"
-  },
-  "proxiedWebsitesEditorPageDesc": {
-    "message": "You can manually add domains that will be proxied by the extension."
-  },
-  "optionsProxiedWebsitesEditorTitle": {
-    "message": "Proxied Websites"
-  },
-  "optionsProxiedWebsitesEditorDesc": {
-    "message": "You can manually manage the list of domains that will be proxied by the extension."
-  },
-  "optionsProxyStatusTurnedOn": {
-    "message": "Turned on"
-  },
-  "optionsProxyStatusTurnedOff": {
-    "message": "Turned off"
-  },
-  "updateLocalRegistryTitle": {
-    "message": "Force update the extension's local database."
-  },
-  "updateLocalRegistryDesc": {
-    "message": "Update the local database of the blocked websites for your region."
-  },
-  "resetToDefaultTitle": {
-    "message": "Reset to default"
-  },
-  "resetToDefaultDesc": {
-    "message": "Reset all the settings to default and generate PAC file for your current region. This option is your choice if there are blocked websites availability problems."
-  },
-  "areYouSureYouWantToResetSettingsTitle": {
-    "message": "Are you sure you want to reset all settings?"
-  },
-  "areYouSureYouWantToResetSettingsDesc": {
-    "message": "Regenerate the PAC file for your current region and reset the settings."
-  },
-  "confirmPopupResetSettings": {
-    "message": "Yes, I'm sure!"
-  },
-  "cancel": {
-    "message": "Cancel"
-  },
-  "updateTakesTime": {
-    "message": "Database update will take some time."
-  },
-  "youCanCloseThisWindow": {
-    "message": "You can close this window"
-  },
-  "good": {
-    "message": "Okay"
-  },
-  "proxiedWebsitesTitle": {
-    "message": "Proxied Websites"
+  "installedPageTitle": {
+    "message": "Censor Tracker Installed"
   },
   "localRegistryUpdated": {
     "message": "Local database updated!"
   },
-  "done": {
-    "message": "Done!"
+  "notBlockedDesc": {
+    "message": "If access to the website is blocked, Censor Tracker will offer to load it through a reliable proxy."
   },
-  "doneDescription": {
-    "message": "Operation completed successfully."
+  "notBlockedTitle": {
+    "message": "Restrictions not found"
   },
-  "popupProxyStatusOk": {
-    "message": "proxy is working fine"
+  "notDisseminatorDesc": {
+    "message": "Some websites may transmit your personal data to government authorities, but we have no such information about this website."
   },
-  "popupProxyStatusError": {
-    "message": "proxy is intermittent"
-  },
-  "proxyOptionsStatusTitle": {
-    "message": "The proxy is working intermittently right now."
-  },
-  "proxyOptionsStatusDesc": {
-    "message": "You can disable proxying or switch to your own proxy."
-  },
-  "popupProxyDisabled": {
-    "message": "proxying is disabled"
-  },
-  "debugInfoTip": {
-    "message": "Click here to see debug information."
-  },
-  "parentalControlTitle": {
-    "message": "«Parental» Control"
-  },
-  "parentalControlDesc": {
-    "message": "Protect your parents from propaganda."
-  },
-  "emergencyConfigTitle": {
-    "message": "Emergency Mode"
-  },
-  "emergencyConfigDesc": {
-    "message": "Allows you to work even in conditions of complete blocking of all our IP addresses and hosts. Do not enable this mode unless there are availability issues."
-  },
-  "optionsRegionTitle": {
-    "message": "Region"
-  },
-  "optionsRegionDesc": {
-    "message": "You can select a region to circumvent country-specific censorship. Selecting particular country also disables auto-detection of your country (based on GeoIP)  which is helpful if you're using software which changes your real IP (for instance VPN)."
-  },
-  "censorshipCircumventionBlockTitle": {
-    "message": "Censorship Circumvention"
+  "notDisseminatorTitle": {
+    "message": "Information about data transmission was not found."
   },
   "notificationsBlockTitle": {
     "message": "Notifications"
   },
-  "extraBlockTitle": {
-    "message": "Extra"
+  "okayButton": {
+    "message": "OK"
   },
-  "countryRU": {
-    "message": "Russia"
+  "optionsConfirmResetMessage": {
+    "message": "All your settings will be removed. Are you sure you want to do this?"
   },
-  "countryBY": {
-    "message": "Belarus"
+  "optionsIgnoredWebsitesDesc": {
+    "message": "Addresses for which proxy will always be disabled. If there are problems with opening certain websites, this list may help."
   },
-  "countryUA": {
-    "message": "Ukraine"
+  "optionsPageTitle": {
+    "message": "Options"
   },
-  "countryAZ": {
-    "message": "Azerbaijan"
+  "optionsProxiedWebsitesEditorDesc": {
+    "message": "You can manually manage the list of domains that will be proxied by the extension."
+  },
+  "optionsProxiedWebsitesEditorTitle": {
+    "message": "Proxied Websites"
+  },
+  "optionsProxyDesc": {
+    "message": "If a website is blocked, Censor Tracker will bypass restrictions to give you access to it. Disable this setting if you use another service to bypass censorship (for example, a VPN) to increase connection speed."
+  },
+  "optionsProxyStatusTurnedOff": {
+    "message": "Turned off"
+  },
+  "optionsProxyStatusTurnedOn": {
+    "message": "Turned on"
+  },
+  "optionsRegionDesc": {
+    "message": "You can select a region to circumvent country-specific censorship. Selecting particular country also disables auto-detection of your country (based on GeoIP)  which is helpful if you're using software which changes your real IP (for instance VPN)."
+  },
+  "optionsRegionTitle": {
+    "message": "Region"
+  },
+  "optionsTitle": {
+    "message": "Censor Tracker's Options"
+  },
+  "parentalControlDesc": {
+    "message": "Protect your parents from propaganda."
+  },
+  "parentalControlTitle": {
+    "message": "«Parental» Control"
+  },
+  "popupNewTabMessage": {
+    "message": "New Tab"
+  },
+  "popupProxyDisabled": {
+    "message": "proxying is disabled"
+  },
+  "popupProxyStatusError": {
+    "message": "proxy is intermittent"
+  },
+  "popupProxyStatusOk": {
+    "message": "proxy is working fine"
+  },
+  "privateBrowsingPermissionsRequiredMessage": {
+    "message": "Proxy disabled. Private Window browsing permissions required →"
+  },
+  "privateBrowsingRequired": {
+    "message": "Allow the extension to work in private windows."
+  },
+  "privateBrowsingRequiredDesc": {
+    "message": "So that we can open blocked websites for you through our proxy. There is no another way to make proxy work in Firefox."
+  },
+  "proxiedWebsitesEditorPageDesc": {
+    "message": "You can manually add domains that will be proxied by the extension."
+  },
+  "proxiedWebsitesEditorPageTitle": {
+    "message": "Proxied Websites"
+  },
+  "proxiedWebsitesTitle": {
+    "message": "Proxied Websites"
+  },
+  "proxyDisabledPageTitle": {
+    "message": "Proxying Disabled"
+  },
+  "proxyHost": {
+    "message": "Proxy Server address"
+  },
+  "proxyOptionsStatusDesc": {
+    "message": "You can disable proxying or switch to your own proxy."
+  },
+  "proxyOptionsStatusTitle": {
+    "message": "The proxy is working intermittently right now."
+  },
+  "proxyPort": {
+    "message": "Port"
+  },
+  "proxySettings": {
+    "message": "Proxy Settings"
+  },
+  "readMoreButton": {
+    "message": "Read More →"
+  },
+  "resetToDefaultDesc": {
+    "message": "Reset all the settings to default and generate PAC file for your current region. This option is your choice if there are blocked websites availability problems."
+  },
+  "resetToDefaultTitle": {
+    "message": "Reset to default"
   },
   "selectRegionTitle": {
     "message": "Region to bypass country-specific censorship"
   },
-  "countryAUTO": {
-    "message": "Auto"
+  "shareFeedback": {
+    "message": "Got issues or suggestions? Let us know!"
+  },
+  "showNotificationsDesc": {
+    "message": "We will warn you when you visit a service that transmits your messages, personal data, and all traffic to third parties automatically."
+  },
+  "showNotificationsTitle": {
+    "message": "Show System Notifications"
+  },
+  "thankYou": {
+    "message": "Thank you!"
+  },
+  "trafficShapingDescription": {
+    "message": "Traffic shaping detected: connection to this website is throttled. Censor Tracker gives you access to it at a normal speed."
+  },
+  "trafficShapingTitle": {
+    "message": "Traffic shaping"
+  },
+  "turnOnExtensionToCheckWebsite": {
+    "message": "Enable to access blocked websites."
+  },
+  "updateLocalRegistryDesc": {
+    "message": "Update the local database of the blocked websites for your region."
+  },
+  "updateLocalRegistryTitle": {
+    "message": "Force update the extension's local database."
+  },
+  "updateTakesTime": {
+    "message": "Database update will take some time."
+  },
+  "useDefaultProxy": {
+    "message": "Proxy Censor Tracker"
+  },
+  "useOwnProxy": {
+    "message": "Use your own proxy"
+  },
+  "useProxy": {
+    "message": "Use proxy"
+  },
+  "useProxyDesc": {
+    "message": "If a website is blocked, Censor Tracker will bypass restrictions to give you access to it. Disable this setting if you use another service to bypass censorship (for example, a VPN) to increase connection speed."
+  },
+  "whatThisMean": {
+    "message": "what does it mean"
+  },
+  "youCanCloseThisWindow": {
+    "message": "You can close this window"
   }
 }

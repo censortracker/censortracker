@@ -33,7 +33,10 @@ import * as storage from 'Background/storage'
         currentOption.textContent = countryName
         currentOption.dataset.i18nKey = `country${countryCode}`
 
-        await storage.set({ currentRegionName: countryName })
+        await storage.set({
+          currentRegion: countryCode,
+          currentRegionName: countryName,
+        })
 
         select.classList.remove('show-countries')
       }

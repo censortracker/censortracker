@@ -326,7 +326,7 @@
     "message": "Region"
   },
   "optionsRegionDesc": {
-    "message": "You can select a region to circumvent country-specific censorship."
+    "message": "You can select a region to circumvent country-specific censorship. If your region is not present in the list, it means that we don't have information about censored websites in your country."
   },
   "censorshipCircumventionBlockTitle": {
     "message": "Censorship Circumvention"

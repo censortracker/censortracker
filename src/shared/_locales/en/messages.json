@@ -66,7 +66,7 @@
     "message": "Hosts that will always be ignored by Censor Tracker. If there are problems with opening the website, this list may help. Each host starts with a new line."
   },
   "autosaveTip": {
-    "message": "Changes will be automatically applied upon pressing <kbd>Enter</kbd> or <kbd>Control</kbd> + <kbd>S</kbd>."
+    "message": "Changes will be automatically applied upon pressing <kbd>Enter</kbd>."
   },
   "optionsTitle": {
     "message": "Censor Tracker's Options"

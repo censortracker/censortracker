@@ -326,7 +326,7 @@
     "message": "Region"
   },
   "optionsRegionDesc": {
-    "message": "You can select a region to circumvent country-specific censorship. If your region is not present in the list, it means that we don't have information about censored websites in your country."
+    "message": "You can select a region to circumvent country-specific censorship. Selecting particular country also disables auto-detection of your country (based on GeoIP)  which is helpful if you're using software which changes your real IP (for instance VPN)."
   },
   "censorshipCircumventionBlockTitle": {
     "message": "Censorship Circumvention"
@@ -354,8 +354,5 @@
   },
   "countryAUTO": {
     "message": "Auto"
-  },
-  "regionOptionsPageTitle": {
-    "message": "Region"
   }
 }

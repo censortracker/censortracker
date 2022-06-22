@@ -1,40 +1,41 @@
+import * as storage from 'Background/storage'
+
 (async () => {
   const select = document.querySelector('.select')
-  const dropdown = document.getElementById('select-toggle')
-  const selectedOption = document.querySelector('.option-selected')
   const options = document.querySelectorAll('.select-option')
-  const currentOption = document.querySelector('[data-select="toggle"]')
+  const currentOption = document.querySelector('#select-toggle')
 
-  dropdown.addEventListener('click', (event) => {
-    select.classList.toggle('select-show')
-  })
+  const { currentRegionName } = await storage.get(['currentRegionName'])
+
+  if (currentRegionName) {
+    currentOption.textContent = currentRegionName
+  }
 
   document.addEventListener('click', (event) => {
+    if (event.target.id === 'select-toggle') {
+      select.classList.toggle('show-countries')
+    }
+
     if (!event.target.closest('.select')) {
-      for (const element of document.querySelectorAll('.select-show')) {
-        element.classList.remove('select-show')
+      for (const element of document.querySelectorAll('.show-countries')) {
+        element.classList.remove('show-countries')
       }
     }
   })
 
   for (const option of options) {
-    option.addEventListener('click', (event) => {
-      if (!option.classList.contains('option-selected')) {
-        options.forEach((item) => {
-          item.classList.remove('option-selected')
-        })
+    option.addEventListener('click', async (event) => {
+      if (!event.target.classList.contains('option-selected')) {
+        const countryCode = event.target.dataset.value
+        const countryName = event.target.textContent
 
-        if (selectedOption) {
-          selectedOption.classList.remove('option-selected')
-        }
+        currentOption.value = countryCode
+        currentOption.textContent = countryName
+        currentOption.dataset.i18nKey = `country${countryCode}`
 
-        const thisOption = option.closest('.select-option')
+        await storage.set({ currentRegionName: countryName })
 
-        thisOption.classList.add('option-selected')
-        currentOption.value = option.dataset.value
-        currentOption.textContent = option.textContent
-        currentOption.dataset.index = option.dataset.index
-        select.classList.remove('select-show')
+        select.classList.remove('show-countries')
       }
     })
   }

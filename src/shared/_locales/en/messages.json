@@ -336,5 +336,26 @@
   },
   "extraBlockTitle": {
     "message": "Extra"
+  },
+  "countryRU": {
+    "message": "Russia"
+  },
+  "countryBY": {
+    "message": "Belarus"
+  },
+  "countryUA": {
+    "message": "Ukraine"
+  },
+  "countryAZ": {
+    "message": "Azerbaijan"
+  },
+  "selectRegionTitle": {
+    "message": "Region to bypass country-specific censorship"
+  },
+  "countryAUTO": {
+    "message": "Auto"
+  },
+  "regionOptionsPageTitle": {
+    "message": "Region"
   }
 }

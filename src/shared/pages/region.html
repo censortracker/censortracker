@@ -3,9 +3,7 @@
 
 <head>
   <meta charset="UTF-8"/>
-  <title data-i18n-key="regionOptionsPageTitle">
-    <%= htmlWebpackPlugin.options.title %>
-  </title>
+  <title data-i18n-key="regionOptionsPageTitle"></title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <link rel="stylesheet" href="css/options.css"/>
 </head>
@@ -30,31 +28,20 @@
           </svg>
         </a>
       </div>
-      <div class="main-page__title" id="options-region-title" data-i18n-key="optionsRegionTitle"></div>
+      <div class="main-page__title" data-i18n-key="optionsRegionTitle" id="options-region-title" ></div>
       <div class="main-page__about" data-i18n-key="optionsRegionDesc"></div>
 
       <div id="select-region">
-        <div class="title">Регион, для обхода специфичесих блокировок</div>
+        <div class="title" data-i18n-key="selectRegionTitle"></div>
         <div class="select">
-          <button type="button"
-                  class="select-toggle"
-                  name="region"
-                  value="auto"
-                  data-select="toggle"
-                  data-index="0"
-                  id="select-toggle">Auto</button>
+          <button type="button" class="select-toggle" data-i18n-key="countryAUTO" id="select-toggle"></button>
           <div class="select-dropdown">
-            <ul class="select-options" id="availableCountries">
-              <li class="select-option option-selected" data-select="option" data-value="AUTO" data-index="0">
-                Auto
-              </li>
-              <li class="select-option" data-select="option" data-value="RU" data-index="1">Russia</li>
-              <li class="select-option" data-select="option" data-value="BY" data-index="2">Belarus</li>
-              <li class="select-option" data-select="option" data-value="TR" data-index="3">Turkey</li>
-              <li class="select-option" data-select="option" data-value="DE" data-index="4">Germany</li>
-              <li class="select-option" data-select="option" data-value="IR" data-index="5">Iran</li>
-              <li class="select-option" data-select="option" data-value="CH" data-index="6">China</li>
-              <li class="select-option" data-select="option" data-value="KZ" data-index="7">Kazakhstan</li>
+            <ul class="select-options">
+              <li class="select-option" data-value="AUTO" data-i18n-key="countryAUTO"></li>
+              <li class="select-option" data-value="RU" data-i18n-key="countryRU"></li>
+              <li class="select-option" data-value="BY" data-i18n-key="countryBY"></li>
+              <li class="select-option" data-value="UA" data-i18n-key="countryUA"></li>
+              <li class="select-option" data-value="AZ" data-i18n-key="countryAZ"></li>
             </ul>
           </div>
         </div>

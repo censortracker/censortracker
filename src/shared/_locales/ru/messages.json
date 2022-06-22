@@ -334,5 +334,26 @@
   },
   "extraBlockTitle": {
     "message": "Дополнительно"
+  },
+  "countryRU": {
+    "message": "Россия"
+  },
+  "countryBY": {
+    "message": "Беларусь"
+  },
+  "countryUA": {
+    "message": "Украина"
+  },
+  "countryAZ": {
+    "message": "Азербайджан"
+  },
+  "selectRegionTitle": {
+    "message": "Регион, для обхода специфичесих блокировок"
+  },
+  "countryAUTO": {
+    "message": "Определить автоматически"
+  },
+  "regionOptionsPageTitle": {
+    "message": "Регион"
   }
 }

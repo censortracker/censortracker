@@ -1,3 +1,4 @@
+import Registry from 'Background/registry'
 import * as storage from 'Background/storage'
 
 (async () => {
@@ -5,7 +6,7 @@ import * as storage from 'Background/storage'
   const options = document.querySelectorAll('.select-option')
   const currentOption = document.querySelector('#select-toggle')
 
-  const { currentRegionName } = await storage.get(['currentRegionName'])
+  const { currentRegionName } = await storage.get({ currentRegionName: '' })
 
   if (currentRegionName) {
     currentOption.textContent = currentRegionName
@@ -25,21 +26,24 @@ import * as storage from 'Background/storage'
 
   for (const option of options) {
     option.addEventListener('click', async (event) => {
-      if (!event.target.classList.contains('option-selected')) {
-        const countryCode = event.target.dataset.value
-        const countryName = event.target.textContent
+      select.classList.remove('show-countries')
 
-        currentOption.value = countryCode
-        currentOption.textContent = countryName
-        currentOption.dataset.i18nKey = `country${countryCode}`
+      const countryCode = event.target.dataset.value
+      const countryName = event.target.textContent
+      const countryAutoDetectionEnabled = countryCode.toUpperCase().includes('AUTO')
 
-        await storage.set({
-          currentRegion: countryCode,
-          currentRegionName: countryName,
-        })
+      currentOption.value = countryCode
+      currentOption.textContent = countryName
+      currentOption.dataset.i18nKey = `country${countryCode}`
 
-        select.classList.remove('show-countries')
-      }
+      await storage.set({
+        currentRegionName: countryName,
+        currentRegionCode: countryAutoDetectionEnabled ? '' : countryCode.toLowerCase(),
+      })
+
+      await Registry.sync()
+
+      console.warn(`Region changed to ${countryName}`)
     })
   }
 })()

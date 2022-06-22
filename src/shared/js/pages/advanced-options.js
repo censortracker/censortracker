@@ -137,7 +137,7 @@ import { choice, select } from 'Background/utilities'
 
   showDebugInfo.addEventListener('click', async (event) => {
     const debugInfoJSON = document.getElementById('debugInfoJSON')
-    const currentConfig = await Registry.getConfig({ debug: true })
+    const currentConfig = await Registry.getCurrentConfig()
 
     currentConfig.currentProxyURI = await ProxyManager.getProxyServerURI()
     debugInfoJSON.innerText = JSON.stringify(currentConfig)

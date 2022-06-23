@@ -1,6 +1,6 @@
 {
   "name": "censortracker",
-  "version": "6.0.0.0",
+  "version": "7.0.0",
   "description": "|",
   "author": "Roskomsvoboda",
   "license": "MIT",
@@ -64,7 +64,7 @@
     "terser-webpack-plugin": "^5.3.1",
     "ts-loader": "^9.3.0",
     "typescript": "^4.6.4",
-    "web-ext": "^6.8.0",
+    "web-ext": "^7.1.0",
     "webpack": "^5.72.0",
     "webpack-cli": "^4.9.2"
   },

@@ -1,3 +1,4 @@
+import ProxyManager from 'Background/proxy'
 import Registry from 'Background/registry'
 import * as storage from 'Background/storage'
 
@@ -6,11 +7,11 @@ import * as storage from 'Background/storage'
   const options = document.querySelectorAll('.select-option')
   const currentOption = document.querySelector('#select-toggle')
 
-  const { currentRegionName } = await storage.get({ currentRegionName: '' })
-
-  if (currentRegionName) {
-    currentOption.textContent = currentRegionName
-  }
+  storage.get('currentRegionName').then(({ currentRegionName = '' }) => {
+    if (currentRegionName) {
+      currentOption.textContent = currentRegionName
+    }
+  })
 
   document.addEventListener('click', (event) => {
     if (event.target.id === 'select-toggle') {
@@ -40,8 +41,12 @@ import * as storage from 'Background/storage'
         currentRegionName: countryName,
         currentRegionCode: countryAutoDetectionEnabled ? '' : countryCode.toLowerCase(),
       })
-
       await Registry.sync()
+      const proxyingEnabled = await ProxyManager.isEnabled()
+
+      if (proxyingEnabled) {
+        await ProxyManager.setProxy()
+      }
 
       console.warn(`Region changed to ${countryName}`)
     })

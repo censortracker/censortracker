@@ -2,6 +2,7 @@
 - Added donate button
 - Improved performance of pages
 - Added support of emergency endpoints
+- Added support of regions
 - Improved performance of tabs
 - Redesigned `Options` page
 - Fixed typos in locales

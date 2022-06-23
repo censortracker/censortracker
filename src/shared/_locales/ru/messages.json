@@ -1,131 +1,48 @@
 {
-  "appName": {
-    "message": "Censor Tracker — Обход блокировок"
+  "advancedOptionsDesc": {
+    "message": "Вы можете вручную обновить локальную базу данных заблокированных веб-сайтов, обновить конфигурацию Censor Tracker и управлять другими расширенными параметрами."
   },
-  "appDesc": {
-    "message": "Расширение для обхода блокировок."
+  "advancedOptionsPageTitle": {
+    "message": "Продвинутые Настройки"
+  },
+  "advancedOptionsTitle": {
+    "message": "Продвинутые Настройки"
   },
   "appAuthor": {
     "message": "Роскомсвобода"
   },
-  "disseminatorTitle": {
-    "message": "Является организатором распространения информации"
+  "appDesc": {
+    "message": "Расширение для обхода блокировок."
   },
-  "notDisseminatorTitle": {
-    "message": "Не является организатором распространения информации"
+  "appName": {
+    "message": "Censor Tracker — Обход блокировок"
   },
-  "notDisseminatorDesc": {
-    "message": "Сервисы из реестра ОРИ могут передавать ваши личные данные, в т.ч. сообщения и весь трафик, государственным органам в автоматическом режиме. Этот сервис не находится в реестре ОРИ."
+  "areYouSureYouWantToResetSettingsDesc": {
+    "message": "Переустановить конфиг и обновить локальную базу данных"
   },
-  "disseminatorDesc": {
-    "message": "Сервис может передавать ваши личные данные, в том числе сообщения и весь трафик российским государственным органам в автоматическом режиме."
+  "areYouSureYouWantToResetSettingsTitle": {
+    "message": "Вы уверены, что хотите сбросить все настройки?"
   },
-  "disseminatorCoopRefused": {
-    "message": "Сервис заявил, что они не передают трафик российским государственным органам в автоматическом режиме."
-  },
-  "blockedTitle": {
-    "message": "Доступ запрещён"
-  },
-  "notBlockedTitle": {
-    "message": "Ограничений нет"
+  "autosaveTip": {
+    "message": "Изменения автоматически сохраняются при нажатии <kbd>Enter</kbd>."
   },
   "blockedDesc": {
     "message": "Доступ к сайту запрещён, но Censor Tracker даёт к нему доступ через надёжный прокси."
   },
-  "notBlockedDesc": {
-    "message": "Если доступ к сайту запретят, то Censor Tracker предложит открыть сайт через надёжный прокси."
+  "blockedTitle": {
+    "message": "Доступ запрещён"
   },
-  "popupNewTabMessage": {
-    "message": "Новая вкладка"
+  "cancel": {
+    "message": "Отмена"
   },
-  "controlledByOtherExtensionsMessage": {
-    "message": "Другое расширение контролирует прокси. Подробнее →"
+  "censorshipCircumventionBlockTitle": {
+    "message": "Обход Блокировок"
   },
-  "privateBrowsingPermissionsRequiredMessage": {
-    "message": "Прокси отключён. Требуется разрешение на работу в приватных окнах →"
+  "closeTab": {
+    "message": "Закрыть вкладку"
   },
-  "whatThisMean": {
-    "message": "что это значит"
-  },
-  "extensionDisabledTitle": {
-    "message": "Censor Tracker выключен"
-  },
-  "extensionEnabledTitle": {
-    "message": "включен"
-  },
-  "okayButton": {
-    "message": "Ясно"
-  },
-  "readMoreButton": {
-    "message": "Подробнее →"
-  },
-  "ignoredSitesTitle": {
-    "message": "Игнорируемые сайты"
-  },
-  "ignoredSitesDesc": {
-    "message": "Адреса, которые всегда будут игнорироваться Censor Tracker. Может помочь, если есть проблемы с открытием сайта. Каждый адрес с новой строки."
-  },
-  "autosaveTip": {
-    "message": "Изменения автоматически сохраняются при нажатии <kbd>Enter</kbd> или <kbd>Control</kbd> + <kbd>S</kbd>."
-  },
-  "optionsTitle": {
-    "message": "Настройки расширения Censor Tracker"
-  },
-  "proxySettings": {
-    "message": "Настройки прокси"
-  },
-  "optionsProxyDesc": {
-    "message": "Если сайт заблокирован, то Censor Tracker предоставит к нему доступ. Отключите эту настройку, если вы пользуетесь другим сервисом для обхода блокировок (например, VPN), чтобы увеличить скорость соединения."
-  },
-  "privateBrowsingRequired": {
-    "message": "Разрешите работу расширения в приватных окнах"
-  },
-  "privateBrowsingRequiredDesc": {
-    "message": "Чтобы мы могли открывать для вас заблокированные сайты через прокси. В Firefox без этого никак."
-  },
-  "howToGrantIncognitoAccess": {
-    "message": "Как это сделать"
-  },
-  "grantPrivateBrowsingPermissions": {
-    "message": "Я разрешил, включите прокси"
-  },
-  "optionsIgnoredWebsitesDesc": {
-    "message": "Адреса, для которых прокси всегда будет отключён. Может помочь, если есть проблемы с открытием сайта."
-  },
-  "showNotificationsTitle": {
-    "message": "Показывать системные уведомления"
-  },
-  "showNotificationsDesc": {
-    "message": "Предупредим, когда какой-то сайт передаёт ваши сообщения, личные данные и весь трафик третьим лицам в автоматическом режиме."
-  },
-  "shareFeedback": {
-    "message": "Есть вопросы или предложения? Дайте нам знать!"
-  },
-  "useProxy": {
-    "message": "Использовать прокси"
-  },
-  "useOwnProxy": {
-    "message": "Свой прокси"
-  },
-  "useProxyDesc": {
-    "message": "Если сайт заблокирован, то Censor Tracker предоставит к нему доступ. Отключите эту настройку, если вы пользуетесь другим сервисом для обхода блокировок (например, VPN), чтобы увеличить скорость соединения."
-  },
-  "useDefaultProxy": {
-    "message": "Прокси Censor Tracker"
-  },
-  "proxyHost": {
-    "message": "Адрес прокси-сервера"
-  },
-  "proxyPort": {
-    "message": "Порт"
-  },
-  "controlledByOtherExtensionTitle": {
-    "message": "Сейчас другое расширение &laquo;<div class=\"extension__name\">$name$</div>&raquo; контролирует ваши настройки прокси",
-    "placeholders": {
-      "name": {
-        "content": "$1"
-      }
-    }
+  "confirmPopupResetSettings": {
+    "message": "Да, сбросить"
   },
   "controlledByOtherExtensionDesc": {
     "message": "Для нормальной работы Censor Tracker, отключите &laquo;<div class=\"extension__name\">$NAME$</div>&raquo; в настройках браузера.",
@@ -141,26 +58,19 @@
   "controlledByOtherExtensionsDesc": {
     "message": "Для нормальной работы Censor Tracker, отключите следующие расширения в настройках браузера:"
   },
-  "disableAll": {
-    "message": "Отключить все"
+  "controlledByOtherExtensionsMessage": {
+    "message": "Другое расширение контролирует прокси. Подробнее →"
   },
-  "closeTab": {
-    "message": "Закрыть вкладку"
+  "controlledByOtherExtensionTitle": {
+    "message": "Сейчас другое расширение &laquo;<div class=\"extension__name\">$name$</div>&raquo; контролирует ваши настройки прокси",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
   },
   "controlledPageDisableExtension": {
     "message": "Отключить"
-  },
-  "installedGratitude": {
-    "message": "Спасибо!"
-  },
-  "installedDesc": {
-    "message": "Закрепите расширение в панели браузера в два клика, чтобы всегда быть в курсе, какие сайты могут передавать ваши сообщения, личные данные и весь трафик третьим лицам."
-  },
-  "extensionInstalledDesc": {
-    "message": "Закрепите расширение в панели браузера в два клика, чтобы всегда быть в курсе, какие сайты могут передавать ваши сообщения, личные данные и весь трафик третьим лицам."
-  },
-  "thankYou": {
-    "message": "Спасибо!"
   },
   "cooperationAcceptedMessage": {
     "message": "$hostname$ может передавать информацию третьим лицам.",
@@ -170,33 +80,83 @@
       }
     }
   },
-  "turnOnExtensionToCheckWebsite": {
-    "message": "Включите, чтобы получить доступ заблокированным сайтам."
+  "countryAUTO": {
+    "message": "Определить автоматически"
   },
-  "howToGrantIncognitoAccessLink": {
-    "message": "https://support.mozilla.org/ru/kb/dopolneniya-v-rezhime-privatnogo-prosmotra"
+  "countryAZ": {
+    "message": "Азербайджан"
   },
-  "trafficShapingTitle": {
-    "message": "Шейпинг"
+  "countryBY": {
+    "message": "Беларусь"
   },
-  "trafficShapingDescription": {
-    "message": "Скорость соединения с сайтом замедляется государством. Censor Tracker даёт доступ к сайту с обычной скоростью."
+  "countryRU": {
+    "message": "Россия"
   },
-
-  "installedAllowIncognitoTitle": {
-    "message": "Разрешите работу Censor Tracker в приватных окнах"
+  "countryUA": {
+    "message": "Украина"
   },
-  "installedAllowIncognitoDescription": {
-    "message": "Это разрешение требуется, чтобы мы могли открывать для вас заблокированные сайты через прокси. В Firefox без этого никак."
+  "debugInfoTip": {
+    "message": "Кликните тут чтобы увидеть отладочную информацию."
+  },
+  "disableAll": {
+    "message": "Отключить все"
+  },
+  "disseminatorCoopRefused": {
+    "message": "Сервис заявил, что они не передают трафик российским государственным органам в автоматическом режиме."
+  },
+  "disseminatorDesc": {
+    "message": "Сервис может передавать ваши личные данные, в том числе сообщения и весь трафик российским государственным органам в автоматическом режиме."
+  },
+  "disseminatorTitle": {
+    "message": "Является организатором распространения информации"
+  },
+  "done": {
+    "message": "Готово!"
+  },
+  "doneDescription": {
+    "message": "Операция выполнена успешно."
+  },
+  "emergencyConfigDesc": {
+    "message": "Позволяет обходить блокировки даже в условиях полной блокировки всех наших IP-адресов и хостов. Не включайте этот режим, если в этом нет реальной необходимости."
+  },
+  "emergencyConfigTitle": {
+    "message": "Аварийный режим"
+  },
+  "extensionDisabledTitle": {
+    "message": "Censor Tracker выключен"
+  },
+  "extensionEnabledTitle": {
+    "message": "включен"
+  },
+  "extensionInstalledDesc": {
+    "message": "Закрепите расширение в панели браузера в два клика, чтобы всегда быть в курсе, какие сайты могут передавать ваши сообщения, личные данные и весь трафик третьим лицам."
+  },
+  "extraBlockTitle": {
+    "message": "Дополнительно"
+  },
+  "good": {
+    "message": "Хорошо"
+  },
+  "grantPrivateBrowsingPermissions": {
+    "message": "Я разрешил, включите прокси"
+  },
+  "howToGrantIncognitoAccess": {
+    "message": "Как это сделать"
   },
   "howToGrantIncognitoAccessBtnTitle": {
     "message": "Как дать разрешение"
   },
-  "installedAllowIncognitoDescriptionThen": {
-    "message": "После этого откройте расширение и подтвердите, что права даны."
+  "howToGrantIncognitoAccessLink": {
+    "message": "https://support.mozilla.org/ru/kb/dopolneniya-v-rezhime-privatnogo-prosmotra"
   },
-  "incognitoAccessRequiredTitle": {
-    "message": "Сайт недоступен или заблокирован. Разрешите Censor Tracker работать в приватных окнах, чтобы открывать такие сайты"
+  "ignoredSitesDesc": {
+    "message": "Адреса, которые всегда будут игнорироваться Censor Tracker. Может помочь, если есть проблемы с открытием сайта. Каждый адрес с новой строки."
+  },
+  "ignoredSitesTitle": {
+    "message": "Игнорируемые сайты"
+  },
+  "ignoreEditorPageTitle": {
+    "message": "Игнорируемые сайты"
   },
   "incognitoAccessRequiredDescription": {
     "message": "Чтобы открыть <b>$hostname$</b> через прокси в Firefox требуется разрешение на работу в приватных окнах. Иначе прокси не работает.",
@@ -206,124 +166,193 @@
       }
     }
   },
-  "optionsPageTitle": {
-    "message": "Настройки"
-  },
-  "installedPageTitle": {
-    "message": "Censor Tracker Установлен"
+  "incognitoAccessRequiredTitle": {
+    "message": "Сайт недоступен или заблокирован. Разрешите Censor Tracker работать в приватных окнах, чтобы открывать такие сайты"
   },
   "incognitoRequiredPageTitle": {
     "message": "Требуется разрешение для работы в приватных окнах"
   },
-  "ignoreEditorPageTitle": {
-    "message": "Игнорируемые сайты"
+  "installedAllowIncognitoDescription": {
+    "message": "Это разрешение требуется, чтобы мы могли открывать для вас заблокированные сайты через прокси. В Firefox без этого никак."
   },
-  "advancedOptionsTitle": {
-    "message": "Продвинутые Настройки"
+  "installedAllowIncognitoDescriptionThen": {
+    "message": "После этого откройте расширение и подтвердите, что права даны."
   },
-  "advancedOptionsDesc": {
-    "message": "Вы можете вручную обновить локальную базу данных заблокированных веб-сайтов, обновить конфигурацию Censor Tracker и управлять другими расширенными параметрами."
+  "installedAllowIncognitoTitle": {
+    "message": "Разрешите работу Censor Tracker в приватных окнах"
+  },
+  "installedGratitude": {
+    "message": "Спасибо!"
+  },
+  "installedPageTitle": {
+    "message": "Censor Tracker Установлен"
+  },
+  "localRegistryUpdated": {
+    "message": "Локальная база данных заблокированных сайтов обновлена!"
+  },
+  "notBlockedDesc": {
+    "message": "Если доступ к сайту запретят, то Censor Tracker предложит открыть сайт через надёжный прокси."
+  },
+  "notBlockedTitle": {
+    "message": "Ограничений нет"
+  },
+  "notDisseminatorDesc": {
+    "message": "Сервисы из реестра ОРИ могут передавать ваши личные данные, в т.ч. сообщения и весь трафик, государственным органам в автоматическом режиме. Этот сервис не находится в реестре ОРИ."
+  },
+  "notDisseminatorTitle": {
+    "message": "Не является организатором распространения информации"
+  },
+  "notificationsBlockTitle": {
+    "message": "Уведомления"
+  },
+  "okayButton": {
+    "message": "Ясно"
   },
   "optionsConfirmResetMessage": {
     "message": "Все ваши настройки будут удалены. Вы уверены, что хотите это сделать?"
   },
-  "advancedOptionsPageTitle": {
-    "message": "Продвинутые Настройки"
+  "optionsIgnoredWebsitesDesc": {
+    "message": "Адреса, для которых прокси всегда будет отключён. Может помочь, если есть проблемы с открытием сайта."
   },
-  "proxyDisabledPageTitle": {
-    "message": "Проксирование Отключено"
+  "optionsPageTitle": {
+    "message": "Настройки"
   },
-  "proxiedWebsitesEditorPageTitle": {
-    "message": "Проксируемые Сайты"
-  },
-  "proxiedWebsitesEditorPageDesc": {
+  "optionsProxiedWebsitesEditorDesc": {
     "message": "Вы можете вручную управлять сайтами, которые будут проксироваться расширением."
   },
   "optionsProxiedWebsitesEditorTitle": {
     "message": "Проксируемые Сайты"
   },
-  "optionsProxiedWebsitesEditorDesc": {
-    "message": "Вы можете вручную управлять сайтами, которые будут проксироваться расширением."
-  },
-  "optionsProxyStatusTurnedOn" : {
-    "message": "Включен"
+  "optionsProxyDesc": {
+    "message": "Если сайт заблокирован, то Censor Tracker предоставит к нему доступ. Отключите эту настройку, если вы пользуетесь другим сервисом для обхода блокировок (например, VPN), чтобы увеличить скорость соединения."
   },
   "optionsProxyStatusTurnedOff": {
     "message": "Выключен"
   },
-  "updateLocalRegistryTitle": {
-    "message": "Принудительно обновить локальную базу данных расширения."
+  "optionsProxyStatusTurnedOn": {
+    "message": "Включен"
   },
-  "updateLocalRegistryDesc": {
-    "message": "Обновить локальную базу данных для вашего региона."
+  "optionsRegionDesc": {
+    "message": "Вы можете выбрать регион, чтобы обходить блокировки специфичные для вашей страны. Выбор конкретной страны также отключает автоматическое определение вашей страны (на основе GeoIP), что полезно, если вы используете программное обеспечение, которое изменяет ваш реальный IP-адрес (например, VPN)."
   },
-  "resetToDefaultTitle": {
-    "message": "Сбросить все настройки"
+  "optionsRegionTitle": {
+    "message": "Регион"
   },
-  "resetToDefaultDesc": {
-    "message": "Сбросить настройки к значениям по умолчанию и пересобрать PAC-файл для вашего текущего региона. Если у вас есть проблемы с доступом к заблокированным сайтам, то эта опция — ваш выбор."
-  },
-  "areYouSureYouWantToResetSettingsTitle": {
-    "message": "Вы уверены, что хотите сбросить все настройки?"
-  },
-  "areYouSureYouWantToResetSettingsDesc": {
-    "message": "Переустановить конфиг и обновить локальную базу данных"
-  },
-  "confirmPopupResetSettings": {
-    "message": "Да, сбросить"
-  },
-  "cancel": {
-    "message": "Отмена"
-  },
-  "updateTakesTime": {
-    "message": "Обновление базы займёт какое-то время"
-  },
-  "youCanCloseThisWindow": {
-    "message": "Можно закрыть это окно"
-  },
-  "good": {
-    "message": "Хорошо"
-  },
-  "proxiedWebsitesTitle": {
-    "message": "Проксируемые сайты"
-  },
-  "localRegistryUpdated": {
-    "message": "Локальная база данных заблокированных сайтов обновлена!"
-  },
-  "done": {
-    "message": "Готово!"
-  },
-  "doneDescription": {
-    "message": "Операция выполнена успешно."
-  },
-  "popupProxyStatusOk" : {
-    "message": "прокси работает нормально"
-  },
-  "popupProxyStatusError": {
-    "message": "прокси работает с перебоями"
-  },
-  "proxyOptionsStatusTitle": {
-    "message": "Сейчас прокси работает с перебоями"
-  },
-  "proxyOptionsStatusDesc": {
-    "message": "Можете попробовать отключить проксирование совсем или переключиться на свой прокси."
-  },
-  "popupProxyDisabled": {
-    "message": "прокси выключен"
-  },
-  "debugInfoTip": {
-    "message": "Кликните тут чтобы увидеть отладочную информацию."
-  },
-  "parentalControlTitle": {
-    "message": "«Родительский» контроль"
+  "optionsTitle": {
+    "message": "Настройки расширения Censor Tracker"
   },
   "parentalControlDesc": {
     "message": "Оградите своих родителей от пропаганды."
   },
-  "emergencyConfigTitle": {
-    "message": "Аварийный режим"
+  "parentalControlTitle": {
+    "message": "«Родительский» контроль"
   },
-  "emergencyConfigDesc": {
-    "message": "Позволяет обходить блокировки даже в условиях полной блокировки всех наших IP-адресов и хостов. Не включайте этот режим, если в этом нет реальной необходимости."
+  "popupNewTabMessage": {
+    "message": "Новая вкладка"
+  },
+  "popupProxyDisabled": {
+    "message": "прокси выключен"
+  },
+  "popupProxyStatusError": {
+    "message": "прокси работает с перебоями"
+  },
+  "popupProxyStatusOk": {
+    "message": "прокси работает нормально"
+  },
+  "privateBrowsingPermissionsRequiredMessage": {
+    "message": "Прокси отключён. Требуется разрешение на работу в приватных окнах →"
+  },
+  "privateBrowsingRequired": {
+    "message": "Разрешите работу расширения в приватных окнах"
+  },
+  "privateBrowsingRequiredDesc": {
+    "message": "Чтобы мы могли открывать для вас заблокированные сайты через прокси. В Firefox без этого никак."
+  },
+  "proxiedWebsitesEditorPageDesc": {
+    "message": "Вы можете вручную управлять сайтами, которые будут проксироваться расширением."
+  },
+  "proxiedWebsitesEditorPageTitle": {
+    "message": "Проксируемые Сайты"
+  },
+  "proxiedWebsitesTitle": {
+    "message": "Проксируемые сайты"
+  },
+  "proxyDisabledPageTitle": {
+    "message": "Проксирование Отключено"
+  },
+  "proxyHost": {
+    "message": "Адрес прокси-сервера"
+  },
+  "proxyOptionsStatusDesc": {
+    "message": "Можете попробовать отключить проксирование совсем или переключиться на свой прокси."
+  },
+  "proxyOptionsStatusTitle": {
+    "message": "Сейчас прокси работает с перебоями"
+  },
+  "proxyPort": {
+    "message": "Порт"
+  },
+  "proxySettings": {
+    "message": "Настройки прокси"
+  },
+  "readMoreButton": {
+    "message": "Подробнее →"
+  },
+  "resetToDefaultDesc": {
+    "message": "Сбросить настройки к значениям по умолчанию и пересобрать PAC-файл для вашего текущего региона. Если у вас есть проблемы с доступом к заблокированным сайтам, то эта опция — ваш выбор."
+  },
+  "resetToDefaultTitle": {
+    "message": "Сбросить все настройки"
+  },
+  "selectRegionTitle": {
+    "message": "Регион, для обхода специфичесих блокировок"
+  },
+  "shareFeedback": {
+    "message": "Есть вопросы или предложения? Дайте нам знать!"
+  },
+  "showNotificationsDesc": {
+    "message": "Предупредим, когда какой-то сайт передаёт ваши сообщения, личные данные и весь трафик третьим лицам в автоматическом режиме."
+  },
+  "showNotificationsTitle": {
+    "message": "Показывать системные уведомления"
+  },
+  "thankYou": {
+    "message": "Спасибо!"
+  },
+  "trafficShapingDescription": {
+    "message": "Скорость соединения с сайтом замедляется государством. Censor Tracker даёт доступ к сайту с обычной скоростью."
+  },
+  "trafficShapingTitle": {
+    "message": "Шейпинг"
+  },
+  "turnOnExtensionToCheckWebsite": {
+    "message": "Включите, чтобы получить доступ заблокированным сайтам."
+  },
+  "updateLocalRegistryDesc": {
+    "message": "Обновить локальную базу данных для вашего региона."
+  },
+  "updateLocalRegistryTitle": {
+    "message": "Принудительно обновить локальную базу данных расширения."
+  },
+  "updateTakesTime": {
+    "message": "Обновление базы займёт какое-то время"
+  },
+  "useDefaultProxy": {
+    "message": "Прокси Censor Tracker"
+  },
+  "useOwnProxy": {
+    "message": "Свой прокси"
+  },
+  "useProxy": {
+    "message": "Использовать прокси"
+  },
+  "useProxyDesc": {
+    "message": "Если сайт заблокирован, то Censor Tracker предоставит к нему доступ. Отключите эту настройку, если вы пользуетесь другим сервисом для обхода блокировок (например, VPN), чтобы увеличить скорость соединения."
+  },
+  "whatThisMean": {
+    "message": "что это значит"
+  },
+  "youCanCloseThisWindow": {
+    "message": "Можно закрыть это окно"
   }
 }

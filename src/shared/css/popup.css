@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
 
 body {
-  width: 310px;
+  width: 315px;
   display: block;
   margin: 0;
   font-family: 'IBM Plex Sans', Arial, sans-serif;
@@ -13,7 +13,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  text-shadow: rgba(0, 0, 0, 0.2) 0 0 1px;
+  text-shadow: rgba(0, 0, 0, 20%) 0 0 1px;
 }
 
 a {
@@ -36,8 +36,8 @@ a {
   right: 0;
   width: 16px;
   height: 16px;
-  mask: url(../images/settings/cog.svg) no-repeat center / contain;
-  -webkit-mask: url(../images/settings/cog.svg) no-repeat center / contain;
+  mask: url("../images/settings/cog.svg") no-repeat center / contain;
+  -webkit-mask: url("../images/settings/cog.svg") no-repeat center / contain;
   background-color: #3b332b;
 }
 
@@ -48,8 +48,8 @@ a {
   margin-right: 28px;
   width: 18px;
   height: 18px;
-  mask: url(../images/settings/donate.svg) no-repeat center / contain;
-  -webkit-mask: url(../images/settings/donate.svg) no-repeat center / contain;
+  mask: url("../images/settings/donate.svg") no-repeat center / contain;
+  -webkit-mask: url("../images/settings/donate.svg") no-repeat center / contain;
   background-color: #6C9E2C;
 }
 
@@ -339,7 +339,7 @@ a {
 
 .censor-tracker__btn:active {
   cursor: pointer;
-  box-shadow: 0 1px 4px rgba(15, 13, 11, 0.1), 0 0 2px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 4px rgba(15, 13, 11, 0.1), 0 0 2px rgba(0, 0, 0, 10%);
 }
 
 .btn-on {

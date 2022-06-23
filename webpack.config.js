@@ -83,9 +83,11 @@ const webConfig = {
     'options': './src/shared/js/pages/options.js',
     'advanced-options': './src/shared/js/pages/advanced-options.js',
     'proxy-options': './src/shared/js/pages/proxy-options.js',
+    'region': './src/shared/js/pages/region.js',
     'ignore-editor': './src/shared/js/pages/ignore-editor.js',
     'proxied-websites-editor': './src/shared/js/pages/proxied-websites-editor.js',
     'translator': './src/shared/js/pages/translator.js',
+    'controlled': `./src/shared/js/pages/controlled.js`
   },
   output: {
     path: resolve(`dist/${BROWSER}/${OUTPUT_SUB_DIR}`),
@@ -196,7 +198,15 @@ const webConfig = {
       filename: 'proxied-websites-editor.html',
       template: 'src/shared/pages/proxied-websites-editor.html',
       inject: true,
-      chunks: ['proxied-websites-editor'],
+      chunks: ['proxied-websites-editor', 'translator'],
+      meta: contentSecurityPolicy,
+    }),
+    new HTMLWebpackPlugin({
+      title: extensionName,
+      filename: 'region.html',
+      template: 'src/shared/pages/region.html',
+      inject: true,
+      chunks: ['region', 'translator'],
       meta: contentSecurityPolicy,
     }),
     new HTMLWebpackPlugin({
@@ -211,6 +221,22 @@ const webConfig = {
       template: 'src/shared/pages/advanced-options.html',
       inject: true,
       chunks: ['options', 'advanced-options', 'translator'],
+      meta: contentSecurityPolicy,
+    }),
+    new HTMLWebpackPlugin({
+      title: extensionName,
+      filename: 'proxy-options.html',
+      template: 'src/shared/pages/proxy-options.html',
+      inject: true,
+      chunks: ['proxy-options', 'controlled'],
+      meta: contentSecurityPolicy,
+    }),
+    new HTMLWebpackPlugin({
+      title: extensionName,
+      filename: 'controlled.html',
+      template: `src/shared/pages/controlled.html`,
+      inject: true,
+      chunks: ['controlled'],
       meta: contentSecurityPolicy,
     }),
     new MergeJsonWebpackPlugin({
@@ -247,18 +273,10 @@ if (isFirefox) {
   }))
   webConfig.plugins.push(new HTMLWebpackPlugin({
     title: extensionName,
-    filename: 'proxy-options.html',
-    template: 'src/shared/pages/proxy-options.html',
-    inject: true,
-    chunks: ['proxy-options'],
-    meta: contentSecurityPolicy,
-  }))
-  webConfig.plugins.push(new HTMLWebpackPlugin({
-    title: extensionName,
     filename: 'installed.html',
     template: 'src/firefox/pages/installed.html',
     inject: true,
-    chunks: ['translator', 'installed'],
+    chunks: ['installed', 'translator'],
     meta: contentSecurityPolicy,
   }))
   webConfig.plugins.push(new HTMLWebpackPlugin({
@@ -272,23 +290,6 @@ if (isFirefox) {
 }
 
 if (isChromium) {
-  webConfig.entry.controlled = `./src/${BROWSER}/js/pages/controlled.js`
-  webConfig.plugins.push(new HTMLWebpackPlugin({
-    title: extensionName,
-    filename: 'proxy-options.html',
-    template: 'src/shared/pages/proxy-options.html',
-    inject: true,
-    chunks: ['proxy-options', 'controlled'],
-    meta: contentSecurityPolicy,
-  }))
-  webConfig.plugins.push(new HTMLWebpackPlugin({
-    title: extensionName,
-    filename: 'controlled.html',
-    template: `src/${BROWSER}/pages/controlled.html`,
-    inject: true,
-    chunks: ['controlled'],
-    meta: contentSecurityPolicy,
-  }))
   webConfig.plugins.push(new HTMLWebpackPlugin({
     title: extensionName,
     filename: 'installed.html',

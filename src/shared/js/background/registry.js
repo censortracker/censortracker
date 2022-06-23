@@ -4,20 +4,24 @@ import * as utilities from './utilities'
 const REGISTRY_API_ENDPOINT = 'https://app.censortracker.org/api/config/'
 
 class Registry {
-  async getConfig (props = {}) {
-    if (props.debug) {
-      const { registryConfig } = await storage.get({ registryConfig: {} })
+  async getCurrentConfig () {
+    const { registryConfig } = await storage.get({ registryConfig: {} })
 
-      return registryConfig
-    }
+    return registryConfig
+  }
 
+  async getConfig () {
     try {
-      const { registryAPIEndpoint } = await storage.get({
+      let { currentRegionCode, registryAPIEndpoint } = await storage.get({
+        currentRegionCode: '',
         registryAPIEndpoint: REGISTRY_API_ENDPOINT,
       })
 
-      console.warn(`Fetching registry config from: ${REGISTRY_API_ENDPOINT}`)
-      const response = await fetch(registryAPIEndpoint)
+      // Modifies the URL based on the current region code if region is present.
+      registryAPIEndpoint += currentRegionCode
+
+      console.warn(`Fetching registry config from: ${registryAPIEndpoint}`)
+      const response = await fetch(`${registryAPIEndpoint}`)
 
       if (response.ok) {
         const data = await response.json()

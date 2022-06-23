@@ -5,11 +5,10 @@ import 'codemirror/addon/display/autorefresh'
 import 'codemirror/lib/codemirror.css'
 
 import * as storage from 'Background/storage'
-import { translateDocument, validateUrls } from 'Background/utilities'
+import { validateUrls } from 'Background/utilities'
 import CodeMirror from 'codemirror'
 
 (async () => {
-  translateDocument(document)
   const searchInput = document.getElementById('search')
   const domainsList = document.getElementById('domainsList')
   const { customProxiedDomains } = await storage.get({

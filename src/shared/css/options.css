@@ -855,6 +855,8 @@ kbd {
   margin-bottom: 28px;
 }
 
-#select-region {
+#select-region,
+#select-datasource {
   margin-top: 25px;
 }
+

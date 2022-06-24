@@ -8,6 +8,8 @@
 
 **Censor Tracker** is a censorship circumvention extension for [Google Chrome] and [Mozilla Firefox].
 
+[**English**](./README.md) | [**Russian**](./README_RU.md)
+
 [<img src="/.github/media/chrome-web-store.png" title="Chrome Web Store" width="170" height="48" />](https://chrome.google.com/webstore/detail/censor-tracker/gaidoampbkcknofoejhnhbhbhhifgdop)
 [<img src="/.github/media/firefox-add-ons.png" title="Firefox Add-ons" width="170" height="48" />](https://addons.mozilla.org/ru/firefox/addon/censor-tracker/)
 

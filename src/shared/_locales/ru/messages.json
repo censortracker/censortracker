@@ -52,6 +52,14 @@
       }
     }
   },
+  "controlledByOtherExtensionTitle": {
+    "message": "Сейчас другое расширение &laquo;<div class=\"extension__name\">$name$</div>&raquo; контролирует ваши настройки прокси",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
   "controlledByOtherExtensions": {
     "message": "Другие расширения контролируют ваши настройки прокси в браузере"
   },
@@ -60,14 +68,6 @@
   },
   "controlledByOtherExtensionsMessage": {
     "message": "Другое расширение контролирует прокси. Подробнее →"
-  },
-  "controlledByOtherExtensionTitle": {
-    "message": "Сейчас другое расширение &laquo;<div class=\"extension__name\">$name$</div>&raquo; контролирует ваши настройки прокси",
-    "placeholders": {
-      "name": {
-        "content": "$1"
-      }
-    }
   },
   "controlledPageDisableExtension": {
     "message": "Отключить"
@@ -149,13 +149,13 @@
   "howToGrantIncognitoAccessLink": {
     "message": "https://support.mozilla.org/ru/kb/dopolneniya-v-rezhime-privatnogo-prosmotra"
   },
+  "ignoreEditorPageTitle": {
+    "message": "Игнорируемые сайты"
+  },
   "ignoredSitesDesc": {
     "message": "Адреса, которые всегда будут игнорироваться Censor Tracker. Может помочь, если есть проблемы с открытием сайта. Каждый адрес с новой строки."
   },
   "ignoredSitesTitle": {
-    "message": "Игнорируемые сайты"
-  },
-  "ignoreEditorPageTitle": {
     "message": "Игнорируемые сайты"
   },
   "incognitoAccessRequiredDescription": {

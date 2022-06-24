@@ -52,6 +52,14 @@
       }
     }
   },
+  "controlledByOtherExtensionTitle": {
+    "message": "Another extension &laquo;<div class=\"extension__name\">$name$</div>&raquo; is controlling your proxy settings.",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
   "controlledByOtherExtensions": {
     "message": "Other extensions are controlling your proxy."
   },
@@ -60,14 +68,6 @@
   },
   "controlledByOtherExtensionsMessage": {
     "message": "Another extension controls the proxy. More details →"
-  },
-  "controlledByOtherExtensionTitle": {
-    "message": "Another extension &laquo;<div class=\"extension__name\">$name$</div>&raquo; is controlling your proxy settings.",
-    "placeholders": {
-      "name": {
-        "content": "$1"
-      }
-    }
   },
   "controlledPageDisableExtension": {
     "message": "Disable"
@@ -149,13 +149,13 @@
   "howToGrantIncognitoAccessLink": {
     "message": "https://support.mozilla.org/en-US/kb/extensions-private-browsing"
   },
+  "ignoreEditorPageTitle": {
+    "message": "Ignored Websites"
+  },
   "ignoredSitesDesc": {
     "message": "Hosts that will always be ignored by Censor Tracker. If there are problems with opening the website, this list may help. Each host starts with a new line."
   },
   "ignoredSitesTitle": {
-    "message": "Ignored Websites"
-  },
-  "ignoreEditorPageTitle": {
     "message": "Ignored Websites"
   },
   "incognitoAccessRequiredDescription": {

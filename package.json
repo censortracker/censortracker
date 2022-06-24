@@ -16,7 +16,8 @@
     "lint": "eslint --ext=.js ./src/",
     "stylelint": "stylelint ./src/",
     "lint:fix": "eslint --fix --ext=.js ./src/",
-    "clean": " rm -rf dist releases"
+    "locales:fmt": "node scripts/orderLocaleMessages.js",
+    "locales:check": "node scripts/checkLocaleStructureMatch.js"
   },
   "dependencies": {
     "@hot-loader/react-dom": "^17.0.2",
@@ -24,10 +25,10 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-hot-loader": "^4.13.0",
-    "validator": "^13.6.0"
+    "validator": "^13.6.0",
+    "underscore": "^1.13.4"
   },
   "devDependencies": {
-    "got": ">=11.8.5",
     "@atomix/eslint-config": "^7.0.0-next.1",
     "@babel/core": "^7.18.2",
     "@babel/plugin-transform-runtime": "^7.18.2",
@@ -57,6 +58,7 @@
     "eslint-plugin-standard": "^5.0.0",
     "file-loader": "^6.2.0",
     "fs": "^0.0.1-security",
+    "got": ">=11.8.5",
     "html-loader": "^3.1.0",
     "html-webpack-plugin": "^5.5.0",
     "merge-jsons-webpack-plugin": "^2.0.1",

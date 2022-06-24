@@ -21,6 +21,7 @@ const storeData = ({ locale, data }) => {
       getLocalePath(locale),
       JSON.stringify(sortedData, null, 2),
     )
+    return true
   } catch (error) {
     console.error(error)
   }
@@ -30,7 +31,11 @@ for (const locale of ['ru', 'en']) {
   const data = loadData({ locale })
 
   if (Object.keys(data).length > 0) {
-    storeData({ locale, data })
+    const saved = storeData({ locale, data })
+
+    if (saved) {
+      console.log(`Formatted i18n messages for: ${locale}`)
+    }
   } else {
     console.error(`Messages for ${locale} not found`)
   }

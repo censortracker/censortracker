@@ -95,6 +95,7 @@ a {
 .main-page__info {
   max-width: 620px;
   margin-top: 30px;
+  width: 620px;
 }
 
 .main-container__after-install .main-page__info {

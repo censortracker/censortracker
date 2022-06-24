@@ -101,15 +101,16 @@ export const handleIgnoredHostsChange = async ({ ignoredHosts }, _areaName) => {
 }
 
 export const handleCustomProxiedDomainsChange = async ({ customProxiedDomains }, _areaName) => {
-  const proxyingEnabled = await ProxyManager.isEnabled()
-  const enableExtension = await Settings.extensionEnabled()
-
-  if (customProxiedDomains && customProxiedDomains.newValue) {
-    if (enableExtension && proxyingEnabled) {
-      await ProxyManager.setProxy()
-      console.warn('Updated custom proxied domains.')
-    }
-  }
+  Settings.extensionEnabled().then((enableExtension) => {
+    ProxyManager.isEnabled().then(async (proxyingEnabled) => {
+      if (customProxiedDomains && customProxiedDomains.newValue) {
+        if (enableExtension && proxyingEnabled) {
+          await ProxyManager.setProxy()
+          console.warn('Updated custom proxied domains.')
+        }
+      }
+    })
+  })
 }
 
 /**
@@ -219,23 +220,24 @@ export const handleInstalled = async ({ reason }) => {
 
 export const handleTabState = async (tabId, { status = 'loading' } = {}, tab) => {
   if (status === Browser.tabs.TabStatus.LOADING) {
-    const isIgnored = await Ignore.contains(tab.url)
-    const extensionEnabled = await Settings.extensionEnabled()
+    Ignore.contains(tab.url).then((isIgnored) => {
+      Settings.extensionEnabled().then(async (extensionEnabled) => {
+        if (extensionEnabled && !isIgnored && utilities.isValidURL(tab.url)) {
+          const blocked = await Registry.contains(tab.url)
+          const { url: disseminatorUrl, cooperationRefused } =
+            await Registry.retrieveInformationDisseminationOrganizerJSON(tab.url)
 
-    if (extensionEnabled && !isIgnored && utilities.isValidURL(tab.url)) {
-      const blocked = await Registry.contains(tab.url)
-      const { url: disseminatorUrl, cooperationRefused } =
-        await Registry.retrieveInformationDisseminationOrganizerJSON(tab.url)
-
-      if (blocked) {
-        Settings.setBlockedIcon(tabId)
-      } else if (disseminatorUrl) {
-        Settings.setDangerIcon(tabId)
-        if (!cooperationRefused) {
-          await warnAboutInformationDisseminationOrganizer(tab.url)
+          if (blocked) {
+            Settings.setBlockedIcon(tabId)
+          } else if (disseminatorUrl) {
+            Settings.setDangerIcon(tabId)
+            if (!cooperationRefused) {
+              await warnAboutInformationDisseminationOrganizer(tab.url)
+            }
+          }
         }
-      }
-    }
+      })
+    })
   }
 }
 

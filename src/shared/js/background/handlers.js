@@ -242,11 +242,11 @@ export const handleTabState = async (tabId, { status = 'loading' } = {}, tab) =>
 }
 
 export const handleTabCreate = async (tab) => {
-  const extensionEnabled = await Settings.extensionEnabled()
-
-  if (extensionEnabled) {
-    Settings.setDefaultIcon(tab.id)
-  } else {
-    Settings.setDisableIcon(tab.id)
-  }
+  Settings.extensionEnabled().then((enabled) => {
+    if (enabled) {
+      Settings.setDefaultIcon(tab.id)
+    } else {
+      Settings.setDisableIcon(tab.id)
+    }
+  })
 }

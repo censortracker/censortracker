@@ -1,5 +1,4 @@
 const fs = require('fs')
-const underscore = require('underscore')
 
 const getLocalePath = (locale) => `./src/shared/_locales/${locale}/messages.json`
 
@@ -28,12 +27,4 @@ for (const [a, b] of zip(ruData, enData)) {
   if (a !== b) {
     throw new Error(`Keys mismatch found: ${a} !== ${b}`)
   }
-}
-
-const keysMatched = underscore.isEqual(ruData, enData)
-
-if (keysMatched) {
-  console.log('All keys matched')
-} else {
-  console.warn('Some keys did not match')
 }

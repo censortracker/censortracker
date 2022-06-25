@@ -114,7 +114,7 @@ a {
   margin-bottom: 30px;
 }
 
-.extension__btn {
+.default-btn {
   background-color: #3b332b;
   font-size: 14px;
   line-height: 15px;
@@ -128,13 +128,13 @@ a {
   margin-bottom: 50px;
 }
 
-.extension__btn:hover {
+.default-btn:hover {
   cursor: pointer;
   background-color: #625c55;
 }
 
-.extension__btn:active,
-.extension__btn:focus {
+.default-btn:active,
+.default-btn:focus {
   background-color: #2a251f;
 }
 

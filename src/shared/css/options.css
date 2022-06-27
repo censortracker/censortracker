@@ -860,3 +860,25 @@ kbd {
   margin-top: 25px;
 }
 
+.options-link {
+  margin-top: 15px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+#options-version {
+  padding: 0 30px;
+  width: 100%;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+#version {
+  opacity: 0.5;
+  width: 570px;
+  height: 20px;
+  bottom: 93px;
+  font-size: 13px;
+  font-weight: 500;
+}

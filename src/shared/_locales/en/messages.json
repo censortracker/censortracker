@@ -134,6 +134,9 @@
   "extraBlockTitle": {
     "message": "Extra"
   },
+  "faqLink": {
+    "message": "Frequently asked question"
+  },
   "good": {
     "message": "Okay"
   },
@@ -240,6 +243,14 @@
   },
   "optionsTitle": {
     "message": "Censor Tracker's Options"
+  },
+  "optionsVersion": {
+    "message": "Version $VERSION$",
+    "placeholders": {
+      "version": {
+        "content": "$1"
+      }
+    }
   },
   "parentalControlDesc": {
     "message": "Protect your parents from propaganda."

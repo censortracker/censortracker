@@ -134,6 +134,9 @@
   "extraBlockTitle": {
     "message": "Дополнительно"
   },
+  "faqLink": {
+    "message": "Ответы на вопросы по работе расширения"
+  },
   "good": {
     "message": "Хорошо"
   },
@@ -240,6 +243,14 @@
   },
   "optionsTitle": {
     "message": "Настройки расширения Censor Tracker"
+  },
+  "optionsVersion": {
+    "message": "Версия $VERSION$",
+    "placeholders": {
+      "version": {
+        "content": "$1"
+      }
+    }
   },
   "parentalControlDesc": {
     "message": "Оградите своих родителей от пропаганды."

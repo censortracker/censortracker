@@ -4,6 +4,7 @@ import Browser from 'Background/webextension';
 
 (async () => {
   const proxyingEnabled = await ProxyManager.isEnabled()
+  const version = document.getElementById('version')
   const proxyStatus = document.getElementById('proxyStatus')
   const showNotificationsCheckbox = document.getElementById(
     'showNotificationsCheckbox',
@@ -83,4 +84,8 @@ import Browser from 'Background/webextension';
 
     showNotificationsCheckbox.checked = showNotifications
   }
+
+  const { version: currentVersion } = Browser.runtime.getManifest()
+
+  version.textContent = await Browser.i18n.getMessage('optionsVersion', currentVersion)
 })()

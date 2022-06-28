@@ -235,10 +235,13 @@
   "optionsProxyStatusTurnedOn": {
     "message": "Включен"
   },
-  "optionsRegionDesc": {
+  "optionsRegistryDesc": {
     "message": "Вы можете выбрать регион, чтобы обходить блокировки специфичные для вашей страны. Выбор конкретной страны также отключает автоматическое определение вашей страны (на основе GeoIP), что полезно, если вы используете программное обеспечение, которое изменяет ваш реальный IP-адрес (например, VPN)."
   },
-  "optionsRegionTitle": {
+  "optionsRegistrySelectRegionTitle": {
+    "message": "Регион, для обхода специфичесих блокировок"
+  },
+  "optionsRegistryTitle": {
     "message": "Регион"
   },
   "optionsTitle": {
@@ -314,9 +317,6 @@
   },
   "resetToDefaultTitle": {
     "message": "Сбросить все настройки"
-  },
-  "selectRegionTitle": {
-    "message": "Регион, для обхода специфичесих блокировок"
   },
   "shareFeedback": {
     "message": "Есть вопросы или предложения? Дайте нам знать!"

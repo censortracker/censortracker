@@ -235,11 +235,14 @@
   "optionsProxyStatusTurnedOn": {
     "message": "Turned on"
   },
-  "optionsRegionDesc": {
+  "optionsRegistryDesc": {
     "message": "You can select a region to circumvent country-specific censorship. Selecting particular country also disables auto-detection of your country (based on GeoIP)  which is helpful if you're using software which changes your real IP (for instance VPN)."
   },
-  "optionsRegionTitle": {
-    "message": "Region"
+  "optionsRegistrySelectRegionTitle": {
+    "message": "Region to bypass country-specific censorship"
+  },
+  "optionsRegistryTitle": {
+    "message": "Registry of Blocked Resources"
   },
   "optionsTitle": {
     "message": "Censor Tracker's Options"
@@ -314,9 +317,6 @@
   },
   "resetToDefaultTitle": {
     "message": "Reset to default"
-  },
-  "selectRegionTitle": {
-    "message": "Region to bypass country-specific censorship"
   },
   "shareFeedback": {
     "message": "Got issues or suggestions? Let us know!"

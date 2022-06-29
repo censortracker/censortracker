@@ -5,7 +5,6 @@ import * as storage from 'Background/storage'
 import {
   extractHostnameFromUrl,
   isValidURL,
-  select,
 } from 'Background/utilities'
 import Browser from 'Background/webextension';
 
@@ -40,21 +39,21 @@ import Browser from 'Background/webextension';
       },
     },
   }
-  const statusImage = select({ id: 'statusImage' })
-  const detailsText = select({ query: '.details-text' })
-  const extensionIsOff = select({ id: 'extensionIsOff' })
-  const restrictionType = select({ id: 'restrictionType' })
-  const mainPageInfoBlocks = select({ query: '.main-page-info' })
-  const popupProxyStatusOk = select({ id: 'popupProxyStatusOk' })
-  const popupProxyDisabled = select({ id: 'popupProxyDisabled' })
-  const popupProxyStatusError = select({ id: 'popupProxyStatusError' })
-  const footerExtensionIsOn = select({ id: 'footerExtensionIsOn' })
-  const currentDomainHeader = select({ id: 'currentDomainHeader' })
-  const closeDetailsButtons = select({ query: '.btn-hide-details' })
-  const whatThisMeanButtons = select({ query: '.btn-what-this-mean' })
-  const restrictionDescription = select({ id: 'restrictionDescription' })
-  const controlledByOtherExtensionsButton = select({ id: 'controlledByOtherExtensionsButton' })
-  const privateBrowsingPermissionsRequiredButton = select({ id: 'privateBrowsingPermissionsRequiredButton' })
+  const statusImage = document.getElementById('statusImage')
+  const detailsText = document.querySelectorAll('.details-text')
+  const extensionIsOff = document.getElementById('extensionIsOff')
+  const restrictionType = document.getElementById('restrictionType')
+  const mainPageInfoBlocks = document.querySelectorAll('.main-page-info')
+  const popupProxyStatusOk = document.getElementById('popupProxyStatusOk')
+  const popupProxyDisabled = document.getElementById('popupProxyDisabled')
+  const popupProxyStatusError = document.getElementById('popupProxyStatusError')
+  const footerExtensionIsOn = document.getElementById('footerExtensionIsOn')
+  const currentDomainHeader = document.getElementById('currentDomainHeader')
+  const closeDetailsButtons = document.querySelectorAll('.btn-hide-details')
+  const whatThisMeanButtons = document.querySelectorAll('.btn-what-this-mean')
+  const restrictionDescription = document.getElementById('restrictionDescription')
+  const controlledByOtherExtensionsButton = document.getElementById('controlledByOtherExtensionsButton')
+  const privateBrowsingPermissionsRequiredButton = document.getElementById('privateBrowsingPermissionsRequiredButton')
 
   privateBrowsingPermissionsRequiredButton.addEventListener('click', () => {
     window.location.href = 'incognito-required-popup.html'
@@ -161,7 +160,7 @@ import Browser from 'Background/webextension';
 
     const restrictionsFound = await Registry.contains(currentHostname)
 
-    select({ query: '#restrictions [data-render-var]' }).forEach((el) => {
+    document.querySelectorAll('#restrictions [data-render-var]').forEach((el) => {
       const renderVar = el.dataset.renderVar
       const value = uiText.restrictions[restrictionsFound][renderVar]
 
@@ -187,7 +186,7 @@ import Browser from 'Background/webextension';
         changeStatusImage('ori')
         currentDomainHeader.classList.add('title-ori')
 
-        for (const element of select({ query: '#ori [data-render-var]' })) {
+        for (const element of document.querySelectorAll('#ori [data-render-var]')) {
           const renderVar = element.dataset.renderVar
           const value = uiText.ori.found[renderVar]
 
@@ -200,7 +199,7 @@ import Browser from 'Background/webextension';
           }
         }
       } else {
-        const [disseminatorDetailsText] = select({ query: '#ori [data-render-var="detailsText"]' })
+        const [disseminatorDetailsText] = document.querySelectorAll('#ori [data-render-var="detailsText"]')
 
         disseminatorDetailsText.innerText = uiText.ori.found.cooperationRefused.message
 

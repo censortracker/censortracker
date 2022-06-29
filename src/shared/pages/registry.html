@@ -28,7 +28,7 @@
           </svg>
         </a>
       </div>
-      <div class="main-page__title" data-i18n-key="optionsRegistryTitle" id="options-region-title" ></div>
+      <div class="main-page__title" data-i18n-key="optionsRegistryTitle" id="options-region-title"></div>
 
       <div class="checkbox__group">
         <div class="main-page__turn">
@@ -56,20 +56,19 @@
           </div>
         </div>
       </div>
-      <div id="select-datasource" hidden>
-        <div class="title">Source of Blocked Domains</div>
+      <div id="registry-select-source">
         <div id="proxyCustomOptionsRadioGroup" class="radio-buttons-group">
           <div class="radio-button">
-            <input id="useDefaultProxy" class="radio-button-input" type="radio" name="proxy-radio" value="default" checked>
-            <label class="radio-button-label" for="useDefaultProxy">Complete (400k+ blocked domains)</label>
+            <input checked class="radio-button-input"
+                   id="registryTypeLightweight" name="proxy-radio" type="radio" value="custom">
+            <label class="radio-button-label"
+                   for="registryTypeLightweight" data-i18n-key="registryTypeLightweight"></label>
           </div>
           <div class="radio-button">
-            <input class="radio-button-input" type="radio" name="proxy-radio" id="useCustomProxy" value="custom">
-            <label class="radio-button-label" for="useCustomProxy">Lightweight (No Porn/Gambling/Escort/Scam etc.)</label>
-          </div>
-          <div class="radio-button">
-            <input class="radio-button-input" type="radio" name="proxy-radio" id="useEmptyRegistry" value="custom">
-            <label class="radio-button-label" for="useEmptyRegistry">Empty (Proxy only Domains from Proxying List)</label>
+            <input id="registryTypeComplete"
+                   class="radio-button-input" type="radio" name="proxy-radio" value="default">
+            <label class="radio-button-label"
+                   for="registryTypeComplete" data-i18n-key="registryTypeComplete"></label>
           </div>
         </div>
       </div>

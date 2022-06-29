@@ -7,6 +7,7 @@ import * as storage from 'Background/storage'
   const options = document.querySelectorAll('.select-option')
   const currentOption = document.querySelector('#select-toggle')
   const useRegistryCheckbox = document.querySelector('#useRegistryCheckbox')
+  // const registrySelectSource = document.querySelector('#registry-select-source')
 
   storage.get({ useRegistry: false, currentRegionName: '' })
     .then(({ useRegistry, currentRegionName }) => {

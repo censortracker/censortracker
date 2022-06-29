@@ -374,5 +374,11 @@
   },
   "youCanCloseThisWindow": {
     "message": "Можно закрыть это окно"
+  },
+  "registryTypeComplete": {
+    "message": "Разблокировать все (400 000+ доменов)"
+  },
+  "registryTypeLightweight": {
+    "message": "Разблокировать всё, кроме небезопасных сайтов (100 000+ доменов)"
   }
 }

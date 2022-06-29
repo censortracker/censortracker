@@ -29,10 +29,20 @@
         </a>
       </div>
       <div class="main-page__title" data-i18n-key="optionsRegistryTitle" id="options-region-title" ></div>
-      <div class="main-page__about" data-i18n-key="optionsRegistryDesc"></div>
+
+      <div class="checkbox__group">
+        <div class="main-page__turn">
+          <label for="useRegistryCheckbox" class="toggle-text" data-i18n-key="useRegistry"></label>
+          <input id="useRegistryCheckbox" type="checkbox" class="toggle-button">
+        </div>
+        <div class="main-page__about">
+          <div class="use_proxy__text" data-i18n-key="useRegistryDesc"></div>
+        </div>
+      </div>
 
       <div id="select-region">
-        <div class="title" data-i18n-key="optionsRegistrySelectRegionTitle"></div>
+        <div class="title" data-i18n-key="registrySelectRegionTitle"></div>
+        <div class="description" data-i18n-key="registrySelectRegionDesc"></div>
         <div class="select">
           <button type="button" class="select-toggle" data-i18n-key="countryAUTO" id="select-toggle"></button>
           <div class="select-dropdown">
@@ -46,7 +56,6 @@
           </div>
         </div>
       </div>
-
       <div id="select-datasource" hidden>
         <div class="title">Source of Blocked Domains</div>
         <div id="proxyCustomOptionsRadioGroup" class="radio-buttons-group">

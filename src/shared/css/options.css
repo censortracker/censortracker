@@ -267,6 +267,7 @@ a {
 }
 
 .main-page__about,
+.description,
 .extension__text {
   font-weight: 400;
   font-size: 14px;
@@ -279,7 +280,8 @@ a {
   margin-bottom: 10px;
 }
 
-.extension__text {
+.extension__text,
+.description {
   margin-bottom: 20px;
 }
 
@@ -744,8 +746,8 @@ kbd {
 }
 
 #debugInfoJSON {
-  width: 550px;
-  height: 350px;
+  width: 570px;
+  height: 520px;
 }
 
 #showDebugInfo {

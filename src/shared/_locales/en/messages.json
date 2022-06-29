@@ -236,10 +236,7 @@
     "message": "Turned on"
   },
   "optionsRegistryDesc": {
-    "message": "You can select a region to circumvent country-specific censorship. Selecting particular country also disables auto-detection of your country (based on GeoIP)  which is helpful if you're using software which changes your real IP (for instance VPN)."
-  },
-  "optionsRegistrySelectRegionTitle": {
-    "message": "Region to bypass country-specific censorship"
+    "message": "Censor Tracker tracks a registry of blocked websites  and automatically opens such sites, bypassing censorship."
   },
   "optionsRegistryTitle": {
     "message": "Registry of Blocked Resources"
@@ -312,6 +309,12 @@
   "readMoreButton": {
     "message": "Read More →"
   },
+  "registrySelectRegionDesc": {
+    "message": "You can select a region to circumvent country-specific censorship. Selecting particular country also disables auto-detection of your country (based on GeoIP)  which is helpful if you're using software which changes your real IP (for instance VPN)."
+  },
+  "registrySelectRegionTitle": {
+    "message": "Region to bypass country-specific censorship"
+  },
   "resetToDefaultDesc": {
     "message": "Reset all the settings to default and generate PAC file for your current region. This option is your choice if there are blocked websites availability problems."
   },
@@ -359,6 +362,12 @@
   },
   "useProxyDesc": {
     "message": "If a website is blocked, Censor Tracker will bypass restrictions to give you access to it. Disable this setting if you use another service to bypass censorship (for example, a VPN) to increase connection speed."
+  },
+  "useRegistry": {
+    "message": "Use registry of blocked websites"
+  },
+  "useRegistryDesc": {
+    "message": "We maintain registries of blocked sites in order to provide access to them through a proxy. If this option is disabled, then only sites from your list of «Proxied Websites» will be proxied."
   },
   "whatThisMean": {
     "message": "what does it mean"

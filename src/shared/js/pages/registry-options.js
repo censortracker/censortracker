@@ -6,12 +6,35 @@ import * as storage from 'Background/storage'
   const select = document.querySelector('.select')
   const options = document.querySelectorAll('.select-option')
   const currentOption = document.querySelector('#select-toggle')
+  const useRegistryCheckbox = document.querySelector('#useRegistryCheckbox')
+  // const registrySelectSource = document.querySelector('#registry-select-source')
 
-  storage.get('currentRegionName').then(({ currentRegionName = '' }) => {
-    if (currentRegionName) {
-      currentOption.textContent = currentRegionName
+  storage.get({ useRegistry: false, currentRegionName: '' })
+    .then(({ useRegistry, currentRegionName }) => {
+      useRegistryCheckbox.checked = useRegistry
+      if (currentRegionName) {
+        currentOption.textContent = currentRegionName
+      }
+    })
+
+  useRegistryCheckbox.addEventListener('change', async (event) => {
+    const useRegistry = event.target.checked
+    const proxyingEnabled = await ProxyManager.isEnabled()
+
+    if (useRegistry) {
+      await Registry.sync()
+      await ProxyManager.setProxy()
+    } else {
+      await Registry.clearRegistry()
+      await storage.set({ currentRegionName: '' })
+
+      if (proxyingEnabled) {
+        await ProxyManager.setProxy()
+      }
     }
-  })
+
+    await storage.set({ useRegistry })
+  }, false)
 
   document.addEventListener('click', (event) => {
     if (event.target.id === 'select-toggle') {

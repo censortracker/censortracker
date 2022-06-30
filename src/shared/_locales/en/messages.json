@@ -52,6 +52,14 @@
       }
     }
   },
+  "controlledByOtherExtensionTitle": {
+    "message": "Another extension &laquo;<div class=\"extension__name\">$name$</div>&raquo; is controlling your proxy settings.",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
   "controlledByOtherExtensions": {
     "message": "Other extensions are controlling your proxy."
   },
@@ -60,14 +68,6 @@
   },
   "controlledByOtherExtensionsMessage": {
     "message": "Another extension controls the proxy. More details →"
-  },
-  "controlledByOtherExtensionTitle": {
-    "message": "Another extension &laquo;<div class=\"extension__name\">$name$</div>&raquo; is controlling your proxy settings.",
-    "placeholders": {
-      "name": {
-        "content": "$1"
-      }
-    }
   },
   "controlledPageDisableExtension": {
     "message": "Disable"
@@ -134,6 +134,9 @@
   "extraBlockTitle": {
     "message": "Extra"
   },
+  "faqLink": {
+    "message": "Frequently asked question"
+  },
   "good": {
     "message": "Okay"
   },
@@ -149,13 +152,13 @@
   "howToGrantIncognitoAccessLink": {
     "message": "https://support.mozilla.org/en-US/kb/extensions-private-browsing"
   },
+  "ignoreEditorPageTitle": {
+    "message": "Ignored Websites"
+  },
   "ignoredSitesDesc": {
     "message": "Hosts that will always be ignored by Censor Tracker. If there are problems with opening the website, this list may help. Each host starts with a new line."
   },
   "ignoredSitesTitle": {
-    "message": "Ignored Websites"
-  },
-  "ignoreEditorPageTitle": {
     "message": "Ignored Websites"
   },
   "incognitoAccessRequiredDescription": {
@@ -232,14 +235,22 @@
   "optionsProxyStatusTurnedOn": {
     "message": "Turned on"
   },
-  "optionsRegionDesc": {
-    "message": "You can select a region to circumvent country-specific censorship. Selecting particular country also disables auto-detection of your country (based on GeoIP)  which is helpful if you're using software which changes your real IP (for instance VPN)."
+  "optionsRegistryDesc": {
+    "message": "Censor Tracker tracks a registry of blocked websites  and automatically opens such sites, bypassing censorship."
   },
-  "optionsRegionTitle": {
-    "message": "Region"
+  "optionsRegistryTitle": {
+    "message": "Registry of Blocked Resources"
   },
   "optionsTitle": {
     "message": "Censor Tracker's Options"
+  },
+  "optionsVersion": {
+    "message": "Version $VERSION$",
+    "placeholders": {
+      "version": {
+        "content": "$1"
+      }
+    }
   },
   "parentalControlDesc": {
     "message": "Protect your parents from propaganda."
@@ -298,14 +309,23 @@
   "readMoreButton": {
     "message": "Read More →"
   },
+  "registrySelectRegionDesc": {
+    "message": "You can select a region to circumvent country-specific censorship. Selecting particular country also disables auto-detection of your country (based on GeoIP)  which is helpful if you're using software which changes your real IP (for instance VPN)."
+  },
+  "registrySelectRegionTitle": {
+    "message": "Region to bypass country-specific censorship"
+  },
+  "registryTypeComplete": {
+    "message": "Use a complete registry of blocked domains (400k+ domains)"
+  },
+  "registryTypeLightweight": {
+    "message": "Use lightweight registry of blocked domains (100k+ domains)"
+  },
   "resetToDefaultDesc": {
     "message": "Reset all the settings to default and generate PAC file for your current region. This option is your choice if there are blocked websites availability problems."
   },
   "resetToDefaultTitle": {
     "message": "Reset to default"
-  },
-  "selectRegionTitle": {
-    "message": "Region to bypass country-specific censorship"
   },
   "shareFeedback": {
     "message": "Got issues or suggestions? Let us know!"
@@ -348,6 +368,12 @@
   },
   "useProxyDesc": {
     "message": "If a website is blocked, Censor Tracker will bypass restrictions to give you access to it. Disable this setting if you use another service to bypass censorship (for example, a VPN) to increase connection speed."
+  },
+  "useRegistry": {
+    "message": "Use registry of blocked websites"
+  },
+  "useRegistryDesc": {
+    "message": "We maintain registries of blocked sites in order to provide access to them through a proxy. If this option is disabled, then only sites from your list of «Proxied Websites» will be proxied."
   },
   "whatThisMean": {
     "message": "what does it mean"

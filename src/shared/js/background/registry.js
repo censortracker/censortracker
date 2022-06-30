@@ -5,20 +5,30 @@ const REGISTRY_API_ENDPOINT = 'https://app.censortracker.org/api/config/'
 
 class Registry {
   async getCurrentConfig () {
-    const { registryConfig } = await storage.get({ registryConfig: {} })
+    const { registryConfig } = await storage.get({
+      registryConfig: {},
+    })
 
     return registryConfig
   }
 
+  async getAPIEndpoint () {
+    const {
+      currentRegionCode,
+      registryAPIEndpoint,
+    } = await storage.get({
+      currentRegionCode: '',
+      registryAPIEndpoint: REGISTRY_API_ENDPOINT,
+    })
+
+    // Modifies the URL based on the current region
+    // code if region is present.
+    return registryAPIEndpoint + currentRegionCode
+  }
+
   async getConfig () {
     try {
-      let { currentRegionCode, registryAPIEndpoint } = await storage.get({
-        currentRegionCode: '',
-        registryAPIEndpoint: REGISTRY_API_ENDPOINT,
-      })
-
-      // Modifies the URL based on the current region code if region is present.
-      registryAPIEndpoint += currentRegionCode
+      const registryAPIEndpoint = await this.getAPIEndpoint()
 
       console.warn(`Fetching registry config from: ${registryAPIEndpoint}`)
       const response = await fetch(`${registryAPIEndpoint}`)
@@ -70,7 +80,7 @@ class Registry {
       console.error(error)
       return {}
     }
-  };
+  }
 
   /**
    * Save JSON data from the remote resources in local storage.
@@ -79,26 +89,27 @@ class Registry {
     console.group('Registry.sync()')
     const { apis } = await this.getConfig()
 
-    if (apis.length > 0) {
-      for (const { storageKey, url } of apis) {
-        try {
-          const response = await fetch(url)
-          const data = await response.json()
-
-          console.warn(`${url} -> Fetched!`)
-
-          await storage.set({ [storageKey]: data })
-        } catch (error) {
-          console.error(`Error on fetching data from the API endpoint: ${url}`)
-        }
-      }
-      console.warn('Registry synced successfully.')
-    } else {
-      console.error('Sync error: There are no API endpoints for your country.')
+    if (apis.length === 0) {
+      console.error('Sync error: there are no API endpoints for your country.')
+      return false
     }
+
+    for (const { storageKey, url } of apis) {
+      try {
+        const response = await fetch(url)
+        const data = await response.json()
+
+        console.warn(`${url} -> Fetched!`)
+
+        await storage.set({ [storageKey]: data })
+      } catch (error) {
+        console.error(`Error on fetching data from the API endpoint: ${url}`)
+      }
+    }
+    console.warn('Registry synced successfully.')
     console.groupEnd()
     return true
-  };
+  }
 
   /**
    * Returns unregistered records from our custom registry.
@@ -109,7 +120,7 @@ class Registry {
     })
 
     return customRegistryRecords
-  };
+  }
 
   /**
    * Return details of unregistered record by URL.
@@ -124,58 +135,54 @@ class Registry {
       }
     }
     return {}
-  };
+  }
 
   /**
    * Returns array of banned domains from the registry.
    */
   async getDomains () {
-    const { domains, blockedDomains, ignoredHosts, customProxiedDomains } =
+    const { domains, ignoredHosts, customProxiedDomains } =
       await storage.get({
         domains: [],
-        blockedDomains: [],
         ignoredHosts: [],
         customProxiedDomains: [],
       })
 
     const domainsFound = domains && domains.length > 0
-    const blockedDomainsFound = blockedDomains && blockedDomains.length > 0
     const customProxiedDomainsFound =
       customProxiedDomains && customProxiedDomains.length > 0
 
-    if (domainsFound || blockedDomainsFound || customProxiedDomainsFound) {
+    if (domainsFound || customProxiedDomainsFound) {
       try {
-        return [...domains, ...blockedDomains, ...customProxiedDomains].filter(
+        return [...domains, ...customProxiedDomains].filter(
           (element) => {
             return !ignoredHosts.includes(element)
           },
         )
       } catch (error) {
         console.error(error)
+        return []
       }
     }
     return []
-  };
+  }
 
   /**
    * Checks if the given URL is in the registry of banned websites.
    */
   async contains (url) {
     const hostname = utilities.extractHostnameFromUrl(url)
-    const { domains, ignoredHosts, blockedDomains } = await storage.get({
+    const { domains, ignoredHosts } = await storage.get({
       domains: [],
       ignoredHosts: [],
-      blockedDomains: [],
     })
 
-    const domainsArray = domains.concat(blockedDomains)
-
-    if (domainsArray.includes(hostname) && !ignoredHosts.includes(hostname)) {
+    if (domains.includes(hostname) && !ignoredHosts.includes(hostname)) {
       console.log(`Registry match found: ${hostname}`)
       return true
     }
     return false
-  };
+  }
 
   /**
    * Checks if the given URL is in registry of IDO (Information Dissemination Organizer).
@@ -194,7 +201,22 @@ class Registry {
       return dataObject
     }
     return {}
-  };
+  }
+
+  async enableRegistry () {
+    await storage.set({ useRegistry: true })
+  }
+
+  async disableRegistry () {
+    await storage.set({ useRegistry: false })
+  }
+
+  async clearRegistry () {
+    await storage.set({
+      domains: [],
+      customRegistryRecords: [],
+    })
+  }
 }
 
 export default new Registry()

@@ -19,6 +19,7 @@ jobs:
     - run: npm install -g node-pre-gyp
     - run: npm install
     - run: npm run lint
+    - run: npm run locales:check
       env:
         CI: true
         PROJECT_NAME: censortracker

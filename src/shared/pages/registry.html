@@ -28,11 +28,21 @@
           </svg>
         </a>
       </div>
-      <div class="main-page__title" data-i18n-key="optionsRegionTitle" id="options-region-title" ></div>
-      <div class="main-page__about" data-i18n-key="optionsRegionDesc"></div>
+      <div class="main-page__title" data-i18n-key="optionsRegistryTitle" id="options-region-title"></div>
+
+      <div class="checkbox__group">
+        <div class="main-page__turn">
+          <label for="useRegistryCheckbox" class="toggle-text" data-i18n-key="useRegistry"></label>
+          <input id="useRegistryCheckbox" type="checkbox" class="toggle-button">
+        </div>
+        <div class="main-page__about">
+          <div class="use_proxy__text" data-i18n-key="useRegistryDesc"></div>
+        </div>
+      </div>
 
       <div id="select-region">
-        <div class="title" data-i18n-key="selectRegionTitle"></div>
+        <div class="title" data-i18n-key="registrySelectRegionTitle"></div>
+        <div class="description" data-i18n-key="registrySelectRegionDesc"></div>
         <div class="select">
           <button type="button" class="select-toggle" data-i18n-key="countryAUTO" id="select-toggle"></button>
           <div class="select-dropdown">
@@ -43,6 +53,22 @@
               <li class="select-option" data-value="UA" data-i18n-key="countryUA"></li>
               <li class="select-option" data-value="AZ" data-i18n-key="countryAZ"></li>
             </ul>
+          </div>
+        </div>
+      </div>
+      <div id="registry-select-source" hidden>
+        <div id="proxyCustomOptionsRadioGroup" class="radio-buttons-group">
+          <div class="radio-button">
+            <input checked class="radio-button-input"
+                   id="registryTypeLightweight" name="proxy-radio" type="radio" value="custom">
+            <label class="radio-button-label"
+                   for="registryTypeLightweight" data-i18n-key="registryTypeLightweight"></label>
+          </div>
+          <div class="radio-button">
+            <input id="registryTypeComplete"
+                   class="radio-button-input" type="radio" name="proxy-radio" value="default">
+            <label class="radio-button-label"
+                   for="registryTypeComplete" data-i18n-key="registryTypeComplete"></label>
           </div>
         </div>
       </div>

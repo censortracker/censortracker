@@ -83,7 +83,7 @@ const webConfig = {
     'options': './src/shared/js/pages/options.js',
     'advanced-options': './src/shared/js/pages/advanced-options.js',
     'proxy-options': './src/shared/js/pages/proxy-options.js',
-    'region': './src/shared/js/pages/region.js',
+    'registry-options': './src/shared/js/pages/registry-options.js',
     'ignore-editor': './src/shared/js/pages/ignore-editor.js',
     'proxied-websites-editor': './src/shared/js/pages/proxied-websites-editor.js',
     'translator': './src/shared/js/pages/translator.js',
@@ -203,10 +203,10 @@ const webConfig = {
     }),
     new HTMLWebpackPlugin({
       title: extensionName,
-      filename: 'region.html',
-      template: 'src/shared/pages/region.html',
+      filename: 'registry.html',
+      template: 'src/shared/pages/registry.html',
       inject: true,
-      chunks: ['region', 'translator'],
+      chunks: ['registry-options', 'translator'],
       meta: contentSecurityPolicy,
     }),
     new HTMLWebpackPlugin({

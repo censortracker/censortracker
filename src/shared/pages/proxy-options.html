@@ -45,14 +45,14 @@
         </div>
 
         <div id="proxyCustomOptions" hidden>
-          <div id="proxyCustomOptionsRadioGroup" class="proxy-radio-btn__group">
-            <div class="proxy-radio-btn_el">
-              <input id="useDefaultProxy" class="proxy-radio-btn_input" type="radio" name="proxy-radio" value="default" checked>
-              <label class="proxy-radio-btn_label" for="useDefaultProxy" data-i18n-key="useDefaultProxy"></label>
+          <div id="proxyCustomOptionsRadioGroup" class="radio-buttons-group">
+            <div class="radio-button">
+              <input id="useDefaultProxy" class="radio-button-input" type="radio" name="proxy-radio" value="default" checked>
+              <label class="radio-button-label" for="useDefaultProxy" data-i18n-key="useDefaultProxy"></label>
             </div>
-            <div class="proxy-radio-btn_el">
-              <input class="proxy-radio-btn_input" type="radio" name="proxy-radio" id="useCustomProxy" value="custom">
-              <label class="proxy-radio-btn_label" for="useCustomProxy" data-i18n-key="useOwnProxy"></label>
+            <div class="radio-button">
+              <input class="radio-button-input" type="radio" name="proxy-radio" id="useCustomProxy" value="custom">
+              <label class="radio-button-label" for="useCustomProxy" data-i18n-key="useOwnProxy"></label>
             </div>
           </div>
 
@@ -67,7 +67,7 @@
           </div>
           <div class="extension__text" data-i18n-key="controlledByOtherExtensionDesc" data-i18n-render-prop="extensionName">
           </div>
-          <a class="extension__btn disable-other-extensions" data-i18n-key="disableAll"></a>
+          <a class="default-btn disable-other-extensions" data-i18n-key="disableAll"></a>
         </div>
 
         <div id="controlledByOtherExtensions" class="main-page__extension" hidden>
@@ -77,7 +77,7 @@
             <ol id="extensionsWhichControlsProxy">
             </ol>
           </div>
-          <a class="extension__btn disable-other-extensions" data-i18n-key="disableAll"></a>
+          <a class="default-btn disable-other-extensions" data-i18n-key="disableAll"></a>
         </div>
       </div>
     </div>

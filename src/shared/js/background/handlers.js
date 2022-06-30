@@ -179,7 +179,6 @@ export const handleInstalled = async ({ reason }) => {
   const UPDATED = reason === Browser.runtime.OnInstalledReason.UPDATE
   const INSTALLED = reason === Browser.runtime.OnInstalledReason.INSTALL
 
-  console.groupCollapsed('onInstall')
   // In Firefox, the UPDATE can be caused after granting incognito access.
   if (UPDATED && Browser.IS_FIREFOX) {
     const controlledByThisExtension = await ProxyManager.controlledByThisExtension()
@@ -192,6 +191,7 @@ export const handleInstalled = async ({ reason }) => {
   }
 
   if (INSTALLED) {
+    await Registry.enableRegistry()
     await Settings.enableExtension()
     await Settings.enableNotifications()
     await Settings.showInstalledPage()
@@ -215,7 +215,6 @@ export const handleInstalled = async ({ reason }) => {
       { name: 'proxy-setProxy', minutes: 10 },
     ])
   }
-  console.groupEnd()
 }
 
 export const handleTabState = async (tabId, { status = 'loading' } = {}, tab) => {
@@ -242,11 +241,11 @@ export const handleTabState = async (tabId, { status = 'loading' } = {}, tab) =>
 }
 
 export const handleTabCreate = async (tab) => {
-  const extensionEnabled = await Settings.extensionEnabled()
-
-  if (extensionEnabled) {
-    Settings.setDefaultIcon(tab.id)
-  } else {
-    Settings.setDisableIcon(tab.id)
-  }
+  Settings.extensionEnabled().then((enabled) => {
+    if (enabled) {
+      Settings.setDefaultIcon(tab.id)
+    } else {
+      Settings.setDisableIcon(tab.id)
+    }
+  })
 }

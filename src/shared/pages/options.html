@@ -41,8 +41,8 @@
           <div class="main-page__about" data-i18n-key="optionsProxyDesc"></div>
         </div>
         <div class="checkbox__group" id="regionOptionsGroup">
-          <a id="regionOptionsButton" href="region.html" class="main-page__link link-ignored">
-            <span data-i18n-key="optionsRegionTitle"></span>
+          <a id="regionOptionsButton" href="registry.html" class="main-page__link link-ignored">
+            <span data-i18n-key="optionsRegistryTitle"></span>
             <span class="arrow arrow-right">
             <svg width="8" height="14" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M7.5002 6.30005L1.9002 0.600049C1.5002 0.200049 0.900195 0.200049 0.500196 0.600049C0.100195
@@ -52,13 +52,13 @@
             </svg>
           </span>
           </a>
-          <div class="main-page__about" data-i18n-key="optionsRegionDesc"></div>
+          <div class="main-page__about" data-i18n-key="optionsRegistryDesc"></div>
         </div>
         <div class="main-page__extension" id="privateBrowsingPermissionsRequiredMessage" hidden>
           <div class="extension__title" data-i18n-key="privateBrowsingRequired"></div>
           <div class="extension__text" data-i18n-key="privateBrowsingRequiredDesc"></div>
 
-          <a id="howToGrantIncognitoAccess" class="extension__btn" data-i18n-key="howToGrantIncognitoAccess"></a>
+          <a id="howToGrantIncognitoAccess" class="default-btn" data-i18n-key="howToGrantIncognitoAccess"></a>
           <a id="grantPrivateBrowsingPermissionsButton" data-i18n-key="grantPrivateBrowsingPermissions"></a>
         </div>
 
@@ -108,7 +108,7 @@
       <div class="options-page-card">
         <div class="block__title" data-i18n-key="extraBlockTitle"></div>
         <div class="options-hr"></div>
-        <div class="checkbox__group" id="advancedOptions">
+        <div id="advancedOptions">
           <a id="advancedOptionsButton" href="advanced-options.html" class="main-page__link link-ignored">
             <span data-i18n-key="advancedOptionsTitle"></span>
             <span class="arrow arrow-right">
@@ -122,12 +122,16 @@
           </a>
           <div class="main-page__about" data-i18n-key="advancedOptionsDesc"></div>
         </div>
-
-        <a href="https://t.me/censortracker_feedback" target="_blank" id="feedbackLink" class="main-page__link">
+        <a href="https://censortracker.org/#faq" target="_blank" class="main-page__link">
+          <span class="main-page__about" data-i18n-key="faqLink"></span><span>&rarr;</span>
+        </a>
+        <a href="https://t.me/censortracker_feedback" target="_blank" class="options-link">
           <span class="main-page__about" data-i18n-key="shareFeedback"></span><span>&rarr;</span>
         </a>
       </div>
-
+      <div id="options-version">
+        <span id="version"></span>
+      </div>
     </div>
   </div>
 </div>

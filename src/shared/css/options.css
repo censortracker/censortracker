@@ -267,6 +267,7 @@ a {
 }
 
 .main-page__about,
+.description,
 .extension__text {
   font-weight: 400;
   font-size: 14px;
@@ -279,7 +280,8 @@ a {
   margin-bottom: 10px;
 }
 
-.extension__text {
+.extension__text,
+.description {
   margin-bottom: 20px;
 }
 
@@ -291,7 +293,7 @@ a {
   padding: 20px 30px;
 }
 
-.extension__btn {
+.default-btn {
   background-color: #3b332b;
   font-size: 14px;
   line-height: 15px;
@@ -304,13 +306,13 @@ a {
   margin-right: 15px;
 }
 
-.extension__btn:hover {
+.default-btn:hover {
   cursor: pointer;
   background-color: #625c55;
 }
 
-.extension__btn:active,
-.extension__btn:focus {
+.default-btn:active,
+.default-btn:focus {
   background-color: #2a251f;
 }
 
@@ -379,22 +381,22 @@ a {
   border: 1px solid #2a251f !important;
 }
 
-.proxy-radio-btn__group {
+.radio-buttons-group {
   display: flex;
   margin: 5px 0;
   flex-direction: column;
 }
 
-.proxy-radio-btn_el {
+.radio-button {
   margin: 15px 0;
   display: inline-block;
 }
 
-.proxy-radio-btn_el input[type=radio] {
+.radio-button input[type=radio] {
   display: none;
 }
 
-.proxy-radio-btn_el input[type=radio] + label::before {
+.radio-button input[type=radio] + label::before {
   content: "";
   display: inline-block;
   width: 20px;
@@ -407,8 +409,8 @@ a {
   border: 1px solid #3b332b;
 }
 
-.proxy-radio-btn_el:hover label::after,
-.proxy-radio-btn_el input[type=radio]:checked + label::after {
+.radio-button:hover label::after,
+.radio-button input[type=radio]:checked + label::after {
   content: "";
   display: inline-block;
   position: absolute;
@@ -420,7 +422,7 @@ a {
   border-radius: 5px;
 }
 
-.proxy-radio-btn_el label {
+.radio-button label {
   cursor: pointer;
   position: relative;
   padding-left: 45px;
@@ -744,8 +746,8 @@ kbd {
 }
 
 #debugInfoJSON {
-  width: 550px;
-  height: 350px;
+  width: 570px;
+  height: 520px;
 }
 
 #showDebugInfo {
@@ -855,6 +857,30 @@ kbd {
   margin-bottom: 28px;
 }
 
-#select-region {
+#select-region,
+#registry-select-source {
   margin-top: 25px;
+}
+
+.options-link {
+  margin-top: 15px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+#options-version {
+  padding: 0 30px;
+  width: 100%;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+#version {
+  opacity: 0.5;
+  width: 570px;
+  height: 20px;
+  bottom: 93px;
+  font-size: 13px;
+  font-weight: 500;
 }

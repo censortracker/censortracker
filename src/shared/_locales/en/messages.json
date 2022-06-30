@@ -236,7 +236,7 @@
     "message": "Turned on"
   },
   "optionsRegistryDesc": {
-    "message": "Censor Tracker tracks a registry of blocked websites  and automatically opens such sites, bypassing censorship."
+    "message": "Censor Tracker tracks a registries of blocked websites  and automatically opens such sites, bypassing censorship."
   },
   "optionsRegistryTitle": {
     "message": "Registry of Blocked Resources"

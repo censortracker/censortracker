@@ -108,7 +108,7 @@
     "message": "This service may transfer your personal data (including messages and all traffic) to government authorities."
   },
   "disseminatorTitle": {
-    "message": "May transmit your data to government authorities."
+    "message": "This service may transmit your data to government authorities."
   },
   "done": {
     "message": "Done!"
@@ -117,7 +117,7 @@
     "message": "Operation completed successfully."
   },
   "emergencyConfigDesc": {
-    "message": "Allows you to work even in conditions of complete blocking of all our IP addresses and hosts. Do not enable this mode unless there are availability issues."
+    "message": "This option allows Censor Tracker to work even in case of complete blocking of all our IP addresses and hosts. Do not enable this mode unless there are availability issues."
   },
   "emergencyConfigTitle": {
     "message": "Emergency Mode"
@@ -129,13 +129,13 @@
     "message": "enabled"
   },
   "extensionInstalledDesc": {
-    "message": "Pin the Censor Tracker in the browser panel in two clicks to always be aware of websites that may transmit your personal data to third parties."
+    "message": "Pin the Censor Tracker in the browser panel in two clicks to be always aware of websites that may transmit your personal data to third parties."
   },
   "extraBlockTitle": {
     "message": "Extra"
   },
   "faqLink": {
-    "message": "Frequently asked question"
+    "message": "Frequently asked questions"
   },
   "good": {
     "message": "Okay"
@@ -156,7 +156,7 @@
     "message": "Ignored Websites"
   },
   "ignoredSitesDesc": {
-    "message": "Hosts that will always be ignored by Censor Tracker. If there are problems with opening the website, this list may help. Each host starts with a new line."
+    "message": "Hosts that will always be ignored by Censor Tracker. If there is a problem while opening the website, this list may help. Each host starts with a new line."
   },
   "ignoredSitesTitle": {
     "message": "Ignored Websites"
@@ -176,7 +176,7 @@
     "message": "Private Browsing Permission Required"
   },
   "installedAllowIncognitoDescription": {
-    "message": "This permission is required for Censor Tracker to open blocked websites for you through a proxy. In Firefox, there is no other way."
+    "message": "This permission is required for Censor Tracker to open blocked websites for you through a proxy. Unfortunately, there is no other way for Firefox."
   },
   "installedAllowIncognitoDescriptionThen": {
     "message": "After that, open the Censor Tracker's popup and confirm the permissions are granted."
@@ -215,10 +215,10 @@
     "message": "All your settings will be removed. Are you sure you want to do this?"
   },
   "optionsIgnoredWebsitesDesc": {
-    "message": "Addresses for which proxy will always be disabled. If there are problems with opening certain websites, this list may help."
+    "message": "For these addresses proxy will always be disabled. If there are problems with opening certain websites, this list may help."
   },
   "optionsPageTitle": {
-    "message": "Options"
+    "message": "Settings"
   },
   "optionsProxiedWebsitesEditorDesc": {
     "message": "You can manually manage the list of domains that will be proxied by the extension."
@@ -236,7 +236,7 @@
     "message": "Turned on"
   },
   "optionsRegistryDesc": {
-    "message": "Censor Tracker tracks a registries of blocked websites  and automatically opens such sites, bypassing censorship."
+    "message": "Censor Tracker tracks a registries of blocked websites and automatically opens such sites, bypassing censorship."
   },
   "optionsRegistryTitle": {
     "message": "Registry of Blocked Resources"
@@ -271,13 +271,13 @@
     "message": "proxy is working fine"
   },
   "privateBrowsingPermissionsRequiredMessage": {
-    "message": "Proxy disabled. Private Window browsing permissions required →"
+    "message": "Proxy disabled. Private Windows browsing permissions required →"
   },
   "privateBrowsingRequired": {
     "message": "Allow the extension to work in private windows."
   },
   "privateBrowsingRequiredDesc": {
-    "message": "So that we can open blocked websites for you through our proxy. There is no another way to make proxy work in Firefox."
+    "message": "So that we could open blocked websites for you through our proxy. There is no another way to make proxy work in Firefox."
   },
   "proxiedWebsitesEditorPageDesc": {
     "message": "You can manually add domains that will be proxied by the extension."
@@ -322,7 +322,7 @@
     "message": "Use lightweight registry of blocked domains (100k+ domains)"
   },
   "resetToDefaultDesc": {
-    "message": "Reset all the settings to default and generate PAC file for your current region. This option is your choice if there are blocked websites availability problems."
+    "message": "Reset all settings to default and generate PAC file for your current region. Use this option if there are availability problems with blocked websites."
   },
   "resetToDefaultTitle": {
     "message": "Reset to default"

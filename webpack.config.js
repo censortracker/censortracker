@@ -7,6 +7,8 @@ const TerserPlugin = require('terser-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const HTMLWebpackPlugin = require('html-webpack-plugin')
 const MergeJsonWebpackPlugin = require('merge-jsons-webpack-plugin')
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 
 const extensionName = 'Censor Tracker'
 
@@ -251,10 +253,13 @@ const webConfig = {
         fileName: 'manifest.json',
       },
     }),
+    new MiniCssExtractPlugin(),
   ],
   optimization: {
-    minimize: false,
-    minimizer: [],
+    minimize: true,
+    minimizer: [
+      new CssMinimizerPlugin(),
+    ],
     moduleIds: 'named',
   },
 }
@@ -307,7 +312,7 @@ if (PRODUCTION) {
 
   // See https://webpack.js.org/configuration/optimization/#optimizationminimize
   webConfig.optimization.minimize = true
-  webConfig.optimization.minimizer = [
+  webConfig.optimization.minimizer.push(
     new TerserPlugin({
       terserOptions: {
         output: {
@@ -315,7 +320,7 @@ if (PRODUCTION) {
         },
       },
     }),
-  ]
+  )
   webWorkerConfig.devtool = 'nosources-source-map'
   webWorkerConfig.optimization.minimize = true
   webWorkerConfig.optimization.minimizer = [

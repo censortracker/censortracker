@@ -315,6 +315,12 @@
   "registrySelectRegionTitle": {
     "message": "Region to bypass country-specific censorship"
   },
+  "registryTypeComplete": {
+    "message": "Use a complete registry of blocked domains (400k+ domains)"
+  },
+  "registryTypeLightweight": {
+    "message": "Use lightweight registry of blocked domains (100k+ domains)"
+  },
   "resetToDefaultDesc": {
     "message": "Reset all the settings to default and generate PAC file for your current region. This option is your choice if there are blocked websites availability problems."
   },
@@ -374,11 +380,5 @@
   },
   "youCanCloseThisWindow": {
     "message": "You can close this window"
-  },
-  "registryTypeComplete": {
-    "message": "Use a complete registry of blocked domains (400k+ domains)"
-  },
-  "registryTypeLightweight": {
-    "message": "Use lightweight registry of blocked domains (100k+ domains)"
   }
 }

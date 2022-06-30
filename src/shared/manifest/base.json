@@ -1,4 +1,5 @@
 {
+  "version": "7.0.0",
   "name": "__MSG_appName__",
   "description": "__MSG_appDesc__",
   "author": "__MSG_appAuthor__",

@@ -8,7 +8,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 const HTMLWebpackPlugin = require('html-webpack-plugin')
 const MergeJsonWebpackPlugin = require('merge-jsons-webpack-plugin')
 
-const extensionName = 'CensorTracker'
+const extensionName = 'Censor Tracker'
 
 function resolve(dir) {
   return path.join(__dirname, dir)

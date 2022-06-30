@@ -20,6 +20,7 @@ a {
 .options-body {
   background-color: #fafafa;
 }
+
 .options-page-card {
   padding: 20px 30px;
   width: 100%;
@@ -30,9 +31,11 @@ a {
   margin-bottom: 20px;
 
 }
+
 .options-page-card:last-child {
   margin-bottom: 0;
 }
+
 .options-page-card .block__title {
   font-size: 16px;
   line-height: 20px;
@@ -714,6 +717,7 @@ kbd {
 .popup .popup-content .popup-title {
   margin-bottom: 10px;
 }
+
 .popup .popup-content .popup-text {
   font-weight: 400;
   margin-bottom: 40px;
@@ -726,11 +730,11 @@ kbd {
   right: 25px;
 }
 
-.popup .popup-content .close-popup path{
+.popup .popup-content .close-popup path {
   stroke: #3B332B;
 }
 
-.popup .popup-content .close-popup:hover{
+.popup .popup-content .close-popup:hover {
   cursor: pointer;
 }
 
@@ -863,10 +867,14 @@ kbd {
 }
 
 .options-link {
-  margin-top: 15px;
+  margin-top: 10px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+}
+
+.options-links {
+  margin-top: 30px;
 }
 
 #options-version {

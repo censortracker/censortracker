@@ -224,7 +224,7 @@
     "message": "You can manually manage the list of domains that will be proxied by the extension."
   },
   "optionsProxiedWebsitesEditorTitle": {
-    "message": "Proxied Websites"
+    "message": "Proxying List"
   },
   "optionsProxyDesc": {
     "message": "If a website is blocked, Censor Tracker will bypass restrictions to give you access to it. Disable this setting if you use another service to bypass censorship (for example, a VPN) to increase connection speed."
@@ -283,10 +283,10 @@
     "message": "You can manually add domains that will be proxied by the extension."
   },
   "proxiedWebsitesEditorPageTitle": {
-    "message": "Proxied Websites"
+    "message": "Proxying List"
   },
   "proxiedWebsitesTitle": {
-    "message": "Proxied Websites"
+    "message": "Proxying List"
   },
   "proxyDisabledPageTitle": {
     "message": "Proxying Disabled"
@@ -373,7 +373,7 @@
     "message": "Use registry of blocked websites"
   },
   "useRegistryDesc": {
-    "message": "We maintain registries of blocked sites in order to provide access to them through a proxy. If this option is disabled, then only sites from your list of «Proxied Websites» will be proxied."
+    "message": "We maintain registries of blocked sites in order to provide access to them through a proxy. If this option is disabled, then only sites from your list of «Proxying List» will be proxied."
   },
   "whatThisMean": {
     "message": "what does it mean"

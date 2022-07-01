@@ -229,8 +229,8 @@ export const handleTabState = async (tabId, { status = 'loading' } = {}, tab) =>
           if (blocked) {
             Settings.setBlockedIcon(tabId)
           } else if (disseminatorUrl) {
-            Settings.setDangerIcon(tabId)
             if (!cooperationRefused) {
+              Settings.setDangerIcon(tabId)
               await warnAboutInformationDisseminationOrganizer(tab.url)
             }
           }

@@ -167,6 +167,12 @@ class Registry {
     return []
   }
 
+  async isEmpty () {
+    const domains = await this.getDomains()
+
+    return domains.length === 0
+  }
+
   /**
    * Checks if the given URL is in the registry of banned websites.
    */

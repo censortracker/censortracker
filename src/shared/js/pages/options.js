@@ -1,4 +1,5 @@
 import ProxyManager from 'Background/proxy'
+import Registry from 'Background/registry'
 import * as storage from 'Background/storage'
 import Browser from 'Background/webextension';
 
@@ -18,6 +19,28 @@ import Browser from 'Background/webextension';
   const privateBrowsingPermissionsRequiredMessage = document.getElementById(
     'privateBrowsingPermissionsRequiredMessage',
   )
+  const optionsRegistryIsEmptyWarning = document.getElementById(
+    'optionsRegistryIsEmptyWarning',
+  )
+  const optionsRegistryUpdateDatabaseButton = document.getElementById(
+    'optionsRegistryUpdateDatabaseButton',
+  )
+  const optionsRegistryProxyingListButton = document.getElementById(
+    'optionsRegistryProxyingListButton',
+  )
+
+  Registry.isEmpty().then((isEmpty) => {
+    if (isEmpty) {
+      optionsRegistryUpdateDatabaseButton.addEventListener('click', (event) => {
+        window.location.href = 'advanced-options.html'
+      })
+
+      optionsRegistryProxyingListButton.addEventListener('click', (event) => {
+        window.location.href = 'proxied-websites-editor.html'
+      })
+      optionsRegistryIsEmptyWarning.classList.remove('hidden')
+    }
+  })
 
   if (proxyStatus) {
     let proxyStatusMessage = 'optionsProxyStatusTurnedOff'

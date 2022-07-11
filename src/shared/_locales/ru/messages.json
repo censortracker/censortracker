@@ -238,8 +238,20 @@
   "optionsRegistryDesc": {
     "message": "Censor Tracker ведёт реестры заблокированных сайтов, чтобы автоматически открывать такие сайты через прокси."
   },
+  "optionsRegistryIsEmptyDesc": {
+    "message": "Для вашего текущего региона пока нечего проксировать, так как реестр заблокированных сайтов пуст, пожалуйста, либо вручную обновите локальную базу, либо добавьте необходимые вам заблокированные сайты в «Проксируемые сайты», чтобы получить к ним доступ."
+  },
+  "optionsRegistryIsEmptyTitle": {
+    "message": "Сайты для проксирования не найдены."
+  },
+  "optionsRegistryProxyingListButton": {
+    "message": "Проксируемые сайты"
+  },
   "optionsRegistryTitle": {
     "message": "Регион"
+  },
+  "optionsRegistryUpdateDatabaseButton": {
+    "message": "Обновить базу данных"
   },
   "optionsTitle": {
     "message": "Настройки расширения Censor Tracker"

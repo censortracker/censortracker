@@ -140,8 +140,8 @@ import { choice, select } from 'Background/utilities'
     const currentConfig = await Registry.getCurrentConfig()
 
     currentConfig.currentProxyURI = await ProxyManager.getProxyServerURI()
-    currentConfig.proxyControlled = await ProxyManager.controlledByThisExtension()
     debugInfoJSON.textContent = JSON.stringify(currentConfig, null, 2)
+
     togglePopup('popupDebugInformation')
   })
 

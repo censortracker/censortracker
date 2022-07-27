@@ -4,6 +4,7 @@ import Registry from 'Background/registry'
 import Settings from 'Background/settings'
 import * as storage from 'Background/storage'
 import { choice, select } from 'Background/utilities'
+import Browser from 'Background/webextension'
 
 (async () => {
   const debugInfoOkBtn = select({ id: 'debugInfoOk' })
@@ -138,9 +139,15 @@ import { choice, select } from 'Background/utilities'
   showDebugInfo.addEventListener('click', async (event) => {
     const debugInfoJSON = document.getElementById('debugInfoJSON')
     const currentConfig = await Registry.getCurrentConfig()
+    const self = await Browser.management.getSelf()
+    const installedExtensions = await Browser.management.getAll()
+    const extensionsWithProxyPermissions = installedExtensions.filter(({ name, permissions }) => {
+      return permissions.includes('proxy') && name !== self.name
+    })
 
     currentConfig.currentProxyURI = await ProxyManager.getProxyServerURI()
     currentConfig.proxyControlled = await ProxyManager.controlledByThisExtension()
+    currentConfig.conflictingExtensions = extensionsWithProxyPermissions.map(({ name }) => name.split('–')[0].trim())
     debugInfoJSON.textContent = JSON.stringify(currentConfig, null, 2)
     togglePopup('popupDebugInformation')
   })

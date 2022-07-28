@@ -73,7 +73,6 @@ class Registry {
           }
         }
       }
-
       console.warn('Censor Tracker does not support your country.')
       return {}
     } catch (error) {

@@ -2,8 +2,25 @@ import * as storage from './storage'
 import * as utilities from './utilities'
 
 const REGISTRY_API_ENDPOINT = 'https://app.censortracker.org/api/config/'
+const REGISTRY_FALLBACK_CONFIG_URL = 'https://roskomsvoboda.github.io/ctconf/registry.fallback.json'
 
 class Registry {
+  async getFallbackConfig () {
+    let { registryFallbackConfig } = await storage.get('registryFallbackConfig')
+
+    if (registryFallbackConfig === undefined) {
+      const response = await fetch(REGISTRY_FALLBACK_CONFIG_URL)
+
+      registryFallbackConfig = await response.json()
+
+      storage.set({ registryFallbackConfig }).then(() => {
+        console.warn('The fallback config fetched and cached.')
+      })
+      return registryFallbackConfig
+    }
+    return registryFallbackConfig
+  }
+
   async getCurrentConfig () {
     const { registryConfig } = await storage.get({
       registryConfig: {},
@@ -27,57 +44,57 @@ class Registry {
   }
 
   async getConfig () {
+    const fallbackConfig = await this.getFallbackConfig()
+
     try {
       const registryAPIEndpoint = await this.getAPIEndpoint()
 
       console.warn(`Fetching registry config from: ${registryAPIEndpoint}`)
       const response = await fetch(`${registryAPIEndpoint}`)
+      const data = await response.json()
 
-      if (response.ok) {
-        const data = await response.json()
+      if (Object.keys(data).length > 0) {
+        await storage.set({ registryConfig: data })
+        const {
+          specifics,
+          registryUrl,
+          countryDetails,
+          customRegistryUrl,
+        } = data
 
-        if (Object.keys(data).length > 0) {
-          await storage.set({ registryConfig: data })
-          const {
-            specifics,
-            registryUrl,
-            countryDetails,
-            customRegistryUrl,
-          } = data
+        const apis = []
 
-          const apis = []
+        if (registryUrl) {
+          apis.push({
+            url: registryUrl,
+            storageKey: 'domains',
+          })
+        }
 
-          if (registryUrl) {
-            apis.push({
-              url: registryUrl,
-              storageKey: 'domains',
-            })
-          }
+        if (customRegistryUrl) {
+          apis.push({
+            url: customRegistryUrl,
+            storageKey: 'customRegistryRecords',
+          })
+        }
 
-          if (customRegistryUrl) {
-            apis.push({
-              url: customRegistryUrl,
-              storageKey: 'customRegistryRecords',
-            })
-          }
+        if (specifics) {
+          apis.push({
+            url: specifics.cooperationRefusedORIUrl,
+            storageKey: 'disseminators',
+          })
+        }
 
-          if (specifics) {
-            apis.push({
-              url: specifics.cooperationRefusedORIUrl,
-              storageKey: 'disseminators',
-            })
-          }
-          return {
-            apis,
-            countryDetails,
-          }
+        return {
+          apis,
+          countryDetails,
         }
       }
-      console.warn('Censor Tracker does not support your country.')
-      return {}
+      console.error('Backend is intermittent: using fallback config.')
+      return fallbackConfig
     } catch (error) {
-      console.error(error)
-      return {}
+      console.error('Backend is intermittent: using fallback config.')
+      return fallbackConfig
     }
   }
 
@@ -87,11 +104,6 @@ class Registry {
   async sync () {
     console.group('Registry.sync()')
     const { apis } = await this.getConfig()
-
-    if (apis.length === 0) {
-      console.error('Sync error: there are no API endpoints for your country.')
-      return false
-    }
 
     for (const { storageKey, url } of apis) {
       try {

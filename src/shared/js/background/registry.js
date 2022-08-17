@@ -85,14 +85,17 @@ class Registry {
           })
         }
 
+        await storage.set({ backendIsIntermittent: false })
         return {
           apis,
           countryDetails,
         }
       }
       console.error('Backend is intermittent: using fallback config.')
+      await storage.set({ backendIsIntermittent: true })
       return fallbackConfig
     } catch (error) {
+      await storage.set({ backendIsIntermittent: true })
       console.error('Backend is intermittent: using fallback config.')
       return fallbackConfig
     }

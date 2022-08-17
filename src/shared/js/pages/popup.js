@@ -47,6 +47,7 @@ import Browser from 'Background/webextension';
   const popupProxyStatusOk = document.getElementById('popupProxyStatusOk')
   const popupProxyDisabled = document.getElementById('popupProxyDisabled')
   const popupProxyStatusError = document.getElementById('popupProxyStatusError')
+  const popupBackedStatusError = document.getElementById('popupBackedStatusError')
   const footerExtensionIsOn = document.getElementById('footerExtensionIsOn')
   const currentDomainHeader = document.getElementById('currentDomainHeader')
   const closeDetailsButtons = document.querySelectorAll('.btn-hide-details')
@@ -65,6 +66,11 @@ import Browser from 'Background/webextension';
 
   const proxyingEnabled = await ProxyManager.isEnabled()
   const extensionEnabled = await Settings.extensionEnabled()
+
+  storage.get('backendIsIntermittent')
+    .then(({ backendIsIntermittent = false }) => {
+      popupBackedStatusError.hidden = !backendIsIntermittent
+    })
 
   ProxyManager.alive().then((alive) => {
     if (proxyingEnabled) {

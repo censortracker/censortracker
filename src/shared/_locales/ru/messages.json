@@ -392,5 +392,14 @@
   },
   "youCanCloseThisWindow": {
     "message": "Можно закрыть это окно"
+  },
+  "backendIsIntermittentTitle": {
+    "message": "Серверная служба сейчас работает с перебоями."
+  },
+  "backendIsIntermittentDesc": {
+    "message": "Censor Tracker будет использовать резервную конфигурацию до тех пор, пока серверная служба не заработает."
+  },
+  "popupBackedStatusError": {
+    "message": "серверная служба работают с перебоями"
   }
 }

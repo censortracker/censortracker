@@ -28,6 +28,12 @@ import Browser from 'Background/webextension';
   const optionsRegistryProxyingListButton = document.getElementById(
     'optionsRegistryProxyingListButton',
   )
+  const backendIsIntermittentAlert = document.getElementById('backendIsIntermittentAlert')
+
+  storage.get('backendIsIntermittent')
+    .then(({ backendIsIntermittent = false }) => {
+      backendIsIntermittentAlert.hidden = !backendIsIntermittent
+    })
 
   Registry.isEmpty().then((isEmpty) => {
     if (isEmpty) {

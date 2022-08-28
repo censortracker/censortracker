@@ -116,5 +116,7 @@ import Browser from 'Background/webextension';
 
   const { version: currentVersion } = Browser.runtime.getManifest()
 
-  version.textContent = await Browser.i18n.getMessage('optionsVersion', currentVersion)
+  if (version) {
+    version.textContent = await Browser.i18n.getMessage('optionsVersion', currentVersion)
+  }
 })()

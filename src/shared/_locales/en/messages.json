@@ -26,6 +26,12 @@
   "autosaveTip": {
     "message": "Changes will be automatically applied upon pressing <kbd>Enter</kbd>."
   },
+  "backendIsIntermittentDesc": {
+    "message": "Censor Tracker will use the fallback configuration until the backend service is alive."
+  },
+  "backendIsIntermittentTitle": {
+    "message": "The backend service is intermittent right now."
+  },
   "blockedDesc": {
     "message": "Access to the website is blocked, but Censor Tracker provides you access to it through a reliable proxy."
   },
@@ -88,6 +94,9 @@
   },
   "countryBY": {
     "message": "Belarus"
+  },
+  "countryKZ": {
+    "message": "Kazakhstan"
   },
   "countryRU": {
     "message": "Russia"
@@ -270,6 +279,9 @@
   "parentalControlTitle": {
     "message": "«Parental» Control"
   },
+  "popupBackedStatusError": {
+    "message": "the backend service is intermittent"
+  },
   "popupNewTabMessage": {
     "message": "New Tab"
   },
@@ -392,14 +404,5 @@
   },
   "youCanCloseThisWindow": {
     "message": "You can close this window"
-  },
-  "backendIsIntermittentTitle": {
-    "message": "The backend service is intermittent right now."
-  },
-  "backendIsIntermittentDesc": {
-    "message": "Censor Tracker will use the fallback configuration until the backend service is alive."
-  },
-  "popupBackedStatusError": {
-    "message": "the backend service is intermittent"
   }
 }

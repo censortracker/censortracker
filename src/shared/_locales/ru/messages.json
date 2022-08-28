@@ -26,6 +26,12 @@
   "autosaveTip": {
     "message": "Изменения автоматически сохраняются при нажатии <kbd>Enter</kbd>."
   },
+  "backendIsIntermittentDesc": {
+    "message": "Censor Tracker будет использовать резервную конфигурацию до тех пор, пока серверная служба не заработает."
+  },
+  "backendIsIntermittentTitle": {
+    "message": "Серверная служба сейчас работает с перебоями."
+  },
   "blockedDesc": {
     "message": "Доступ к сайту запрещён, но Censor Tracker даёт к нему доступ через надёжный прокси."
   },
@@ -88,6 +94,9 @@
   },
   "countryBY": {
     "message": "Беларусь"
+  },
+  "countryKZ": {
+    "message": "Казахстан"
   },
   "countryRU": {
     "message": "Россия"
@@ -270,6 +279,9 @@
   "parentalControlTitle": {
     "message": "«Родительский» контроль"
   },
+  "popupBackedStatusError": {
+    "message": "серверная служба работают с перебоями"
+  },
   "popupNewTabMessage": {
     "message": "Новая вкладка"
   },
@@ -392,14 +404,5 @@
   },
   "youCanCloseThisWindow": {
     "message": "Можно закрыть это окно"
-  },
-  "backendIsIntermittentTitle": {
-    "message": "Серверная служба сейчас работает с перебоями."
-  },
-  "backendIsIntermittentDesc": {
-    "message": "Censor Tracker будет использовать резервную конфигурацию до тех пор, пока серверная служба не заработает."
-  },
-  "popupBackedStatusError": {
-    "message": "серверная служба работают с перебоями"
   }
 }

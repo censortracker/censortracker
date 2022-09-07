@@ -71,6 +71,8 @@
                         </button>
                     </a>
                 </li>
+                <li id="brows-id">
+                </li>
 
                 <li><a href="https://github.com/roskomsvoboda/censortracker/releases/">Скачать архив с расширением</a>
                 </li>
@@ -504,6 +506,20 @@
     }
     $('.animated').css("top", cardTop);
   });
+
+  window.onload = function () {
+    let agent = navigator.userAgent.toLowerCase();
+
+    if (agent.indexOf('chrome') != -1) { 
+    document.getElementById('brows-id').innerHTML = 
+    `
+        <a href="" target="_blank" download>
+            <button class="btn btn-lg btn-primary download-btn-b">
+                Установить в обход блокировки
+            </button>
+        </a>
+    `
+    }
 </script>
 
 </body>

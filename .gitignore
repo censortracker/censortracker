@@ -101,6 +101,9 @@ out
 # TernJS port file
 .tern-port
 
+# macOS Finder setting files
+.DS_Store
+
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test
 

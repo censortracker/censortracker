@@ -66,6 +66,10 @@ a {
     background-color: #3f5fba;
 }
 
+.navbar-quokka {
+    text-decoration: none !important;
+}
+
 .lead {
     color: #555;
     font-size: 18px;

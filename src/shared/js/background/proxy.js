@@ -80,7 +80,7 @@ class ProxyManager {
     const pacData = await this.generateProxyAutoConfigData()
 
     if (!pacData) {
-      console.warn('Cannot set proxy: local database is empty')
+      await this.removeProxy()
       return false
     }
 

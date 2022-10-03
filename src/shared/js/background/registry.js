@@ -192,13 +192,22 @@ class Registry {
    */
   async contains (url) {
     const hostname = utilities.extractHostnameFromUrl(url)
-    const { domains, ignoredHosts } = await storage.get({
+    const {
+      domains,
+      ignoredHosts,
+      customProxiedDomains,
+    } = await storage.get({
       domains: [],
       ignoredHosts: [],
+      customProxiedDomains: [],
     })
 
-    if (domains.includes(hostname) && !ignoredHosts.includes(hostname)) {
-      console.log(`Registry match found: ${hostname}`)
+    if (ignoredHosts.includes(hostname)) {
+      return false
+    }
+
+    if (domains.includes(hostname) || customProxiedDomains.includes(hostname)) {
+      console.log(`Registry or custom registry match found: ${hostname}`)
       return true
     }
     return false

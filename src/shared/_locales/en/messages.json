@@ -33,7 +33,7 @@
     "message": "The backend service is intermittent right now."
   },
   "blockedDesc": {
-    "message": "Access to the website is blocked, but Censor Tracker provides you access to it through a reliable proxy."
+    "message": "This website is either blocked or added to your custom proxying list, so Censor Tracker provides you access to it through a reliable proxy."
   },
   "blockedTitle": {
     "message": "Blocked"

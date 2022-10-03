@@ -5,7 +5,7 @@ import 'codemirror/addon/display/autorefresh'
 import 'codemirror/lib/codemirror.css'
 
 import * as storage from 'Background/storage'
-import { validateUrls } from 'Background/utilities'
+import { parseURLStrings } from 'Background/utilities'
 import CodeMirror from 'codemirror'
 
 (async () => {
@@ -33,7 +33,7 @@ import CodeMirror from 'codemirror'
       const urls = editor.getValue().split('\n')
 
       await storage.set({
-        customProxiedDomains: validateUrls(urls),
+        customProxiedDomains: parseURLStrings(urls),
       })
       console.warn('Custom proxy list updated!')
       event.preventDefault()

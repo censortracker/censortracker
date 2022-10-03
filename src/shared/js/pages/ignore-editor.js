@@ -5,7 +5,7 @@ import 'codemirror/addon/display/autorefresh'
 import 'codemirror/lib/codemirror.css'
 
 import Ignore from 'Background/ignore'
-import { validateUrls } from 'Background/utilities'
+import { parseURLStrings } from 'Background/utilities'
 import CodeMirror from 'codemirror'
 
 (async () => {
@@ -30,12 +30,12 @@ import CodeMirror from 'codemirror'
   })
 
   document.addEventListener('keydown', async (event) => {
-    if ((event.ctrlKey && event.key === 's') || event.keyCode === 13) {
+    if (event.keyCode === 13) {
       const editorContent = editor.getValue().trim()
 
       Ignore.clear().then(async () => {
         const urls = editorContent.split('\n')
-        const validUrls = validateUrls(urls)
+        const validUrls = parseURLStrings(urls)
 
         for (const url of validUrls) {
           await Ignore.add(url)

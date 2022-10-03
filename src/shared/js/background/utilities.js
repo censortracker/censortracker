@@ -151,7 +151,7 @@ export const translateDocument = (doc, props = {}) => {
  * @param urls Array of urls.
  * @returns {Array[string]} Array of valid URLs.
  */
-export const validateUrls = (urls) => {
+export const parseURLStrings = (urls) => {
   const result = new Set()
 
   for (const url of urls) {
@@ -163,7 +163,7 @@ export const validateUrls = (urls) => {
         domain = domain.split('/', 1)[0]
         result.add(domain)
       } else {
-        console.log(domain)
+        result.add(domain)
       }
     }
   }

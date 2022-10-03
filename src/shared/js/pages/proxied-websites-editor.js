@@ -35,7 +35,7 @@ import CodeMirror from 'codemirror'
       await storage.set({
         customProxiedDomains: validateUrls(urls),
       })
-      console.warn('Ignore list updated')
+      console.warn('Custom proxy list updated!')
       event.preventDefault()
     }
   })

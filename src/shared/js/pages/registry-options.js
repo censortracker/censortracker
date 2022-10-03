@@ -22,10 +22,12 @@ import * as storage from 'Background/storage'
     const proxyingEnabled = await ProxyManager.isEnabled()
 
     if (useRegistry) {
+      await Registry.enableRegistry()
       await Registry.sync()
       await ProxyManager.setProxy()
     } else {
       await Registry.clearRegistry()
+      await Registry.disableRegistry()
       await storage.set({ currentRegionName: '' })
 
       if (proxyingEnabled) {

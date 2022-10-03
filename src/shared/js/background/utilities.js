@@ -159,10 +159,11 @@ export const validateUrls = (urls) => {
       let domain = url.replace(/^https?:\/\//, '')
 
       if (domain.indexOf('/') !== -1) {
-        domain = domain.split('/', 1)
+        // Extract domain name from URL.
+        domain = domain.split('/', 1)[0]
         result.add(domain)
       } else {
-        result.add(domain)
+        console.log(domain)
       }
     }
   }

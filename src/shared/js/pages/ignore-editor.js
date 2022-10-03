@@ -30,8 +30,12 @@ import CodeMirror from 'codemirror'
   })
 
   document.addEventListener('keydown', async (event) => {
-    if (event.keyCode === 13) {
+    if (event.keyCode === 13 || event.keyCode === 8) {
       const editorContent = editor.getValue().trim()
+
+      if (editorContent.length === 0) {
+        await Ignore.clear()
+      }
 
       Ignore.clear().then(async () => {
         const urls = editorContent.split('\n')

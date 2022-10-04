@@ -53,7 +53,6 @@ const webWorkerConfig = {
     minimizer: [],
     moduleIds: 'named',
   },
-
   module: {
     rules: [
       {
@@ -69,6 +68,11 @@ const webWorkerConfig = {
         include: [
           resolve('src'),
         ],
+      },
+      {
+        test: /\.ts$/,
+        use: 'ts-loader',
+        exclude: /node_modules/,
       },
     ],
   },

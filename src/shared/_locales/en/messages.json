@@ -404,5 +404,14 @@
   },
   "youCanCloseThisWindow": {
     "message": "You can close this window"
+  },
+  "siteActionIgnoreTitle": {
+    "message": "Ignore this website"
+  },
+  "siteActionProxyTitle": {
+    "message": "Always proxy this website"
+  },
+  "siteActionTitle": {
+    "message": "Website customization"
   }
 }

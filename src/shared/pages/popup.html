@@ -18,7 +18,22 @@
       <a href="https://donate.roskomsvoboda.org/" class="icon__donate" target="_blank"></a>
     </div>
     <div class="main-page__info">
-      <div class="main-page__title current-domain" id="currentDomainHeader" hidden>
+
+      <div class="main-page__title title-domain">
+        <div class="current-domain title-normal current-domain" id="currentDomainHeader"></div>
+        <span class="icon__site_settings icon-show site-action hidden" id="toggleSiteActions"></span>
+      </div>
+
+      <div class="main-page__block main-page-setting hidden" id="siteActions">
+        <div class="block__title" data-i18n-key="siteActionTitle"></div>
+        <div class="main-page__turn">
+          <label for="siteActionIgnoreCheckbox" class="toggle-text" data-i18n-key="siteActionIgnoreTitle"></label>
+          <input id="siteActionIgnoreCheckbox" type="checkbox" class="toggle-button">
+        </div>
+        <div class="main-page__turn">
+          <label for="siteActionProxyCheckbox" class="toggle-text" data-i18n-key="siteActionProxyTitle"></label>
+          <input id="siteActionProxyCheckbox" type="checkbox" class="toggle-button">
+        </div>
       </div>
 
       <div class="main-page__block main-page-info" id="ori">
@@ -46,7 +61,8 @@
       <div class="main-page__block main-page-info" id="restrictions">
         <div class="block__title">
           <span data-render-var="title" id="restrictionType" data-i18n-key="notBlockedTitle"></span>
-          <img class="icon__status" data-render-var="statusIcon" src="images/popup/status/ok.svg" width="24px" height="24px" alt=""/>
+          <img class="icon__status" data-render-var="statusIcon" src="images/popup/status/ok.svg" width="24px"
+               height="24px" alt=""/>
         </div>
         <div class="block__btn btn-about btn-what-this-mean">
           <span data-i18n-key="whatThisMean"></span>
@@ -95,8 +111,10 @@
           <b>Censor Tracker</b> <span class="censor-tracker__turn" data-i18n-key="extensionEnabledTitle"></span>
         </div>
         <div id="popupProxyStatusOk" data-i18n-key="popupProxyStatusOk" class="censor-tracker__status" hidden></div>
-        <div id="popupProxyStatusError" data-i18n-key="popupProxyStatusError" class="censor-tracker__status status-error" hidden></div>
-        <div id="popupBackedStatusError" data-i18n-key="popupBackedStatusError" class="censor-tracker__status status-error" hidden></div>
+        <div id="popupProxyStatusError" data-i18n-key="popupProxyStatusError"
+             class="censor-tracker__status status-error" hidden></div>
+        <div id="popupBackedStatusError" data-i18n-key="popupBackedStatusError"
+             class="censor-tracker__status status-error" hidden></div>
         <div id="popupProxyDisabled" data-i18n-key="popupProxyDisabled" class="censor-tracker__status" hidden></div>
       </div>
       <div class="censor-tracker__column">

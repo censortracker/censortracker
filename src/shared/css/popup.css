@@ -391,10 +391,110 @@ div#grantPrivateBrowsingPermissionsButton {
   color: #8A8580;
   margin-top: 3px;
 }
-.censor-tracker__status.status-error{
+
+.censor-tracker__status.status-error {
   color: #B66B14;
 }
 
 .censor-tracker__turn {
   font-weight: 400;
+}
+
+.main-page__title.title-domain {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.main-page__info .icon__site_settings {
+  width: 16px;
+  height: 16px;
+  margin-left: 8px;
+}
+
+.main-page__info .icon__site_settings.icon-show {
+  mask: url(../images/popup/more.svg) no-repeat center / contain;
+  -webkit-mask: url(../images/popup/more.svg) no-repeat center / contain;
+  background-color: #3b332b;
+}
+
+.main-page__info .icon__site_settings.icon-hide {
+  mask: url(../images/popup/close.svg) no-repeat center / contain;
+  -webkit-mask: url(../images/popup/close.svg) no-repeat center / contain;
+  background-color: #3b332b;
+}
+
+.main-page__info .icon__site_settings:hover {
+  cursor: pointer;
+  filter: contrast(300%);
+}
+
+.toggle-button {
+  position: relative;
+  display: inline-block;
+  margin: 0;
+  vertical-align: top;
+  outline: none;
+  cursor: pointer;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 38px;
+  height: 20px;
+  left: 0;
+  top: 0;
+  background-color: #e0e0e0;
+  border-radius: 20px;
+}
+
+.toggle-button::after {
+  content: "";
+  display: inline-block;
+  position: absolute;
+  left: 1px;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  top: 2px;
+  background: #fff;
+  box-shadow: 0 2px 11px rgba(15, 13, 11, 0.055), 0 1px 6px rgba(15, 13, 11, 0.0655718), 0 0.5 3.5 rgba(15, 13, 11, 0.079074);
+  transform: translateX(0);
+  transition: all 150ms ease-in-out;
+}
+
+.toggle-button:checked::after {
+  transform: translateX(calc(100% + 3px));
+  background-color: #fff;
+}
+
+.toggle-button:checked {
+  background: linear-gradient(319.24deg, #3ca55c 0%, #b5ac49 100%), #fff;
+}
+
+.main-page-setting {
+  background: #F4F7FA;
+  border-radius: 5px;
+  margin: 20px 0px 30px;
+  padding: 14px;
+}
+
+.main-page-setting > .block__title {
+  font-size: 13px;
+  line-height: 12px;
+  color: #8A8580;
+  font-weight: 400;
+  padding: 0
+}
+
+.main-page__turn {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  font-weight: 500;
+}
+
+.hidden {
+  display: none;
 }

@@ -404,5 +404,14 @@
   },
   "youCanCloseThisWindow": {
     "message": "Можно закрыть это окно"
+  },
+  "siteActionIgnoreTitle": {
+    "message": "Игнорировать сайт"
+  },
+  "siteActionProxyTitle": {
+    "message": "Всегда проксировать"
+  },
+  "siteActionTitle": {
+    "message": "Индивидуальные настройки сайта"
   }
 }

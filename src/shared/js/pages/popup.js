@@ -1,3 +1,4 @@
+import Ignore from 'Background/ignore'
 import ProxyManager from 'Background/proxy'
 import Registry from 'Background/registry'
 import Settings from 'Background/settings'
@@ -55,6 +56,59 @@ import Browser from 'Background/webextension';
   const restrictionDescription = document.getElementById('restrictionDescription')
   const controlledByOtherExtensionsButton = document.getElementById('controlledByOtherExtensionsButton')
   const privateBrowsingPermissionsRequiredButton = document.getElementById('privateBrowsingPermissionsRequiredButton')
+  const toggleSiteActionsButton = document.getElementById('toggleSiteActions')
+  const siteActions = document.getElementById('siteActions')
+  const siteActionProxyCheckbox = document.getElementById('siteActionProxyCheckbox')
+  const siteActionIgnoreCheckbox = document.getElementById('siteActionIgnoreCheckbox')
+
+  const [{ url: currentUrl }] = await Browser.tabs.query({
+    active: true, lastFocusedWindow: true,
+  })
+  const currentHostname = extractHostnameFromUrl(currentUrl)
+
+  // Show website actions only for valid URLs
+  if (isValidURL(currentUrl)) {
+    toggleSiteActionsButton.classList.remove('hidden')
+    toggleSiteActionsButton.addEventListener('click', async (event) => {
+      Registry.contains(currentHostname)
+        .then((blocked) => {
+          siteActionProxyCheckbox.checked = blocked
+        })
+
+      Ignore.contains(currentHostname)
+        .then((ignored) => {
+          if (ignored) {
+            siteActionIgnoreCheckbox.checked = ignored
+          }
+        })
+
+      if (event.target.classList.contains('icon-show')) {
+        siteActions.classList.remove('hidden')
+        event.target.classList.remove('icon-show')
+        event.target.classList.add('icon-hide')
+      } else {
+        siteActions.classList.add('hidden')
+        event.target.classList.add('icon-show')
+        event.target.classList.remove('icon-hide')
+      }
+    })
+
+    siteActionProxyCheckbox.addEventListener('change', async (event) => {
+      if (event.target.checked) {
+        await Registry.add(currentUrl)
+      } else {
+        await Registry.remove(currentUrl)
+      }
+    })
+
+    siteActionIgnoreCheckbox.addEventListener('change', async (event) => {
+      if (event.target.checked) {
+        await Ignore.add(currentUrl)
+      } else {
+        await Ignore.remove(currentUrl)
+      }
+    })
+  }
 
   privateBrowsingPermissionsRequiredButton.addEventListener('click', () => {
     window.location.href = 'incognito-required-popup.html'
@@ -131,14 +185,6 @@ import Browser from 'Background/webextension';
           })
       })
   }
-
-  const [{ url: currentUrl }] = await Browser.tabs.query({
-    active: true, lastFocusedWindow: true,
-  })
-
-  const currentHostname = extractHostnameFromUrl(currentUrl)
-
-  console.warn(`Current hostname: ${currentHostname}`)
 
   if (isValidURL(currentHostname)) {
     currentDomainHeader.innerText = currentHostname

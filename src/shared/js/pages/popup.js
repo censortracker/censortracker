@@ -4,13 +4,14 @@ import Registry from 'Background/registry'
 import Settings from 'Background/settings'
 import * as storage from 'Background/storage'
 import {
-  extractHostnameFromUrl,
+  extractDomainFromUrl,
   i18nGetMessage,
   isValidURL,
 } from 'Background/utilities'
 import Browser from 'Background/webextension';
 
 (async () => {
+  // TODO: Refactor this
   const uiText = {
     ori: {
       found: {
@@ -67,7 +68,7 @@ import Browser from 'Background/webextension';
     active: true,
     lastFocusedWindow: true,
   })
-  const currentHostname = extractHostnameFromUrl(currentUrl)
+  const currentHostname = extractDomainFromUrl(currentUrl) || 'newtab'
 
   if (isValidURL(currentUrl)) {
     toggleSiteActionsButton.classList.remove('hidden')
@@ -259,9 +260,6 @@ import Browser from 'Background/webextension';
 
     const { url: disseminatorUrl, cooperationRefused } =
       await Registry.retrieveInformationDisseminationOrganizerJSON(currentHostname)
-
-    console.log(`Disseminator URL: ${disseminatorUrl}`)
-    console.log(`Disseminator Cooperation Refused: ${cooperationRefused}`)
 
     if (disseminatorUrl) {
       if (!cooperationRefused) {

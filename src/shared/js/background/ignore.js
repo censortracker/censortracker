@@ -1,6 +1,6 @@
 import * as storage from './storage'
 import * as utilities from './utilities'
-import { extractHostnameFromUrl } from './utilities'
+import { extractDomainFromUrl } from './utilities'
 
 const IGNORE_API_ENDPOINT = 'https://app.censortracker.org/api/ignore/'
 
@@ -50,7 +50,7 @@ export class Ignore {
    * @param url URL to ignore.
    */
   async add (url) {
-    const hostname = extractHostnameFromUrl(url)
+    const hostname = extractDomainFromUrl(url)
     const { ignoredHosts } = await storage.get({ ignoredHosts: [] })
 
     if (!ignoredHosts.includes(hostname)) {
@@ -63,7 +63,7 @@ export class Ignore {
   }
 
   async remove (url) {
-    const hostname = extractHostnameFromUrl(url)
+    const hostname = extractDomainFromUrl(url)
     const { ignoredHosts } = await storage.get({ ignoredHosts: [] })
 
     if (ignoredHosts.includes(hostname)) {
@@ -82,7 +82,7 @@ export class Ignore {
    */
   async contains (url) {
     const ignoredHosts = await this.getAll()
-    const hostname = utilities.extractHostnameFromUrl(url)
+    const hostname = utilities.extractDomainFromUrl(url)
 
     if (ignoredHosts.includes(hostname)) {
       console.warn(`Ignoring host: ${hostname}`)

@@ -1,3 +1,4 @@
+import { getDomain } from 'tldts'
 import isURL from 'validator/lib/isURL'
 
 import Browser from './webextension'
@@ -30,55 +31,21 @@ export const isValidURL = (url) => {
 }
 
 /**
- * Extract URL from params.
- * @param url URL.
- * @returns {string|*}
+ * Extract domain from the URL address.
+ * @param url URL string.
+ * @returns {string} Extracted domain.
  */
-const extractURLFromQueryParams = (url) => {
+export const extractDomainFromUrl = (url) => {
   if (isExtensionUrl(url)) {
     const urlParams = url.split('?')[1]
     const searchParams = new URLSearchParams(urlParams)
     const encodedUrl = searchParams.get('loadFor')
 
     if (encodedUrl) {
-      return atob(encodedUrl)
+      url = atob(encodedUrl)
     }
   }
-  return url
-}
-
-/**
- * Extract hostname from the URL address.
- * @param url URL string.
- * @returns {string} Extracted hostname.
- */
-export const extractHostnameFromUrl = (url) => {
-  url = extractURLFromQueryParams(url)
-
-  url = url.trim().replace('www.', '')
-  try {
-    return new URL(url).hostname
-  } catch (error) {
-    return url
-  }
-}
-
-/**
- * Extracts origin decoded URL.
- * @param url Chrome extension URL.
- * @param key Key.
- * @returns {string|*}
- */
-export const extractDecodedOriginUrl = (url, key = 'originUrl') => {
-  try {
-    const [, params] = url.split('?')
-    const searchParams = new URLSearchParams(params)
-    const encodedHostname = searchParams.get(key)
-
-    return atob(encodedHostname)
-  } catch (error) {
-    return null
-  }
+  return getDomain(url)
 }
 
 export const i18nGetMessage = (key, props = {}) => {
@@ -117,16 +84,10 @@ export const parseURLStrings = (urls) => {
   const result = new Set()
 
   for (const url of urls) {
-    if (url !== '' && url.indexOf('.') !== -1 && !url.endsWith('.')) {
-      let domain = url.replace(/^https?:\/\//, '')
+    const domain = getDomain(url)
 
-      if (domain.indexOf('/') !== -1) {
-        // Extract domain name from URL.
-        domain = domain.split('/', 1)[0]
-        result.add(domain)
-      } else {
-        result.add(domain)
-      }
+    if (domain) {
+      result.add(domain)
     }
   }
   return Array.from(result)

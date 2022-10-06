@@ -1,5 +1,5 @@
 import ProxyManager from 'Background/proxy'
-import { extractDecodedOriginUrl, translateDocument } from 'Background/utilities'
+import { translateDocument } from 'Background/utilities'
 
 (async () => {
   const closeTab = document.querySelector('#closeTab')
@@ -45,7 +45,5 @@ import { extractDecodedOriginUrl, translateDocument } from 'Background/utilities
     })
   }
 
-  translateDocument(document, {
-    url: extractDecodedOriginUrl(tab.url),
-  })
+  translateDocument(document)
 })()

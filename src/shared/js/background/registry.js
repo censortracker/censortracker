@@ -1,5 +1,5 @@
 import * as storage from './storage'
-import { extractHostnameFromUrl } from './utilities'
+import { extractDomainFromUrl } from './utilities'
 
 const REGISTRY_API_ENDPOINT = 'https://app.censortracker.org/api/config/'
 const REGISTRY_FALLBACK_CONFIG_URL = 'https://roskomsvoboda.github.io/ctconf/registry.fallback.json'
@@ -140,7 +140,7 @@ class Registry {
    * Return details of unregistered record by URL.
    */
   async getCustomRegistryRecordByURL (url) {
-    const domain = extractHostnameFromUrl(url)
+    const domain = extractDomainFromUrl(url)
     const records = await this.getCustomRegistryRecords()
 
     for (const record of records) {
@@ -193,7 +193,7 @@ class Registry {
   }
 
   async add (url) {
-    const hostname = extractHostnameFromUrl(url)
+    const hostname = extractDomainFromUrl(url)
     const { customProxiedDomains } = await storage.get({ customProxiedDomains: [] })
 
     if (!customProxiedDomains.includes(hostname)) {
@@ -205,7 +205,7 @@ class Registry {
   }
 
   async remove (url) {
-    const hostname = extractHostnameFromUrl(url)
+    const hostname = extractDomainFromUrl(url)
     const { customProxiedDomains } = await storage.get({ customProxiedDomains: [] })
 
     if (customProxiedDomains.includes(hostname)) {
@@ -222,7 +222,7 @@ class Registry {
    * Checks if the given URL is in the registry of banned websites.
    */
   async contains (url) {
-    const hostname = extractHostnameFromUrl(url)
+    const hostname = extractDomainFromUrl(url)
     const {
       domains,
       ignoredHosts,
@@ -249,7 +249,7 @@ class Registry {
    * This method makes sense only for some countries (Russia).
    */
   async retrieveInformationDisseminationOrganizerJSON (url) {
-    const hostname = extractHostnameFromUrl(url)
+    const hostname = extractDomainFromUrl(url)
     const { disseminators } = await storage.get({ disseminators: [] })
 
     const dataObject = disseminators.find(

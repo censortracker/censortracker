@@ -21,7 +21,7 @@ export const handleOnConnect = (port) => {
 }
 
 export const warnAboutInformationDisseminationOrganizer = async (url) => {
-  const hostname = utilities.extractHostnameFromUrl(url)
+  const hostname = utilities.extractDomainFromUrl(url)
   const { notifiedHosts, showNotifications } = await storage.get({
     notifiedHosts: [],
     showNotifications: true,

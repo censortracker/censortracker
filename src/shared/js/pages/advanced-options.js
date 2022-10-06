@@ -143,11 +143,10 @@ import Browser from 'Background/webextension'
     const installedExtensions = await Browser.management.getAll()
 
     if (installedExtensions.length > 0) {
-      const extensionsWithProxyPermissions = installedExtensions.filter(({ name, permissions = [] }) => {
-        return permissions.includes('proxy') && name !== self.name
-      })
-
-      currentConfig.conflictingExtensions = extensionsWithProxyPermissions.map(({ name }) => name.split('–')[0].trim())
+      currentConfig.conflictingExtensions = installedExtensions
+        .filter(({ name, permissions = [] }) =>
+          permissions.includes('proxy') && name !== self.name)
+        .map(({ name }) => name.split(' - ')[0])
     }
 
     currentConfig.currentProxyURI = await ProxyManager.getProxyServerURI()

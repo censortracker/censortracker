@@ -391,10 +391,15 @@ div#grantPrivateBrowsingPermissionsButton {
   color: #8A8580;
   margin-top: 3px;
 }
-.censor-tracker__status.status-error{
+
+.censor-tracker__status.status-error {
   color: #B66B14;
 }
 
 .censor-tracker__turn {
   font-weight: 400;
+}
+
+.hidden {
+  display: none;
 }

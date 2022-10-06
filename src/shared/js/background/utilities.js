@@ -1,4 +1,4 @@
-import { getDomain } from 'tldts'
+import { getDomain, getHostname } from 'tldts'
 import isURL from 'validator/lib/isURL'
 
 import Browser from './webextension'
@@ -46,6 +46,10 @@ export const extractDomainFromUrl = (url) => {
     }
   }
   return getDomain(url)
+}
+
+export const extractHostnameFromUrl = (url) => {
+  return getHostname(url)
 }
 
 export const i18nGetMessage = (key, props = {}) => {

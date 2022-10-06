@@ -4,7 +4,7 @@ import Registry from 'Background/registry'
 import Settings from 'Background/settings'
 import * as storage from 'Background/storage'
 import {
-  extractDomainFromUrl,
+  extractHostnameFromUrl,
   i18nGetMessage,
   isValidURL,
 } from 'Background/utilities'
@@ -68,7 +68,6 @@ import Browser from 'Background/webextension';
     active: true,
     lastFocusedWindow: true,
   })
-  const currentHostname = extractDomainFromUrl(currentUrl) || 'newtab'
 
   if (isValidURL(currentUrl)) {
     toggleSiteActionsButton.classList.remove('hidden')
@@ -216,6 +215,8 @@ import Browser from 'Background/webextension';
           })
       })
   }
+
+  const currentHostname = extractHostnameFromUrl(currentUrl) || 'newtab'
 
   if (isValidURL(currentHostname)) {
     currentDomainHeader.innerText = currentHostname

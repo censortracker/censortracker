@@ -1,5 +1,8 @@
 import * as storage from './storage'
-import { extractDomainFromUrl } from './utilities'
+import {
+  extractDomainFromUrl,
+  extractHostnameFromUrl,
+} from './utilities'
 
 const REGISTRY_API_ENDPOINT = 'https://app.censortracker.org/api/config/'
 const REGISTRY_FALLBACK_CONFIG_URL = 'https://roskomsvoboda.github.io/ctconf/registry.fallback.json'
@@ -120,7 +123,6 @@ class Registry {
         console.error(`Error on fetching data from the API endpoint: ${url}`)
       }
     }
-    console.warn('Registry synced successfully.')
     console.groupEnd()
     return true
   }
@@ -155,28 +157,30 @@ class Registry {
    * Returns array of banned domains from the registry.
    */
   async getDomains () {
-    const { useRegistry, domains, ignoredHosts, customProxiedDomains } =
-      await storage.get({
-        useRegistry: true,
-        domains: [],
-        ignoredHosts: [],
-        customProxiedDomains: [],
-      })
+    const {
+      domains,
+      useRegistry,
+      ignoredHosts,
+      customProxiedDomains,
+    } = await storage.get({
+      domains: [],
+      useRegistry: true,
+      ignoredHosts: [],
+      customProxiedDomains: [],
+    })
 
     if (!useRegistry) {
+      if (customProxiedDomains.length > 0) {
+        return customProxiedDomains
+      }
       return []
     }
 
-    const domainsFound = domains && domains.length > 0
-    const customProxiedDomainsFound =
-      customProxiedDomains && customProxiedDomains.length > 0
-
-    if (domainsFound || customProxiedDomainsFound) {
+    if (domains.length > 0 || customProxiedDomains.length > 0) {
       try {
-        return [...domains, ...customProxiedDomains].filter(
-          (element) => {
-            return !ignoredHosts.includes(element)
-          },
+        return [...domains, ...customProxiedDomains].filter((element) => {
+          return !ignoredHosts.includes(element)
+        },
         )
       } catch (error) {
         console.error(error)
@@ -193,27 +197,27 @@ class Registry {
   }
 
   async add (url) {
-    const hostname = extractDomainFromUrl(url)
+    const domain = extractDomainFromUrl(url)
     const { customProxiedDomains } = await storage.get({ customProxiedDomains: [] })
 
-    if (!customProxiedDomains.includes(hostname)) {
-      customProxiedDomains.push(hostname)
+    if (!customProxiedDomains.includes(domain)) {
+      customProxiedDomains.push(domain)
       await storage.set({ customProxiedDomains })
-      console.warn(`Adding ${hostname} to the custom registry.`)
+      console.warn(`Adding ${domain} to the custom registry.`)
     }
     return true
   }
 
   async remove (url) {
-    const hostname = extractDomainFromUrl(url)
+    const domain = extractDomainFromUrl(url)
     const { customProxiedDomains } = await storage.get({ customProxiedDomains: [] })
 
-    if (customProxiedDomains.includes(hostname)) {
-      const index = customProxiedDomains.indexOf(hostname)
+    if (customProxiedDomains.includes(domain)) {
+      const index = customProxiedDomains.indexOf(domain)
 
       customProxiedDomains.splice(index, 1)
       await storage.set({ customProxiedDomains })
-      console.warn(`Removing ${hostname} from ignore`)
+      console.warn(`Removing ${domain} from ignore`)
     }
     return true
   }
@@ -222,7 +226,7 @@ class Registry {
    * Checks if the given URL is in the registry of banned websites.
    */
   async contains (url) {
-    const hostname = extractDomainFromUrl(url)
+    const domain = extractDomainFromUrl(url)
     const {
       domains,
       ignoredHosts,
@@ -233,12 +237,15 @@ class Registry {
       customProxiedDomains: [],
     })
 
-    if (ignoredHosts.includes(hostname)) {
+    if (ignoredHosts.includes(domain)) {
       return false
     }
 
-    if (domains.includes(hostname) || customProxiedDomains.includes(hostname)) {
-      console.log(`Registry or custom registry match found: ${hostname}`)
+    if (
+      domains.includes(domain) ||
+      customProxiedDomains.includes(domain)
+    ) {
+      console.log(`Registry or custom registry match found: ${domain}`)
       return true
     }
     return false
@@ -249,15 +256,15 @@ class Registry {
    * This method makes sense only for some countries (Russia).
    */
   async retrieveInformationDisseminationOrganizerJSON (url) {
-    const hostname = extractDomainFromUrl(url)
+    const domain = extractHostnameFromUrl(url)
     const { disseminators } = await storage.get({ disseminators: [] })
 
     const dataObject = disseminators.find(
-      ({ url: innerUrl }) => hostname === innerUrl,
+      ({ url: innerUrl }) => domain === innerUrl,
     )
 
-    if (dataObject) {
-      console.warn(`Found IDO data for ${hostname}`)
+    if (Object.keys(dataObject).length > 0) {
+      console.warn(`Found IDO data for ${domain}`)
       return dataObject
     }
     return {}

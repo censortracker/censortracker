@@ -1,5 +1,4 @@
 import ProxyManager from 'Background/proxy'
-import { translateDocument } from 'Background/utilities'
 
 (async () => {
   const closeTab = document.querySelector('#closeTab')
@@ -44,6 +43,4 @@ import { translateDocument } from 'Background/utilities'
       }
     })
   }
-
-  translateDocument(document)
 })()

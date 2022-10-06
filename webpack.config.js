@@ -277,7 +277,7 @@ if (isFirefox) {
     filename: 'incognito-required-popup.html',
     template: 'src/firefox/pages/incognito-required-popup.html',
     inject: true,
-    chunks: ['incognito_required'],
+    chunks: ['translator','incognito_required'],
     meta: contentSecurityPolicy,
   }))
   webConfig.plugins.push(new HTMLWebpackPlugin({

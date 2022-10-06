@@ -195,9 +195,8 @@ class Registry {
       customProxiedDomains.push(hostname)
       await storage.set({ customProxiedDomains })
       console.warn(`Adding ${hostname} to the custom registry.`)
-      return true
     }
-    return false
+    return true
   }
 
   async remove (url) {
@@ -211,6 +210,7 @@ class Registry {
       await storage.set({ customProxiedDomains })
       console.warn(`Removing ${hostname} from ignore`)
     }
+    return true
   }
 
   /**

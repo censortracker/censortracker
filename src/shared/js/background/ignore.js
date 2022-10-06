@@ -56,9 +56,10 @@ export class Ignore {
     if (!ignoredHosts.includes(hostname)) {
       ignoredHosts.push(hostname)
       console.warn(`Adding ${hostname} to ignore`)
+      await storage.set({ ignoredHosts })
     }
 
-    await storage.set({ ignoredHosts })
+    return true
   }
 
   async remove (url) {
@@ -71,9 +72,8 @@ export class Ignore {
       ignoredHosts.splice(index, 1)
       await storage.set({ ignoredHosts })
       console.warn(`Removing ${hostname} from ignore`)
-      return true
     }
-    return false
+    return true
   }
 
   /**

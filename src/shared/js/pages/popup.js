@@ -64,7 +64,8 @@ import Browser from 'Background/webextension';
   const privateBrowsingPermissionsRequiredButton = document.getElementById('privateBrowsingPermissionsRequiredButton')
 
   const [{ url: currentUrl }] = await Browser.tabs.query({
-    active: true, lastFocusedWindow: true,
+    active: true,
+    lastFocusedWindow: true,
   })
   const currentHostname = extractHostnameFromUrl(currentUrl)
 
@@ -73,18 +74,21 @@ import Browser from 'Background/webextension';
     siteActionDescription.textContent = i18nGetMessage('siteActionAutoDesc')
 
     const checkSiteActionRadioButton = (value) => {
-      document.querySelector(`input[type="radio"][value="${value}"]`).checked = true
+      document.querySelector(`input[value="${value}"]`).checked = true
     }
 
-    Ignore.contains(currentUrl).then((isIgnored) => {
-      if (isIgnored) {
+    Ignore.contains(currentUrl).then((ignored) => {
+      if (ignored) {
         checkSiteActionRadioButton('never')
+        siteActionDescription.textContent = i18nGetMessage('siteActionNeverDesc')
       } else {
         Registry.contains(currentUrl).then((blocked) => {
           if (blocked) {
             checkSiteActionRadioButton('always')
+            siteActionDescription.textContent = i18nGetMessage('siteActionAlwaysDesc')
           } else {
             checkSiteActionRadioButton('auto')
+            siteActionDescription.textContent = i18nGetMessage('siteActionAutoDesc')
           }
         })
       }
@@ -120,15 +124,12 @@ import Browser from 'Background/webextension';
             }
           })
         } else if (event.target.value === 'never') {
-          Ignore.add(currentUrl)
-            .then((added) => {
-              if (added) {
-                console.warn('Proxying strategy was changed to: "never"')
-              }
-            })
+          await Ignore.add(currentUrl)
+          await Registry.remove(currentUrl)
           siteActionDescription.textContent = i18nGetMessage('siteActionNeverDesc')
         } else {
           await Ignore.remove(currentUrl)
+          await Registry.remove(currentUrl)
           siteActionDescription.textContent = i18nGetMessage('siteActionAutoDesc')
         }
 

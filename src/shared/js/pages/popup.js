@@ -70,7 +70,7 @@ import Browser from 'Background/webextension';
 
   // Show website actions only for valid URLs
   if (isValidURL(currentUrl)) {
-    // toggleSiteActionsButton.classList.remove('hidden')
+    toggleSiteActionsButton.classList.remove('hidden')
     toggleSiteActionsButton.addEventListener('click', async (event) => {
       Registry.contains(currentHostname)
         .then((blocked) => {

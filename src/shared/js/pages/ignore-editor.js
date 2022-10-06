@@ -30,7 +30,7 @@ import CodeMirror from 'codemirror'
   })
 
   document.addEventListener('keydown', async (event) => {
-    if (event.keyCode === 13 || event.keyCode === 8) {
+    if (event.keyCode === 13) {
       const editorContent = editor.getValue().trim()
 
       if (editorContent.length === 0) {

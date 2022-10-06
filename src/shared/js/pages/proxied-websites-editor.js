@@ -29,7 +29,7 @@ import CodeMirror from 'codemirror'
   editor.setValue(content)
 
   document.addEventListener('keydown', async (event) => {
-    if (event.keyCode === 13 || event.keyCode === 8) {
+    if (event.keyCode === 13) {
       const urls = editor.getValue().split('\n')
 
       await storage.set({

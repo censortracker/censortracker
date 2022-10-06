@@ -140,7 +140,7 @@ export const parseURLStrings = (urls) => {
   const result = new Set()
 
   for (const url of urls) {
-    if (url !== '' && url.indexOf('.') !== -1 && url.endsWith('.')) {
+    if (url !== '' && url.indexOf('.') !== -1 && !url.endsWith('.')) {
       let domain = url.replace(/^https?:\/\//, '')
 
       if (domain.indexOf('/') !== -1) {

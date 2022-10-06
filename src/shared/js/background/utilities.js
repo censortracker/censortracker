@@ -108,13 +108,17 @@ export const select = ({ id, query, cls, doc = document }) => {
   return doc.querySelectorAll(query)
 }
 
+export const i18nGetMessage = (key, props = {}) => {
+  return Browser.i18n.getMessage(key)
+}
+
 /**
  * Translate given document.
  * @param doc Document to translate.
  * @param props Properties.
  */
 export const translateDocument = (doc, props = {}) => {
-  for (const element of select({ query: '[data-i18n-key]', doc })) {
+  for (const element of doc.querySelectorAll('[data-i18n-key]')) {
     const value = element.getAttribute('data-i18n-key')
     // Extract value with the given name from "props".
     const renderProp = element.getAttribute('data-i18n-render-prop')
@@ -175,8 +179,4 @@ export const getRequestFilter = () => {
  */
 export const choice = (array) => {
   return array[Math.floor(Math.random() * array.length)]
-}
-
-export const i18nGetMessage = (key, props = {}) => {
-  return Browser.i18n.getMessage(key)
 }

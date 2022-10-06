@@ -11,7 +11,6 @@ import {
   handleTabCreate,
   handleTabState,
 } from 'Background/handlers'
-import { getRequestFilter } from 'Background/utilities'
 
 browser.alarms.onAlarm.addListener(handleOnAlarm)
 browser.proxy.onError.addListener(handleProxyError)
@@ -23,8 +22,13 @@ browser.storage.onChanged.addListener(handleIgnoredHostsChange)
 browser.storage.onChanged.addListener(handleCustomProxiedDomainsChange)
 
 browser.webRequest.onBeforeRequest.addListener(
-  handleBeforeRequest,
-  getRequestFilter(),
+  handleBeforeRequest, {
+    urls: [
+      'http://*/*',
+      'https://*/*',
+    ],
+    types: ['main_frame'],
+  },
 )
 
 browser.tabs.onUpdated.addListener(handleTabState)

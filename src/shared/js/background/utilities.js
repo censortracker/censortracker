@@ -81,13 +81,6 @@ export const extractDecodedOriginUrl = (url, key = 'originUrl') => {
   }
 }
 
-/**
- * Returns UNIX timestamp.
- */
-export const timestamp = () => {
-  return Math.floor(Date.now() / 1000)
-}
-
 export const i18nGetMessage = (key, props = {}) => {
   return Browser.i18n.getMessage(key)
 }
@@ -137,19 +130,6 @@ export const parseURLStrings = (urls) => {
     }
   }
   return Array.from(result)
-}
-
-/**
- * Returns request filter
- * @returns {Object}
- */
-export const getRequestFilter = () => {
-  return {
-    urls: [
-      'http://*/*', 'https://*/*',
-    ],
-    types: ['main_frame'],
-  }
 }
 
 /**

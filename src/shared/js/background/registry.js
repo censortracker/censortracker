@@ -155,12 +155,17 @@ class Registry {
    * Returns array of banned domains from the registry.
    */
   async getDomains () {
-    const { domains, ignoredHosts, customProxiedDomains } =
+    const { useRegistry, domains, ignoredHosts, customProxiedDomains } =
       await storage.get({
+        useRegistry: true,
         domains: [],
         ignoredHosts: [],
         customProxiedDomains: [],
       })
+
+    if (!useRegistry) {
+      return []
+    }
 
     const domainsFound = domains && domains.length > 0
     const customProxiedDomainsFound =

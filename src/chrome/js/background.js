@@ -12,7 +12,6 @@ import {
   handleTabState,
 } from 'Background/handlers'
 import * as storage from 'Background/storage'
-import { getRequestFilter } from 'Background/utilities'
 
 chrome.alarms.onAlarm.addListener(handleOnAlarm)
 chrome.runtime.onStartup.addListener(handleStartup)
@@ -23,8 +22,13 @@ chrome.storage.onChanged.addListener(handleStorageChanged)
 chrome.storage.onChanged.addListener(handleIgnoredHostsChange)
 chrome.storage.onChanged.addListener(handleCustomProxiedDomainsChange)
 chrome.webNavigation.onBeforeNavigate.addListener(
-  handleBeforeRequest,
-  getRequestFilter(),
+  handleBeforeRequest, {
+    urls: [
+      'http://*/*',
+      'https://*/*',
+    ],
+    types: ['main_frame'],
+  },
 )
 
 chrome.tabs.onUpdated.addListener(handleTabState)

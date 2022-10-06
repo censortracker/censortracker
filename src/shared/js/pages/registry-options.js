@@ -5,12 +5,15 @@ import * as storage from 'Background/storage'
 (async () => {
   const select = document.querySelector('.select')
   const options = document.querySelectorAll('.select-option')
+  const selectRegion = document.querySelector('#selectRegion')
   const currentOption = document.querySelector('#select-toggle')
   const useRegistryCheckbox = document.querySelector('#useRegistryCheckbox')
-  // const registrySelectSource = document.querySelector('#registry-select-source')
 
   storage.get({ useRegistry: false, currentRegionName: '' })
     .then(({ useRegistry, currentRegionName }) => {
+      if (useRegistry) {
+        selectRegion.classList.remove('hidden')
+      }
       useRegistryCheckbox.checked = useRegistry
       if (currentRegionName) {
         currentOption.textContent = currentRegionName
@@ -22,10 +25,12 @@ import * as storage from 'Background/storage'
     const proxyingEnabled = await ProxyManager.isEnabled()
 
     if (useRegistry) {
+      selectRegion.classList.remove('hidden')
       await Registry.enableRegistry()
       await Registry.sync()
       await ProxyManager.setProxy()
     } else {
+      selectRegion.classList.add('hidden')
       await Registry.clearRegistry()
       await Registry.disableRegistry()
       await storage.set({ currentRegionName: '' })

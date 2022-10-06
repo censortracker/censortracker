@@ -70,7 +70,7 @@ import Browser from 'Background/webextension';
 
   // Show website actions only for valid URLs
   if (isValidURL(currentUrl)) {
-    toggleSiteActionsButton.classList.remove('hidden')
+    // toggleSiteActionsButton.classList.remove('hidden')
     toggleSiteActionsButton.addEventListener('click', async (event) => {
       Registry.contains(currentHostname)
         .then((blocked) => {
@@ -95,12 +95,14 @@ import Browser from 'Background/webextension';
       }
     })
 
-    siteActionAuto.addEventListener('click', async (event) => {
+    siteActionDescription.textContent = Browser.i18n.getMessage('siteActionAutoDesc')
+
+    siteActionAuto.addEventListener('change', async (event) => {
       siteActionDescription.textContent = Browser.i18n.getMessage('siteActionAutoDesc')
       await Ignore.remove(currentUrl)
     })
 
-    siteActionProxy.addEventListener('click', async (event) => {
+    siteActionProxy.addEventListener('change', async (event) => {
       siteActionDescription.textContent = Browser.i18n.getMessage('siteActionAlwaysDesc')
       if (event.target.checked) {
         await Registry.add(currentUrl)
@@ -109,7 +111,7 @@ import Browser from 'Background/webextension';
       }
     })
 
-    siteActionIgnore.addEventListener('click', async (event) => {
+    siteActionIgnore.addEventListener('change', async (event) => {
       siteActionDescription.textContent = Browser.i18n.getMessage('siteActionNeverDesc')
       if (event.target.checked) {
         await Ignore.add(currentUrl)

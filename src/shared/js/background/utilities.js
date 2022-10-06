@@ -3,21 +3,6 @@ import isURL from 'validator/lib/isURL'
 import Browser from './webextension'
 
 /**
- * Checks if passed value is a valid port number.
- * @param value Port number to check.
- * @returns {boolean} true if valid, false otherwise.
- */
-export const isPort = (value) => {
-  try {
-    const port = parseInt(value, 10)
-
-    return port >= 0 && port < (2 ** 16)
-  } catch (error) {
-    return false
-  }
-}
-
-/**
  * Checks if passed value is a extension URL.
  * @param url URL to check.
  * @returns {boolean} true if valid, false otherwise.
@@ -190,4 +175,8 @@ export const getRequestFilter = () => {
  */
 export const choice = (array) => {
   return array[Math.floor(Math.random() * array.length)]
+}
+
+export const i18nGetMessage = (key, props = {}) => {
+  return Browser.i18n.getMessage(key)
 }

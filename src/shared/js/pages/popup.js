@@ -5,6 +5,7 @@ import Settings from 'Background/settings'
 import * as storage from 'Background/storage'
 import {
   extractHostnameFromUrl,
+  i18nGetMessage,
   isValidURL,
 } from 'Background/utilities'
 import Browser from 'Background/webextension';
@@ -13,40 +14,45 @@ import Browser from 'Background/webextension';
   const uiText = {
     ori: {
       found: {
-        title: Browser.i18n.getMessage('disseminatorTitle'),
+        title: i18nGetMessage('disseminatorTitle'),
         statusIcon: 'images/popup/status/danger.svg',
-        detailsText: Browser.i18n.getMessage('disseminatorDesc'),
+        detailsText: i18nGetMessage('disseminatorDesc'),
         detailsClasses: ['text-warning'],
         cooperationRefused: {
-          message: Browser.i18n.getMessage('disseminatorCoopRefused'),
+          message: i18nGetMessage('disseminatorCoopRefused'),
         },
       },
       notFound: {
         statusIcon: 'images/popup/status/ok.svg',
-        title: Browser.i18n.getMessage('notDisseminatorTitle'),
-        detailsText: Browser.i18n.getMessage('notDisseminatorDesc'),
+        title: i18nGetMessage('notDisseminatorTitle'),
+        detailsText: i18nGetMessage('notDisseminatorDesc'),
       },
     },
     restrictions: {
       true: {
         statusIcon: 'images/popup/status/info.svg',
-        title: Browser.i18n.getMessage('blockedTitle'),
-        detailsText: Browser.i18n.getMessage('blockedDesc'),
+        title: i18nGetMessage('blockedTitle'),
+        detailsText: i18nGetMessage('blockedDesc'),
       },
       false: {
         statusIcon: 'images/popup/status/ok.svg',
-        title: Browser.i18n.getMessage('notBlockedTitle'),
-        detailsText: Browser.i18n.getMessage('notBlockedDesc'),
+        title: i18nGetMessage('notBlockedTitle'),
+        detailsText: i18nGetMessage('notBlockedDesc'),
       },
     },
   }
   const statusImage = document.getElementById('statusImage')
+  const disseminatorInfoBlock = document.getElementById('ori')
+  const siteActions = document.getElementById('siteActions')
+  const restrictionsInfoBlock = document.getElementById('restrictions')
   const detailsText = document.querySelectorAll('.details-text')
   const extensionIsOff = document.getElementById('extensionIsOff')
   const restrictionType = document.getElementById('restrictionType')
   const mainPageInfoBlocks = document.querySelectorAll('.main-page-info')
   const popupProxyStatusOk = document.getElementById('popupProxyStatusOk')
   const popupProxyDisabled = document.getElementById('popupProxyDisabled')
+  const toggleSiteActionsButton = document.getElementById('toggleSiteActions')
+  const siteActionDescription = document.getElementById('siteActionDescription')
   const popupProxyStatusError = document.getElementById('popupProxyStatusError')
   const popupBackedStatusError = document.getElementById('popupBackedStatusError')
   const footerExtensionIsOn = document.getElementById('footerExtensionIsOn')
@@ -56,69 +62,81 @@ import Browser from 'Background/webextension';
   const restrictionDescription = document.getElementById('restrictionDescription')
   const controlledByOtherExtensionsButton = document.getElementById('controlledByOtherExtensionsButton')
   const privateBrowsingPermissionsRequiredButton = document.getElementById('privateBrowsingPermissionsRequiredButton')
-  const siteActions = document.getElementById('siteActions')
-  const siteActionAuto = document.getElementById('siteActionAuto')
-  const siteActionProxy = document.getElementById('siteActionProxy')
-  const siteActionIgnore = document.getElementById('siteActionIgnore')
-  const toggleSiteActionsButton = document.getElementById('toggleSiteActions')
-  const siteActionDescription = document.getElementById('siteActionDescription')
 
   const [{ url: currentUrl }] = await Browser.tabs.query({
     active: true, lastFocusedWindow: true,
   })
   const currentHostname = extractHostnameFromUrl(currentUrl)
 
-  // Show website actions only for valid URLs
   if (isValidURL(currentUrl)) {
     toggleSiteActionsButton.classList.remove('hidden')
-    toggleSiteActionsButton.addEventListener('click', async (event) => {
-      Registry.contains(currentHostname)
-        .then((blocked) => {
-          siteActionProxy.checked = blocked
-        })
+    siteActionDescription.textContent = i18nGetMessage('siteActionAutoDesc')
 
-      Ignore.contains(currentHostname)
-        .then((ignored) => {
-          if (ignored) {
-            siteActionIgnore.checked = ignored
+    const checkSiteActionRadioButton = (value) => {
+      document.querySelector(`input[type="radio"][value="${value}"]`).checked = true
+    }
+
+    Ignore.contains(currentUrl).then((isIgnored) => {
+      if (isIgnored) {
+        checkSiteActionRadioButton('never')
+      } else {
+        Registry.contains(currentUrl).then((blocked) => {
+          if (blocked) {
+            checkSiteActionRadioButton('always')
+          } else {
+            checkSiteActionRadioButton('auto')
           }
         })
+      }
+    })
 
+    toggleSiteActionsButton.addEventListener('click', async (event) => {
       if (event.target.classList.contains('icon-show')) {
         siteActions.classList.remove('hidden')
         event.target.classList.remove('icon-show')
         event.target.classList.add('icon-hide')
+        disseminatorInfoBlock.classList.add('hidden')
+        restrictionsInfoBlock.classList.add('hidden')
       } else {
         siteActions.classList.add('hidden')
         event.target.classList.add('icon-show')
         event.target.classList.remove('icon-hide')
+        disseminatorInfoBlock.classList.remove('hidden')
+        restrictionsInfoBlock.classList.remove('hidden')
       }
     })
 
-    siteActionDescription.textContent = Browser.i18n.getMessage('siteActionAutoDesc')
+    const siteActionRadioButtons = document.querySelectorAll('input[name="site-action-radio"]')
 
-    siteActionAuto.addEventListener('change', async (event) => {
-      siteActionDescription.textContent = Browser.i18n.getMessage('siteActionAutoDesc')
-      await Ignore.remove(currentUrl)
-    })
+    for (const radioButton of siteActionRadioButtons) {
+      radioButton.addEventListener('change', async (event) => {
+        if (event.target.value === 'always') {
+          siteActionDescription.textContent = i18nGetMessage('siteActionAlwaysDesc')
+          Ignore.remove(currentUrl).then((removed) => {
+            if (removed) {
+              Registry.add(currentUrl).then((added) => {
+                console.warn('Proxying strategy was changed to: "always"')
+              })
+            }
+          })
+        } else if (event.target.value === 'never') {
+          Ignore.add(currentUrl)
+            .then((added) => {
+              if (added) {
+                console.warn('Proxying strategy was changed to: "never"')
+              }
+            })
+          siteActionDescription.textContent = i18nGetMessage('siteActionNeverDesc')
+        } else {
+          await Ignore.remove(currentUrl)
+          siteActionDescription.textContent = i18nGetMessage('siteActionAutoDesc')
+        }
 
-    siteActionProxy.addEventListener('change', async (event) => {
-      siteActionDescription.textContent = Browser.i18n.getMessage('siteActionAlwaysDesc')
-      if (event.target.checked) {
-        await Registry.add(currentUrl)
-      } else {
-        await Registry.remove(currentUrl)
-      }
-    })
+        await ProxyManager.setProxy()
 
-    siteActionIgnore.addEventListener('change', async (event) => {
-      siteActionDescription.textContent = Browser.i18n.getMessage('siteActionNeverDesc')
-      if (event.target.checked) {
-        await Ignore.add(currentUrl)
-      } else {
-        await Ignore.remove(currentUrl)
-      }
-    })
+        event.target.checked = true
+      })
+    }
   }
 
   privateBrowsingPermissionsRequiredButton.addEventListener('click', () => {
@@ -200,7 +218,7 @@ import Browser from 'Background/webextension';
   if (isValidURL(currentHostname)) {
     currentDomainHeader.innerText = currentHostname
   } else {
-    const popupNewTabMessage = Browser.i18n.getMessage('popupNewTabMessage')
+    const popupNewTabMessage = i18nGetMessage('popupNewTabMessage')
 
     currentDomainHeader.innerText = popupNewTabMessage
 
@@ -292,8 +310,8 @@ import Browser from 'Background/webextension';
             descriptionPlaceholder = 'blockedDesc'
           }
 
-          restrictionType.innerText = Browser.i18n.getMessage(titlePlaceholder)
-          restrictionDescription.innerText = Browser.i18n.getMessage(descriptionPlaceholder)
+          restrictionType.innerText = i18nGetMessage(titlePlaceholder)
+          restrictionDescription.innerText = i18nGetMessage(descriptionPlaceholder)
         }
       })
   } else {

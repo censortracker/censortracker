@@ -193,10 +193,11 @@ class Registry {
 
     if (!customProxiedDomains.includes(hostname)) {
       customProxiedDomains.push(hostname)
+      await storage.set({ customProxiedDomains })
       console.warn(`Adding ${hostname} to the custom registry.`)
+      return true
     }
-
-    await storage.set({ customProxiedDomains })
+    return false
   }
 
   async remove (url) {

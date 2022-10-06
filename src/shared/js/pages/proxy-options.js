@@ -1,6 +1,6 @@
 import ProxyManager from 'Background/proxy'
 import * as storage from 'Background/storage'
-import { isPort, select } from 'Background/utilities'
+import { select } from 'Background/utilities'
 
 (async () => {
   const proxyingEnabled = await ProxyManager.isEnabled()
@@ -13,6 +13,16 @@ import { isPort, select } from 'Background/utilities'
   const proxyCustomOptionsRadioGroup = select({ id: 'proxyCustomOptionsRadioGroup' })
   const useCustomProxyRadioButton = select({ id: 'useCustomProxy' })
   const useDefaultProxyRadioButton = select({ id: 'useDefaultProxy' })
+
+  const isPort = (value) => {
+    try {
+      const port = parseInt(value, 10)
+
+      return port >= 0 && port < (2 ** 16)
+    } catch (error) {
+      return false
+    }
+  }
 
   ProxyManager.alive().then((alive) => {
     proxyIsDown.hidden = alive

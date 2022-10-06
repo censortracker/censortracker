@@ -71,7 +71,9 @@ export class Ignore {
       ignoredHosts.splice(index, 1)
       await storage.set({ ignoredHosts })
       console.warn(`Removing ${hostname} from ignore`)
+      return true
     }
+    return false
   }
 
   /**

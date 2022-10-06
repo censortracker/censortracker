@@ -21,25 +21,23 @@
 
       <div class="main-page__title title-domain">
         <div class="current-domain title-normal current-domain" id="currentDomainHeader"></div>
-        <span class="icon__site_settings icon-show" id="toggleSiteActions"></span>
+        <span class="icon__site_settings icon-show hidden" id="toggleSiteActions"></span>
       </div>
 
-      <div class="main-page__block main-page-setting" id="siteActions">
+      <div class="main-page__block main-page-setting hidden" id="siteActions">
         <div class="block__title" data-i18n-key="siteActionTitle"></div>
 
         <div class="site-actions-group">
           <div class="site-actions-group-item">
-            <input id="siteActionAuto" type="radio" name="radio" value="1" checked>
+            <input id="siteActionAuto" type="radio" name="site-action-radio" value="auto">
             <label for="siteActionAuto" data-i18n-key="siteActionItemLabelAuto"></label>
           </div>
-
           <div class="site-actions-group-item">
-            <input id="siteActionProxy" type="radio" name="radio" value="2">
+            <input id="siteActionProxy" type="radio" name="site-action-radio" value="always">
             <label for="siteActionProxy" data-i18n-key="siteActionItemLabelAlways"></label>
           </div>
-
           <div class="site-actions-group-item">
-            <input id="siteActionIgnore" type="radio" name="radio" value="3">
+            <input id="siteActionIgnore" type="radio" name="site-action-radio" value="never">
             <label for="siteActionIgnore" data-i18n-key="siteActionItemLabelNever"></label>
           </div>
         </div>

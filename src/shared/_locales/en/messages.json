@@ -418,12 +418,12 @@
     "message": "Never"
   },
   "siteActionAutoDesc": {
-    "message": "Open the site through a proxy only if the site is unavailable due to blocking"
+    "message": "Open the site through a proxy only if the site is unavailable due to blocking."
   },
   "siteActionAlwaysDesc": {
     "message": "Always open this website through a proxy"
   },
   "siteActionNeverDesc": {
-    "message": "Never open this website through a proxy"
+    "message": "Never open this website through a proxy (even if the site is unavailable due to blocking)"
   }
 }

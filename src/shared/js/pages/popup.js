@@ -56,10 +56,11 @@ import Browser from 'Background/webextension';
   const restrictionDescription = document.getElementById('restrictionDescription')
   const controlledByOtherExtensionsButton = document.getElementById('controlledByOtherExtensionsButton')
   const privateBrowsingPermissionsRequiredButton = document.getElementById('privateBrowsingPermissionsRequiredButton')
-  const toggleSiteActionsButton = document.getElementById('toggleSiteActions')
   const siteActions = document.getElementById('siteActions')
-  const siteActionProxyCheckbox = document.getElementById('siteActionProxyCheckbox')
-  const siteActionIgnoreCheckbox = document.getElementById('siteActionIgnoreCheckbox')
+  const siteActionAuto = document.getElementById('siteActionAuto')
+  const siteActionProxy = document.getElementById('siteActionProxy')
+  const siteActionIgnore = document.getElementById('siteActionIgnore')
+  const toggleSiteActionsButton = document.getElementById('toggleSiteActions')
 
   const [{ url: currentUrl }] = await Browser.tabs.query({
     active: true, lastFocusedWindow: true,
@@ -72,13 +73,13 @@ import Browser from 'Background/webextension';
     toggleSiteActionsButton.addEventListener('click', async (event) => {
       Registry.contains(currentHostname)
         .then((blocked) => {
-          siteActionProxyCheckbox.checked = blocked
+          siteActionProxy.checked = blocked
         })
 
       Ignore.contains(currentHostname)
         .then((ignored) => {
           if (ignored) {
-            siteActionIgnoreCheckbox.checked = ignored
+            siteActionIgnore.checked = ignored
           }
         })
 
@@ -93,7 +94,11 @@ import Browser from 'Background/webextension';
       }
     })
 
-    siteActionProxyCheckbox.addEventListener('change', async (event) => {
+    siteActionAuto.addEventListener('click', async (event) => {
+      await Ignore.remove(currentUrl)
+    })
+
+    siteActionProxy.addEventListener('click', async (event) => {
       if (event.target.checked) {
         await Registry.add(currentUrl)
       } else {
@@ -101,7 +106,7 @@ import Browser from 'Background/webextension';
       }
     })
 
-    siteActionIgnoreCheckbox.addEventListener('change', async (event) => {
+    siteActionIgnore.addEventListener('click', async (event) => {
       if (event.target.checked) {
         await Ignore.add(currentUrl)
       } else {

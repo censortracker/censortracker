@@ -120,7 +120,7 @@ import * as storage from 'Background/storage'
     }
   }, false)
 
-  await ProxyManager.isEnabled().then((isEnabled) => {
+  ProxyManager.isEnabled().then((isEnabled) => {
     useProxyCheckbox.checked = isEnabled
   })
 })()

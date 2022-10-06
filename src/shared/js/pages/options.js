@@ -32,7 +32,9 @@ import Browser from 'Background/webextension';
 
   storage.get('backendIsIntermittent')
     .then(({ backendIsIntermittent = false }) => {
-      backendIsIntermittentAlert.hidden = !backendIsIntermittent
+      if (backendIsIntermittentAlert) {
+        backendIsIntermittentAlert.hidden = !backendIsIntermittent
+      }
     })
 
   Registry.isEmpty().then((isEmpty) => {
@@ -78,7 +80,9 @@ import Browser from 'Background/webextension';
     }
 
     if (privateBrowsingPermissionsRequired || !allowedIncognitoAccess) {
-      privateBrowsingPermissionsRequiredMessage.hidden = false
+      if (privateBrowsingPermissionsRequiredMessage) {
+        privateBrowsingPermissionsRequiredMessage.hidden = false
+      }
 
       if (grantPrivateBrowsingPermissionsButton) {
         grantPrivateBrowsingPermissionsButton.addEventListener('click', async () => {

@@ -263,7 +263,7 @@ class Registry {
       ({ url: innerUrl }) => domain === innerUrl,
     )
 
-    if (Object.keys(dataObject).length > 0) {
+    if (dataObject) {
       console.warn(`Found IDO data for ${domain}`)
       return dataObject
     }

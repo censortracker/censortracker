@@ -83,7 +83,7 @@ const webConfig = {
   mode: NODE_ENV,
   // Also see: https://webpack.js.org/configuration/devtool/#devtool
   target: 'web',
-  devtool: 'source-map',
+  devtool: 'inline-nosources-cheap-module-source-map',
   entry: {
     'popup': './src/shared/js/pages/popup.js',
     'options': './src/shared/js/pages/options.js',

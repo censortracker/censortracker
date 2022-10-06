@@ -138,16 +138,20 @@ import Browser from 'Background/webextension'
 
   showDebugInfo.addEventListener('click', async (event) => {
     const debugInfoJSON = document.getElementById('debugInfoJSON')
-    const currentConfig = await Registry.getCurrentConfig()
     const self = await Browser.management.getSelf()
+    const currentConfig = await Registry.getCurrentConfig()
     const installedExtensions = await Browser.management.getAll()
-    const extensionsWithProxyPermissions = installedExtensions.filter(({ name, permissions }) => {
-      return permissions.includes('proxy') && name !== self.name
-    })
+
+    if (installedExtensions.length > 0) {
+      const extensionsWithProxyPermissions = installedExtensions.filter(({ name, permissions = [] }) => {
+        return permissions.includes('proxy') && name !== self.name
+      })
+
+      currentConfig.conflictingExtensions = extensionsWithProxyPermissions.map(({ name }) => name.split('–')[0].trim())
+    }
 
     currentConfig.currentProxyURI = await ProxyManager.getProxyServerURI()
     currentConfig.proxyControlled = await ProxyManager.controlledByThisExtension()
-    currentConfig.conflictingExtensions = extensionsWithProxyPermissions.map(({ name }) => name.split('–')[0].trim())
     debugInfoJSON.textContent = JSON.stringify(currentConfig, null, 2)
     togglePopup('popupDebugInformation')
   })

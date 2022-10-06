@@ -21,29 +21,29 @@
 
       <div class="main-page__title title-domain">
         <div class="current-domain title-normal current-domain" id="currentDomainHeader"></div>
-        <span class="icon__site_settings icon-show site-action hidden" id="toggleSiteActions"></span>
+        <span class="icon__site_settings icon-show hidden" id="toggleSiteActions"></span>
       </div>
 
       <div class="main-page__block main-page-setting hidden" id="siteActions">
-        <div class="block__title">Когда следует использовать прокси для открытия этого сайта?</div>
+        <div class="block__title" data-i18n-key="siteActionTitle"></div>
 
         <div class="site-actions-group">
           <div class="site-actions-group-item">
             <input id="siteActionAuto" type="radio" name="radio" value="1" checked>
-            <label for="siteActionAuto">Авто</label>
+            <label for="siteActionAuto" data-i18n-key="siteActionItemLabelAuto"></label>
           </div>
 
           <div class="site-actions-group-item">
             <input id="siteActionProxy" type="radio" name="radio" value="2">
-            <label for="siteActionProxy">Всегда</label>
+            <label for="siteActionProxy" data-i18n-key="siteActionItemLabelAlways"></label>
           </div>
 
           <div class="site-actions-group-item">
             <input id="siteActionIgnore" type="radio" name="radio" value="3">
-            <label for="siteActionIgnore">Никогда</label>
+            <label for="siteActionIgnore" data-i18n-key="siteActionItemLabelNever"></label>
           </div>
         </div>
-        <div class="proxy_info">Прокси будет использоваться только если сайт окажется недоступен из-за блокировки</div>
+        <div class="proxy_info" id="siteActionDescription"></div>
       </div>
 
       <div class="main-page__block main-page-info" id="ori">

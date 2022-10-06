@@ -61,6 +61,7 @@ import Browser from 'Background/webextension';
   const siteActionProxy = document.getElementById('siteActionProxy')
   const siteActionIgnore = document.getElementById('siteActionIgnore')
   const toggleSiteActionsButton = document.getElementById('toggleSiteActions')
+  const siteActionDescription = document.getElementById('siteActionDescription')
 
   const [{ url: currentUrl }] = await Browser.tabs.query({
     active: true, lastFocusedWindow: true,
@@ -95,10 +96,12 @@ import Browser from 'Background/webextension';
     })
 
     siteActionAuto.addEventListener('click', async (event) => {
+      siteActionDescription.textContent = Browser.i18n.getMessage('siteActionAutoDesc')
       await Ignore.remove(currentUrl)
     })
 
     siteActionProxy.addEventListener('click', async (event) => {
+      siteActionDescription.textContent = Browser.i18n.getMessage('siteActionAlwaysDesc')
       if (event.target.checked) {
         await Registry.add(currentUrl)
       } else {
@@ -107,6 +110,7 @@ import Browser from 'Background/webextension';
     })
 
     siteActionIgnore.addEventListener('click', async (event) => {
+      siteActionDescription.textContent = Browser.i18n.getMessage('siteActionNeverDesc')
       if (event.target.checked) {
         await Ignore.add(currentUrl)
       } else {

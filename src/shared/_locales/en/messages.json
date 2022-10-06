@@ -405,13 +405,25 @@
   "youCanCloseThisWindow": {
     "message": "You can close this window"
   },
-  "siteActionIgnoreTitle": {
-    "message": "Ignore this website"
-  },
-  "siteActionProxyTitle": {
-    "message": "Always proxy this website"
-  },
   "siteActionTitle": {
-    "message": "Website customization"
+    "message": "How should a proxy be used to for this website?"
+  },
+  "siteActionItemLabelAuto": {
+    "message": "Auto"
+  },
+  "siteActionItemLabelAlways": {
+    "message": "Always"
+  },
+  "siteActionItemLabelNever": {
+    "message": "Never"
+  },
+  "siteActionAutoDesc": {
+    "message": "Open the site through a proxy only if the site is unavailable due to blocking"
+  },
+  "siteActionAlwaysDesc": {
+    "message": "Always open this website through a proxy"
+  },
+  "siteActionNeverDesc": {
+    "message": "Never open this website through a proxy"
   }
 }

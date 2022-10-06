@@ -405,13 +405,25 @@
   "youCanCloseThisWindow": {
     "message": "Можно закрыть это окно"
   },
-  "siteActionIgnoreTitle": {
-    "message": "Игнорировать сайт"
-  },
-  "siteActionProxyTitle": {
-    "message": "Всегда проксировать"
-  },
   "siteActionTitle": {
-    "message": "Индивидуальные настройки сайта"
+    "message": "Когда следует использовать прокси для открытия этого сайта?"
+  },
+  "siteActionItemLabelAuto": {
+    "message": "Авто"
+  },
+  "siteActionItemLabelAlways": {
+    "message": "Всегда"
+  },
+  "siteActionItemLabelNever": {
+    "message": "Никогда"
+  },
+  "siteActionAutoDesc": {
+    "message": "Открывать сайт через прокси, только если сайт окажется недоступен из-за блокировки"
+  },
+  "siteActionAlwaysDesc": {
+    "message": "Всегда открывать этот сайт через прокси"
+  },
+  "siteActionNeverDesc": {
+    "message": "Никогда не открывать этот сайт через прокси"
   }
 }

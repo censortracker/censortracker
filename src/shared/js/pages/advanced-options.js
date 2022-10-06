@@ -3,22 +3,22 @@ import ProxyManager from 'Background/proxy'
 import Registry from 'Background/registry'
 import Settings from 'Background/settings'
 import * as storage from 'Background/storage'
-import { choice, select } from 'Background/utilities'
+import { choice } from 'Background/utilities'
 import Browser from 'Background/webextension'
 
 (async () => {
-  const debugInfoOkBtn = select({ id: 'debugInfoOk' })
-  const showDebugInfo = select({ id: 'showDebugInfo' })
-  const confirmResetBtn = select({ id: 'confirmReset' })
-  const closeDebugInfoBtn = select({ id: 'closeDebugInfo' })
-  const closePopupResetBtn = select({ id: 'closePopupReset' })
-  const completedConfirmBtn = select({ id: 'completedConfirm' })
-  const cancelPopupResetBtn = select({ id: 'cancelPopupReset' })
-  const closePopupConfirmBtn = select({ id: 'closePopupConfirm' })
-  const updateLocalRegistryBtn = select({ id: 'updateLocalRegistry' })
-  const emergencyConfigCheckbox = select({ id: 'emergencyConfigCheckbox' })
-  const resetSettingsToDefaultBtn = select({ id: 'resetSettingsToDefault' })
-  const parentalControlCheckbox = select({ id: 'parentalControlCheckbox' })
+  const debugInfoOkBtn = document.getElementById('debugInfoOk')
+  const showDebugInfo = document.getElementById('showDebugInfo')
+  const confirmResetBtn = document.getElementById('confirmReset')
+  const closeDebugInfoBtn = document.getElementById('closeDebugInfo')
+  const closePopupResetBtn = document.getElementById('closePopupReset')
+  const completedConfirmBtn = document.getElementById('completedConfirm')
+  const cancelPopupResetBtn = document.getElementById('cancelPopupReset')
+  const closePopupConfirmBtn = document.getElementById('closePopupConfirm')
+  const updateLocalRegistryBtn = document.getElementById('updateLocalRegistry')
+  const emergencyConfigCheckbox = document.getElementById('emergencyConfigCheckbox')
+  const resetSettingsToDefaultBtn = document.getElementById('resetSettingsToDefault')
+  const parentalControlCheckbox = document.getElementById('parentalControlCheckbox')
 
   const fetchEmergencyAPIEndpoints = async () => {
     const apiURL = choice([
@@ -130,7 +130,7 @@ import Browser from 'Background/webextension'
 
   document.addEventListener('keydown', async (event) => {
     if (event.key === 'Escape') {
-      for (const popup of select({ cls: 'popup-show' })) {
+      for (const popup of document.getElementsByClassName('popup-show')) {
         popup.classList.remove('popup-show')
       }
     }

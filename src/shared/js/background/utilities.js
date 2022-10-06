@@ -88,26 +88,6 @@ export const timestamp = () => {
   return Math.floor(Date.now() / 1000)
 }
 
-/**
- * Simple element selector.
- * @param id Select by given ID.
- * @param query Select by given query.
- * @param cls Select by given class.
- * @param doc Document.
- * @returns {NodeListOf<*>|HTMLElement|HTMLCollectionOf<Element>}
- */
-export const select = ({ id, query, cls, doc = document }) => {
-  if (id) {
-    return doc.getElementById(id)
-  }
-
-  if (cls) {
-    return doc.getElementsByClassName(cls)
-  }
-
-  return doc.querySelectorAll(query)
-}
-
 export const i18nGetMessage = (key, props = {}) => {
   return Browser.i18n.getMessage(key)
 }

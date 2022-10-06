@@ -1,18 +1,17 @@
 import ProxyManager from 'Background/proxy'
 import * as storage from 'Background/storage'
-import { select } from 'Background/utilities'
 
 (async () => {
   const proxyingEnabled = await ProxyManager.isEnabled()
-  const useProxyCheckbox = select({ id: 'useProxyCheckbox' })
-  const proxyCustomOptions = select({ id: 'proxyCustomOptions' })
-  const proxyHostInput = select({ id: 'proxyHostInput' })
-  const proxyPortInput = select({ id: 'proxyPortInput' })
-  const proxyIsDown = select({ id: 'proxyIsDown' })
-  const proxyOptionsInputs = select({ id: 'proxyOptionsInputs' })
-  const proxyCustomOptionsRadioGroup = select({ id: 'proxyCustomOptionsRadioGroup' })
-  const useCustomProxyRadioButton = select({ id: 'useCustomProxy' })
-  const useDefaultProxyRadioButton = select({ id: 'useDefaultProxy' })
+  const proxyIsDown = document.getElementById('proxyIsDown')
+  const proxyHostInput = document.getElementById('proxyHostInput')
+  const proxyPortInput = document.getElementById('proxyPortInput')
+  const useProxyCheckbox = document.getElementById('useProxyCheckbox')
+  const proxyCustomOptions = document.getElementById('proxyCustomOptions')
+  const proxyOptionsInputs = document.getElementById('proxyOptionsInputs')
+  const useCustomProxyRadioButton = document.getElementById('useCustomProxy')
+  const useDefaultProxyRadioButton = document.getElementById('useDefaultProxy')
+  const proxyCustomOptionsRadioGroup = document.getElementById('proxyCustomOptionsRadioGroup')
 
   const isPort = (value) => {
     try {

@@ -24,6 +24,7 @@ const storeData = ({ locale, data }) => {
     return true
   } catch (error) {
     console.error(error)
+    return false
   }
 }
 

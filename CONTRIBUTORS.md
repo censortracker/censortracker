@@ -6,6 +6,8 @@
 
 
 ## Special thanks
+
+- Mole ([Erghel](https://github.com/Erghel))
 - Denis Efremov ([Piterden](https://github.com/Piterden))
 
 ## Contributors
@@ -14,3 +16,4 @@
 - Denis Efremov ([Piterden](https://github.com/Piterden))
 - HellsYeah ([HellsYeah](https://github.com/HellsYeah))
 - Isaak Uchakaev ([lk-geimfari](https://github.com/lk-geimfari))
+- Mole ([Erghel](https://github.com/Erghel))

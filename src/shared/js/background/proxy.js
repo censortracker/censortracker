@@ -122,13 +122,14 @@ class ProxyManager {
    */
   async generateProxyAutoConfigData () {
     const domains = await Registry.getDomains()
-    const proxyServerURI = await this.getProxyServerURI()
-
-    await storage.set({ proxyServerURI })
 
     if (domains.length === 0) {
       return undefined
     }
+
+    const proxyServerURI = await this.getProxyServerURI()
+
+    await storage.set({ proxyServerURI })
 
     domains.sort()
     return `

@@ -217,7 +217,7 @@ class Registry {
 
       customProxiedDomains.splice(index, 1)
       await storage.set({ customProxiedDomains })
-      console.warn(`Removing ${domain} from ignore`)
+      console.warn(`Removing ${domain} from custom registry`)
     }
     return true
   }

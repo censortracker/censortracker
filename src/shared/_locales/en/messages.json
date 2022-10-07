@@ -107,6 +107,9 @@
   "debugInfoTip": {
     "message": "Click here to see debug information."
   },
+  "debugInfoTitle": {
+    "message": "Debug Info"
+  },
   "disableAll": {
     "message": "Disable all"
   },
@@ -360,6 +363,27 @@
   "showNotificationsTitle": {
     "message": "Show System Notifications"
   },
+  "siteActionAlwaysDesc": {
+    "message": "Always open this website through a proxy"
+  },
+  "siteActionAutoDesc": {
+    "message": "Open the site through a proxy only if the site is unavailable due to blocking."
+  },
+  "siteActionItemLabelAlways": {
+    "message": "Always"
+  },
+  "siteActionItemLabelAuto": {
+    "message": "Auto"
+  },
+  "siteActionItemLabelNever": {
+    "message": "Never"
+  },
+  "siteActionNeverDesc": {
+    "message": "Never open this website through a proxy (even if the site is unavailable due to blocking)"
+  },
+  "siteActionTitle": {
+    "message": "How should a proxy be used to for this website?"
+  },
   "thankYou": {
     "message": "Thank you!"
   },
@@ -404,26 +428,5 @@
   },
   "youCanCloseThisWindow": {
     "message": "You can close this window"
-  },
-  "siteActionTitle": {
-    "message": "How should a proxy be used to for this website?"
-  },
-  "siteActionItemLabelAuto": {
-    "message": "Auto"
-  },
-  "siteActionItemLabelAlways": {
-    "message": "Always"
-  },
-  "siteActionItemLabelNever": {
-    "message": "Never"
-  },
-  "siteActionAutoDesc": {
-    "message": "Open the site through a proxy only if the site is unavailable due to blocking."
-  },
-  "siteActionAlwaysDesc": {
-    "message": "Always open this website through a proxy"
-  },
-  "siteActionNeverDesc": {
-    "message": "Never open this website through a proxy (even if the site is unavailable due to blocking)"
   }
 }

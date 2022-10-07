@@ -428,5 +428,11 @@
   },
   "youCanCloseThisWindow": {
     "message": "Можно закрыть это окно"
+  },
+  "optionsRegistryPageTitle": {
+    "message": "Регион"
+  },
+  "optionsProxyPageTitle": {
+    "message": "Настройки Прокси"
   }
 }

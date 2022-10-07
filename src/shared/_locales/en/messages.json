@@ -428,5 +428,11 @@
   },
   "youCanCloseThisWindow": {
     "message": "You can close this window"
+  },
+  "optionsRegistryPageTitle": {
+    "message": "Region"
+  },
+  "optionsProxyPageTitle": {
+    "message": "Proxy Settings"
   }
 }

@@ -1,4 +1,4 @@
-# 9.0.0
+# 8.5.0
 
 - Improved performance of `popup` and `options`
 - Added support of website actions in `popup`

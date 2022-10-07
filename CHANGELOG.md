@@ -1,3 +1,13 @@
+# 9.0.0
+
+- Improved performance of `popup` and `options`
+- Added support of website actions in `popup`
+- Fixed debug info page for `Firefox` and `Chrome`
+- Fixed proxying/ignoring conflicts
+- Fixed bug which caused that some requests were not proxied (proxying was not working for `subdomain.domain.com`, but for `domain.com`)
+- Fixed typos and grammar in locales
+- Removed unused functionality
+
 # 7.0.0
 - Added donate button
 - Improved performance of pages

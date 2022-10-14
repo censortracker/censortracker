@@ -1,7 +1,6 @@
 import * as storage from './storage'
 import {
   extractDomainFromUrl,
-  extractHostnameFromUrl,
 } from './utilities'
 
 const REGISTRY_API_ENDPOINT = 'https://app.censortracker.org/api/config/'
@@ -256,7 +255,7 @@ class Registry {
    * This method makes sense only for some countries (Russia).
    */
   async retrieveInformationDisseminationOrganizerJSON (url) {
-    const domain = extractHostnameFromUrl(url)
+    const domain = extractDomainFromUrl(url)
     const { disseminators } = await storage.get({ disseminators: [] })
 
     const dataObject = disseminators.find(

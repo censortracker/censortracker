@@ -137,14 +137,14 @@ import Browser from 'Background/webextension'
 
   showDebugInfo.addEventListener('click', async (event) => {
     const debugInfoJSON = document.getElementById('debugInfoJSON')
-    const self = await Browser.management.getSelf()
+    const thisExtension = await Browser.management.getSelf()
     const currentConfig = await Registry.getCurrentConfig()
-    const installedExtensions = await Browser.management.getAll()
+    const extensionsInfo = await Browser.management.getAll()
 
-    if (installedExtensions.length > 0) {
-      currentConfig.conflictingExtensions = installedExtensions
-        .filter(({ name, permissions = [] }) =>
-          permissions.includes('proxy') && name !== self.name)
+    if (extensionsInfo.length > 0) {
+      currentConfig.conflictingExtensions = extensionsInfo
+        .filter(({ name }) => name !== thisExtension.name)
+        .filter(({ enabled, permissions }) => permissions.includes('proxy') && enabled)
         .map(({ name }) => name.split(' - ')[0])
     }
 

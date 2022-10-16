@@ -1,4 +1,3 @@
-import Ignore from 'Background/ignore'
 import ProxyManager from 'Background/proxy'
 import Registry from 'Background/registry'
 import Settings from 'Background/settings'
@@ -158,7 +157,6 @@ import Browser from 'Background/webextension'
   confirmResetBtn.addEventListener('click', async (event) => {
     togglePopup('popupConfirmReset')
     togglePopup('popupCompletedSuccessfully')
-    await Ignore.clear()
     await Registry.sync()
     await ProxyManager.setProxy()
     await Settings.enableExtension()

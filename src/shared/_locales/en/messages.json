@@ -128,12 +128,6 @@
   "doneDescription": {
     "message": "Operation completed successfully."
   },
-  "emergencyConfigDesc": {
-    "message": "This option allows Censor Tracker to work even in case of complete blocking of all our IP addresses and hosts. Do not enable this mode unless there are availability issues."
-  },
-  "emergencyConfigTitle": {
-    "message": "Emergency Mode"
-  },
   "extensionDisabledTitle": {
     "message": "Censor Tracker disabled"
   },

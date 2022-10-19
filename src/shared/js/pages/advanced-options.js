@@ -2,7 +2,6 @@ import ProxyManager from 'Background/proxy'
 import Registry from 'Background/registry'
 import Settings from 'Background/settings'
 import * as storage from 'Background/storage'
-import { choice } from 'Background/utilities'
 import Browser from 'Background/webextension'
 
 (async () => {
@@ -15,64 +14,13 @@ import Browser from 'Background/webextension'
   const cancelPopupResetBtn = document.getElementById('cancelPopupReset')
   const closePopupConfirmBtn = document.getElementById('closePopupConfirm')
   const updateLocalRegistryBtn = document.getElementById('updateLocalRegistry')
-  const emergencyConfigCheckbox = document.getElementById('emergencyConfigCheckbox')
   const resetSettingsToDefaultBtn = document.getElementById('resetSettingsToDefault')
   const parentalControlCheckbox = document.getElementById('parentalControlCheckbox')
 
-  const fetchEmergencyAPIEndpoints = async () => {
-    const apiURL = choice([
-      'https://censortracker.netlify.app/',
-      'https://roskomsvoboda.github.io/ctconf/endpoints.json',
-    ])
-
-    try {
-      const response = await fetch(apiURL)
-
-      return await response.json()
-    } catch (error) {
-      console.error('Error on fetching emergency API endpoints:', error)
-      return {}
-    }
-  }
-
-  storage.get({
-    emergencyMode: false,
-    parentalControl: false,
-  }).then(({ emergencyMode, parentalControl }) => {
-    emergencyConfigCheckbox.checked = emergencyMode
-    parentalControlCheckbox.checked = parentalControl
-  })
-
-  emergencyConfigCheckbox.addEventListener('change', async (event) => {
-    const emergencyMode = event.target.checked
-
-    if (emergencyMode) {
-      const {
-        proxy: proxyAPIEndpoint,
-        ignore: ignoreAPIEndpoint,
-        registry: registryAPIEndpoint,
-      } = await fetchEmergencyAPIEndpoints()
-
-      if (ignoreAPIEndpoint && proxyAPIEndpoint && registryAPIEndpoint) {
-        await storage.set({
-          emergencyMode: true,
-          proxyAPIEndpoint,
-          ignoreAPIEndpoint,
-          registryAPIEndpoint,
-        })
-      } else {
-        console.error('Failed to fetch emergency API endpoints')
-      }
-    } else {
-      await storage.set({ emergencyMode: false })
-      await storage.remove([
-        'proxyAPIEndpoint',
-        'ignoreAPIEndpoint',
-        'registryAPIEndpoint',
-      ])
-    }
-    console.log(`Emergency mode: ${emergencyMode}`)
-  }, false)
+  storage.get({ parentalControl: false })
+    .then(({ parentalControl }) => {
+      parentalControlCheckbox.checked = parentalControl
+    })
 
   parentalControlCheckbox.addEventListener('change', async (event) => {
     await storage.set({ parentalControl: event.target.checked })
@@ -144,7 +92,8 @@ import Browser from 'Background/webextension'
     if (extensionsInfo.length > 0) {
       currentConfig.conflictingExtensions = extensionsInfo
         .filter(({ name }) => name !== thisExtension.name)
-        .filter(({ enabled, permissions }) => permissions.includes('proxy') && enabled)
+        .filter(({ enabled, permissions }) =>
+          permissions.includes('proxy') && enabled)
         .map(({ name }) => name.split(' - ')[0])
     }
 

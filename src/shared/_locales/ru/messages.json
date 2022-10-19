@@ -128,12 +128,6 @@
   "doneDescription": {
     "message": "Операция выполнена успешно."
   },
-  "emergencyConfigDesc": {
-    "message": "Позволяет обходить блокировки даже в условиях полной блокировки всех наших IP-адресов и хостов. Не используйте этот режим, если в этом нет реальной необходимости."
-  },
-  "emergencyConfigTitle": {
-    "message": "Аварийный режим"
-  },
   "extensionDisabledTitle": {
     "message": "Censor Tracker выключен"
   },

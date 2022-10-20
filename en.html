@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Censor Tracker | Roskomsvoboda's blocking bypass plugin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Censor Tracker | Roskomsvoboda's blocking bypass plugin">
+    <meta name="keywords" content="bypass blockades, go to a blocked site, censortracker, censor tracker, go to a banned site, 
+                                   bypass blocking, site banned bypass, censorship, proxy, bypass censorship, roscomsvoboda, browser extension, 
+                                   browser plugin, unblock">
+    <meta property="og:type" content="website"/>
+    <meta property="og:title" content="Censor Tracker"/>
+    <meta property="og:url" content="https://censortracker.org"/>
+    <meta property="og:image" content="https://censortracker.org/static/img/preview.png"/>
+    <meta property="og:site_name" content="Censor Tracker">
+    <meta property="og:description" content="Roskomsvoboda's blocking bypass plugin"/>
+    <meta name="twitter:title" content="Censor Tracker"/>
+    <meta name="twitter:description" content="Roskomsvoboda's blocking bypass plugin"/>
+    <meta name="twitter:image" content="https://censortracker.org/static/img/preview.png"/>
+    <meta name="twitter:card" content="summary_large_image"/>
+    <meta name="twitter:site" content="@RuBlackListNET"/>
+
+    <link rel="shortcut icon" href="/static/img/favicon.ico" type="image/x-icon">
+
+    <!-- Bootstrap core CSS -->
+    <link href="static/css/bootstrap.min.css" rel="stylesheet">
+
+    <!--Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@700&family=Inter:wght@400;700&display=swap"
+          rel="stylesheet">
+
+    <link href="static/css/styles.css" rel="stylesheet">
+    <script defer data-domain="censortracker.org" src="https://plausible.io/js/plausible.js"></script>
+    <script type='application/ld+json'>
+        {
+          "@context": "https://schema.org",
+          "@type": "Organization",
+           "name": "Censor Tracker",
+           "url": "https://censortracker.org/",
+           "logo": "https://censortracker.org/static/img/preview.png",
+           "sameAs": [
+             "https://twitter.com/RuBlackListNET",
+             "https://t.me/roskomsvoboda",
+             "https://github.com/roskomsvoboda"
+           ]
+         }
+    </script>
+</head>
+
+<body>
+<nav class="container pt-3">
+    <a class="navbar-quokka" href="/">
+        <img src="static/img/quokka_nav.svg" class="vertical">
+    </a>
+    <a class="navbar-brand" href="https://roskomsvoboda.org/">
+        <img src="static/img/rks.svg">
+    </a>
+</nav>
+
+<section class="container pb-5 pl-md-5">
+    <div class="row">
+        <div class="col-lg-6 order-lg-2 text-center">
+            <img src="static/img/quokka_big.svg" class="image-big">
+            <small class="floating-link"><a href="https://ru.wikipedia.org/wiki/%D0%9A%D0%B2%D0%BE%D0%BA%D0%BA%D0%B0"
+                                            target="_blank">Quokka</a></small>
+        </div>
+        <div class="col-lg-6 order-lg-1 text-center text-md-left pt-md-5">
+            <h1 class="mt-5">Censor Tracker</h1>
+            <p class="lead">An extension to bypass blocking and identify websites that have some surveillance tools installed. 
+                We do not earn on our users and do not look into your traffic.</p>
+            <ul class="lead list-unstyled">
+                <li>
+                    <a href="https://chrome.google.com/webstore/detail/censor-tracker/gaidoampbkcknofoejhnhbhbhhifgdop/related"
+                       target="_blank">
+                        <button class="btn btn-lg btn-primary download-btn">
+                            <img src="static/img/chrome.svg">
+                            Install in Chrome 
+                        </button>
+                    </a>
+                </li>
+                <li>
+                    <a href="https://addons.mozilla.org/en-US/firefox/addon/censor-tracker/" target="_blank">
+                        <button class="btn btn-lg btn-primary download-btn">
+                            <img width="31" height="28" src="static/img/ff.svg">
+                            Install in Firefox 
+                        </button>
+                    </a>
+                </li>
+
+                <li><a href="https://github.com/roskomsvoboda/censortracker/releases/">Download as a zip file</a>
+                </li>
+                <li><a href="https://github.com/roskomsvoboda/censortracker" target="_blank">See on GitHub</a>
+                </li>
+                <li><a href="https://t.me/CensorTracker_feedback" target="_blank">If you are having any issues, please get in touch and let us know!</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<hr>
+
+<section class="container my-md-5 pt-md-5 px-md-5">
+    <div class="row pt-5 px-md-5">
+        <div class="col-lg-6 text-center text-md-left mx-5 mx-md-0">
+            <img src="static/img/avito-en.svg" class="shadow responsive">
+        </div>
+        <div class="col-lg-6 pt-5">
+            <h3>We will warn you if the website is included in the register of information dissemination organisers</h3>
+            <p class="text-secondary">Such websites have to store your personal data and share it with law enforcement by request. 
+                They also have to un-encrypt and share all traffic created by your activity on their website by request.</p>
+        </div>
+    </div>
+</section>
+
+<section class="container mt-5 mb-md-5 py-5 px-md-5">
+    <div class="row px-md-5">
+        <div class="col-md-6 order-md-2 text-center text-md-right mx-5 mx-md-0">
+            <img src="static/img/proton-en.svg" class="shadow animated responsive">
+        </div>
+
+        <div class="col-md-6 mt-md-5 mb-5 pt-5 order-md-1 double">
+            <div class="mb-5">
+                <h3>We will check if the website is banned in Russia</h3>
+                <p class="text-secondary">Roskomsvoboda monitors the register of websites being banned in Russia. 
+                    Currently, there are more than 340,000 URLs on our list</p>
+            </div>
+
+            <div class="spacer d-none d-lg-block"></div>
+
+            <div>
+                <h3>We will unblock, even if the website is blocked by the law on the "Sovereign" Runet</h3>
+                <p class="text-secondary">Regular extensions bypass only blockings by the Roskomnadzor registry, 
+                    but we have organised bypassing out-of-registry locks.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="text-center mt-md-5 bg-light">
+    <div class="container bg-vector">
+        <div class="row py-5">
+            <div class="col-md-8 offset-md-2">
+                <h2 class="h2 py-5">By using Censor Tracker, you help us to investigate the cases of internet censorship on Runet</h2>
+                <p class="text-secondary text-left">The extension tracks blockings created by Roskomnadzor according to the law on the "Sovereign" Runet, 
+                    which bypasses the official registry of prohibited websites, 
+                    and we make these blockings public.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="container py-5 px-md-5 my-md-5">
+    <div class="row pt-4">
+        <div class="col-lg-6">
+            <h3>We do not store or share with third parties your personal data and your browser history</h3>
+        </div>
+        <div class="col-lg-6">
+            <p class="text-secondary">
+                We do not store logs compared to most commercial extensions.</p>
+            <p class="text-secondary">
+                You can see this for yourself by checking out the Censor Tracker source code on <a
+                    href="https://github.com/roskomsvoboda/censortracker" target="_blank">GitHub</a>.
+            </p>
+
+        </div>
+    </div>
+</section>
+<hr>
+<section class="container py-5 px-md-5 my-md-5">
+    <h2 id="faq" class="h2 py-5 text-center mb-4">Frequently Asked Questions</h2>
+    <div class="accordion" id="accordionExample">
+        <div class="card">
+            <div class="card-header bg-transparent" id="heading11">
+                <h2 class="mb-0">
+                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse"
+                            data-target="#collapse11" aria-expanded="true" aria-controls="collapse11">
+                            The extension doesn't work, what should I do?
+                    </button>
+                </h2>
+            </div>
+
+            <div id="collapse11" class="collapse" aria-labelledby="heading11" data-parent="#accordionExample">
+                <div class="card-body  text-secondary">
+                    Please check the version of your browser, the extension supports <kbd>Firefox 98+</kbd> and <kbd>Google Chrome 94+</kbd>.
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header bg-transparent" id="heading0">
+                <h2 class="mb-0">
+                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse"
+                            data-target="#collapse0" aria-expanded="true" aria-controls="collapse0">
+                            What is "Sovereign Runet"?
+                    </button>
+                </h2>
+            </div>
+
+            <div id="collapse0" class="collapse" aria-labelledby="heading0" data-parent="#accordionExample">
+                <div class="card-body  text-secondary">
+                    By "Sovereign Runet" we mean the Russian national Internet traffic routing system, 
+                    which allows to centralize the network management in the country and provides an opportunity to disconnect it from the global network if necessary.
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header bg-transparent" id="headingOne">
+                <h2 class="mb-0">
+                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse"
+                            data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                            I cannot open Twitter/Youtube/another website, what should I do?
+                    </button>
+                </h2>
+            </div>
+
+            <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">
+                <div class="card-body  text-secondary">
+                    <ol>
+                        <li>Please check if you have the latest version of the extension installed in your browser.</li>
+                        <li>If you have VPN service turned on, please turn it off as it may interfere with the work of the extension.
+                        </li>
+                        <li>Please go to the 'Extended settings' and update the database 
+                            (you can do that by clicking on the extension button —> click the settings button in the upper right corner of the new window —> 
+                            Advanced settings —> Force update the extension's local database.
+                        </li>
+                        <li>If you have an extension or extensions controlling the proxy settings, 
+                            you should turn them off in the settings of the browser as the extensions controlling proxies can interfere one with another.
+                        </li>
+                        <li>Re-install the extension</li>
+                    </ol>
+                    <p>If nothing from above helped you to fix the problem, please get in touch <a href="https://t.me/CensorTracker_feedback"
+                                                                        target="_blank">with us!</a>!</p>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header bg-transparent" id="headingTwo">
+                <h2 class="mb-0">
+                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse"
+                            data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                            Why I am having issues connecting to Youtube while my extension is turned on?
+                    </button>
+                </h2>
+            </div>
+            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+                <div class="card-body  text-secondary">
+                    This happens because Google considers our traffic suspicious if there are too many requests from one IP address.
+                    <br>
+                    <br>
+                    One of the possible solutions for this issue is adding youtube.com to the list of 'ignored' websites. 
+
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header bg-transparent" id="headingThree">
+                <h2 class="mb-0">
+                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse"
+                            data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                            Will I have access to the websites blocked through the 'middleboxes' (TSPU)?
+                    </button>
+                </h2>
+            </div>
+            <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
+                <div class="card-body  text-secondary">
+                    Yes, you will! We monitor the websites blocked through the 'middleboxes' (TSPU) and ass them to our register. 
+                    You do not need to do anything, Censor Tracker updates its list of blocked websites automatically every 40 minutes. 
+                    However, if you have any issues accessing some websites, you will be able to add them to Censor Tracker's list manually.
+                    <br>
+                    <br>
+                    To do that click the extension button in your browser —> click the settings button in the upper right corner of the new window —> 
+                    "Proxying List" —> add the website or websites you are having issues with —> press <kbd>Enter</kbd>.
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header bg-transparent" id="heading4">
+                <h2 class="mb-0">
+                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse"
+                            data-target="#collapse4" aria-expanded="false" aria-controls="collapse4">
+                            Can I use my own proxy server?
+                    </button>
+                </h2>
+            </div>
+            <div id="collapse4" class="collapse" aria-labelledby="heading4" data-parent="#accordionExample">
+                <div class="card-body  text-secondary">
+                    Yes, the extension allows you to do so. 
+                    To use your own proxy server, please click the extension button in your browser —> click the settings button in the upper right corner of the new window —> Proxy settings. 
+                    The extension supports only proxies using HTTPS. The correct input looks like this: in the first window please enter the <code>username:password@hostname</code>, 
+                    in the second please enter the port.
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header bg-transparent" id="heading5">
+                <h2 class="mb-0">
+                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse"
+                            data-target="#collapse5" aria-expanded="false" aria-controls="collapse5">
+                            Can I contribute to the Censor Tracker development?
+                    </button>
+                </h2>
+            </div>
+            <div id="collapse5" class="collapse" aria-labelledby="heading5" data-parent="#accordionExample">
+                <div class="card-body  text-secondary">
+                    Yes! Censor Tracker is an <a href="https://github.com/roskomsvoboda/censortracker"
+                                                       target="_blank">open-source</a> project, so anyone willing to contribute.
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header bg-transparent" id="heading6">
+                <h2 class="mb-0">
+                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse"
+                            data-target="#collapse6" aria-expanded="false" aria-controls="collapse6">
+                            Some websites say that my IP is German, is it alright?
+                    </button>
+                </h2>
+            </div>
+            <div id="collapse6" class="collapse" aria-labelledby="heading6" data-parent="#accordionExample">
+                <div class="card-body  text-secondary">
+                    It is ok, our servers are based in the EU, including Germany.
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header bg-transparent" id="heading7">
+                <h2 class="mb-0">
+                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse"
+                            data-target="#collapse7" aria-expanded="false" aria-controls="collapse7">
+                            Can I use Censor Tracker on my mobile?
+                    </button>
+                </h2>
+            </div>
+            <div id="collapse7" class="collapse" aria-labelledby="heading7" data-parent="#accordionExample">
+                <div class="card-body  text-secondary">
+                    At the moment, the main browsers for mobile devices (Chrome for Android and Safari for iOS) do not support the extension. 
+                    We cannot take responsibility and recommend users third-party browsers which support it.
+                    </br>
+                    </br>
+                    Censor Tracker is a proxy extension specifically for web browsers, not a VPN. We do not plan to add VPN function to the Censor Tracker yet. If you need a good VPN, 
+                    you can use the website <a href="https://vpnlove.me/">VPN Love</a> to choose a reliable ISP (Internet Service Provider or install <a href="https://ru.amnezia.org/">AmneziaVPN</a>, 
+                    which is a graduate of the Privacy Accelerator (organized by our experts).
+
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header bg-transparent" id="heading9">
+                <h2 class="mb-0">
+                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse"
+                            data-target="#collapse9" aria-expanded="false" aria-controls="collapse9">
+                            Can I get in touch with you to report an issue?
+                    </button>
+                </h2>
+            </div>
+            <div id="collapse9" class="collapse" aria-labelledby="heading9" data-parent="#accordionExample">
+                <div class="card-body  text-secondary">
+                    Yes, we have a <a href="https://t.me/CensorTracker_feedback" target="_blank">Telegram chat</a>
+                    dedicated to the discussion of the issues discovered and reported by our users, and to the discussion of the operation of our extension.
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header bg-transparent" id="heading10">
+                <h2 class="mb-0">
+                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse"
+                            data-target="#collapse10" aria-expanded="false" aria-controls="collapse10">
+                            I want to support you financially, how can I do so?
+                    </button>
+                </h2>
+            </div>
+            <div id="collapse10" class="collapse" aria-labelledby="heading10" data-parent="#accordionExample">
+                <div class="card-body  text-secondary">
+                    You can make regular donations or send a one-time payment on our website: <a
+                        href="https://donate.roskomsvoboda.org/" target="_blank">donate.roskomsvoboda.org</a>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header bg-transparent" id="heading12">
+                <h2 class="mb-0">
+                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse"
+                            data-target="#collapse12" aria-expanded="false" aria-controls="collapse12">
+                            What are alternative ways to install the extension?
+                    </button>
+                </h2>
+            </div>
+            <div id="collapse12" class="collapse" aria-labelledby="heading12" data-parent="#accordionExample">
+                <div class="card-body  text-secondary">
+                    You can use the <a href="https://github.com/roskomsvoboda/censortracker/releases">GitHub repository</a> to install the extension. 
+                    <ul class="lead list-unstyled">
+                        <h3>Install the extension in Firefox</h3> 
+                        <li>1. Download <a href="https://github.com/roskomsvoboda/censortracker/releases">the latest archive</a> with the extension from our GitHub repository.</li>
+                        <img src="./guide/ff/archive.JPG" />
+                        <li>2. Unzip the Extension into a new folder.</li>
+                        <img src="./guide/ff/folder.JPG" />
+                        <img src="./guide/ff/arxhivemove-ff.JPG" />
+                        <img src="./guide/ff/antiarchive.JPG" />
+                        <li>3. Open a <code>"New Tab"</code> and go to this address: <code>about:debugging#/runtime/this-firefox</code>.</li>
+                        <li>4. Next, click the <kbd>Download temporary add-on button</kbd>.</li>
+                        <img src="./guide/ff/inject1.JPG" />
+                        <li>5. Go to the folder where you unpacked the extension and select the <code>manifest.json</code>.</li>
+                        <img src="./guide/ff/inject2.JPG" />
+                        <li>Ready! You can use the extension.</li>
+                        <li>*You will need to do this every time you start the browser.</li>
+                    </ul>
+                    <ul class="lead list-unstyled">
+                        <h3>Install the extension in Google Chrome</h3>
+                        <li>1. Download <a href="https://github.com/roskomsvoboda/censortracker/releases"> the latest archive</a> with the extension from our GitHub repository.</li>
+                        <img src="./guide/gc/archive.JPG" />
+                        <li>2. Unzip the Extension into a new folder.</li>
+                        <img src="./guide/gc/folder.JPG" />
+                        <img src="./guide/gc/archivemove-gc.JPG" />
+                        <img src="./guide/gc/antiarchive.JPG" />
+                        <li>3. Open a <code>"New Tab"</code> and go to this address: <code>chrome://extensions</code>.</li>
+                        <li>4. In the upper right corner, turn on <code>"Developer Mode"</code>.</li>
+                        <img src="./guide/gc/developer-regime.JPG" />
+                        <img src="./guide/gc/developer-regime-on.JPG" />
+                        <li>5. Next, click on the button <kbd>Download the unpacked file</kbd>.</li>
+                        <img src="./guide/gc/inject1.JPG" />
+                        <li>6. Select the folder where you unzipped the extension.</li>
+                        <img src="./guide/gc/inject2.JPG" />
+                        <li>Ready! You can use the extension.</li>
+                    </ul>
+                    <!--
+                    <ul class="lead list-unstyled">
+                        <h3>Установка расширения с сайта Censor Tracker</h3>
+                        <li>Вы можете перейти по этой ссылке и установка начнется сама, вам только нужно будет следовать указанным там инструкциям.</li>
+                        <li>Также вы можете подняться наверх страницы и увидеть кнопку для установки в ваш браузер.</li>
+                    </ul>
+                    -->
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+
+</section>
+<hr>
+<section class="container text-center py-5 px-md-5">
+    <h2 class="h2 py-5 text-center mb-4">Supported browsers</h2>
+    <div class="row mt-5">
+        <div class="col">
+            <a target="_blank"
+               href="https://chrome.google.com/webstore/detail/censor-tracker/gaidoampbkcknofoejhnhbhbhhifgdop">
+                <img width="64" src="static/img/google-chrome.svg">
+                <p class="mt-3 text-dark">Chrome</p>
+            </a>
+        </div>
+        <div class="col">
+            <a target="_blank"
+               href="https://addons.mozilla.org/ru/firefox/addon/censor-tracker/">
+                <img width="64" src="static/img/firefox.png">
+                <p class="mt-3 text-dark">Mozilla Firefox</p>
+            </a>
+        </div>
+        <div class="col">
+            <a target="_blank"
+               href="https://chrome.google.com/webstore/detail/censor-tracker/gaidoampbkcknofoejhnhbhbhhifgdop">
+                <img width="64" src="static/img/brave.svg">
+                <p class="mt-3 text-dark">Brave</p>
+            </a>
+        </div>
+        <div class="col">
+            <a href="https://chrome.google.com/webstore/detail/censor-tracker/gaidoampbkcknofoejhnhbhbhhifgdop"
+               target="_blank">
+                <img width="64" src="static/img/opera.svg">
+                <p class="mt-3 text-dark">Opera</p>
+            </a>
+        </div>
+    </div>
+</section>
+
+<hr>
+
+<section class="container text-center py-5 px-md-5">
+    <img src="static/img/quokka-logo.svg" alt="CensorTracker">
+    <h2 class="mt-5">Censor Tracker</h2>
+    <ul class="lead list-unstyled">
+        <li>
+            <a href="https://chrome.google.com/webstore/detail/censor-tracker/gaidoampbkcknofoejhnhbhbhhifgdop/related"
+               target="_blank">
+                <button class="btn btn-lg btn-primary download-btn">
+                    <img alt="Chrome" src="static/img/chrome.svg"> Install in Chrome
+                </button>
+            </a>
+        </li>
+        <li>
+            <a href="https://addons.mozilla.org/en-US/firefox/addon/censor-tracker/" target="_blank">
+                <button class="btn btn-lg btn-primary download-btn">
+                    <img alt="Firefox" width="31" height="28" src="static/img/ff.svg"> Install in Firefox
+                </button>
+            </a>
+        </li>
+        <li>
+            <a href="https://github.com/roskomsvoboda/censortracker/releases/" target="_blank">
+                Download as a zip file
+            </a>
+        </li>
+    </ul>
+</section>
+
+<hr>
+
+<footer class="text-center pt-4 pb-5">
+    <a href="https://roskomsvoboda.org/" target="_blank">
+        <img src="static/img/rks.svg">
+    </a>
+</footer>
+
+<!-- Bootstrap core JavaScript -->
+<script src="static/js/jquery.slim.min.js"></script>
+<script src="static/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript">
+  $(window).scroll(function () {
+    let offset = $('.animated').parent().offset().top;
+    let fixedCardTop = $(window).scrollTop() + ($(window).height() - $('.animated').height()) / 2;
+    let cardTop = fixedCardTop - offset;
+    let maxCardTop = $('.animated').parent().height() - $('.animated').height();
+    if (cardTop <= 0) {
+      cardTop = 0;
+    } else if (cardTop > maxCardTop) {
+      cardTop = maxCardTop;
+    }
+    $('.animated').css("top", cardTop);
+  });
+</script>
+
+</body>
+
+</html>

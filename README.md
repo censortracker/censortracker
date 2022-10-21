@@ -21,7 +21,7 @@ Censor Tracker provides a lot of useful features, here are the most important:
 - Configurable proxy
 - Country-specific proxying
 - Custom proxying list
-- Bypass censorship and restrictions (including [DPI]-filtration)
+- Censorship-resistant itself
 - Warns about sites that transfer data to third parties
 
 Development

@@ -2,35 +2,10 @@ import * as storage from './storage'
 import * as utilities from './utilities'
 import { extractDomainFromUrl } from './utilities'
 
-const IGNORE_API_ENDPOINT = 'https://app.censortracker.org/api/ignore/'
-
 export class Ignore {
   /**
-   * Fetches ignored domains from the API endpoint.
-   */
-  async fetch () {
-    try {
-      const { ignoreAPIEndpoint } = await storage.get({
-        ignoreAPIEndpoint: IGNORE_API_ENDPOINT,
-      })
-      const ignoredHosts = await this.getAll()
-      const response = await fetch(ignoreAPIEndpoint)
-      const domains = await response.json()
-
-      for (const domain of domains) {
-        if (!ignoredHosts.includes(domain)) {
-          ignoredHosts.push(domain)
-        }
-      }
-      await storage.set({ ignoredHosts })
-      console.log('Remote ignored domains fetched!')
-    } catch (error) {
-      console.warn('Fetching ignored domains...')
-    }
-  }
-
-  /**
    * Clears the list of ignored domains.
+   * @returns {Promise<undefined>}
    */
   async clear () {
     await storage.set({ ignoredHosts: [] })
@@ -38,6 +13,7 @@ export class Ignore {
 
   /**
    * Returns the list of all ignored domains.
+   * @returns {Promise<string[]>}
    */
   async getAll () {
     const { ignoredHosts } = await storage.get({ ignoredHosts: [] })
@@ -48,6 +24,7 @@ export class Ignore {
   /**
    * Adds a given URL to the list of ignored.
    * @param url URL to ignore.
+   * @returns {Promise<boolean>}
    */
   async add (url) {
     const hostname = extractDomainFromUrl(url)
@@ -58,10 +35,14 @@ export class Ignore {
       console.warn(`Adding ${hostname} to ignore`)
       await storage.set({ ignoredHosts })
     }
-
     return true
   }
 
+  /**
+   * Removes a URL/Hostname from the list of ignored.
+   * @param url URL to remove.
+   * @returns {Promise<boolean>}
+   */
   async remove (url) {
     const hostname = extractDomainFromUrl(url)
     const { ignoredHosts } = await storage.get({ ignoredHosts: [] })
@@ -79,6 +60,7 @@ export class Ignore {
   /**
    * Checks if a given URL is ignored..
    * @param url URL.
+   * @returns {Promise<boolean>}
    */
   async contains (url) {
     const ignoredHosts = await this.getAll()

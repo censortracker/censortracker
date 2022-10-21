@@ -1,6 +1,7 @@
 import Ignore from './ignore'
 import ProxyManager from './proxy'
 import Registry from './registry'
+import * as server from './server'
 import Settings from './settings'
 import * as storage from './storage'
 import Task from './task'
@@ -49,20 +50,16 @@ export const warnAboutInformationDisseminationOrganizer = async (url) => {
 export const handleOnAlarm = async ({ name }) => {
   console.warn(`Alarm received: ${name}`)
 
-  if (name === 'ignore-fetch') {
-    await Ignore.fetch()
+  if (name === 'sync') {
+    await server.synchronize()
   }
 
-  if (name === 'proxy-setProxy') {
+  if (name === 'setProxy') {
     const proxyingEnabled = await ProxyManager.isEnabled()
 
     if (proxyingEnabled) {
       await ProxyManager.setProxy()
     }
-  }
-
-  if (name === 'registry-sync') {
-    await Registry.sync()
   }
 }
 
@@ -73,8 +70,6 @@ export const handleBeforeRequest = async (_details) => {
 
 export const handleStartup = async () => {
   console.groupCollapsed('onStartup')
-  await Ignore.fetch()
-  await Registry.sync()
 
   const proxyingEnabled = await ProxyManager.isEnabled()
 
@@ -83,9 +78,8 @@ export const handleStartup = async () => {
   }
 
   await Task.schedule([
-    { name: 'ignore-fetch', minutes: 10 },
-    { name: 'registry-sync', minutes: 20 },
-    { name: 'proxy-setProxy', minutes: 10 },
+    { name: 'sync', minutes: 20 },
+    { name: 'setProxy', minutes: 10 },
   ])
   console.groupEnd()
 }
@@ -197,46 +191,43 @@ export const handleInstalled = async ({ reason }) => {
     await Settings.showInstalledPage()
     await ProxyManager.enableProxy()
 
-    const synchronized = await Registry.sync()
-
-    if (synchronized) {
-      await ProxyManager.requestIncognitoAccess()
-      await ProxyManager.ping()
-      await ProxyManager.setProxy()
-    } else {
-      console.warn('Synchronization failed')
-    }
+    await server.synchronize()
+    await ProxyManager.requestIncognitoAccess()
+    await ProxyManager.ping()
+    await ProxyManager.setProxy()
   }
 
   if (UPDATED || INSTALLED) {
     await Task.schedule([
-      { name: 'ignore-fetch', minutes: 10 },
-      { name: 'registry-sync', minutes: 20 },
-      { name: 'proxy-setProxy', minutes: 10 },
+      { name: 'sync', minutes: 20 },
+      { name: 'setProxy', minutes: 10 },
     ])
   }
 }
 
 export const handleTabState = async (tabId, { status = 'loading' } = {}, tab) => {
   if (status === Browser.tabs.TabStatus.LOADING) {
-    Ignore.contains(tab.url).then((isIgnored) => {
-      Settings.extensionEnabled().then(async (extensionEnabled) => {
-        if (extensionEnabled && !isIgnored && utilities.isValidURL(tab.url)) {
-          const blocked = await Registry.contains(tab.url)
-          const { url: disseminatorUrl, cooperationRefused } =
-            await Registry.retrieveInformationDisseminationOrganizerJSON(tab.url)
+    Ignore.contains(tab.url)
+      .then((isIgnored) => {
+        Settings.extensionEnabled()
+          .then(async (extensionEnabled) => {
+            if (extensionEnabled && !isIgnored && utilities.isValidURL(tab.url)) {
+              const blocked = await Registry.contains(tab.url)
+              const {
+                url: disseminatorUrl, cooperationRefused,
+              } = await Registry.retrieveInformationDisseminationOrganizerJSON(tab.url)
 
-          if (blocked) {
-            Settings.setBlockedIcon(tabId)
-          } else if (disseminatorUrl) {
-            if (!cooperationRefused) {
-              Settings.setDangerIcon(tabId)
-              await warnAboutInformationDisseminationOrganizer(tab.url)
+              if (blocked) {
+                Settings.setBlockedIcon(tabId)
+              } else if (disseminatorUrl) {
+                if (!cooperationRefused) {
+                  Settings.setDangerIcon(tabId)
+                  await warnAboutInformationDisseminationOrganizer(tab.url)
+                }
+              }
             }
-          }
-        }
+          })
       })
-    })
   }
 }
 

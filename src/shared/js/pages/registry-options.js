@@ -69,7 +69,7 @@ import * as storage from 'Background/storage'
 
       await storage.set({
         currentRegionName: countryName,
-        currentRegionCode: countryAutoDetectionEnabled ? '' : countryCode.toLowerCase(),
+        currentRegionCode: countryAutoDetectionEnabled ? '' : countryCode.toUpperCase(),
       })
       await Registry.sync()
       const proxyingEnabled = await ProxyManager.isEnabled()

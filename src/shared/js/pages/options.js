@@ -1,9 +1,12 @@
 import ProxyManager from 'Background/proxy'
 import Registry from 'Background/registry'
+import * as server from 'Background/server'
 import * as storage from 'Background/storage'
-import Browser from 'Background/webextension';
+import Browser from 'Background/webextension'
 
 (async () => {
+  window.server = server
+
   const proxyingEnabled = await ProxyManager.isEnabled()
   const version = document.getElementById('version')
   const proxyStatus = document.getElementById('proxyStatus')

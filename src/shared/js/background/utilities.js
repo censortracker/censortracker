@@ -96,12 +96,3 @@ export const parseURLStrings = (urls) => {
   }
   return Array.from(result)
 }
-
-/**
- * Returns random element of a given array.
- * @param array Array.
- * @returns {*} Random element of array.
- */
-export const choice = (array) => {
-  return array[Math.floor(Math.random() * array.length)]
-}

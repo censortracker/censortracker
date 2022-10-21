@@ -2,54 +2,17 @@ import Registry from './registry'
 import * as storage from './storage'
 import Browser from './webextension'
 
-const PROXY_CONFIG_API_ENDPOINT = 'https://app.censortracker.org/api/proxy-config/'
-const FALLBACK_PROXY_SERVER_HOST = 'proxy.roskomsvoboda.org'
-const FALLBACK_PROXY_SERVER_URI = `${FALLBACK_PROXY_SERVER_HOST}:33333`
-const FALLBACK_PROXY_SERVER_PING_URI = `${FALLBACK_PROXY_SERVER_HOST}:39263`
-
 class ProxyManager {
-  async fetchReserveConfig () {
-    try {
-      const { proxyAPIEndpoint } = await storage.get({
-        proxyAPIEndpoint: PROXY_CONFIG_API_ENDPOINT,
-      })
-      const response = await fetch(proxyAPIEndpoint)
-      const { server, port, pingHost, pingPort } = await response.json()
-
-      if (server && port && pingHost && pingPort) {
-        const reserveProxyPingURI = `${pingHost}:${pingPort}`
-        const reserveProxyServerURI = `${server}:${port}`
-
-        console.warn(`Proxy fetched: ${reserveProxyServerURI}!`)
-
-        await storage.set({ reserveProxyPingURI, reserveProxyServerURI })
-
-        return { reserveProxyServerURI }
-      }
-      console.warn('Reverse proxy is not provided.')
-    } catch (error) {
-      console.error(
-        'Error on fetching proxy: trying again in 10 minutes...',
-      )
-    }
-    return {}
-  }
-
   async getProxyServerURI () {
-    const { reserveProxyServerURI } = await this.fetchReserveConfig()
+    const { proxyServerURI } = await storage.get('proxyServerURI')
     const { customProxyServerURI } = await storage.get(['customProxyServerURI'])
 
     if (customProxyServerURI) {
       console.warn('Using custom proxy for PAC.')
       return customProxyServerURI
     }
-
-    if (reserveProxyServerURI) {
-      console.warn('Using reserve proxy for PAC.')
-      return reserveProxyServerURI
-    }
-    console.log('Using fallback proxy for PAC.')
-    return FALLBACK_PROXY_SERVER_URI
+    console.warn('Using default proxy for PAC.')
+    return proxyServerURI
   }
 
   async requestIncognitoAccess () {
@@ -108,9 +71,10 @@ class ProxyManager {
       await Browser.proxy.settings.set(config)
       await this.enableProxy()
       await this.grantIncognitoAccess()
-      console.warn('PAC has been generated and set successfully!')
+      console.warn('PAC has been set successfully!')
       return true
     } catch (error) {
+      console.error(`PAC could not be set: ${error}`)
       await this.disableProxy()
       await this.requestIncognitoAccess()
       return false
@@ -194,11 +158,9 @@ class ProxyManager {
   }
 
   async ping () {
-    const { reserveProxyPingURI } = await storage.get({
-      reserveProxyPingURI: FALLBACK_PROXY_SERVER_PING_URI,
-    })
+    const { proxyPingURI } = await storage.get('proxyPingURI')
 
-    fetch(`http://${reserveProxyPingURI}`, {
+    fetch(`http://${proxyPingURI}`, {
       method: 'POST',
       headers: {
         'Content-type': 'application/json; charset=UTF-8',
@@ -208,7 +170,7 @@ class ProxyManager {
       }),
     }).catch(() => {
       // We don't care about the result.
-      console.warn(`Pinged ${reserveProxyPingURI}!`)
+      console.warn(`Pinged ${proxyPingURI}!`)
     })
   }
 

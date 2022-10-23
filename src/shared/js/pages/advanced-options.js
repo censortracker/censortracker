@@ -66,9 +66,12 @@ import Browser from 'Background/webextension'
 
   updateLocalRegistryBtn.addEventListener('click', async (event) => {
     togglePopup('popupCompletedSuccessfully')
-
     await server.synchronize()
-    await ProxyManager.setProxy()
+    const proxyingEnabled = ProxyManager.isEnabled()
+
+    if (proxyingEnabled) {
+      await ProxyManager.setProxy()
+    }
   })
 
   document.addEventListener('keydown', async (event) => {

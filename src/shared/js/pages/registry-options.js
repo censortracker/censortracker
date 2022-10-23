@@ -1,5 +1,6 @@
 import ProxyManager from 'Background/proxy'
 import Registry from 'Background/registry'
+import * as server from 'Background/server'
 import * as storage from 'Background/storage'
 
 (async () => {
@@ -27,7 +28,7 @@ import * as storage from 'Background/storage'
     if (useRegistry) {
       selectRegion.classList.remove('hidden')
       await Registry.enableRegistry()
-      await Registry.sync()
+      await server.synchronize()
       await ProxyManager.setProxy()
     } else {
       selectRegion.classList.add('hidden')
@@ -71,7 +72,7 @@ import * as storage from 'Background/storage'
         currentRegionName: countryName,
         currentRegionCode: countryAutoDetectionEnabled ? '' : countryCode.toUpperCase(),
       })
-      await Registry.sync()
+      await server.sync()
       const proxyingEnabled = await ProxyManager.isEnabled()
 
       if (proxyingEnabled) {

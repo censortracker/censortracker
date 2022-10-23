@@ -4,14 +4,6 @@ import {
 } from './utilities'
 
 class Registry {
-  async getCurrentConfig () {
-    const { registryConfig } = await storage.get({
-      registryConfig: {},
-    })
-
-    return registryConfig
-  }
-
   /**
    * Returns unregistered records from our custom registry.
    */

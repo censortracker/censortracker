@@ -1,5 +1,4 @@
 import ProxyManager from 'Background/proxy'
-import Registry from 'Background/registry'
 import * as server from 'Background/server'
 import Settings from 'Background/settings'
 import * as storage from 'Background/storage'
@@ -83,27 +82,30 @@ import Browser from 'Background/webextension'
   showDebugInfo.addEventListener('click', async (event) => {
     const debugInfoJSON = document.getElementById('debugInfoJSON')
     const thisExtension = await Browser.management.getSelf()
-    const currentConfig = await Registry.getCurrentConfig()
     const extensionsInfo = await Browser.management.getAll()
 
+    const { localConfig } = await storage.get({
+      localConfig: {},
+    })
+
     if (extensionsInfo.length > 0) {
-      currentConfig.conflictingExtensions = extensionsInfo
+      localConfig.conflictingExtensions = extensionsInfo
         .filter(({ name }) => name !== thisExtension.name)
         .filter(({ enabled, permissions }) =>
           permissions.includes('proxy') && enabled)
         .map(({ name }) => name.split(' - ')[0])
     }
 
-    currentConfig.currentProxyURI = await ProxyManager.getProxyServerURI()
-    currentConfig.proxyControlled = await ProxyManager.controlledByThisExtension()
-    debugInfoJSON.textContent = JSON.stringify(currentConfig, null, 2)
+    localConfig.currentProxyURI = await ProxyManager.getProxyServerURI()
+    localConfig.proxyControlled = await ProxyManager.controlledByThisExtension()
+    debugInfoJSON.textContent = JSON.stringify(localConfig, null, 2)
     togglePopup('popupDebugInformation')
   })
 
   confirmResetBtn.addEventListener('click', async (event) => {
     togglePopup('popupConfirmReset')
     togglePopup('popupCompletedSuccessfully')
-    await Registry.sync()
+    await server.synchronize()
     await ProxyManager.setProxy()
     await Settings.enableExtension()
     console.warn('Censor Tracker has been reset to default settings.')

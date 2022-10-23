@@ -57,6 +57,8 @@ const fetchConfig = async () => {
       if (response.ok) {
         const { meta, data } = await response.json()
 
+        console.log(`[Config] Fetched config from: ${endpoint.name}`)
+
         if (meta.timestamp > 0) {
           let countryCode = FALLBACK_COUNTRY_CODE
 

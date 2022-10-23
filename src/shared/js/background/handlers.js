@@ -89,9 +89,22 @@ export const handleProxyError = (details) => {
 }
 
 export const handleIgnoredHostsChange = async ({ ignoredHosts }, _areaName) => {
-  if (ignoredHosts && ignoredHosts.newValue) {
-    await ProxyManager.setProxy()
-  }
+  ProxyManager.isEnabled()
+    .then((enabled) => {
+      if (enabled) {
+        if (ignoredHosts && ignoredHosts.newValue) {
+          console.log('The list of ignored hosts has been updated.')
+          ProxyManager.setProxy()
+            .then((proxySet) => {
+              if (proxySet) {
+                console.log('Regenerating PAC...')
+              } else {
+                console.warn('PAC could not be regenerated, since proxying is disabled.')
+              }
+            })
+        }
+      }
+    })
 }
 
 export const handleCustomProxiedDomainsChange = async ({ customProxiedDomains }, _areaName) => {
@@ -112,10 +125,8 @@ export const handleCustomProxiedDomainsChange = async ({ customProxiedDomains },
  * @param changes Object describing the change. This contains one property for each key that changed.
  * @param _areaName The name of the storage area ("sync", "local") to which the changes were made.
  */
-export const handleStorageChanged = async ({ enableExtension, ignoredHosts, useProxy }, _areaName) => {
-  if (enableExtension || ignoredHosts || useProxy) {
-    console.group('handleStorageChanged')
-
+export const handleStorageChanged = async ({ enableExtension, useProxy }, _areaName) => {
+  if (enableExtension || useProxy) {
     if (enableExtension) {
       const enableExtensionNewValue = enableExtension.newValue
       const enableExtensionOldValue = enableExtension.oldValue
@@ -159,7 +170,6 @@ export const handleStorageChanged = async ({ enableExtension, ignoredHosts, useP
         }
       }
     }
-    console.groupEnd()
   }
 }
 

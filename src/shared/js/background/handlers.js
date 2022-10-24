@@ -12,10 +12,9 @@ export const handleOnConnect = (port) => {
   if (port.name === 'censortracker') {
     port.onMessage.addListener((message) => {
       if (message.parentalControl === '?') {
-        storage.get({ parentalControl: false })
-          .then(({ parentalControl }) => {
-            port.postMessage({ parentalControl })
-          })
+        storage.get({ parentalControl: false }).then(({ parentalControl }) => {
+          port.postMessage({ parentalControl })
+        })
       }
     })
   }
@@ -88,26 +87,34 @@ export const handleProxyError = (details) => {
   console.error(`Proxy error: ${JSON.stringify(details)}`)
 }
 
-export const handleIgnoredHostsChange = async ({ ignoredHosts }, _areaName) => {
-  ProxyManager.isEnabled()
-    .then((enabled) => {
+export const handleIgnoredHostsChange = async (
+  { ignoredHosts = {} } = {},
+  _areaName,
+) => {
+  if ('newValue' in ignoredHosts) {
+    console.log('The list of ignored hosts has been updated.')
+    ProxyManager.isEnabled().then((enabled) => {
       if (enabled) {
-        if (ignoredHosts && ignoredHosts.newValue) {
-          console.log('The list of ignored hosts has been updated.')
-          ProxyManager.setProxy()
-            .then((proxySet) => {
-              if (proxySet) {
-                console.log('Regenerating PAC...')
-              } else {
-                console.warn('PAC could not be regenerated, since proxying is disabled.')
-              }
-            })
-        }
+        ProxyManager.setProxy().then((proxySet) => {
+          if (proxySet) {
+            console.log('Regenerating PAC...')
+          } else {
+            console.error('Failed to regenerate PAC.')
+          }
+        })
+      } else {
+        console.warn(
+          'PAC could not be regenerated, since proxying is disabled.',
+        )
       }
     })
+  }
 }
 
-export const handleCustomProxiedDomainsChange = async ({ customProxiedDomains }, _areaName) => {
+export const handleCustomProxiedDomainsChange = async (
+  { customProxiedDomains },
+  _areaName,
+) => {
   Settings.extensionEnabled().then((enableExtension) => {
     ProxyManager.isEnabled().then(async (proxyingEnabled) => {
       if (customProxiedDomains && customProxiedDomains.newValue) {
@@ -125,13 +132,18 @@ export const handleCustomProxiedDomainsChange = async ({ customProxiedDomains },
  * @param changes Object describing the change. This contains one property for each key that changed.
  * @param _areaName The name of the storage area ("sync", "local") to which the changes were made.
  */
-export const handleStorageChanged = async ({ enableExtension, useProxy }, _areaName) => {
+export const handleStorageChanged = async (
+  { enableExtension, useProxy },
+  _areaName,
+) => {
   if (enableExtension || useProxy) {
     if (enableExtension) {
       const enableExtensionNewValue = enableExtension.newValue
       const enableExtensionOldValue = enableExtension.oldValue
 
-      console.log(`enableExtension: ${enableExtensionOldValue} -> ${enableExtensionNewValue}`)
+      console.log(
+        `enableExtension: ${enableExtensionOldValue} -> ${enableExtensionNewValue}`,
+      )
 
       Browser.tabs.query({}).then((tabs) => {
         for (const { id } of tabs) {
@@ -143,11 +155,17 @@ export const handleStorageChanged = async ({ enableExtension, useProxy }, _areaN
         }
       })
 
-      if (enableExtensionNewValue === true && enableExtensionOldValue === false) {
+      if (
+        enableExtensionNewValue === true &&
+        enableExtensionOldValue === false
+      ) {
         await ProxyManager.setProxy()
       }
 
-      if (enableExtensionNewValue === false && enableExtensionOldValue === true) {
+      if (
+        enableExtensionNewValue === false &&
+        enableExtensionOldValue === true
+      ) {
         await ProxyManager.removeProxy()
       }
     }
@@ -185,8 +203,10 @@ export const handleInstalled = async ({ reason }) => {
 
   // In Firefox, the UPDATE can be caused after granting incognito access.
   if (UPDATED && Browser.IS_FIREFOX) {
-    const controlledByThisExtension = await ProxyManager.controlledByThisExtension()
-    const isAllowedIncognitoAccess = await Browser.extension.isAllowedIncognitoAccess()
+    const controlledByThisExtension =
+      await ProxyManager.controlledByThisExtension()
+    const isAllowedIncognitoAccess =
+      await Browser.extension.isAllowedIncognitoAccess()
 
     if (isAllowedIncognitoAccess && !controlledByThisExtension) {
       console.warn('Incognito access granted, setting proxy...')
@@ -215,29 +235,32 @@ export const handleInstalled = async ({ reason }) => {
   }
 }
 
-export const handleTabState = async (tabId, { status = 'loading' } = {}, tab) => {
+export const handleTabState = async (
+  tabId,
+  { status = 'loading' } = {},
+  tab,
+) => {
   if (status === Browser.tabs.TabStatus.LOADING) {
-    Ignore.contains(tab.url)
-      .then((isIgnored) => {
-        Settings.extensionEnabled()
-          .then(async (extensionEnabled) => {
-            if (extensionEnabled && !isIgnored && utilities.isValidURL(tab.url)) {
-              const blocked = await Registry.contains(tab.url)
-              const {
-                url: disseminatorUrl, cooperationRefused,
-              } = await Registry.retrieveInformationDisseminationOrganizerJSON(tab.url)
+    Ignore.contains(tab.url).then((isIgnored) => {
+      Settings.extensionEnabled().then(async (extensionEnabled) => {
+        if (extensionEnabled && !isIgnored && utilities.isValidURL(tab.url)) {
+          const blocked = await Registry.contains(tab.url)
+          const { url: disseminatorUrl, cooperationRefused } =
+            await Registry.retrieveInformationDisseminationOrganizerJSON(
+              tab.url,
+            )
 
-              if (blocked) {
-                Settings.setBlockedIcon(tabId)
-              } else if (disseminatorUrl) {
-                if (!cooperationRefused) {
-                  Settings.setDangerIcon(tabId)
-                  await warnAboutInformationDisseminationOrganizer(tab.url)
-                }
-              }
+          if (blocked) {
+            Settings.setBlockedIcon(tabId)
+          } else if (disseminatorUrl) {
+            if (!cooperationRefused) {
+              Settings.setDangerIcon(tabId)
+              await warnAboutInformationDisseminationOrganizer(tab.url)
             }
-          })
+          }
+        }
       })
+    })
   }
 }
 

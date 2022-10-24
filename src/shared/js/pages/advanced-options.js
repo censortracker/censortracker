@@ -44,7 +44,13 @@ import Browser from 'Background/webextension'
   }
 
   copyDebugInfoBtn.addEventListener('click', (event) => {
-    togglePopup('popupDebugInformation')
+    debugInfoJSON.select()
+    document.execCommand('copy')
+    event.target.innerHTML = '&check;'
+
+    setTimeout(() => {
+      togglePopup('popupDebugInformation')
+    }, 500)
   })
   closeDebugInfoBtn.addEventListener('click', (event) => {
     togglePopup('popupDebugInformation')

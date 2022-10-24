@@ -11,7 +11,6 @@ class ProxyManager {
       console.warn('Using custom proxy for PAC.')
       return customProxyServerURI
     }
-    console.warn('Using default proxy for PAC.')
     return proxyServerURI
   }
 

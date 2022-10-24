@@ -132,7 +132,7 @@ class Registry {
    * Checks if the given URL is in registry of IDO (Information Dissemination Organizer).
    * This method makes sense only for some countries (Russia).
    */
-  async retrieveInformationDisseminationOrganizerJSON (url) {
+  async retrieveDisseminator (url) {
     const domain = extractDomainFromUrl(url)
     const { disseminators } = await storage.get({ disseminators: [] })
 

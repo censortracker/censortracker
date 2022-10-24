@@ -260,7 +260,7 @@ import Browser from 'Background/webextension';
     })
 
     const { url: disseminatorUrl, cooperationRefused } =
-      await Registry.retrieveInformationDisseminationOrganizerJSON(currentHostname)
+      await Registry.retrieveDisseminator(currentHostname)
 
     if (disseminatorUrl) {
       if (!cooperationRefused) {

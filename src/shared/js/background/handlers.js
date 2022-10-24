@@ -47,7 +47,7 @@ export const warnAboutInformationDisseminationOrganizer = async (url) => {
 }
 
 export const handleOnAlarm = async ({ name }) => {
-  console.warn(`Alarm received: ${name}`)
+  console.warn(`Task received: ${name}`)
 
   if (name === 'sync') {
     await server.synchronize()
@@ -265,11 +265,12 @@ export const handleTabState = async (
 }
 
 export const handleTabCreate = async (tab) => {
-  Settings.extensionEnabled().then((enabled) => {
-    if (enabled) {
-      Settings.setDefaultIcon(tab.id)
-    } else {
-      Settings.setDisableIcon(tab.id)
-    }
-  })
+  Settings.extensionEnabled()
+    .then((enabled) => {
+      if (enabled) {
+        Settings.setDefaultIcon(tab.id)
+      } else {
+        Settings.setDisableIcon(tab.id)
+      }
+    })
 }

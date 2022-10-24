@@ -86,6 +86,9 @@
       }
     }
   },
+  "copyButton": {
+    "message": "Скопировать"
+  },
   "countryAUTO": {
     "message": "Определить автоматически"
   },
@@ -235,6 +238,9 @@
   "optionsProxyDesc": {
     "message": "Если сайт заблокирован - Censor Tracker предоставит к нему доступ. Отключите эту настройку, если вы пользуетесь другим сервисом для обхода блокировок (например, VPN), чтобы увеличить скорость соединения."
   },
+  "optionsProxyPageTitle": {
+    "message": "Настройки Прокси"
+  },
   "optionsProxyStatusTurnedOff": {
     "message": "Выключен"
   },
@@ -249,6 +255,9 @@
   },
   "optionsRegistryIsEmptyTitle": {
     "message": "Сайты для проксирования не найдены."
+  },
+  "optionsRegistryPageTitle": {
+    "message": "Регион"
   },
   "optionsRegistryProxyingListButton": {
     "message": "Проксируемые сайты"
@@ -422,11 +431,5 @@
   },
   "youCanCloseThisWindow": {
     "message": "Можно закрыть это окно"
-  },
-  "optionsRegistryPageTitle": {
-    "message": "Регион"
-  },
-  "optionsProxyPageTitle": {
-    "message": "Настройки Прокси"
   }
 }

@@ -63,6 +63,7 @@ class Settings {
       useProxy: false,
       enableExtension: false,
       showNotifications: false,
+      parentalControl: false,
     })
 
     if (Browser.IS_FIREFOX) {

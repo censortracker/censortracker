@@ -5,10 +5,11 @@ import * as storage from 'Background/storage'
 import Browser from 'Background/webextension'
 
 (async () => {
-  const debugInfoOkBtn = document.getElementById('debugInfoOk')
+  const debugInfoJSON = document.getElementById('debugInfoJSON')
   const showDebugInfo = document.getElementById('showDebugInfo')
   const confirmResetBtn = document.getElementById('confirmReset')
   const closeDebugInfoBtn = document.getElementById('closeDebugInfo')
+  const copyDebugInfoBtn = document.getElementById('copyDebugInfoBtn')
   const closePopupResetBtn = document.getElementById('closePopupReset')
   const completedConfirmBtn = document.getElementById('completedConfirm')
   const cancelPopupResetBtn = document.getElementById('cancelPopupReset')
@@ -42,7 +43,7 @@ import Browser from 'Background/webextension'
     }
   }
 
-  debugInfoOkBtn.addEventListener('click', (event) => {
+  copyDebugInfoBtn.addEventListener('click', (event) => {
     togglePopup('popupDebugInformation')
   })
   closeDebugInfoBtn.addEventListener('click', (event) => {
@@ -86,7 +87,6 @@ import Browser from 'Background/webextension'
   })
 
   showDebugInfo.addEventListener('click', async (event) => {
-    const debugInfoJSON = document.getElementById('debugInfoJSON')
     const thisExtension = await Browser.management.getSelf()
     const extensionsInfo = await Browser.management.getAll()
 
@@ -112,8 +112,10 @@ import Browser from 'Background/webextension'
     togglePopup('popupConfirmReset')
     togglePopup('popupCompletedSuccessfully')
     await server.synchronize()
-    await ProxyManager.setProxy()
     await Settings.enableExtension()
+    await Settings.enableNotifications()
+    await Settings.enableParentalControl()
+    await ProxyManager.setProxy()
     console.warn('Censor Tracker has been reset to default settings.')
   })
 })()

@@ -86,6 +86,9 @@
       }
     }
   },
+  "copyButton": {
+    "message": "Copy"
+  },
   "countryAUTO": {
     "message": "Auto"
   },
@@ -235,6 +238,9 @@
   "optionsProxyDesc": {
     "message": "If a website is blocked, Censor Tracker will bypass restrictions to give you access to it. Disable this setting if you use another service to bypass censorship (for example, a VPN) to increase connection speed."
   },
+  "optionsProxyPageTitle": {
+    "message": "Proxy Settings"
+  },
   "optionsProxyStatusTurnedOff": {
     "message": "Turned off"
   },
@@ -249,6 +255,9 @@
   },
   "optionsRegistryIsEmptyTitle": {
     "message": "A registry is empty: nothing to proxy."
+  },
+  "optionsRegistryPageTitle": {
+    "message": "Region"
   },
   "optionsRegistryProxyingListButton": {
     "message": "Proxying List"
@@ -422,11 +431,5 @@
   },
   "youCanCloseThisWindow": {
     "message": "You can close this window"
-  },
-  "optionsRegistryPageTitle": {
-    "message": "Region"
-  },
-  "optionsProxyPageTitle": {
-    "message": "Proxy Settings"
   }
 }

@@ -66,10 +66,10 @@ import Browser from 'Background/webextension'
 
   updateLocalRegistryBtn.addEventListener('click', async (event) => {
     togglePopup('popupCompletedSuccessfully')
-    await server.synchronize()
     const proxyingEnabled = ProxyManager.isEnabled()
 
     if (proxyingEnabled) {
+      await server.synchronize()
       await ProxyManager.setProxy()
     }
   })

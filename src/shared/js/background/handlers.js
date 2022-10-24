@@ -54,11 +54,12 @@ export const handleOnAlarm = async ({ name }) => {
   }
 
   if (name === 'setProxy') {
-    const proxyingEnabled = await ProxyManager.isEnabled()
-
-    if (proxyingEnabled) {
-      await ProxyManager.setProxy()
-    }
+    ProxyManager.isEnabled()
+      .then(async (proxyingEnabled) => {
+        if (proxyingEnabled) {
+          await ProxyManager.setProxy()
+        }
+      })
   }
 }
 
@@ -93,21 +94,23 @@ export const handleIgnoredHostsChange = async (
 ) => {
   if ('newValue' in ignoredHosts) {
     console.log('The list of ignored hosts has been updated.')
-    ProxyManager.isEnabled().then((enabled) => {
-      if (enabled) {
-        ProxyManager.setProxy().then((proxySet) => {
-          if (proxySet) {
-            console.log('Regenerating PAC...')
-          } else {
-            console.error('Failed to regenerate PAC.')
-          }
-        })
-      } else {
-        console.warn(
-          'PAC could not be regenerated, since proxying is disabled.',
-        )
-      }
-    })
+    ProxyManager.isEnabled()
+      .then((enabled) => {
+        if (enabled) {
+          ProxyManager.setProxy()
+            .then((proxySet) => {
+              if (proxySet) {
+                console.log('Regenerating PAC...')
+              } else {
+                console.error('Failed to regenerate PAC.')
+              }
+            })
+        } else {
+          console.warn(
+            'PAC could not be regenerated, since proxying is disabled.',
+          )
+        }
+      })
   }
 }
 

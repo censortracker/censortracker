@@ -72,10 +72,11 @@ import * as storage from 'Background/storage'
         currentRegionName: countryName,
         currentRegionCode: countryAutoDetectionEnabled ? '' : countryCode.toUpperCase(),
       })
-      await server.sync()
+
       const proxyingEnabled = await ProxyManager.isEnabled()
 
       if (proxyingEnabled) {
+        await server.synchronize()
         await ProxyManager.setProxy()
       }
 

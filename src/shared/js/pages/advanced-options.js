@@ -66,11 +66,14 @@ import Browser from 'Background/webextension'
 
   updateLocalRegistryBtn.addEventListener('click', async (event) => {
     togglePopup('popupCompletedSuccessfully')
-    const proxyingEnabled = ProxyManager.isEnabled()
+    const proxyingEnabled = await ProxyManager.isEnabled()
+
+    await server.synchronize()
 
     if (proxyingEnabled) {
-      await server.synchronize()
       await ProxyManager.setProxy()
+    } else {
+      console.warn('Registry updated, but proxying is disabled.')
     }
   })
 

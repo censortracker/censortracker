@@ -249,9 +249,7 @@ export const handleTabState = async (
         if (extensionEnabled && !isIgnored && utilities.isValidURL(tab.url)) {
           const blocked = await Registry.contains(tab.url)
           const { url: disseminatorUrl, cooperationRefused } =
-            await Registry.retrieveDisseminator(
-              tab.url,
-            )
+            await Registry.retrieveDisseminator(tab.url)
 
           if (blocked) {
             Settings.setBlockedIcon(tabId)

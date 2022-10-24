@@ -114,7 +114,7 @@ import Browser from 'Background/webextension'
     await server.synchronize()
     await Settings.enableExtension()
     await Settings.enableNotifications()
-    await Settings.enableParentalControl()
+    await Settings.disableParentalControl()
     await ProxyManager.setProxy()
     console.warn('Censor Tracker has been reset to default settings.')
   })

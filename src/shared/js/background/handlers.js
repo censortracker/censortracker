@@ -28,8 +28,6 @@ export const warnAboutInformationDisseminationOrganizer = async (url) => {
   })
 
   if (showNotifications && !notifiedHosts.includes(hostname)) {
-    console.log(`Showing notification for ${hostname}`)
-
     await Browser.notifications.create(hostname, {
       type: 'basic',
       title: Settings.getName(),
@@ -241,23 +239,29 @@ export const handleInstalled = async ({ reason }) => {
 export const handleTabState = async (
   tabId,
   { status = 'loading' } = {},
-  tab,
+  { url } = {},
 ) => {
-  if (status === Browser.tabs.TabStatus.LOADING) {
-    Ignore.contains(tab.url).then((isIgnored) => {
-      Settings.extensionEnabled().then(async (extensionEnabled) => {
-        if (extensionEnabled && !isIgnored && utilities.isValidURL(tab.url)) {
-          const blocked = await Registry.contains(tab.url)
-          const { url: disseminatorUrl, cooperationRefused } =
-            await Registry.retrieveDisseminator(tab.url)
+  if (url && status === Browser.tabs.TabStatus.LOADING) {
+    Settings.extensionEnabled().then((enabled) => {
+      Ignore.contains(url).then(async (isIgnored) => {
+        if (enabled) {
+          Registry.retrieveDisseminator(url).then(
+            async ({ url: disseminatorUrl, cooperationRefused }) => {
+              if (disseminatorUrl) {
+                if (!cooperationRefused) {
+                  Settings.setDangerIcon(tabId)
+                  await warnAboutInformationDisseminationOrganizer(url)
+                }
+              }
+            },
+          )
 
-          if (blocked) {
-            Settings.setBlockedIcon(tabId)
-          } else if (disseminatorUrl) {
-            if (!cooperationRefused) {
-              Settings.setDangerIcon(tabId)
-              await warnAboutInformationDisseminationOrganizer(tab.url)
-            }
+          if (!isIgnored) {
+            Registry.contains(url).then((blocked) => {
+              if (blocked) {
+                Settings.setBlockedIcon(tabId)
+              }
+            })
           }
         }
       })

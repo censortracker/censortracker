@@ -113,18 +113,18 @@ export const handleIgnoredHostsChange = async (
 }
 
 export const handleCustomProxiedDomainsChange = async (
-  { customProxiedDomains },
+  { customProxiedDomains: { newValue } = {} } = {},
   _areaName,
 ) => {
   Settings.extensionEnabled().then((enableExtension) => {
-    ProxyManager.isEnabled().then(async (proxyingEnabled) => {
-      if (customProxiedDomains && customProxiedDomains.newValue) {
-        if (enableExtension && proxyingEnabled) {
+    if (enableExtension && newValue) {
+      ProxyManager.isEnabled().then(async (proxyingEnabled) => {
+        if (proxyingEnabled) {
           await ProxyManager.setProxy()
           console.warn('Updated custom proxied domains.')
         }
-      }
-    })
+      })
+    }
   })
 }
 

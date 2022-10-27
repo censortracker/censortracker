@@ -7,6 +7,7 @@ class Registry {
   /**
    * Returns array of banned domains from the registry.
    */
+
   async getDomains () {
     const {
       domains,
@@ -27,16 +28,15 @@ class Registry {
       return []
     }
 
-    if (domains.length > 0 || customProxiedDomains.length > 0) {
-      try {
-        return [...domains, ...customProxiedDomains].filter((element) => {
-          return !ignoredHosts.includes(element)
-        },
-        )
-      } catch (error) {
-        console.error(error)
-        return []
-      }
+    const allDomains = [
+      ...domains,
+      ...customProxiedDomains,
+    ].filter((element) => {
+      return !ignoredHosts.includes(element)
+    })
+
+    if (allDomains.length > 0) {
+      return allDomains
     }
     return []
   }

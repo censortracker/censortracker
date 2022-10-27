@@ -167,6 +167,7 @@ export const handleStorageChanged = async (
         enableExtensionNewValue === false &&
         enableExtensionOldValue === true
       ) {
+        await ProxyManager.disableProxy()
         await ProxyManager.removeProxy()
       }
     }
@@ -185,6 +186,7 @@ export const handleStorageChanged = async (
         }
 
         if (useProxyNewValue === false && useProxyOldValue === true) {
+          await ProxyManager.disableProxy()
           await ProxyManager.removeProxy()
         }
       }
@@ -270,12 +272,11 @@ export const handleTabState = async (
 }
 
 export const handleTabCreate = async (tab) => {
-  Settings.extensionEnabled()
-    .then((enabled) => {
-      if (enabled) {
-        Settings.setDefaultIcon(tab.id)
-      } else {
-        Settings.setDisableIcon(tab.id)
-      }
-    })
+  Settings.extensionEnabled().then((enabled) => {
+    if (enabled) {
+      Settings.setDefaultIcon(tab.id)
+    } else {
+      Settings.setDisableIcon(tab.id)
+    }
+  })
 }

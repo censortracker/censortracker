@@ -54,7 +54,7 @@ class Registry {
     if (!customProxiedDomains.includes(domain)) {
       customProxiedDomains.push(domain)
       await storage.set({ customProxiedDomains })
-      console.warn(`Adding ${domain} to the custom registry.`)
+      console.warn(`${domain} added to the custom registry.`)
     }
     return true
   }
@@ -68,7 +68,7 @@ class Registry {
 
       customProxiedDomains.splice(index, 1)
       await storage.set({ customProxiedDomains })
-      console.warn(`Removing ${domain} from custom registry`)
+      console.warn(`${domain} removed from custom registry`)
     }
     return true
   }
@@ -96,7 +96,6 @@ class Registry {
       domains.includes(domain) ||
       customProxiedDomains.includes(domain)
     ) {
-      console.log(`Registry or custom registry match found: ${domain}`)
       return true
     }
     return false
@@ -115,7 +114,6 @@ class Registry {
     )
 
     if (dataObject) {
-      console.warn(`Found IDO data for ${domain}`)
       return dataObject
     }
     return {}

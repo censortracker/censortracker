@@ -29,22 +29,18 @@ class Settings {
 
   setDisableIcon (tabId) {
     this.changePageIcon(tabId, 'disabled')
-    console.log('Settings.setDisableIcon()')
   }
 
   setDefaultIcon (tabId) {
     this.changePageIcon(tabId, 'default')
-    console.log('Settings.setDefaultIcon()')
   }
 
   setDangerIcon (tabId) {
     this.changePageIcon(tabId, 'danger')
-    console.log('Settings.setDangerIcon()')
   }
 
   setBlockedIcon (tabId) {
     this.changePageIcon(tabId, 'blocked')
-    console.log('Settings.setBlockedIcon()')
   }
 
   async extensionEnabled () {
@@ -75,12 +71,10 @@ class Settings {
 
   async enableNotifications () {
     await storage.set({ showNotifications: true })
-    console.log('Settings.enableNotifications()')
   }
 
   async disableNotifications () {
     await storage.set({ showNotifications: false })
-    console.log('Settings.disableNotifications()')
   }
 
   async enableParentalControl () {

@@ -144,9 +144,8 @@ class ProxyManager {
   }
 
   async removeProxy () {
-    await storage.set({ useProxy: false })
     await Browser.proxy.settings.clear({})
-    console.warn('PAC data cleaned!')
+    console.warn('Proxy settings have been reset.')
   }
 
   async alive () {
@@ -169,7 +168,7 @@ class ProxyManager {
       }),
     }).catch(() => {
       // We don't care about the result.
-      console.warn(`Pinged ${proxyPingURI}!`)
+      console.log(`Pinged ${proxyPingURI}!`)
     })
   }
 
@@ -205,15 +204,12 @@ class ProxyManager {
     const self = await Browser.management.getSelf()
     const extensions = await Browser.management.getAll()
 
-    console.group('Taking control of proxy settings.')
-
     for (const { id, name, permissions } of extensions) {
       if (permissions.includes('proxy') && name !== self.name) {
         console.warn(`Disabling ${name}...`)
         await Browser.management.setEnabled(id, false)
       }
     }
-    console.groupEnd()
   }
 }
 

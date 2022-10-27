@@ -23,7 +23,6 @@ import * as storage from 'Background/storage'
 
   useRegistryCheckbox.addEventListener('change', async (event) => {
     const useRegistry = event.target.checked
-    const proxyingEnabled = await ProxyManager.isEnabled()
 
     if (useRegistry) {
       selectRegion.classList.remove('hidden')
@@ -34,11 +33,9 @@ import * as storage from 'Background/storage'
       selectRegion.classList.add('hidden')
       await Registry.clearRegistry()
       await Registry.disableRegistry()
+      await ProxyManager.removeProxy()
+      await ProxyManager.setProxy()
       await storage.set({ currentRegionName: '' })
-
-      if (proxyingEnabled) {
-        await ProxyManager.setProxy()
-      }
     }
 
     await storage.set({ useRegistry })

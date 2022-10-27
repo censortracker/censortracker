@@ -390,12 +390,6 @@
   "thankYou": {
     "message": "Thank you!"
   },
-  "trafficShapingDescription": {
-    "message": "Traffic shaping detected: connection to this website is throttled. Censor Tracker gives you access to it at a normal speed."
-  },
-  "trafficShapingTitle": {
-    "message": "Traffic shaping"
-  },
   "turnOnExtensionToCheckWebsite": {
     "message": "Enable to access blocked websites."
   },

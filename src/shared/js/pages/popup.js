@@ -48,7 +48,6 @@ import Browser from 'Background/webextension';
   const restrictionsInfoBlock = document.getElementById('restrictions')
   const detailsText = document.querySelectorAll('.details-text')
   const extensionIsOff = document.getElementById('extensionIsOff')
-  const restrictionType = document.getElementById('restrictionType')
   const mainPageInfoBlocks = document.querySelectorAll('.main-page-info')
   const popupProxyStatusOk = document.getElementById('popupProxyStatusOk')
   const popupProxyDisabled = document.getElementById('popupProxyDisabled')
@@ -60,7 +59,6 @@ import Browser from 'Background/webextension';
   const currentDomainHeader = document.getElementById('currentDomainHeader')
   const closeDetailsButtons = document.querySelectorAll('.btn-hide-details')
   const whatThisMeanButtons = document.querySelectorAll('.btn-what-this-mean')
-  const restrictionDescription = document.getElementById('restrictionDescription')
   const controlledByOtherExtensionsButton = document.getElementById('controlledByOtherExtensionsButton')
   const privateBrowsingPermissionsRequiredButton = document.getElementById('privateBrowsingPermissionsRequiredButton')
 
@@ -293,27 +291,6 @@ import Browser from 'Background/webextension';
         changeStatusImage('ori_blocked')
       }
     }
-
-    Registry.getCustomRegistryRecordByURL(currentHostname)
-      .then(({ restriction }) => {
-        if (restriction && restriction.code) {
-          let titlePlaceholder, descriptionPlaceholder
-
-          const isBanned = restriction.code === 'ban'
-          const isShaped = restriction.code === 'shaping'
-
-          if (isShaped) {
-            titlePlaceholder = 'trafficShapingTitle'
-            descriptionPlaceholder = 'trafficShapingDescription'
-          } else if (isBanned) {
-            titlePlaceholder = 'blockedTitle'
-            descriptionPlaceholder = 'blockedDesc'
-          }
-
-          restrictionType.innerText = i18nGetMessage(titlePlaceholder)
-          restrictionDescription.innerText = i18nGetMessage(descriptionPlaceholder)
-        }
-      })
   } else {
     changeStatusImage('disabled')
     extensionIsOff.hidden = false

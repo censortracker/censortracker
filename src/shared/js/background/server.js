@@ -129,10 +129,6 @@ const fetchRegistry = async () => {
       storageKey: 'domains',
     },
     {
-      url: localConfig.customRegistryUrl,
-      storageKey: 'customRegistryRecords',
-    },
-    {
       url: localConfig.specifics.cooperationRefusedORIUrl,
       storageKey: 'disseminators',
     },

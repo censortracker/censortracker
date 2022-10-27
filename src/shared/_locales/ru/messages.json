@@ -390,12 +390,6 @@
   "thankYou": {
     "message": "Спасибо!"
   },
-  "trafficShapingDescription": {
-    "message": "Скорость соединения с сайтом замедляется государством. Censor Tracker даёт доступ к сайту с обычной скоростью."
-  },
-  "trafficShapingTitle": {
-    "message": "Шейпинг"
-  },
   "turnOnExtensionToCheckWebsite": {
     "message": "Включите, чтобы получить доступ заблокированным сайтам."
   },

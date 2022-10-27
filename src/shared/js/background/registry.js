@@ -5,32 +5,6 @@ import {
 
 class Registry {
   /**
-   * Returns unregistered records from our custom registry.
-   */
-  async getCustomRegistryRecords () {
-    const { customRegistryRecords } = await storage.get({
-      customRegistryRecords: [],
-    })
-
-    return customRegistryRecords
-  }
-
-  /**
-   * Return details of unregistered record by URL.
-   */
-  async getCustomRegistryRecordByURL (url) {
-    const domain = extractDomainFromUrl(url)
-    const records = await this.getCustomRegistryRecords()
-
-    for (const record of records) {
-      if (record.domains.includes(domain)) {
-        return record
-      }
-    }
-    return {}
-  }
-
-  /**
    * Returns array of banned domains from the registry.
    */
   async getDomains () {
@@ -156,10 +130,7 @@ class Registry {
   }
 
   async clearRegistry () {
-    await storage.set({
-      domains: [],
-      customRegistryRecords: [],
-    })
+    await storage.set({ domains: [] })
   }
 }
 

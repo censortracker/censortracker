@@ -245,8 +245,8 @@ export const handleTabState = async (
 ) => {
   if (url && status === Browser.tabs.TabStatus.LOADING) {
     Settings.extensionEnabled().then((enabled) => {
-      Ignore.contains(url).then(async (isIgnored) => {
-        if (enabled) {
+      if (enabled) {
+        Ignore.contains(url).then(async (isIgnored) => {
           Registry.retrieveDisseminator(url).then(
             async ({ url: disseminatorUrl, cooperationRefused }) => {
               if (disseminatorUrl) {
@@ -265,8 +265,10 @@ export const handleTabState = async (
               }
             })
           }
-        }
-      })
+        })
+      } else {
+        Settings.setDisableIcon(tabId)
+      }
     })
   }
 }

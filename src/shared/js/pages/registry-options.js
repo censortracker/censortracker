@@ -10,16 +10,18 @@ import * as storage from 'Background/storage'
   const currentOption = document.querySelector('#select-toggle')
   const useRegistryCheckbox = document.querySelector('#useRegistryCheckbox')
 
-  storage.get({ useRegistry: false, currentRegionName: '' })
-    .then(({ useRegistry, currentRegionName }) => {
-      if (useRegistry) {
-        selectRegion.classList.remove('hidden')
-      }
-      useRegistryCheckbox.checked = useRegistry
-      if (currentRegionName) {
-        currentOption.textContent = currentRegionName
-      }
-    })
+  storage.get({
+    useRegistry: false,
+    currentRegionName: '',
+  }).then(({ useRegistry, currentRegionName }) => {
+    if (useRegistry) {
+      selectRegion.classList.remove('hidden')
+    }
+    useRegistryCheckbox.checked = useRegistry
+    if (currentRegionName) {
+      currentOption.textContent = currentRegionName
+    }
+  })
 
   useRegistryCheckbox.addEventListener('change', async (event) => {
     const useRegistry = event.target.checked
@@ -28,16 +30,15 @@ import * as storage from 'Background/storage'
       selectRegion.classList.remove('hidden')
       await Registry.enableRegistry()
       await server.synchronize()
-      await ProxyManager.setProxy()
     } else {
       selectRegion.classList.add('hidden')
       await Registry.clearRegistry()
       await Registry.disableRegistry()
       await ProxyManager.removeProxy()
-      await ProxyManager.setProxy()
       await storage.set({ currentRegionName: '' })
     }
 
+    await ProxyManager.setProxy()
     await storage.set({ useRegistry })
   }, false)
 
@@ -70,14 +71,13 @@ import * as storage from 'Background/storage'
         currentRegionCode: countryAutoDetectionEnabled ? '' : countryCode.toUpperCase(),
       })
 
-      const proxyingEnabled = await ProxyManager.isEnabled()
-
-      if (proxyingEnabled) {
-        await server.synchronize()
-        await ProxyManager.setProxy()
-      }
-
-      console.warn(`Region changed to ${countryName}`)
+      ProxyManager.isEnabled().then(async (proxyingEnabled) => {
+        if (proxyingEnabled) {
+          await server.synchronize()
+          await ProxyManager.setProxy()
+          console.warn(`Region changed to ${countryName}`)
+        }
+      })
     })
   }
 })()

@@ -180,6 +180,7 @@ a {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  margin-bottom: 7px;
 }
 
 .center-text {
@@ -277,6 +278,7 @@ a {
   line-height: 20px;
   color: #6d675f;
   margin-right: 70px;
+  cursor: text;
 }
 
 .use_proxy__text {

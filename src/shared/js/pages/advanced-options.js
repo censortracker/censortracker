@@ -103,7 +103,7 @@ import Browser from 'Background/webextension'
     if (extensionsInfo.length > 0) {
       localConfig.conflictingExtensions = extensionsInfo
         .filter(({ name }) => name !== thisExtension.name)
-        .filter(({ enabled, permissions }) =>
+        .filter(({ enabled, permissions = [] }) =>
           permissions.includes('proxy') && enabled)
         .map(({ name }) => name.split(' - ')[0])
     }

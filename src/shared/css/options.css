@@ -149,7 +149,7 @@ a {
   font-size: 16px;
   line-height: 20px;
   font-weight: 500;
-  margin-bottom: 10px;
+  margin-bottom: 7px;
 }
 
 .disclaimer__text {
@@ -496,10 +496,6 @@ a {
 
 .mt-10 {
   margin-top: 10px;
-}
-
-#proxyOptionsTitle {
-  margin-bottom: 28px;
 }
 
 /* CodeMirror */
@@ -893,4 +889,8 @@ kbd {
   bottom: 93px;
   font-size: 13px;
   font-weight: 500;
+}
+
+.page-main-title {
+  margin-bottom: 28px;
 }

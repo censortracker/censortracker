@@ -22,7 +22,7 @@ Censor Tracker provides a lot of useful features, here are the most important:
 - Country-specific proxying
 - Custom proxying list
 - Censorship-resistant itself
-- Warns about sites that transfer data to third parties
+- Warns about websites that transfer data to third parties
 
 Development
 ===========

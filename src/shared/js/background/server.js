@@ -83,6 +83,10 @@ const fetchConfig = async () => {
             return cfg.countryCode === countryCode
           })
 
+          // For debugging purposes
+          localConfig.configEndpointUrl = endpoint.url
+          localConfig.configEndpointSource = endpoint.name
+
           console.log(localConfig)
 
           await storage.set({

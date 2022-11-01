@@ -27,7 +27,7 @@
     "message": "Changes will be automatically applied upon pressing <kbd>Enter</kbd>."
   },
   "backendIsIntermittentDesc": {
-    "message": "Censor Tracker will use the fallback configuration until the backend service is alive."
+    "message": "You might disable Censor Tracker until the backend service is up. <br><br> <a target='_blank' href='https://t.me/CensorTracker_feedback'>Let us know about this issue.</a>"
   },
   "backendIsIntermittentTitle": {
     "message": "The backend service is intermittent right now."

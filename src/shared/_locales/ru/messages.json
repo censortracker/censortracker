@@ -27,7 +27,7 @@
     "message": "Изменения автоматически сохраняются при нажатии <kbd>Enter</kbd>."
   },
   "backendIsIntermittentDesc": {
-    "message": "Censor Tracker будет использовать резервную конфигурацию до тех пор, пока серверная служба не заработает."
+    "message": "Вы можете отключить Censor Tracker, пока не заработает серверная служба. <br><br> <a target='_blank' href='https://t.me/CensorTracker_feedback'>Напишите нам в Telegram об этой проблеме.</a>"
   },
   "backendIsIntermittentTitle": {
     "message": "Серверная служба сейчас работает с перебоями."

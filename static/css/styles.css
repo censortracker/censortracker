@@ -216,3 +216,13 @@ hr {
   padding: 0;
   padding-bottom: 1.75rem;
 }
+
+.s-version {
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.nav-content {
+    display: flex;
+    justify-content: space-between;
+}

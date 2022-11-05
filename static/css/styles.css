@@ -237,3 +237,43 @@ hr {
     overflow-wrap: break-word;
     padding: 0.1em 0.6em;
 }
+
+
+@media (max-width: 400px) {
+    .ml-md-0, .mx-md-0 {
+        margin-right: 0.5rem !important;
+        margin-left: 0.5rem !important;
+    }
+}
+
+@media (max-width: 550px) {
+    .ru-instr {
+        width: 450px;
+        height: 250px;
+    }
+}
+
+@media (max-width: 450px) {
+    .ru-instr {
+        width: 350px;
+        height: 150px;
+    }
+}
+
+@media (max-width: 995px) {
+    .en-instr-1 {
+        width: 350px;
+        height: 220px;
+    }
+    .en-instr-2 {
+        width: 350px;
+        height: 270px;
+    }
+}
+
+@media (min-width: 995px) {
+    .en-instr-2, .en-instr-1 {
+        width: 950px;
+        height: 550px;
+    }
+}

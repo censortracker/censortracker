@@ -226,3 +226,14 @@ hr {
     display: flex;
     justify-content: space-between;
 }
+
+.spec-symbol {
+    border: 1px solid #9aa2aa;
+    border-radius: 3px;
+    box-shadow: 0 1px 1px rgb(12 13 14 / 44%), inset 0 1px 0 0 hsl(0deg 0% 42% / 14%);
+    display: inline-block;
+    font-size: 12px;
+    margin: 0 0.1em;
+    overflow-wrap: break-word;
+    padding: 0.1em 0.6em;
+}

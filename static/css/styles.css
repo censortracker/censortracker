@@ -238,7 +238,6 @@ hr {
     padding: 0.1em 0.6em;
 }
 
-
 @media (max-width: 400px) {
     .ml-md-0, .mx-md-0 {
         margin-right: 0.5rem !important;
@@ -246,34 +245,23 @@ hr {
     }
 }
 
-@media (max-width: 550px) {
-    .ru-instr {
-        width: 450px;
-        height: 250px;
+@media (max-width: 900px) {
+.en-instr-2, .en-instr-1, .ru-instr {
+        width: 100%;
+        height: 100%;
     }
 }
 
-@media (max-width: 450px) {
-    .ru-instr {
-        width: 350px;
-        height: 150px;
-    }
-}
-
-@media (max-width: 995px) {
-    .en-instr-1 {
-        width: 350px;
-        height: 220px;
-    }
-    .en-instr-2 {
-        width: 350px;
-        height: 270px;
-    }
-}
-
-@media (min-width: 995px) {
+@media (min-width: 900px) {
     .en-instr-2, .en-instr-1 {
-        width: 950px;
-        height: 550px;
+        width: 650px;
+        height: 350px;
+    }
+}
+
+@media (min-width: 1000px) {
+    .en-instr-2, .en-instr-1 {
+        width: 900px;
+        height: 650px;
     }
 }

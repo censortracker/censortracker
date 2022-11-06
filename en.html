@@ -52,10 +52,10 @@
 <nav class="container nav-content pt-3">
     <div>
         <a class="navbar-quokka" href="/">
-            <img src="static/img/quokka_nav.svg" class="vertical">
+            <img src="static/img/quokka_nav.svg" class="vertical" alt="Extension logo" />
         </a>
         <a class="navbar-brand" href="https://roskomsvoboda.org/">
-            <img src="static/img/rks-en.svg">
+            <img src="static/img/rks-en.svg" alt="Roskomsvoboda" />
         </a>
     </div>
     <div>
@@ -66,7 +66,7 @@
 <section class="container pb-5 pl-md-5">
     <div class="row">
         <div class="col-lg-6 order-lg-2 text-center">
-            <img src="static/img/quokka_big.svg" class="image-big">
+            <img src="static/img/quokka_big.svg" class="image-big" alt="Animal from logo" />
             <small class="floating-link"><a href="https://en.wikipedia.org/wiki/Quokka"
                                             target="_blank">Quokka</a></small>
         </div>
@@ -79,7 +79,7 @@
                     <a href="https://chrome.google.com/webstore/detail/censor-tracker/gaidoampbkcknofoejhnhbhbhhifgdop/related"
                        target="_blank">
                         <button class="btn btn-lg btn-primary download-btn">
-                            <img src="static/img/chrome.svg">
+                            <img src="static/img/chrome.svg" alt="Google Store where the extension is available for installation" />
                             Install in Chrome
                         </button>
                     </a>
@@ -87,7 +87,7 @@
                 <li>
                     <a href="https://addons.mozilla.org/en-US/firefox/addon/censor-tracker/" target="_blank">
                         <button class="btn btn-lg btn-primary download-btn">
-                            <img width="31" height="28" src="static/img/ff.svg">
+                            <img width="31" height="28" src="static/img/ff.svg" alt="Mozilla Store where the extension is available for installation" />
                             Install in Firefox
                         </button>
                     </a>
@@ -106,55 +106,33 @@
 
 <hr>
 
-<section class="container my-md-5 pt-md-5 px-md-5">
-    <div class="row pt-5 px-md-5">
-        <div class="col-lg-6 text-center text-md-left mx-5 mx-md-0">
-            <img src="static/img/avito-en.svg" class="shadow responsive">
-        </div>
-        <div class="col-lg-6 pt-5">
-            <h3>We will warn you if the website is included in the register of information dissemination organisers</h3>
-            <p class="text-secondary">Such websites have to store your personal data and share it with law enforcement by request.
-                They also have to un-encrypt and share all traffic created by your activity on their website by request.</p>
-        </div>
-    </div>
-</section>
-
 <section class="container mt-5 mb-md-5 py-5 px-md-5">
     <div class="row px-md-5">
         <div class="col-md-6 order-md-2 text-center text-md-right mx-5 mx-md-0">
-            <img src="static/img/proton-en.svg" class="shadow animated responsive">
+            <img src="static/img/proton-en.svg" class="shadow animated responsive" alt="Blocked site" />
         </div>
 
         <div class="col-md-6 mt-md-5 mb-5 pt-5 order-md-1 double">
             <div class="mb-5">
-                <h3>We will check if the website is banned in Russia</h3>
-                <p class="text-secondary">Roskomsvoboda monitors the register of websites being banned in Russia.
-                    Currently, there are more than 340,000 URLs on our list</p>
+                <h3>We will check if the website is banned</h3>
+                <p class="text-secondary">Roskomsvoboda monitors the register of websites being banned in World.
+                    Currently have over 400,000 URLs in our list (and that's just sites from Russia). 
+                    We also maintain registries of blocked sites in many other countries - Kazakhstan, Ukraine, Belarus, Azerbaijan, Turkey. </p>
             </div>
 
             <div class="spacer d-none d-lg-block"></div>
 
             <div>
-                <h3>We will unblock, even if the website is blocked by the law on the "Sovereign" Runet</h3>
-                <p class="text-secondary">Regular extensions bypass only blockings by the Roskomnadzor registry,
-                    but we have organised bypassing out-of-registry locks.</p>
+                <h3>We can help unblock any site, as we have the "Forced Proxy List" feature available</h3>
+                <p class="text-secondary">In addition to blocked sites from the database, there are sites that are not included there and should also be accessed, 
+                    for this extension has a function "Forced proxy list", 
+                    entering there the desired domain - it also, as sites from the database, will go through our reliable proxy.</p>
             </div>
         </div>
     </div>
 </section>
 
-<section class="text-center mt-md-5 bg-light">
-    <div class="container bg-vector">
-        <div class="row py-5">
-            <div class="col-md-8 offset-md-2">
-                <h2 class="h2 py-5">By using Censor Tracker, you help us to investigate the cases of internet censorship on Runet</h2>
-                <p class="text-secondary text-left">The extension tracks blockings created by Roskomnadzor according to the law on the "Sovereign" Runet,
-                    which bypasses the official registry of prohibited websites,
-                    and we make these blockings public.</p>
-            </div>
-        </div>
-    </div>
-</section>
+<hr>
 
 <section class="container py-5 px-md-5 my-md-5">
     <div class="row pt-4">
@@ -177,118 +155,61 @@
     <h2 id="faq" class="h2 py-5 text-center mb-4">Frequently Asked Questions</h2>
     <div class="accordion" id="accordionExample">
         <div class="card">
-            <div class="card-header bg-transparent" id="heading11">
-                <h2 class="mb-0">
-                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse"
-                            data-target="#collapse11" aria-expanded="true" aria-controls="collapse11">
-                            The extension doesn't work, what should I do?
-                    </button>
-                </h2>
-            </div>
-
-            <div id="collapse11" class="collapse" aria-labelledby="heading11" data-parent="#accordionExample">
-                <div class="card-body  text-secondary">
-                    Please check the version of your browser, the extension supports <kbd>Firefox 98+</kbd> and <kbd>Google Chrome 94+</kbd>.
-                </div>
-            </div>
-        </div>
-        <div class="card">
             <div class="card-header bg-transparent" id="heading0">
                 <h2 class="mb-0">
                     <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse"
                             data-target="#collapse0" aria-expanded="true" aria-controls="collapse0">
-                            What is "Sovereign Runet"?
+                            How do I get to a blocked site?
                     </button>
                 </h2>
             </div>
 
             <div id="collapse0" class="collapse" aria-labelledby="heading0" data-parent="#accordionExample">
                 <div class="card-body  text-secondary">
-                    By "Sovereign Runet" we mean the Russian national Internet traffic routing system,
-                    which allows to centralize the network management in the country and provides an opportunity to disconnect it from the global network if necessary.
-                </div>
-            </div>
-        </div>
-        <div class="card">
-            <div class="card-header bg-transparent" id="headingOne">
-                <h2 class="mb-0">
-                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse"
-                            data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                            I cannot open Twitter/Youtube/another website, what should I do?
-                    </button>
-                </h2>
-            </div>
-
-            <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">
-                <div class="card-body  text-secondary">
-                    <ol>
-                        <li>Please check if you have the latest version of the extension installed in your browser.</li>
-                        <li>If you have VPN service turned on, please turn it off as it may interfere with the work of the extension.
-                        </li>
-                        <li>Please go to the 'Extended settings' and update the database
-                            (you can do that by clicking on the extension button —> click the settings button in the upper right corner of the new window —>
-                            Advanced settings —> Force update the extension's local database.
-                        </li>
-                        <li>If you have an extension or extensions controlling the proxy settings,
-                            you should turn them off in the settings of the browser as the extensions controlling proxies can interfere one with another.
-                        </li>
-                        <li>Re-install the extension</li>
-                    </ol>
+                    If you want to access a blocked resource, and you are in a country for which we do not have a database of sites, you can get access in 2 ways:
+                    <ul class="lead list-unstyled">
+                        <h3>The first way:</h3>
+                        <li>1. Click on the extension icon &mdash;&gt; click the settings button in the upper right corner of the new window &mdash;&gt; go to <code>"Proxying List"</code> -> 
+                            enter the desired domain in the input field &mdash;&gt; press Enter to save your changes.</li>
+                        <li>2. Done, the site is added to the "Forced proxy list" and you can access it through a reliable proxy.</li>
+                    </ul>
+                    <ul class="lead list-unstyled">
+                        <h3>The second way:</h3>
+                        <li>1. Click on extension icon &mdash;&gt; click on <kbd class="spec-symbol"> ⁝ </kbd> &mdash;&gt; choose <code>"Always"</code> mode to always proxy this site &mdash;&gt; reload the page</li>
+                        <li>2. Done, the site is added to the "Forced proxy list" and you can access it through a reliable proxy.</li>
+                    </ul>   
+                    </br>
                     <p>If nothing from above helped you to fix the problem, please get in touch <a href="https://t.me/CensorTracker_feedback"
-                                                                        target="_blank">with us!</a>!</p>
+                        target="_blank">with us</a>!</p>
                 </div>
             </div>
         </div>
         <div class="card">
-            <div class="card-header bg-transparent" id="headingTwo">
+            <div class="card-header bg-transparent" id="heading1">
                 <h2 class="mb-0">
                     <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse"
-                            data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                            Why I am having issues connecting to Youtube while my extension is turned on?
+                            data-target="#collapse1" aria-expanded="true" aria-controls="collapse1">
+                            The extension doesn't work, what should I do?
                     </button>
                 </h2>
             </div>
-            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
-                <div class="card-body  text-secondary">
-                    This happens because Google considers our traffic suspicious if there are too many requests from one IP address.
-                    <br>
-                    <br>
-                    One of the possible solutions for this issue is adding youtube.com to the list of 'ignored' websites.
 
-                </div>
-            </div>
-        </div>
-        <div class="card">
-            <div class="card-header bg-transparent" id="headingThree">
-                <h2 class="mb-0">
-                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse"
-                            data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                            Will I have access to the websites blocked through the 'middleboxes' (TSPU)?
-                    </button>
-                </h2>
-            </div>
-            <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
+            <div id="collapse1" class="collapse" aria-labelledby="heading1" data-parent="#accordionExample">
                 <div class="card-body  text-secondary">
-                    Yes, you will! We monitor the websites blocked through the 'middleboxes' (TSPU) and ass them to our register.
-                    You do not need to do anything, Censor Tracker updates its list of blocked websites automatically every 40 minutes.
-                    However, if you have any issues accessing some websites, you will be able to add them to Censor Tracker's list manually.
-                    <br>
-                    <br>
-                    To do that click the extension button in your browser —> click the settings button in the upper right corner of the new window —>
-                    "Proxying List" —> add the website or websites you are having issues with —> press <kbd>Enter</kbd>.
+                    Please check the version of your browser, the extension supports <kbd>Firefox 98+</kbd> and <kbd>Google Chrome 94+</kbd>.
                 </div>
             </div>
         </div>
         <div class="card">
-            <div class="card-header bg-transparent" id="heading4">
+            <div class="card-header bg-transparent" id="heading2">
                 <h2 class="mb-0">
                     <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse"
-                            data-target="#collapse4" aria-expanded="false" aria-controls="collapse4">
+                            data-target="#collapse2" aria-expanded="false" aria-controls="collapse2">
                             Can I use my own proxy server?
                     </button>
                 </h2>
             </div>
-            <div id="collapse4" class="collapse" aria-labelledby="heading4" data-parent="#accordionExample">
+            <div id="collapse2" class="collapse" aria-labelledby="heading2" data-parent="#accordionExample">
                 <div class="card-body  text-secondary">
                     Yes, the extension allows you to do so.
                     To use your own proxy server, please click the extension button in your browser —> click the settings button in the upper right corner of the new window —> Proxy settings.
@@ -298,15 +219,15 @@
             </div>
         </div>
         <div class="card">
-            <div class="card-header bg-transparent" id="heading5">
+            <div class="card-header bg-transparent" id="heading3">
                 <h2 class="mb-0">
                     <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse"
-                            data-target="#collapse5" aria-expanded="false" aria-controls="collapse5">
+                            data-target="#collapse3" aria-expanded="false" aria-controls="collapse3">
                             Can I contribute to the Censor Tracker development?
                     </button>
                 </h2>
             </div>
-            <div id="collapse5" class="collapse" aria-labelledby="heading5" data-parent="#accordionExample">
+            <div id="collapse3" class="collapse" aria-labelledby="heading3" data-parent="#accordionExample">
                 <div class="card-body  text-secondary">
                     Yes! Censor Tracker is an <a href="https://github.com/roskomsvoboda/censortracker"
                                                        target="_blank">open-source</a> project, so anyone willing to contribute.
@@ -314,30 +235,30 @@
             </div>
         </div>
         <div class="card">
-            <div class="card-header bg-transparent" id="heading6">
+            <div class="card-header bg-transparent" id="heading4">
                 <h2 class="mb-0">
                     <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse"
-                            data-target="#collapse6" aria-expanded="false" aria-controls="collapse6">
+                            data-target="#collapse4" aria-expanded="false" aria-controls="collapse4">
                             Some websites say that my IP is German, is it alright?
                     </button>
                 </h2>
             </div>
-            <div id="collapse6" class="collapse" aria-labelledby="heading6" data-parent="#accordionExample">
+            <div id="collapse4" class="collapse" aria-labelledby="heading4" data-parent="#accordionExample">
                 <div class="card-body  text-secondary">
                     It is ok, our servers are based in the EU, including Germany.
                 </div>
             </div>
         </div>
         <div class="card">
-            <div class="card-header bg-transparent" id="heading7">
+            <div class="card-header bg-transparent" id="heading5">
                 <h2 class="mb-0">
                     <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse"
-                            data-target="#collapse7" aria-expanded="false" aria-controls="collapse7">
+                            data-target="#collapse5" aria-expanded="false" aria-controls="collapse5">
                             Can I use Censor Tracker on my mobile?
                     </button>
                 </h2>
             </div>
-            <div id="collapse7" class="collapse" aria-labelledby="heading7" data-parent="#accordionExample">
+            <div id="collapse5" class="collapse" aria-labelledby="heading5" data-parent="#accordionExample">
                 <div class="card-body  text-secondary">
                     At the moment, the main browsers for mobile devices (Chrome for Android and Safari for iOS) do not support the extension.
                     We cannot take responsibility and recommend users third-party browsers which support it.
@@ -351,15 +272,15 @@
             </div>
         </div>
         <div class="card">
-            <div class="card-header bg-transparent" id="heading9">
+            <div class="card-header bg-transparent" id="heading6">
                 <h2 class="mb-0">
                     <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse"
-                            data-target="#collapse9" aria-expanded="false" aria-controls="collapse9">
+                            data-target="#collapse6" aria-expanded="false" aria-controls="collapse9">
                             Can I get in touch with you to report an issue?
                     </button>
                 </h2>
             </div>
-            <div id="collapse9" class="collapse" aria-labelledby="heading9" data-parent="#accordionExample">
+            <div id="collapse6" class="collapse" aria-labelledby="heading6" data-parent="#accordionExample">
                 <div class="card-body  text-secondary">
                     Yes, we have a <a href="https://t.me/CensorTracker_feedback" target="_blank">Telegram chat</a>
                     dedicated to the discussion of the issues discovered and reported by our users, and to the discussion of the operation of our extension.
@@ -367,15 +288,15 @@
             </div>
         </div>
         <div class="card">
-            <div class="card-header bg-transparent" id="heading10">
+            <div class="card-header bg-transparent" id="heading7">
                 <h2 class="mb-0">
                     <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse"
-                            data-target="#collapse10" aria-expanded="false" aria-controls="collapse10">
+                            data-target="#collapse7" aria-expanded="false" aria-controls="collapse7">
                             I want to support you financially, how can I do so?
                     </button>
                 </h2>
             </div>
-            <div id="collapse10" class="collapse" aria-labelledby="heading10" data-parent="#accordionExample">
+            <div id="collapse7" class="collapse" aria-labelledby="heading7" data-parent="#accordionExample">
                 <div class="card-body  text-secondary">
                     You can make regular donations or send a one-time payment on our website: <a
                         href="https://donate.roskomsvoboda.org/" target="_blank">donate.roskomsvoboda.org</a>
@@ -383,43 +304,43 @@
             </div>
         </div>
         <div class="card">
-            <div class="card-header bg-transparent" id="heading12">
+            <div class="card-header bg-transparent" id="heading8">
                 <h2 class="mb-0">
                     <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse"
-                            data-target="#collapse12" aria-expanded="false" aria-controls="collapse12">
+                            data-target="#collapse8" aria-expanded="false" aria-controls="collapse8">
                             What are alternative ways to install the extension?
                     </button>
                 </h2>
             </div>
-            <div id="collapse12" class="collapse" aria-labelledby="heading12" data-parent="#accordionExample">
+            <div id="collapse8" class="collapse" aria-labelledby="heading8" data-parent="#accordionExample">
                 <div class="card-body  text-secondary">
                     You can use the <a href="https://github.com/roskomsvoboda/censortracker/releases">GitHub repository</a> to install the extension.
                     <ul class="lead list-unstyled">
                         <h3>Install the extension in Firefox</h3>
                         <li>1. Download <a href="https://github.com/roskomsvoboda/censortracker/releases">the latest archive</a> with the extension from our GitHub repository.</li>
-                        <img src="./guide/ff/archive.JPG" />
+                        <img src="./guide/ff/archive.JPG" alt="Archive with extension" />
                         <li>2. Unzip the Extension into a new folder.</li>
-                        <img src="./guide/ff/en/1.png" width="950" height="550"/>
+                        <img class="en-instr-1" src="./guide/ff/en/1.png" alt="Unzip the extension" />
                         <li>3. Open a <code>"New Tab"</code> and go to this address: <code>about:debugging#/runtime/this-firefox</code>.</li>
                         <li>4. Next, click the <kbd>Download temporary add-on button</kbd>.</li>
-                        <img src="/guide/ff/en/2.png"width="950" height="550" />
+                        <img class="en-instr-2" src="/guide/ff/en/2.png" alt="Installing inside the browser" />
                         <li>5. Go to the folder where you unpacked the extension and select the <code>manifest.json</code>.</li>
-                        <img src="./guide/ff/en/3.png" width="950" height="550" />
+                        <img class="en-instr-2" src="./guide/ff/en/3.png" alt="Installing inside the browser" />
                         <li>Ready! You can use the extension.</li>
                         <li>*You will need to do this every time you start the browser.</li>
                     </ul>
                     <ul class="lead list-unstyled">
                         <h3>Install the extension in Google Chrome</h3>
                         <li>1. Download <a href="https://github.com/roskomsvoboda/censortracker/releases"> the latest archive</a> with the extension from our GitHub repository.</li>
-                        <img src="./guide/gc/archive.JPG" />
+                        <img src="./guide/gc/archive.JPG" alt="Archive with extension" />
                         <li>2. Unzip the Extension into a new folder.</li>
-                        <img src="./guide/gc/en/1.png" width="950" height="550" />
+                        <img class="en-instr-2" src="./guide/gc/en/1.png" alt="Unzip the extension" />
                         <li>3. Open a <code>"New Tab"</code> and go to this address: <code>chrome://extensions</code>.</li>
                         <li>4. In the upper right corner, turn on <code>"Developer Mode"</code>.</li>
-                        <img src="./guide/gc/en/2.png" width="950" height="550" />
+                        <img class="en-instr-2" src="./guide/gc/en/2.png" alt="Developer Mode" />
                         <li>5. Next, click on the button <kbd>Download the unpacked file</kbd>.</li>
                         <li>6. Select the folder where you unzipped the extension.</li>
-                        <img src="./guide/gc/en/3.png" width="950" height="550" />
+                        <img class="en-instr-2" src="./guide/gc/en/3.png" alt="Installing inside the browser" />
                         <li>Ready! You can use the extension.</li>
                     </ul>
                     <!--
@@ -444,28 +365,28 @@
         <div class="col">
             <a target="_blank"
                href="https://chrome.google.com/webstore/detail/censor-tracker/gaidoampbkcknofoejhnhbhbhhifgdop">
-                <img width="64" src="static/img/google-chrome.svg">
+                <img width="64" src="static/img/google-chrome.svg" alt="Google" />
                 <p class="mt-3 text-dark">Chrome</p>
             </a>
         </div>
         <div class="col">
             <a target="_blank"
                href="https://addons.mozilla.org/ru/firefox/addon/censor-tracker/">
-                <img width="64" src="static/img/firefox.png">
+                <img width="64" src="static/img/firefox.png" alt="Firefox" />
                 <p class="mt-3 text-dark">Mozilla Firefox</p>
             </a>
         </div>
         <div class="col">
             <a target="_blank"
                href="https://chrome.google.com/webstore/detail/censor-tracker/gaidoampbkcknofoejhnhbhbhhifgdop">
-                <img width="64" src="static/img/brave.svg">
+                <img width="64" src="static/img/brave.svg" alt="Brave" />
                 <p class="mt-3 text-dark">Brave</p>
             </a>
         </div>
         <div class="col">
             <a href="https://chrome.google.com/webstore/detail/censor-tracker/gaidoampbkcknofoejhnhbhbhhifgdop"
                target="_blank">
-                <img width="64" src="static/img/opera.svg">
+                <img width="64" src="static/img/opera.svg" alt="Opera" />
                 <p class="mt-3 text-dark">Opera</p>
             </a>
         </div>
@@ -482,14 +403,14 @@
             <a href="https://chrome.google.com/webstore/detail/censor-tracker/gaidoampbkcknofoejhnhbhbhhifgdop/related"
                target="_blank">
                 <button class="btn btn-lg btn-primary download-btn">
-                    <img alt="Chrome" src="static/img/chrome.svg"> Install in Chrome
+                    <img alt="Chrome" src="static/img/chrome.svg" alt="Google Store where the extension is available for installation" /> Install in Chrome
                 </button>
             </a>
         </li>
         <li>
             <a href="https://addons.mozilla.org/en-US/firefox/addon/censor-tracker/" target="_blank">
                 <button class="btn btn-lg btn-primary download-btn">
-                    <img alt="Firefox" width="31" height="28" src="static/img/ff.svg"> Install in Firefox
+                    <img alt="Firefox" width="31" height="28" src="static/img/ff.svg" alt="Mozilla Store where the extension is available for installation" /> Install in Firefox
                 </button>
             </a>
         </li>
@@ -505,7 +426,7 @@
 
 <footer class="text-center pt-4 pb-5">
     <a href="https://roskomsvoboda.org/" target="_blank">
-        <img src="static/img/logo-en.svg">
+        <img src="static/img/logo-en.svg" alt="Roskomsvoboda">
     </a>
 </footer>
 

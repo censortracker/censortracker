@@ -1,10 +1,8 @@
 import * as storage from './storage'
 
-/* ACHTUNG! DO NOT TOUCH THESE URLS. DON'T EVEN LOOK AT THEM. */
 const AMAZON_CLOUDFRONT_CONFIG_FILE_URL = 'https://d204gfm9dw21wi.cloudfront.net/'
 const AMAZON_S3_CONFIG_FILE_URL = 'https://censortracker.s3.eu-central-1.amazonaws.com/config.json'
 const GOOGLE_CLOUD_STORAGE_CONFIG_FILE_URL = 'https://storage.googleapis.com/censortracker/config.json'
-/* END OF ACHTUNG. NOW YOU CAN CONTINUE READING CODE. */
 
 /**
  * Returns all the supported API endpoint to use for fetching the configs.

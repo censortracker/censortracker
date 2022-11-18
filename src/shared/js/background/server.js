@@ -4,33 +4,25 @@ const CLOUDFRONT_CONFIG_URL = 'https://d204gfm9dw21wi.cloudfront.net/'
 const AWS_S3_CONFIG_URL = 'https://censortracker.s3.eu-central-1.amazonaws.com/config.json'
 const GOOGLEAPIS_CONFIG_URL = 'https://storage.googleapis.com/censortracker/config.json'
 
-/**
- * Returns all the supported API endpoint to use.
- */
 const getConfigAPIEndpoints = () => {
   return [
     {
-      name: 'Google Cloud Storage',
-      url: GOOGLEAPIS_CONFIG_URL,
+      endpointName: 'Google Cloud Storage',
+      endpointUrl: GOOGLEAPIS_CONFIG_URL,
     },
     {
-      name: 'Amazon S3',
-      url: AWS_S3_CONFIG_URL,
+      endpointName: 'Amazon S3',
+      endpointUrl: AWS_S3_CONFIG_URL,
     },
     {
-      name: 'Amazon CloudFront',
-      url: CLOUDFRONT_CONFIG_URL,
+      endpointName: 'Amazon CloudFront',
+      endpointUrl: CLOUDFRONT_CONFIG_URL,
     },
   ]
 }
 
 const FALLBACK_COUNTRY_CODE = 'RU'
 
-/**
- * Returns the country code of the user using GeoIP API.
- * @param geoIPServiceURL The URL of the GeoIP service.
- * @returns {Promise<string|*>} The country code of the user.
- */
 const inquireCountryCode = async (geoIPServiceURL) => {
   try {
     const response = await fetch(geoIPServiceURL)
@@ -45,144 +37,130 @@ const inquireCountryCode = async (geoIPServiceURL) => {
   }
 }
 
-/**
- * Fetches the config from the API endpoint.
- * @returns {Promise<>} Nothing.
- */
 const fetchConfig = async () => {
   const { currentRegionCode } = await storage.get({
     currentRegionCode: '',
   })
 
-  for (const endpoint of getConfigAPIEndpoints()) {
+  for (const { endpointName, endpointUrl } of getConfigAPIEndpoints()) {
     try {
-      const response = await fetch(endpoint.url)
+      const response = await fetch(endpointUrl)
 
       if (response.ok) {
-        const { meta, data } = await response.json()
+        const { meta, data = {} } = await response.json()
 
-        if (data && data.length === 0) {
-          console.warn('Damaged config file. Skipping...')
+        if (data.length === 0) {
+          console.warn(`Damaged config file. Skipping ${endpointName}...`)
           continue
         }
 
-        console.log(`[Config] Fetched config from: ${endpoint.name}`)
+        console.log(`[Config] Fetched config from: ${endpointName}`)
 
-        if (meta.timestamp > 0) {
-          let countryCode = FALLBACK_COUNTRY_CODE
+        let countryCode = FALLBACK_COUNTRY_CODE
 
-          if (currentRegionCode) {
-            countryCode = currentRegionCode
-          } else if (meta.geoIPServiceURL) {
-            countryCode = await inquireCountryCode(meta.geoIPServiceURL)
-          }
-
-          const localConfig = data.find((cfg) => {
-            return cfg.countryCode === countryCode
-          })
-
-          // For debugging purposes
-          localConfig.configEndpointUrl = endpoint.url
-          localConfig.configEndpointSource = endpoint.name
-
-          console.log(localConfig)
-
-          await storage.set({
-            localConfig,
-            backendIsIntermittent: false,
-          })
-
-          return localConfig
+        if (currentRegionCode) {
+          countryCode = currentRegionCode
+        } else if (meta.geoIPServiceURL) {
+          countryCode = await inquireCountryCode(meta.geoIPServiceURL)
         }
-      } else {
-        console.warn(
-          `[Config] Error on fetching config from: ${endpoint.name}`,
-        )
+
+        const config = data.find((cfg) => {
+          return cfg.countryCode === countryCode
+        })
+
+        if (!config) {
+          // TODO: Show "Unsupported country" message
+        }
+
+        // For debugging purposes
+        config.configEndpointUrl = endpointUrl
+        config.configEndpointSource = endpointName
+
+        await storage.set({
+          localConfig: config,
+          backendIsIntermittent: false,
+        })
+
+        return config
       }
+      console.warn(
+        `[Config] Error on fetching config from: ${endpointName}`,
+      )
     } catch (error) {
-      console.error(`Failed to fetch config from ${endpoint.name}: ${error}`)
+      console.error(`[Config] Failed to fetch config from ${endpointName}: ${error}`)
     }
   }
-  await storage.set({ backendIsIntermittent: true })
-  return undefined
-}
-
-const getLocalConfig = async () => {
-  const { localConfig } = await storage.get({ localConfig: {} })
-
-  return localConfig
+  return {}
 }
 
 /**
- * Fetches the config and registry data.
- * @param excludeServer The server to exclude from the fetch.
- * @returns {Promise<void>} Nothing.
+ * Fetches available config to connect to the proxy server.
+ * @param proxyUrl {string} API endpoint for fetching proxy config.
+ * @param excludeServer {string} The server name to exclude its config from the API response.
+ * @returns {Promise<void>} Resolves when the config is fetched.
  */
-const fetchProxy = async ({ excludeServer } = {}) => {
-  let { proxyUrl } = await getLocalConfig()
+const fetchProxy = async ({ proxyUrl, excludeServer } = {}) => {
   const { badProxies } = await storage.get({ badProxies: [] })
 
-  if (proxyUrl) {
-    console.log('[Proxy] Fetching available proxy server...')
+  console.log('[Proxy] Fetching available proxy server...')
 
-    if (excludeServer) {
-      const params = new URLSearchParams({
-        exclude: excludeServer,
-      })
+  if (excludeServer) {
+    const params = new URLSearchParams({
+      exclude: excludeServer,
+    })
 
-      proxyUrl += params.toString()
+    proxyUrl += params.toString()
 
-      if (!badProxies.includes(excludeServer)) {
-        badProxies.push(excludeServer)
-        await storage.set({ badProxies })
-      }
-      console.warn(`[Proxy] Excluding bad proxies: ${JSON.stringify(badProxies)}`)
+    if (!badProxies.includes(excludeServer)) {
+      badProxies.push(excludeServer)
+      await storage.set({ badProxies })
+    }
+    console.warn(`[Proxy] Excluding bad proxies: ${JSON.stringify(badProxies)}`)
+  }
+
+  try {
+    const response = await fetch(proxyUrl)
+    // const { server, port, pingHost, pingPort } = await response.json()
+    let { server, port, pingHost, pingPort } = await response.json()
+
+    server = 'px.censortracker.org' // TODO: Remove this line
+
+    if (badProxies.includes(server)) {
+      // Refetch proxy config without the bad proxy server
+      await fetchProxy({ proxyUrl, excludeServer: server })
     }
 
-    try {
-      const response = await fetch(proxyUrl)
-      const { server, port, pingHost, pingPort } = await response.json()
+    const proxyPingURI = `${pingHost}:${pingPort}`
+    const proxyServerURI = `${server}:${port}`
 
-      if (badProxies.includes(server)) {
-        await fetchProxy({ exclude: server })
-      }
+    console.warn(`[Proxy] Proxy server fetched: ${proxyServerURI}!`)
 
-      const proxyPingURI = `${pingHost}:${pingPort}`
-      const proxyServerURI = `${server}:${port}`
-
-      console.warn(`[Proxy] Proxy server fetched: ${proxyServerURI}!`)
-
-      await storage.set({
-        proxyPingURI,
-        proxyServerURI,
-        currentProxyServer: server,
-      })
-    } catch (error) {
-      console.error(
-        '[Proxy] Error on fetching proxy server from the API endpoint',
-      )
-    }
-  } else {
-    console.error('[Proxy] No proxy API endpoint is found in local config.')
-    await fetchConfig()
+    await storage.set({
+      proxyPingURI,
+      proxyServerURI,
+      currentProxyServer: server,
+    })
+  } catch (error) {
+    console.error(
+      '[Proxy] Error on fetching proxy server from the API endpoint',
+    )
   }
 }
 
-const fetchRegistry = async () => {
-  const localConfig = await getLocalConfig()
+const fetchRegistry = async ({ registryUrl, specifics = {} } = {}) => {
+  console.groupCollapsed('[Registry] Fetching registry data...')
 
-  console.log('[Registry] Fetching registry data...')
+  const apis = [{
+    url: registryUrl,
+    storageKey: 'domains',
+  }]
 
-  const apis = [
-    {
-      url: localConfig.registryUrl,
-      storageKey: 'domains',
-    },
-    {
-      url: localConfig.specifics.cooperationRefusedORIUrl,
+  if ('cooperationRefusedORIUrl' in specifics) {
+    apis.push({
+      url: specifics.cooperationRefusedORIUrl,
       storageKey: 'disseminators',
-    },
-  ]
+    })
+  }
 
   for (const { storageKey, url } of apis) {
     try {
@@ -196,16 +174,15 @@ const fetchRegistry = async () => {
       console.error(`[Registry] Error on fetching data from: ${url}`)
     }
   }
+  console.groupEnd()
 }
 
-const fetchIgnore = async () => {
-  const localConfig = await getLocalConfig()
-
+const fetchIgnore = async ({ ignoreUrl } = {}) => {
   console.log('[Ignore] Fetching ignored hosts...')
 
   try {
     const { ignoredHosts } = await storage.get({ ignoredHosts: [] })
-    const response = await fetch(localConfig.ignoreUrl)
+    const response = await fetch(ignoreUrl)
     const domains = await response.json()
 
     for (const domain of domains) {
@@ -220,20 +197,39 @@ const fetchIgnore = async () => {
   }
 }
 
-export const synchronize = async (params = {}) => {
+export const synchronize = async ({ excludeProxyServer } = {}) => {
   console.groupCollapsed('[Server] Synchronizing with the server...')
-  await fetchConfig()
-  await fetchRegistry()
-  await fetchIgnore()
-  await fetchProxy(params)
+
+  const config = await fetchConfig()
+
+  if (Object.keys(config).length > 0) {
+    const { proxyUrl, ignoreUrl, registryUrl, specifics } = config
+
+    console.log(config)
+
+    if (ignoreUrl) {
+      await fetchIgnore({ ignoreUrl })
+    } else {
+      console.warn('[Ignore] «ignoreUrl» is not present in config.')
+    }
+
+    if (proxyUrl) {
+      await fetchProxy({ proxyUrl, excludeProxyServer })
+    } else {
+      console.error('[Proxy] «proxyUrl» is not present in config.')
+    }
+
+    if (registryUrl) {
+      await fetchRegistry({ registryUrl, specifics })
+    } else {
+      console.error('[Registry] «registryUrl» is not present in config.')
+    }
+  } else {
+    await storage.set({ backendIsIntermittent: true })
+  }
   console.groupEnd()
 }
 
 export default {
   synchronize,
-  fetchConfig,
-  fetchRegistry,
-  fetchIgnore,
-  fetchProxy,
-  getLocalConfig,
 }

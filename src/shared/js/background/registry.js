@@ -49,7 +49,8 @@ class Registry {
 
   async add (url) {
     const domain = extractDomainFromUrl(url)
-    const { customProxiedDomains } = await storage.get({ customProxiedDomains: [] })
+    const { customProxiedDomains } =
+      await storage.get({ customProxiedDomains: [] })
 
     if (!customProxiedDomains.includes(domain)) {
       customProxiedDomains.push(domain)
@@ -61,7 +62,8 @@ class Registry {
 
   async remove (url) {
     const domain = extractDomainFromUrl(url)
-    const { customProxiedDomains } = await storage.get({ customProxiedDomains: [] })
+    const { customProxiedDomains } =
+      await storage.get({ customProxiedDomains: [] })
 
     if (customProxiedDomains.includes(domain)) {
       const index = customProxiedDomains.indexOf(domain)

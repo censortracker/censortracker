@@ -280,7 +280,8 @@ import Browser from 'Background/webextension';
       } else {
         const [disseminatorDetailsText] = document.querySelectorAll('#ori [data-render-var="detailsText"]')
 
-        disseminatorDetailsText.innerText = uiText.ori.found.cooperationRefused.message
+        disseminatorDetailsText.innerText =
+          uiText.ori.found.cooperationRefused.message
 
         changeStatusImage('normal')
       }

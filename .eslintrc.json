@@ -67,6 +67,7 @@
       2,
       "1tbs"
     ],
+    "no-multi-spaces": "error",
     "padding-line-between-statements": [
       "error",
       {

@@ -95,6 +95,7 @@ import Browser from 'Background/webextension'
   showDebugInfo.addEventListener('click', async (event) => {
     const thisExtension = await Browser.management.getSelf()
     const extensionsInfo = await Browser.management.getAll()
+    const { version: currentVersion } = Browser.runtime.getManifest()
 
     const { localConfig } = await storage.get({
       localConfig: {},
@@ -108,6 +109,7 @@ import Browser from 'Background/webextension'
         .map(({ name }) => name.split(' - ')[0])
     }
 
+    localConfig.version = currentVersion
     localConfig.currentProxyURI = await ProxyManager.getProxyServerURI()
     localConfig.proxyControlled = await ProxyManager.controlledByThisExtension()
     debugInfoJSON.textContent = JSON.stringify(localConfig, null, 2)
@@ -122,6 +124,7 @@ import Browser from 'Background/webextension'
     await Settings.enableNotifications()
     await Settings.disableParentalControl()
     await ProxyManager.setProxy()
+    await ProxyManager.removeBadProxies()
     console.warn('Censor Tracker has been reset to default settings.')
   })
 })()

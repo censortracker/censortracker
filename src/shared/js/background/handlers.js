@@ -45,19 +45,19 @@ export const warnAboutInformationDisseminationOrganizer = async (url) => {
 }
 
 export const handleOnAlarm = async ({ name }) => {
-  console.warn(`Task received: ${name}`)
+  console.groupCollapsed(`Task received: ${name}`)
 
-  if (name === 'sync') {
-    await server.synchronize()
+  if (name === 'removeBadProxies') {
+    await ProxyManager.removeBadProxies()
   }
 
   if (name === 'setProxy') {
-    ProxyManager.isEnabled()
-      .then(async (proxyingEnabled) => {
-        if (proxyingEnabled) {
-          await ProxyManager.setProxy()
-        }
-      })
+    ProxyManager.isEnabled().then(async (proxyingEnabled) => {
+      if (proxyingEnabled) {
+        await server.synchronize()
+        await ProxyManager.setProxy()
+      }
+    })
   }
 }
 
@@ -76,14 +76,10 @@ export const handleStartup = async () => {
   }
 
   await Task.schedule([
-    { name: 'sync', minutes: 20 },
     { name: 'setProxy', minutes: 10 },
+    { name: 'removeBadProxies', minutes: 5 },
   ])
   console.groupEnd()
-}
-
-export const handleProxyError = (details) => {
-  console.error(`Proxy error: ${JSON.stringify(details)}`)
 }
 
 export const handleIgnoredHostsChange = async (
@@ -92,23 +88,21 @@ export const handleIgnoredHostsChange = async (
 ) => {
   if ('newValue' in ignoredHosts) {
     console.log('The list of ignored hosts has been updated.')
-    ProxyManager.isEnabled()
-      .then((enabled) => {
-        if (enabled) {
-          ProxyManager.setProxy()
-            .then((proxySet) => {
-              if (proxySet) {
-                console.log('Regenerating PAC...')
-              } else {
-                console.error('Failed to regenerate PAC.')
-              }
-            })
-        } else {
-          console.warn(
-            'PAC could not be regenerated, since proxying is disabled.',
-          )
-        }
-      })
+    ProxyManager.isEnabled().then((enabled) => {
+      if (enabled) {
+        ProxyManager.setProxy().then((proxySet) => {
+          if (proxySet) {
+            console.log('Regenerating PAC...')
+          } else {
+            console.error('Failed to regenerate PAC.')
+          }
+        })
+      } else {
+        console.warn(
+          'PAC could not be regenerated, since proxying is disabled.',
+        )
+      }
+    })
   }
 }
 
@@ -222,18 +216,18 @@ export const handleInstalled = async ({ reason }) => {
     await Settings.enableExtension()
     await Settings.enableNotifications()
     await Settings.showInstalledPage()
-    await ProxyManager.enableProxy()
 
     await server.synchronize()
+    await ProxyManager.enableProxy()
     await ProxyManager.requestIncognitoAccess()
-    await ProxyManager.ping()
     await ProxyManager.setProxy()
+    await ProxyManager.ping()
   }
 
   if (UPDATED || INSTALLED) {
     await Task.schedule([
-      { name: 'sync', minutes: 20 },
       { name: 'setProxy', minutes: 10 },
+      { name: 'removeBadProxies', minutes: 5 },
     ])
   }
 }
@@ -281,4 +275,28 @@ export const handleTabCreate = async (tab) => {
       Settings.setDisableIcon(tab.id)
     }
   })
+}
+
+export const handleProxyError = async ({ error }) => {
+  error = error.replace('net::', '')
+
+  const proxyErrors = [
+    // Firefox
+    'NS_ERROR_UNKNOWN_PROXY_HOST',
+
+    // Chrome
+    'ERR_PROXY_CONNECTION_FAILED',
+  ]
+
+  if (proxyErrors.includes(error)) {
+    const { currentProxyServer } = await storage.get('currentProxyServer')
+
+    if (currentProxyServer) {
+      await server.synchronize({ currentProxyServer })
+      await ProxyManager.setProxy()
+      await ProxyManager.ping()
+    }
+
+    console.error(`Proxy connection failed: ${error}`)
+  }
 }

@@ -1,25 +1,25 @@
 import * as storage from './storage'
 
-const AMAZON_CLOUDFRONT_CONFIG_FILE_URL = 'https://d204gfm9dw21wi.cloudfront.net/'
-const AMAZON_S3_CONFIG_FILE_URL = 'https://censortracker.s3.eu-central-1.amazonaws.com/config.json'
-const GOOGLE_CLOUD_STORAGE_CONFIG_FILE_URL = 'https://storage.googleapis.com/censortracker/config.json'
+const CLOUDFRONT_CONFIG_URL = 'https://d204gfm9dw21wi.cloudfront.net/'
+const AWS_S3_CONFIG_URL = 'https://censortracker.s3.eu-central-1.amazonaws.com/config.json'
+const GOOGLEAPIS_CONFIG_URL = 'https://storage.googleapis.com/censortracker/config.json'
 
 /**
- * Returns all the supported API endpoint to use for fetching the configs.
+ * Returns all the supported API endpoint to use.
  */
 const getConfigAPIEndpoints = () => {
   return [
     {
       name: 'Google Cloud Storage',
-      url: GOOGLE_CLOUD_STORAGE_CONFIG_FILE_URL,
+      url: GOOGLEAPIS_CONFIG_URL,
     },
     {
       name: 'Amazon S3',
-      url: AMAZON_S3_CONFIG_FILE_URL,
+      url: AWS_S3_CONFIG_URL,
     },
     {
       name: 'Amazon CloudFront',
-      url: AMAZON_CLOUDFRONT_CONFIG_FILE_URL,
+      url: CLOUDFRONT_CONFIG_URL,
     },
   ]
 }
@@ -46,8 +46,8 @@ const inquireCountryCode = async (geoIPServiceURL) => {
 }
 
 /**
- * Returns the first available API endpoint to use for fetching the config.
- * @returns {Promise<null>} The first available API endpoint.
+ * Fetches the config from the API endpoint.
+ * @returns {Promise<>} Nothing.
  */
 const fetchConfig = async () => {
   const { currentRegionCode } = await storage.get({
@@ -95,7 +95,9 @@ const fetchConfig = async () => {
           return localConfig
         }
       } else {
-        console.warn(`[Config] Error on fetching config from: ${endpoint.name}`)
+        console.warn(
+          `[Config] Error on fetching config from: ${endpoint.name}`,
+        )
       }
     } catch (error) {
       console.error(`Failed to fetch config from ${endpoint.name}: ${error}`)
@@ -111,23 +113,58 @@ const getLocalConfig = async () => {
   return localConfig
 }
 
-const fetchProxy = async () => {
-  const localConfig = await getLocalConfig()
+/**
+ * Fetches the config and registry data.
+ * @param excludeServer The server to exclude from the fetch.
+ * @returns {Promise<void>} Nothing.
+ */
+const fetchProxy = async ({ excludeServer } = {}) => {
+  let { proxyUrl } = await getLocalConfig()
+  const { badProxies } = await storage.get({ badProxies: [] })
 
-  console.log('Fetching available proxy server...')
+  if (proxyUrl) {
+    console.log('[Proxy] Fetching available proxy server...')
 
-  try {
-    const response = await fetch(localConfig.proxyUrl)
-    const { server, port, pingHost, pingPort } = await response.json()
+    if (excludeServer) {
+      const params = new URLSearchParams({
+        exclude: excludeServer,
+      })
 
-    const proxyPingURI = `${pingHost}:${pingPort}`
-    const proxyServerURI = `${server}:${port}`
+      proxyUrl += params.toString()
 
-    console.warn(`[Proxy] Proxy server fetched: ${proxyServerURI}!`)
+      if (!badProxies.includes(excludeServer)) {
+        badProxies.push(excludeServer)
+        await storage.set({ badProxies })
+      }
+      console.warn(`[Proxy] Excluding bad proxies: ${JSON.stringify(badProxies)}`)
+    }
 
-    await storage.set({ proxyPingURI, proxyServerURI })
-  } catch (error) {
-    console.error('[Proxy] Error on fetching proxy server from the API endpoint')
+    try {
+      const response = await fetch(proxyUrl)
+      const { server, port, pingHost, pingPort } = await response.json()
+
+      if (badProxies.includes(server)) {
+        await fetchProxy({ exclude: server })
+      }
+
+      const proxyPingURI = `${pingHost}:${pingPort}`
+      const proxyServerURI = `${server}:${port}`
+
+      console.warn(`[Proxy] Proxy server fetched: ${proxyServerURI}!`)
+
+      await storage.set({
+        proxyPingURI,
+        proxyServerURI,
+        currentProxyServer: server,
+      })
+    } catch (error) {
+      console.error(
+        '[Proxy] Error on fetching proxy server from the API endpoint',
+      )
+    }
+  } else {
+    console.error('[Proxy] No proxy API endpoint is found in local config.')
+    await fetchConfig()
   }
 }
 
@@ -183,15 +220,20 @@ const fetchIgnore = async () => {
   }
 }
 
-export const synchronize = async () => {
+export const synchronize = async (params = {}) => {
   console.groupCollapsed('[Server] Synchronizing with the server...')
   await fetchConfig()
   await fetchRegistry()
   await fetchIgnore()
-  await fetchProxy()
+  await fetchProxy(params)
   console.groupEnd()
 }
 
 export default {
   synchronize,
+  fetchConfig,
+  fetchRegistry,
+  fetchIgnore,
+  fetchProxy,
+  getLocalConfig,
 }

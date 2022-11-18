@@ -211,6 +211,16 @@ class ProxyManager {
       }
     }
   }
+
+  async removeBadProxies () {
+    await storage.set({ badProxies: [] })
+  }
+
+  async getBadProxies () {
+    const { badProxies } = await storage.get({ badProxies: [] })
+
+    return badProxies
+  }
 }
 
 export default new ProxyManager()

@@ -33,3 +33,4 @@ browser.webRequest.onBeforeRequest.addListener(
 
 browser.tabs.onUpdated.addListener(handleTabState)
 browser.tabs.onCreated.addListener(handleTabCreate)
+browser.webRequest.onErrorOccurred.addListener(handleProxyError, { urls: ['<all_urls>'] })

@@ -114,7 +114,7 @@ const fetchProxy = async ({ proxyUrl } = {}) => {
 
       proxyUrl += `?${params.toString()}`
 
-      console.warn('[Proxy] Excluding bad proxies:')
+      console.log('[Proxy] Excluding bad proxies:')
       console.table(badProxies)
     }
 
@@ -127,18 +127,6 @@ const fetchProxy = async ({ proxyUrl } = {}) => {
       fallbackReason,
     } = await response.json()
 
-    if (badProxies.includes(server)) {
-      // Refetch proxy config without the bad proxy server
-      console.warn(`[Proxy] Bad proxy server: ${server}.`)
-      await fetchProxy({ proxyUrl })
-    }
-
-    if (fallbackReason) {
-      await storage.set({ fallbackReason })
-    } else {
-      await storage.remove('fallbackReason')
-    }
-
     const proxyPingURI = `${pingHost}:${pingPort}`
     const proxyServerURI = `${server}:${port}`
 
@@ -147,6 +135,7 @@ const fetchProxy = async ({ proxyUrl } = {}) => {
     await storage.set({
       proxyPingURI,
       proxyServerURI,
+      fallbackReason,
       currentProxyServer: server,
     })
   } catch (error) {

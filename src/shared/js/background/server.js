@@ -187,21 +187,25 @@ const fetchRegistry = async ({ registryUrl, specifics = {} } = {}) => {
 }
 
 const fetchIgnore = async ({ ignoreUrl } = {}) => {
-  try {
-    const { ignoredHosts } = await storage.get({ ignoredHosts: [] })
-    const response = await fetch(ignoreUrl)
-    const domains = await response.json()
-
-    for (const domain of domains) {
-      if (!ignoredHosts.includes(domain)) {
-        ignoredHosts.push(domain)
-      }
-    }
-    await storage.set({ ignoredHosts })
-    console.log('[Ignore] Globally ignored domains fetched.')
-  } catch (error) {
-    console.error(`[Ignore] Error on fetching ignored hosts: ${error}`)
-  }
+  fetch(ignoreUrl)
+    .then((response) => response.json())
+    .then((domains) => {
+      storage.get({ ignoredHosts: [] })
+        .then(({ ignoredHosts }) => {
+          for (const domain of domains) {
+            if (!ignoredHosts.includes(domain)) {
+              ignoredHosts.push(domain)
+            }
+          }
+          storage.set({ ignoredHosts })
+            .then(() => {
+              console.log('[Ignore] Globally ignored domains fetched.')
+            })
+        })
+    })
+    .catch((error) => {
+      console.error(`[Ignore] Error on fetching ignored hosts: ${error}`)
+    })
 }
 
 export const synchronize = async () => {

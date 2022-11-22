@@ -279,7 +279,6 @@ export const handleTabCreate = async (tab) => {
 
 export const handleProxyError = async ({ error }) => {
   error = error.replace('net::', '')
-  console.log(error)
 
   const proxyErrors = [
     // Firefox
@@ -293,10 +292,18 @@ export const handleProxyError = async ({ error }) => {
     const { currentProxyServer } = await storage.get('currentProxyServer')
 
     if (currentProxyServer) {
-      await server.synchronize({
-        excludeProxyServer: currentProxyServer,
-      })
+      const { badProxies } = await storage.get({ badProxies: [] })
+
+      await storage.set({ proxyIsAlive: false })
+
+      if (!badProxies.includes(currentProxyServer)) {
+        badProxies.push(currentProxyServer)
+        await storage.set({ badProxies })
+      }
+
+      await server.synchronize()
       await ProxyManager.setProxy()
+      await ProxyManager.ping()
     }
 
     console.error(`Proxy connection failed: ${error}`)

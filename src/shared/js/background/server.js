@@ -69,7 +69,7 @@ const fetchConfig = async () => {
         })
 
         if (!config) {
-          // TODO: Show "Unsupported country" message
+          await storage.set({ unsupportedCountry: true })
         }
 
         // For debugging purposes
@@ -96,38 +96,47 @@ const fetchConfig = async () => {
 /**
  * Fetches available config to connect to the proxy server.
  * @param proxyUrl {string} API endpoint for fetching proxy config.
- * @param excludeServer {string} The server name to exclude its config from the API response.
  * @returns {Promise<void>} Resolves when the config is fetched.
  */
-const fetchProxy = async ({ proxyUrl, excludeServer } = {}) => {
+const fetchProxy = async ({ proxyUrl } = {}) => {
   const { badProxies } = await storage.get({ badProxies: [] })
 
-  console.log('[Proxy] Fetching available proxy server...')
-
-  if (excludeServer) {
-    const params = new URLSearchParams({
-      exclude: excludeServer,
-    })
-
-    proxyUrl += params.toString()
-
-    if (!badProxies.includes(excludeServer)) {
-      badProxies.push(excludeServer)
-      await storage.set({ badProxies })
-    }
-    console.warn(`[Proxy] Excluding bad proxies: ${JSON.stringify(badProxies)}`)
-  }
-
   try {
-    const response = await fetch(proxyUrl)
-    // const { server, port, pingHost, pingPort } = await response.json()
-    let { server, port, pingHost, pingPort } = await response.json()
+    // TODO: ================== REMOVE THIS  ==================
+    proxyUrl = proxyUrl.replace('app.', 'dev.')
 
-    server = 'px.censortracker.org' // TODO: Remove this line
+    if (badProxies.length > 0) {
+      const params = new URLSearchParams()
+
+      for (const badProxy of badProxies) {
+        params.append('exclude', badProxy)
+      }
+
+      proxyUrl += `?${params.toString()}`
+
+      console.warn('[Proxy] Excluding bad proxies:')
+      console.table(badProxies)
+    }
+
+    const response = await fetch(proxyUrl)
+    const {
+      server,
+      port,
+      pingHost,
+      pingPort,
+      fallbackReason,
+    } = await response.json()
 
     if (badProxies.includes(server)) {
       // Refetch proxy config without the bad proxy server
-      await fetchProxy({ proxyUrl, excludeServer: server })
+      console.warn(`[Proxy] Bad proxy server: ${server}.`)
+      await fetchProxy({ proxyUrl })
+    }
+
+    if (fallbackReason) {
+      await storage.set({ fallbackReason })
+    } else {
+      await storage.remove('fallbackReason')
     }
 
     const proxyPingURI = `${pingHost}:${pingPort}`
@@ -142,7 +151,7 @@ const fetchProxy = async ({ proxyUrl, excludeServer } = {}) => {
     })
   } catch (error) {
     console.error(
-      '[Proxy] Error on fetching proxy server from the API endpoint',
+      `[Proxy] Error on fetching proxy server: ${error}`,
     )
   }
 }
@@ -178,8 +187,6 @@ const fetchRegistry = async ({ registryUrl, specifics = {} } = {}) => {
 }
 
 const fetchIgnore = async ({ ignoreUrl } = {}) => {
-  console.log('[Ignore] Fetching ignored hosts...')
-
   try {
     const { ignoredHosts } = await storage.get({ ignoredHosts: [] })
     const response = await fetch(ignoreUrl)
@@ -197,7 +204,7 @@ const fetchIgnore = async ({ ignoreUrl } = {}) => {
   }
 }
 
-export const synchronize = async ({ excludeProxyServer } = {}) => {
+export const synchronize = async () => {
   console.groupCollapsed('[Server] Synchronizing with the server...')
 
   const config = await fetchConfig()
@@ -214,7 +221,7 @@ export const synchronize = async ({ excludeProxyServer } = {}) => {
     }
 
     if (proxyUrl) {
-      await fetchProxy({ proxyUrl, excludeProxyServer })
+      await fetchProxy({ proxyUrl })
     } else {
       console.error('[Proxy] «proxyUrl» is not present in config.')
     }

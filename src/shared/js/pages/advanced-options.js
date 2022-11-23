@@ -6,7 +6,7 @@ import Browser from 'Background/webextension'
 
 (async () => {
   const debugInfoJSON = document.getElementById('debugInfoJSON')
-  const showDebugInfo = document.getElementById('showDebugInfo')
+  const showDebugInfoBtn = document.getElementById('showDebugInfo')
   const confirmResetBtn = document.getElementById('confirmReset')
   const closeDebugInfoBtn = document.getElementById('closeDebugInfo')
   const copyDebugInfoBtn = document.getElementById('copyDebugInfoBtn')
@@ -94,7 +94,7 @@ import Browser from 'Background/webextension'
     }
   })
 
-  showDebugInfo.addEventListener('click', async (event) => {
+  showDebugInfoBtn.addEventListener('click', async (event) => {
     const thisExtension = await Browser.management.getSelf()
     const extensionsInfo = await Browser.management.getAll()
     const { version: currentVersion } = Browser.runtime.getManifest()

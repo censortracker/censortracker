@@ -107,9 +107,6 @@
   "countryUA": {
     "message": "Ukraine"
   },
-  "debugInfoTip": {
-    "message": "Click here to see debug information."
-  },
   "debugInfoTitle": {
     "message": "Debug Info"
   },
@@ -360,6 +357,12 @@
   "shareFeedback": {
     "message": "Got issues or suggestions? Let us know!"
   },
+  "showDebugInfoDesc": {
+    "message": "Show debug information of the extension."
+  },
+  "showDebugInfoTitle": {
+    "message": "Debug information"
+  },
   "showNotificationsDesc": {
     "message": "We will warn you when you visit a service that transmits your messages, personal data, and all traffic to third parties automatically."
   },
@@ -397,7 +400,7 @@
     "message": "Update the local database of the blocked websites for your region."
   },
   "updateLocalRegistryTitle": {
-    "message": "Force update the extension's local database."
+    "message": "Force update the extension's local database"
   },
   "updateTakesTime": {
     "message": "Database update will take some time."

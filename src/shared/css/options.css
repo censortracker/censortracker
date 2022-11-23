@@ -752,11 +752,6 @@ kbd {
   height: 520px;
 }
 
-#showDebugInfo {
-  cursor: pointer;
-  margin-bottom: 28px;
-}
-
 /* Region Select */
 
 .select {

@@ -294,16 +294,22 @@ export const handleProxyError = async ({ error }) => {
     if (currentProxyServer) {
       const { badProxies } = await storage.get({ badProxies: [] })
 
-      await storage.set({ proxyIsAlive: false })
-
       if (!badProxies.includes(currentProxyServer)) {
         badProxies.push(currentProxyServer)
         await storage.set({ badProxies })
       }
 
-      await server.synchronize()
-      await ProxyManager.setProxy()
-      await ProxyManager.ping()
+      Browser.tabs.query({ active: true, lastFocusedWindow: true })
+        .then(async (tab) => {
+          await server.synchronize({
+            syncIgnore: false,
+            syncRegistry: false,
+            syncProxy: true,
+          })
+          await ProxyManager.setProxy()
+          await ProxyManager.ping()
+          Browser.tabs.reload(tab.id)
+        })
     }
 
     console.error(`Proxy connection failed: ${error}`)

@@ -28,8 +28,6 @@ const inquireCountryCode = async (geoIPServiceURL) => {
     const response = await fetch(geoIPServiceURL)
     const { countryCode } = await response.json()
 
-    console.log(`[GeoIP] Your country is: ${countryCode}.`)
-
     return countryCode
   } catch (error) {
     console.error('[GeoIP] Error on fetching country code. Using fallback.')
@@ -50,11 +48,9 @@ const fetchConfig = async () => {
         const { meta, data = {} } = await response.json()
 
         if (data.length === 0) {
-          console.warn(`Damaged config file. Skipping ${endpointName}...`)
+          console.warn(`[Config] Skipping ${endpointName}...`)
           continue
         }
-
-        console.log(`[Config] Fetched config from: ${endpointName}`)
 
         let countryCode = FALLBACK_COUNTRY_CODE
 
@@ -83,7 +79,7 @@ const fetchConfig = async () => {
 
         return config
       }
-      console.warn(
+      console.error(
         `[Config] Error on fetching config from: ${endpointName}`,
       )
     } catch (error) {
@@ -99,7 +95,14 @@ const fetchConfig = async () => {
  * @returns {Promise<void>} Resolves when the config is fetched.
  */
 const fetchProxy = async ({ proxyUrl } = {}) => {
+  if (!proxyUrl) {
+    console.warn('[Proxy] «proxyUrl» is not present in config.')
+    return
+  }
+
   const { badProxies } = await storage.get({ badProxies: [] })
+
+  console.group('[Proxy] Fetching proxy...')
 
   try {
     // TODO: ================== REMOVE THIS  ==================
@@ -114,7 +117,7 @@ const fetchProxy = async ({ proxyUrl } = {}) => {
 
       proxyUrl += `?${params.toString()}`
 
-      console.log('[Proxy] Excluding bad proxies:')
+      console.log('Excluding bad proxies:')
       console.table(badProxies)
     }
 
@@ -130,7 +133,7 @@ const fetchProxy = async ({ proxyUrl } = {}) => {
     const proxyPingURI = `${pingHost}:${pingPort}`
     const proxyServerURI = `${server}:${port}`
 
-    console.warn(`[Proxy] Proxy server fetched: ${proxyServerURI}!`)
+    console.log(`Proxy server fetched: ${proxyServerURI}!`)
 
     await storage.set({
       proxyPingURI,
@@ -140,13 +143,19 @@ const fetchProxy = async ({ proxyUrl } = {}) => {
     })
   } catch (error) {
     console.error(
-      `[Proxy] Error on fetching proxy server: ${error}`,
+      `Error on fetching proxy server: ${error}`,
     )
   }
+  console.groupEnd()
 }
 
 const fetchRegistry = async ({ registryUrl, specifics = {} } = {}) => {
-  console.groupCollapsed('[Registry] Fetching registry data...')
+  if (!registryUrl) {
+    console.warn('[Registry] «registryUrl» is not present in config.')
+    return
+  }
+
+  console.group('[Registry] Fetching registry...')
 
   const apis = [{
     url: registryUrl,
@@ -165,17 +174,22 @@ const fetchRegistry = async ({ registryUrl, specifics = {} } = {}) => {
       const response = await fetch(url)
       const data = await response.json()
 
-      console.warn(`[Registry] Fetched: ${url}`)
+      console.log(`Fetched: ${url}`)
 
       await storage.set({ [storageKey]: data })
     } catch (error) {
-      console.error(`[Registry] Error on fetching data from: ${url}`)
+      console.error(`Error on fetching data from: ${url}`)
     }
   }
   console.groupEnd()
 }
 
 const fetchIgnore = async ({ ignoreUrl } = {}) => {
+  if (!ignoreUrl) {
+    console.warn('[Ignore] «ignoreUrl» is not present in config.')
+    return
+  }
+
   fetch(ignoreUrl)
     .then((response) => response.json())
     .then((domains) => {
@@ -197,32 +211,28 @@ const fetchIgnore = async ({ ignoreUrl } = {}) => {
     })
 }
 
-export const synchronize = async () => {
-  console.groupCollapsed('[Server] Synchronizing with the server...')
+export const synchronize = async ({
+  syncRegistry = true,
+  syncIgnore = true,
+  syncProxy = true,
+} = {}) => {
+  console.groupCollapsed('[Server] Synchronizing config...')
 
   const config = await fetchConfig()
 
   if (Object.keys(config).length > 0) {
     const { proxyUrl, ignoreUrl, registryUrl, specifics } = config
 
-    console.log(config)
-
-    if (ignoreUrl) {
+    if (syncIgnore) {
       await fetchIgnore({ ignoreUrl })
-    } else {
-      console.warn('[Ignore] «ignoreUrl» is not present in config.')
     }
 
-    if (proxyUrl) {
+    if (syncProxy) {
       await fetchProxy({ proxyUrl })
-    } else {
-      console.error('[Proxy] «proxyUrl» is not present in config.')
     }
 
-    if (registryUrl) {
+    if (syncRegistry) {
       await fetchRegistry({ registryUrl, specifics })
-    } else {
-      console.error('[Registry] «registryUrl» is not present in config.')
     }
   } else {
     await storage.set({ backendIsIntermittent: true })

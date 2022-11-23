@@ -135,6 +135,10 @@ const fetchProxy = async ({ proxyUrl } = {}) => {
 
     console.log(`Proxy server fetched: ${proxyServerURI}!`)
 
+    if (fallbackReason) {
+      console.warn(`Using fallback «${proxyServerURI}» for the reason: ${fallbackReason}`)
+    }
+
     await storage.set({
       proxyPingURI,
       proxyServerURI,

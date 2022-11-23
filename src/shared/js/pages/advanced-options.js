@@ -73,15 +73,17 @@ import Browser from 'Background/webextension'
 
   updateLocalRegistryBtn.addEventListener('click', async (event) => {
     togglePopup('popupCompletedSuccessfully')
-    const proxyingEnabled = await ProxyManager.isEnabled()
+    ProxyManager.isEnabled().then(async (proxyingEnabled) => {
+      await server.synchronize()
 
-    await server.synchronize()
-
-    if (proxyingEnabled) {
-      await ProxyManager.setProxy()
-    } else {
-      console.warn('Registry updated, but proxying is disabled.')
-    }
+      if (proxyingEnabled) {
+        await ProxyManager.removeBadProxies()
+        await ProxyManager.setProxy()
+        await ProxyManager.ping()
+      } else {
+        console.warn('Registry updated, but proxying is disabled.')
+      }
+    })
   })
 
   document.addEventListener('keydown', async (event) => {
@@ -97,9 +99,10 @@ import Browser from 'Background/webextension'
     const extensionsInfo = await Browser.management.getAll()
     const { version: currentVersion } = Browser.runtime.getManifest()
 
-    const { localConfig } = await storage.get({
-      localConfig: {},
-    })
+    const {
+      localConfig = {},
+      fallbackReason,
+    } = await storage.get(['localConfig', 'fallbackReason'])
 
     if (extensionsInfo.length > 0) {
       localConfig.conflictingExtensions = extensionsInfo
@@ -110,6 +113,9 @@ import Browser from 'Background/webextension'
     }
 
     localConfig.version = currentVersion
+    if (fallbackReason) {
+      localConfig.fallbackReason = fallbackReason
+    }
     localConfig.currentProxyURI = await ProxyManager.getProxyServerURI()
     localConfig.proxyControlled = await ProxyManager.controlledByThisExtension()
     debugInfoJSON.textContent = JSON.stringify(localConfig, null, 2)
@@ -123,8 +129,9 @@ import Browser from 'Background/webextension'
     await Settings.enableExtension()
     await Settings.enableNotifications()
     await Settings.disableParentalControl()
-    await ProxyManager.setProxy()
     await ProxyManager.removeBadProxies()
+    await ProxyManager.setProxy()
+    await ProxyManager.ping()
     console.warn('Censor Tracker has been reset to default settings.')
   })
 })()

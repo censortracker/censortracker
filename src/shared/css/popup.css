@@ -179,8 +179,8 @@ a {
   padding-right: 40px;
 }
 
-.block-disabled .block__title {
-  padding-right: 0;
+.block-disabled {
+  padding-right: 0 !important;
 }
 
 .block__btn {

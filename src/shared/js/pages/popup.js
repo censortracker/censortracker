@@ -295,6 +295,7 @@ import Browser from 'Background/webextension';
   } else {
     changeStatusImage('disabled')
     extensionIsOff.hidden = false
+    toggleSiteActionsButton.hidden = true
     mainPageInfoBlocks.forEach((element) => {
       element.hidden = true
     })

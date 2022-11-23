@@ -51,7 +51,7 @@
     "message": "Да, сбросить"
   },
   "controlledByOtherExtensionDesc": {
-    "message": "Для корректной работы Censor Tracker, отключите &laquo;<div class=\"extension__name\">$NAME$</div>&raquo; в настройках браузера.",
+    "message": "Для корректной работы Censor Tracker, отключите &laquo;<div class=\"extension__name\">$name$</div>&raquo;.",
     "placeholders": {
       "name": {
         "content": "$1"

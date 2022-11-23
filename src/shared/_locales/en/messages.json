@@ -51,7 +51,7 @@
     "message": "Yes, I'm sure!"
   },
   "controlledByOtherExtensionDesc": {
-    "message": "To use Censor Tracker, disable &laquo;<div class=\"extension__name\">$name$</div>&raquo; in browser settings.",
+    "message": "To use Censor Tracker, disable &laquo;<div class=\"extension__name\">$name$</div>&raquo;.",
     "placeholders": {
       "name": {
         "content": "$1"

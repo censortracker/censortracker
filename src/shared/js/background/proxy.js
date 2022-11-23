@@ -145,7 +145,7 @@ class ProxyManager {
 
   async removeProxy () {
     await Browser.proxy.settings.clear({})
-    console.warn('Proxy settings have been reset.')
+    console.warn('Proxy settings removed.')
   }
 
   async alive () {

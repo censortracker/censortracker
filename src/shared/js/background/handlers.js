@@ -45,19 +45,19 @@ export const warnAboutInformationDisseminationOrganizer = async (url) => {
 }
 
 export const handleOnAlarm = async ({ name }) => {
-  console.groupCollapsed(`Task received: ${name}`)
+  console.log(`Task received: ${name}`)
 
   if (name === 'removeBadProxies') {
     await ProxyManager.removeBadProxies()
-  }
-
-  if (name === 'setProxy') {
+  } else if (name === 'setProxy') {
     ProxyManager.isEnabled().then(async (proxyingEnabled) => {
       if (proxyingEnabled) {
         await server.synchronize()
         await ProxyManager.setProxy()
       }
     })
+  } else {
+    console.warn(`Unknown task: ${name}`)
   }
 }
 
@@ -87,20 +87,9 @@ export const handleIgnoredHostsChange = async (
   _areaName,
 ) => {
   if ('newValue' in ignoredHosts) {
-    console.log('The list of ignored hosts has been updated.')
     ProxyManager.isEnabled().then((enabled) => {
       if (enabled) {
-        ProxyManager.setProxy().then((proxySet) => {
-          if (proxySet) {
-            console.log('Regenerating PAC...')
-          } else {
-            console.error('Failed to regenerate PAC.')
-          }
-        })
-      } else {
-        console.warn(
-          'PAC could not be regenerated, since proxying is disabled.',
-        )
+        ProxyManager.setProxy().then((proxySet) => {})
       }
     })
   }
@@ -115,7 +104,6 @@ export const handleCustomProxiedDomainsChange = async (
       ProxyManager.isEnabled().then(async (proxyingEnabled) => {
         if (proxyingEnabled) {
           await ProxyManager.setProxy()
-          console.warn('Updated custom proxied domains.')
         }
       })
     }
@@ -169,9 +157,6 @@ export const handleStorageChanged = async (
     if (useProxy && enableExtension === undefined) {
       const useProxyNewValue = useProxy.newValue
       const useProxyOldValue = useProxy.oldValue
-
-      console.log(`useProxy: ${useProxyOldValue} -> ${useProxyNewValue}`)
-
       const extensionEnabled = await Settings.extensionEnabled()
 
       if (extensionEnabled) {
@@ -291,6 +276,8 @@ export const handleProxyError = async ({ error }) => {
   if (proxyErrors.includes(error)) {
     const { currentProxyServer } = await storage.get('currentProxyServer')
 
+    console.error(`Error on connection to ${currentProxyServer}: ${error}`)
+
     if (currentProxyServer) {
       const { badProxies } = await storage.get({ badProxies: [] })
 
@@ -311,7 +298,5 @@ export const handleProxyError = async ({ error }) => {
           Browser.tabs.reload(tab.id)
         })
     }
-
-    console.error(`Proxy connection failed: ${error}`)
   }
 }

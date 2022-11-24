@@ -102,7 +102,16 @@ import Browser from 'Background/webextension'
     const {
       localConfig = {},
       fallbackReason,
-    } = await storage.get(['localConfig', 'fallbackReason'])
+      fallbackProxyInUse = false,
+      fallbackProxyError,
+      proxyLastFetchTs,
+    } = await storage.get([
+      'localConfig',
+      'fallbackReason',
+      'fallbackProxyInUse',
+      'fallbackProxyError',
+      'proxyLastFetchTs',
+    ])
 
     if (extensionsInfo.length > 0) {
       localConfig.conflictingExtensions = extensionsInfo
@@ -113,9 +122,14 @@ import Browser from 'Background/webextension'
     }
 
     localConfig.version = currentVersion
-    if (fallbackReason) {
+
+    if (fallbackProxyInUse) {
       localConfig.fallbackReason = fallbackReason
+      localConfig.fallbackProxyError = fallbackProxyError
+      localConfig.fallbackProxyInUse = fallbackProxyInUse
     }
+
+    localConfig.proxyLastFetchTs = proxyLastFetchTs
     localConfig.currentProxyURI = await ProxyManager.getProxyServerURI()
     localConfig.proxyControlled = await ProxyManager.controlledByThisExtension()
     debugInfoJSON.textContent = JSON.stringify(localConfig, null, 2)

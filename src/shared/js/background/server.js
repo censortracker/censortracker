@@ -23,6 +23,11 @@ const getConfigAPIEndpoints = () => {
 
 const FALLBACK_COUNTRY_CODE = 'RU'
 
+/**
+ * Fetches the country code from the given GeoIP API Endpoint.
+ * @param geoIPServiceURL {string} API endpoint for fetching country code.
+ * @returns {Promise<string|*>} Resolves with the country code.
+ */
 const inquireCountryCode = async (geoIPServiceURL) => {
   try {
     const response = await fetch(geoIPServiceURL)
@@ -35,6 +40,10 @@ const inquireCountryCode = async (geoIPServiceURL) => {
   }
 }
 
+/**
+ * Fetches config from the server.
+ * @returns {Promise<{}|*>} Resolves with the config.
+ */
 const fetchConfig = async () => {
   const { currentRegionCode } = await storage.get({
     currentRegionCode: '',
@@ -105,9 +114,6 @@ const fetchProxy = async ({ proxyUrl } = {}) => {
   console.group('[Proxy] Fetching proxy...')
 
   try {
-    // TODO: ================== REMOVE THIS  ==================
-    proxyUrl = proxyUrl.replace('app.', 'dev.')
-
     if (badProxies.length > 0) {
       const params = new URLSearchParams()
 
@@ -130,20 +136,33 @@ const fetchProxy = async ({ proxyUrl } = {}) => {
       fallbackReason,
     } = await response.json()
 
+    const fallbackProxyInUse = !!fallbackReason
+
+    console.warn(`Status: ${response.status}`)
+
     const proxyPingURI = `${pingHost}:${pingPort}`
     const proxyServerURI = `${server}:${port}`
 
     console.log(`Proxy server fetched: ${proxyServerURI}!`)
 
-    if (fallbackReason) {
+    if (fallbackProxyInUse) {
       console.warn(`Using fallback «${proxyServerURI}» for the reason: ${fallbackReason}`)
+    } else {
+      await storage.set({ proxyIsAlive: true })
+      await storage.remove([
+        'fallbackReason',
+        'fallbackProxyInUse',
+        'fallbackProxyError',
+      ])
     }
 
     await storage.set({
       proxyPingURI,
       proxyServerURI,
-      fallbackReason,
       currentProxyServer: server,
+      fallbackReason,
+      fallbackProxyInUse,
+      proxyLastFetchTs: Date.now(),
     })
   } catch (error) {
     console.error(
@@ -152,7 +171,12 @@ const fetchProxy = async ({ proxyUrl } = {}) => {
   }
   console.groupEnd()
 }
-
+/**
+ * Fetches database of blocked websites from registry.
+ * @param registryUrl Registry URL.
+ * @param specifics Specific attributes.
+ * @returns {Promise<void>} Resolves when the database is fetched.
+ */
 const fetchRegistry = async ({ registryUrl, specifics = {} } = {}) => {
   if (!registryUrl) {
     console.warn('[Registry] «registryUrl» is not present in config.')
@@ -188,6 +212,11 @@ const fetchRegistry = async ({ registryUrl, specifics = {} } = {}) => {
   console.groupEnd()
 }
 
+/**
+ * Fetches the ignored domains from the server.
+ * @param ignoreUrl {string} API endpoint for fetching ignored domains.
+ * @returns {Promise<void>} Resolves when the ignored domains are fetched.
+ */
 const fetchIgnore = async ({ ignoreUrl } = {}) => {
   if (!ignoreUrl) {
     console.warn('[Ignore] «ignoreUrl» is not present in config.')

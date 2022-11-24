@@ -59,6 +59,7 @@ import Browser from 'Background/webextension';
   const currentDomainHeader = document.getElementById('currentDomainHeader')
   const closeDetailsButtons = document.querySelectorAll('.btn-hide-details')
   const whatThisMeanButtons = document.querySelectorAll('.btn-what-this-mean')
+  const proxyConnectionIssuesButton = document.getElementById('proxyConnectionIssuesButton')
   const controlledByOtherExtensionsButton = document.getElementById('controlledByOtherExtensionsButton')
   const privateBrowsingPermissionsRequiredButton = document.getElementById('privateBrowsingPermissionsRequiredButton')
 
@@ -162,6 +163,10 @@ import Browser from 'Background/webextension';
       } else {
         popupProxyStatusOk.hidden = true
         popupProxyStatusError.hidden = false
+        proxyConnectionIssuesButton.hidden = false
+        proxyConnectionIssuesButton.addEventListener('click', async () => {
+          await Browser.tabs.create({ url: 'https://t.me/censortracker_feedback' })
+        })
       }
     } else {
       popupProxyDisabled.hidden = false

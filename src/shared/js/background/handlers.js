@@ -76,7 +76,7 @@ export const handleStartup = async () => {
   }
 
   await Task.schedule([
-    { name: 'setProxy', minutes: 10 },
+    { name: 'setProxy', minutes: 8 },
     { name: 'removeBadProxies', minutes: 5 },
   ])
   console.groupEnd()
@@ -211,7 +211,7 @@ export const handleInstalled = async ({ reason }) => {
 
   if (UPDATED || INSTALLED) {
     await Task.schedule([
-      { name: 'setProxy', minutes: 10 },
+      { name: 'setProxy', minutes: 8 },
       { name: 'removeBadProxies', minutes: 5 },
     ])
   }
@@ -268,13 +268,27 @@ export const handleProxyError = async ({ error }) => {
   const proxyErrors = [
     // Firefox
     'NS_ERROR_UNKNOWN_PROXY_HOST',
-
     // Chrome
     'ERR_PROXY_CONNECTION_FAILED',
   ]
 
   if (proxyErrors.includes(error)) {
-    const { currentProxyServer } = await storage.get('currentProxyServer')
+    const {
+      currentProxyServer,
+      fallbackProxyInUse = false,
+    } = await storage.get([
+      'currentProxyServer',
+      'fallbackProxyInUse',
+    ])
+
+    if (fallbackProxyInUse) {
+      await storage.set({
+        proxyIsAlive: false,
+        fallbackProxyError: error,
+      })
+      console.warn('Fallback proxy is intermittent, interrupting auto fetch...')
+      return
+    }
 
     console.error(`Error on connection to ${currentProxyServer}: ${error}`)
 
@@ -288,6 +302,7 @@ export const handleProxyError = async ({ error }) => {
 
       Browser.tabs.query({ active: true, lastFocusedWindow: true })
         .then(async (tab) => {
+          console.warn('Requesting new proxy server...')
           await server.synchronize({
             syncIgnore: false,
             syncRegistry: false,

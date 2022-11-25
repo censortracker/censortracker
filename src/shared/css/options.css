@@ -509,8 +509,8 @@ a {
   font-size: 14px;
   font-weight: 400;
   height: calc(100vh - 300px) !important;
-  min-height: 400px;
-  max-height: 700px !important;
+  max-height: 70% !important;
+  min-height: 25% !important;
 }
 
 .CodeMirror .CodeMirror-gutters {

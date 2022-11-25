@@ -82,7 +82,11 @@ import ProxyManager from 'Background/proxy'
     } else {
       proxyOptionsInputs.classList.add('hidden')
       await Browser.storage.local.set({ useCustomChecked: false })
-      await Browser.storage.local.remove(['customProxyHost', 'customProxyPort', 'customProxyServerURI'])
+      await Browser.storage.local.remove([
+        'customProxyHost',
+        'customProxyPort',
+        'customProxyServerURI',
+      ])
       await ProxyManager.setProxy()
     }
   })

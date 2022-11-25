@@ -889,3 +889,7 @@ kbd {
 .page-main-title {
   margin-bottom: 28px;
 }
+
+#saveChanges {
+  margin-top: 10px;
+}

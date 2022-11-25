@@ -46,7 +46,7 @@ import * as server from 'Background/server'
       })
 
       optionsRegistryProxyingListButton.addEventListener('click', (event) => {
-        window.location.href = 'proxied-websites-editor.html'
+        window.location.href = 'proxy-list.html'
       })
       optionsRegistryIsEmptyWarning.classList.remove('hidden')
     }

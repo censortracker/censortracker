@@ -90,8 +90,7 @@ const webConfig = {
     'advanced-options': './src/shared/js/pages/advanced-options.js',
     'proxy-options': './src/shared/js/pages/proxy-options.js',
     'registry-options': './src/shared/js/pages/registry-options.js',
-    'ignore-editor': './src/shared/js/pages/ignore-editor.js',
-    'proxied-websites-editor': './src/shared/js/pages/proxied-websites-editor.js',
+    'rules-editor': './src/shared/js/pages/rules-editor.js',
     'translator': './src/shared/js/pages/translator.js',
     'controlled': `./src/shared/js/pages/controlled.js`
   },
@@ -194,17 +193,17 @@ const webConfig = {
       meta: contentSecurityPolicy,
     }),
     new HTMLWebpackPlugin({
-      filename: 'ignore-editor.html',
-      template: 'src/shared/pages/ignore-editor.html',
+      filename: 'ignore-list.html',
+      template: 'src/shared/pages/ignore-list.html',
       inject: true,
-      chunks: ['ignore-editor', 'translator'],
+      chunks: ['rules-editor', 'translator'],
       meta: contentSecurityPolicy,
     }),
     new HTMLWebpackPlugin({
-      filename: 'proxied-websites-editor.html',
-      template: 'src/shared/pages/proxied-websites-editor.html',
+      filename: 'proxy-list.html',
+      template: 'src/shared/pages/proxy-list.html',
       inject: true,
-      chunks: ['proxied-websites-editor', 'translator'],
+      chunks: ['rules-editor', 'translator'],
       meta: contentSecurityPolicy,
     }),
     new HTMLWebpackPlugin({

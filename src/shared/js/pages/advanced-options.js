@@ -23,8 +23,9 @@ import Settings from 'Background/settings'
     })
 
   parentalControlCheckbox.addEventListener('change', async (event) => {
-    await Browser.storage.local.set({ parentalControl: event.target.checked })
-    console.log(`Parental control: ${event.target.checked}`)
+    await Browser.storage.local.set({
+      parentalControl: event.target.checked,
+    })
   }, false)
 
   const togglePopup = (id) => {

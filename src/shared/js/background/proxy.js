@@ -1,11 +1,15 @@
 import Registry from './registry'
-import * as storage from './storage'
 import Browser from './webextension'
 
 class ProxyManager {
   async getProxyServerURI () {
-    const { proxyServerURI } = await storage.get('proxyServerURI')
-    const { customProxyServerURI } = await storage.get(['customProxyServerURI'])
+    const {
+      proxyServerURI,
+      customProxyServerURI,
+    } = await Browser.storage.local.get([
+      'proxyServerURI',
+      'customProxyServerURI',
+    ])
 
     if (customProxyServerURI) {
       console.warn('Using custom proxy for PAC.')
@@ -21,10 +25,10 @@ class ProxyManager {
 
       if (!isAllowedIncognitoAccess) {
         await Browser.browserAction.setBadgeText({ text: '✕' })
-        await storage.set({ privateBrowsingPermissionsRequired: true })
+        await Browser.storage.local.set({
+          privateBrowsingPermissionsRequired: true,
+        })
         console.info('Private browsing permissions requested.')
-      } else {
-        console.log('Private browsing permissions already granted.')
       }
     }
   }
@@ -32,7 +36,9 @@ class ProxyManager {
   async grantIncognitoAccess () {
     if (Browser.IS_FIREFOX) {
       await Browser.browserAction.setBadgeText({ text: '' })
-      await storage.set({ privateBrowsingPermissionsRequired: false })
+      await Browser.storage.local.set({
+        privateBrowsingPermissionsRequired: false,
+      })
       console.info('Private browsing permissions granted.')
     }
   }
@@ -92,7 +98,7 @@ class ProxyManager {
 
     const proxyServerURI = await this.getProxyServerURI()
 
-    await storage.set({ proxyServerURI })
+    await Browser.storage.local.set({ proxyServerURI })
 
     domains.sort()
     return `
@@ -150,13 +156,13 @@ class ProxyManager {
 
   async alive () {
     const { proxyIsAlive } =
-      await storage.get({ proxyIsAlive: true })
+      await Browser.storage.local.get({ proxyIsAlive: true })
 
     return proxyIsAlive
   }
 
   async ping () {
-    const { proxyPingURI } = await storage.get('proxyPingURI')
+    const { proxyPingURI } = await Browser.storage.local.get('proxyPingURI')
 
     fetch(`http://${proxyPingURI}`, {
       method: 'POST',
@@ -173,19 +179,19 @@ class ProxyManager {
   }
 
   async isEnabled () {
-    const { useProxy } = await storage.get({ useProxy: true })
+    const { useProxy } = await Browser.storage.local.get({ useProxy: true })
 
     return useProxy
   }
 
   async enableProxy () {
     console.log('Proxying enabled.')
-    await storage.set({ useProxy: true, proxyIsAlive: true })
+    await Browser.storage.local.set({ useProxy: true, proxyIsAlive: true })
   }
 
   async disableProxy () {
     console.warn('Proxying disabled.')
-    await storage.set({ useProxy: false })
+    await Browser.storage.local.set({ useProxy: false })
   }
 
   async controlledByOtherExtensions () {
@@ -213,11 +219,12 @@ class ProxyManager {
   }
 
   async removeBadProxies () {
-    await storage.set({ badProxies: [] })
+    await Browser.storage.local.set({ badProxies: [] })
   }
 
   async getBadProxies () {
-    const { badProxies } = await storage.get({ badProxies: [] })
+    const { badProxies } =
+      await Browser.storage.local.get({ badProxies: [] })
 
     return badProxies
   }

@@ -894,3 +894,7 @@ kbd {
 #saveChanges {
   margin-top: 10px;
 }
+
+.option-link-text {
+  cursor: pointer;
+}

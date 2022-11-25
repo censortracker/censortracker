@@ -1,20 +1,20 @@
+import Browser from './browser-api'
 import Ignore from './ignore'
 import ProxyManager from './proxy'
 import Registry from './registry'
 import * as server from './server'
 import Settings from './settings'
-import * as storage from './storage'
 import Task from './task'
 import * as utilities from './utilities'
-import Browser from './webextension'
 
 export const handleOnConnect = (port) => {
   if (port.name === 'censortracker') {
     port.onMessage.addListener((message) => {
       if (message.parentalControl === '?') {
-        storage.get({ parentalControl: false }).then(({ parentalControl }) => {
-          port.postMessage({ parentalControl })
-        })
+        Browser.storage.local.get({ parentalControl: false })
+          .then(({ parentalControl }) => {
+            port.postMessage({ parentalControl })
+          })
       }
     })
   }
@@ -22,7 +22,7 @@ export const handleOnConnect = (port) => {
 
 export const warnAboutInformationDisseminationOrganizer = async (url) => {
   const hostname = utilities.extractDomainFromUrl(url)
-  const { notifiedHosts, showNotifications } = await storage.get({
+  const { notifiedHosts, showNotifications } = await Browser.storage.local.get({
     notifiedHosts: [],
     showNotifications: true,
   })
@@ -37,7 +37,7 @@ export const warnAboutInformationDisseminationOrganizer = async (url) => {
 
     try {
       notifiedHosts.push(hostname)
-      await storage.set({ notifiedHosts })
+      await Browser.storage.local.set({ notifiedHosts })
     } catch (error) {
       console.error(error)
     }
@@ -276,13 +276,13 @@ export const handleProxyError = async ({ error }) => {
     const {
       currentProxyServer,
       fallbackProxyInUse = false,
-    } = await storage.get([
+    } = await Browser.storage.local.get([
       'currentProxyServer',
       'fallbackProxyInUse',
     ])
 
     if (fallbackProxyInUse) {
-      await storage.set({
+      await Browser.storage.local.set({
         proxyIsAlive: false,
         fallbackProxyError: error,
       })
@@ -293,11 +293,11 @@ export const handleProxyError = async ({ error }) => {
     console.error(`Error on connection to ${currentProxyServer}: ${error}`)
 
     if (currentProxyServer) {
-      const { badProxies } = await storage.get({ badProxies: [] })
+      const { badProxies } = await Browser.storage.local.get({ badProxies: [] })
 
       if (!badProxies.includes(currentProxyServer)) {
         badProxies.push(currentProxyServer)
-        await storage.set({ badProxies })
+        await Browser.storage.local.set({ badProxies })
       }
 
       Browser.tabs.query({ active: true, lastFocusedWindow: true })

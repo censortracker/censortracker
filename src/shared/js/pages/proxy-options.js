@@ -1,5 +1,5 @@
+import Browser from 'Background/browser-api'
 import ProxyManager from 'Background/proxy'
-import * as storage from 'Background/storage'
 
 (async () => {
   const proxyingEnabled = await ProxyManager.isEnabled()
@@ -30,7 +30,7 @@ import * as storage from 'Background/storage'
   proxyCustomOptions.hidden = !proxyingEnabled
 
   const { customProxyHost, customProxyPort, useCustomChecked } =
-    await storage.get(['customProxyHost', 'customProxyPort', 'useCustomChecked'])
+    await Browser.storage.local.get(['customProxyHost', 'customProxyPort', 'useCustomChecked'])
 
   if (useCustomChecked) {
     proxyOptionsInputs.hidden = false
@@ -56,7 +56,7 @@ import * as storage from 'Background/storage'
 
     if ((event.ctrlKey && event.key === 's') || event.keyCode === 13) {
       if (host && isPort(port)) {
-        await storage.set({
+        await Browser.storage.local.set({
           useCustomChecked: true,
           customProxyPort: port,
           customProxyHost: host,
@@ -81,8 +81,8 @@ import * as storage from 'Background/storage'
       await ProxyManager.setProxy()
     } else {
       proxyOptionsInputs.classList.add('hidden')
-      await storage.set({ useCustomChecked: false })
-      await storage.remove(['customProxyHost', 'customProxyPort', 'customProxyServerURI'])
+      await Browser.storage.local.set({ useCustomChecked: false })
+      await Browser.storage.local.remove(['customProxyHost', 'customProxyPort', 'customProxyServerURI'])
       await ProxyManager.setProxy()
     }
   })

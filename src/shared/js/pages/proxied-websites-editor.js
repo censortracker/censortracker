@@ -4,14 +4,14 @@ import 'codemirror/addon/search/searchcursor'
 import 'codemirror/addon/display/autorefresh'
 import 'codemirror/lib/codemirror.css'
 
-import * as storage from 'Background/storage'
+import Browser from 'Background/browser-api'
 import { parseURLStrings } from 'Background/utilities'
 import CodeMirror from 'codemirror'
 
 (async () => {
   const searchInput = document.getElementById('search')
   const domainsList = document.getElementById('domainsList')
-  const { customProxiedDomains } = await storage.get({
+  const { customProxiedDomains } = await Browser.storage.local.get({
     customProxiedDomains: [],
   })
 
@@ -32,7 +32,7 @@ import CodeMirror from 'codemirror'
     if (event.keyCode === 13) {
       const urls = editor.getValue().split('\n')
 
-      await storage.set({
+      await Browser.storage.local.set({
         customProxiedDomains: parseURLStrings(urls),
       })
       console.warn('Custom proxy list updated!')

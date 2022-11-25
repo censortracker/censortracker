@@ -1,7 +1,7 @@
+import Browser from 'Background/browser-api'
 import ProxyManager from 'Background/proxy'
 import Registry from 'Background/registry'
 import * as server from 'Background/server'
-import * as storage from 'Background/storage'
 
 (async () => {
   const select = document.querySelector('.select')
@@ -10,7 +10,7 @@ import * as storage from 'Background/storage'
   const currentOption = document.querySelector('#select-toggle')
   const useRegistryCheckbox = document.querySelector('#useRegistryCheckbox')
 
-  storage.get({
+  Browser.storage.local.get({
     useRegistry: false,
     currentRegionName: '',
   }).then(({ useRegistry, currentRegionName }) => {
@@ -35,11 +35,11 @@ import * as storage from 'Background/storage'
       await Registry.clearRegistry()
       await Registry.disableRegistry()
       await ProxyManager.removeProxy()
-      await storage.set({ currentRegionName: '' })
+      await Browser.storage.local.set({ currentRegionName: '' })
     }
 
     await ProxyManager.setProxy()
-    await storage.set({ useRegistry })
+    await Browser.storage.local.set({ useRegistry })
   }, false)
 
   document.addEventListener('click', (event) => {
@@ -66,7 +66,7 @@ import * as storage from 'Background/storage'
       currentOption.textContent = countryName
       currentOption.dataset.i18nKey = `country${countryCode}`
 
-      await storage.set({
+      await Browser.storage.local.set({
         currentRegionName: countryName,
         currentRegionCode: countryAutoDetectionEnabled ? '' : countryCode.toUpperCase(),
       })

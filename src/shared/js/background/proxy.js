@@ -1,5 +1,5 @@
+import Browser from './browser-api'
 import Registry from './registry'
-import Browser from './webextension'
 
 class ProxyManager {
   async getProxyServerURI () {
@@ -39,7 +39,6 @@ class ProxyManager {
       await Browser.storage.local.set({
         privateBrowsingPermissionsRequired: false,
       })
-      console.info('Private browsing permissions granted.')
     }
   }
 

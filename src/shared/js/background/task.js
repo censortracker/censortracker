@@ -1,4 +1,4 @@
-import Browser from './webextension'
+import Browser from './browser-api'
 
 class Task {
   /**

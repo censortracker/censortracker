@@ -1,4 +1,4 @@
-import * as storage from './storage'
+import Browser from './browser-api'
 import {
   extractDomainFromUrl,
 } from './utilities'
@@ -14,7 +14,7 @@ class Registry {
       useRegistry,
       ignoredHosts,
       customProxiedDomains,
-    } = await storage.get({
+    } = await Browser.storage.local.get({
       domains: [],
       useRegistry: true,
       ignoredHosts: [],
@@ -50,11 +50,11 @@ class Registry {
   async add (url) {
     const domain = extractDomainFromUrl(url)
     const { customProxiedDomains } =
-      await storage.get({ customProxiedDomains: [] })
+      await Browser.storage.local.get({ customProxiedDomains: [] })
 
     if (!customProxiedDomains.includes(domain)) {
       customProxiedDomains.push(domain)
-      await storage.set({ customProxiedDomains })
+      await Browser.storage.local.set({ customProxiedDomains })
       console.warn(`${domain} added to the custom registry.`)
     }
     return true
@@ -63,13 +63,13 @@ class Registry {
   async remove (url) {
     const domain = extractDomainFromUrl(url)
     const { customProxiedDomains } =
-      await storage.get({ customProxiedDomains: [] })
+      await Browser.storage.local.get({ customProxiedDomains: [] })
 
     if (customProxiedDomains.includes(domain)) {
       const index = customProxiedDomains.indexOf(domain)
 
       customProxiedDomains.splice(index, 1)
-      await storage.set({ customProxiedDomains })
+      await Browser.storage.local.set({ customProxiedDomains })
       console.warn(`${domain} removed from custom registry`)
     }
     return true
@@ -84,7 +84,7 @@ class Registry {
       domains,
       ignoredHosts,
       customProxiedDomains,
-    } = await storage.get({
+    } = await Browser.storage.local.get({
       domains: [],
       ignoredHosts: [],
       customProxiedDomains: [],
@@ -94,13 +94,8 @@ class Registry {
       return false
     }
 
-    if (
-      domains.includes(domain) ||
-      customProxiedDomains.includes(domain)
-    ) {
-      return true
-    }
-    return false
+    return !!(domains.includes(domain) ||
+      customProxiedDomains.includes(domain))
   }
 
   /**
@@ -109,7 +104,8 @@ class Registry {
    */
   async retrieveDisseminator (url) {
     const domain = extractDomainFromUrl(url)
-    const { disseminators } = await storage.get({ disseminators: [] })
+    const { disseminators } =
+      await Browser.storage.local.get({ disseminators: [] })
 
     const dataObject = disseminators.find(
       ({ url: innerUrl }) => domain === innerUrl,
@@ -122,15 +118,15 @@ class Registry {
   }
 
   async enableRegistry () {
-    await storage.set({ useRegistry: true })
+    await Browser.storage.local.set({ useRegistry: true })
   }
 
   async disableRegistry () {
-    await storage.set({ useRegistry: false })
+    await Browser.storage.local.set({ useRegistry: false })
   }
 
   async clearRegistry () {
-    await storage.set({ domains: [] })
+    await Browser.storage.local.set({ domains: [] })
   }
 }
 

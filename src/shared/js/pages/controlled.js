@@ -1,6 +1,6 @@
+import Browser from 'Background/browser-api'
 import ProxyManager from 'Background/proxy'
 import { translateDocument } from 'Background/utilities'
-import Browser from 'Background/webextension'
 
 (async () => {
   const i18nPageProps = {}

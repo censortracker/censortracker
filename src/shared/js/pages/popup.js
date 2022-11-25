@@ -1,14 +1,13 @@
+import Browser from 'Background/browser-api'
 import Ignore from 'Background/ignore'
 import ProxyManager from 'Background/proxy'
 import Registry from 'Background/registry'
 import Settings from 'Background/settings'
-import * as storage from 'Background/storage'
 import {
   extractHostnameFromUrl,
   i18nGetMessage,
   isValidURL,
 } from 'Background/utilities'
-import Browser from 'Background/webextension';
 
 (async () => {
   // TODO: Refactor this
@@ -150,7 +149,7 @@ import Browser from 'Background/webextension';
   const proxyingEnabled = await ProxyManager.isEnabled()
   const extensionEnabled = await Settings.extensionEnabled()
 
-  storage.get('backendIsIntermittent')
+  Browser.storage.local.get('backendIsIntermittent')
     .then(({ backendIsIntermittent = false }) => {
       popupBackedStatusError.hidden = !backendIsIntermittent
     })
@@ -210,7 +209,7 @@ import Browser from 'Background/webextension';
   if (extensionEnabled && Browser.IS_FIREFOX) {
     Browser.extension.isAllowedIncognitoAccess()
       .then((allowedIncognitoAccess) => {
-        storage.get({ privateBrowsingPermissionsRequired: false })
+        Browser.storage.local.get({ privateBrowsingPermissionsRequired: false })
           .then(({ privateBrowsingPermissionsRequired }) => {
             if (!allowedIncognitoAccess || privateBrowsingPermissionsRequired) {
               privateBrowsingPermissionsRequiredButton.hidden = false

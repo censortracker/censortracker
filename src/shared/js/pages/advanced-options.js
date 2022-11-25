@@ -1,8 +1,7 @@
+import Browser from 'Background/browser-api'
 import ProxyManager from 'Background/proxy'
 import * as server from 'Background/server'
 import Settings from 'Background/settings'
-import * as storage from 'Background/storage'
-import Browser from 'Background/webextension'
 
 (async () => {
   const debugInfoJSON = document.getElementById('debugInfoJSON')
@@ -18,13 +17,13 @@ import Browser from 'Background/webextension'
   const resetSettingsToDefaultBtn = document.getElementById('resetSettingsToDefault')
   const parentalControlCheckbox = document.getElementById('parentalControlCheckbox')
 
-  storage.get({ parentalControl: false })
+  Browser.storage.local.get({ parentalControl: false })
     .then(({ parentalControl }) => {
       parentalControlCheckbox.checked = parentalControl
     })
 
   parentalControlCheckbox.addEventListener('change', async (event) => {
-    await storage.set({ parentalControl: event.target.checked })
+    await Browser.storage.local.set({ parentalControl: event.target.checked })
     console.log(`Parental control: ${event.target.checked}`)
   }, false)
 
@@ -105,7 +104,7 @@ import Browser from 'Background/webextension'
       fallbackProxyInUse = false,
       fallbackProxyError,
       proxyLastFetchTs,
-    } = await storage.get([
+    } = await Browser.storage.local.get([
       'localConfig',
       'fallbackReason',
       'fallbackProxyInUse',

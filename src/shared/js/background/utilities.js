@@ -1,7 +1,7 @@
 import { getDomain, getHostname } from 'tldts'
 import isURL from 'validator/lib/isURL'
 
-import Browser from './webextension'
+import Browser from './browser-api'
 
 /**
  * Checks if passed value is a extension URL.

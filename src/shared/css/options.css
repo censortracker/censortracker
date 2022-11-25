@@ -509,7 +509,7 @@ a {
   font-size: 14px;
   font-weight: 400;
   height: calc(100vh - 300px) !important;
-  max-height: 70% !important;
+  max-height: 60% !important;
   min-height: 25% !important;
 }
 

@@ -315,6 +315,9 @@
   "proxiedWebsitesTitle": {
     "message": "Proxying List"
   },
+  "proxyConnectionIssuesMessage": {
+    "message": "A network problem has been detected. Please go to our support chat and tell us about the problem, we will try to solve it →"
+  },
   "proxyDisabledPageTitle": {
     "message": "Proxying Disabled"
   },
@@ -353,6 +356,9 @@
   },
   "resetToDefaultTitle": {
     "message": "Reset to default"
+  },
+  "saveChanges": {
+    "message": "Save changes"
   },
   "shareFeedback": {
     "message": "Got issues or suggestions? Let us know!"
@@ -428,11 +434,5 @@
   },
   "youCanCloseThisWindow": {
     "message": "You can close this window"
-  },
-  "proxyConnectionIssuesMessage": {
-    "message": "A network problem has been detected. Please go to our support chat and tell us about the problem, we will try to solve it →"
-  },
-  "saveChanges": {
-    "message": "Save changes"
   }
 }

@@ -315,6 +315,9 @@
   "proxiedWebsitesTitle": {
     "message": "Проксируемые сайты"
   },
+  "proxyConnectionIssuesMessage": {
+    "message": "Обнаружена проблема с сетью. Пожалуйста, обратитесь в чат поддержки и расскажите нам о проблеме, мы постараемся ее решить →"
+  },
   "proxyDisabledPageTitle": {
     "message": "Проксирование Отключено"
   },
@@ -353,6 +356,9 @@
   },
   "resetToDefaultTitle": {
     "message": "Сбросить все настройки"
+  },
+  "saveChanges": {
+    "message": "Сохранить изменения"
   },
   "shareFeedback": {
     "message": "Есть вопросы или предложения? Дайте нам знать!"
@@ -428,11 +434,5 @@
   },
   "youCanCloseThisWindow": {
     "message": "Можно закрыть это окно"
-  },
-  "proxyConnectionIssuesMessage": {
-    "message": "Обнаружена проблема с сетью. Пожалуйста, обратитесь в чат поддержки и расскажите нам о проблеме, мы постараемся ее решить →"
-  },
-  "saveChanges": {
-    "message": "Сохранить изменения"
   }
 }

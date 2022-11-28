@@ -107,6 +107,9 @@
   "countryUA": {
     "message": "Ukraine"
   },
+  "countryUZ": {
+    "message": "Uzbekistan"
+  },
   "debugInfoTitle": {
     "message": "Debug Info"
   },

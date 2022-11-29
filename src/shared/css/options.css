@@ -809,7 +809,7 @@ kbd {
   left: 0;
   right: 0;
   border: 1px solid #C4C2BF;
-  max-height: 10rem;
+  max-height: 14rem;
   overflow-y: auto;
   border-radius: 4px;
   z-index: 2;

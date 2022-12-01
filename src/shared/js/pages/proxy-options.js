@@ -11,7 +11,9 @@ import ProxyManager from 'Background/proxy'
   const proxyOptionsInputs = document.getElementById('proxyOptionsInputs')
   const useCustomProxyRadioButton = document.getElementById('useCustomProxy')
   const useDefaultProxyRadioButton = document.getElementById('useDefaultProxy')
-  const proxyCustomOptionsRadioGroup = document.getElementById('proxyCustomOptionsRadioGroup')
+  const proxyCustomOptionsRadioGroup = document.getElementById(
+    'proxyCustomOptionsRadioGroup',
+  )
 
   const isPort = (value) => {
     try {
@@ -30,7 +32,11 @@ import ProxyManager from 'Background/proxy'
   proxyCustomOptions.hidden = !proxyingEnabled
 
   const { customProxyHost, customProxyPort, useCustomChecked } =
-    await Browser.storage.local.get(['customProxyHost', 'customProxyPort', 'useCustomChecked'])
+    await Browser.storage.local.get([
+      'customProxyHost',
+      'customProxyPort',
+      'useCustomChecked',
+    ])
 
   if (useCustomChecked) {
     proxyOptionsInputs.hidden = false

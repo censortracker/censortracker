@@ -65,9 +65,10 @@ import * as server from 'Background/server'
   if (Browser.IS_FIREFOX) {
     const allowedIncognitoAccess =
       await browser.extension.isAllowedIncognitoAccess()
-    const { privateBrowsingPermissionsRequired } = await Browser.storage.local.get({
-      privateBrowsingPermissionsRequired: false,
-    })
+    const { privateBrowsingPermissionsRequired } =
+      await Browser.storage.local.get({
+        privateBrowsingPermissionsRequired: false,
+      })
 
     if (grantPrivateBrowsingPermissionsButton) {
       grantPrivateBrowsingPermissionsButton.hidden = !allowedIncognitoAccess

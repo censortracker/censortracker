@@ -1,82 +1,31 @@
+import Browser from 'Background/browser-api'
 import ProxyManager from 'Background/proxy'
-import Registry from 'Background/registry'
+import * as server from 'Background/server'
 import Settings from 'Background/settings'
-import * as storage from 'Background/storage'
-import { choice } from 'Background/utilities'
-import Browser from 'Background/webextension'
 
 (async () => {
-  const debugInfoOkBtn = document.getElementById('debugInfoOk')
-  const showDebugInfo = document.getElementById('showDebugInfo')
+  const debugInfoJSON = document.getElementById('debugInfoJSON')
+  const showDebugInfoBtn = document.getElementById('showDebugInfo')
   const confirmResetBtn = document.getElementById('confirmReset')
   const closeDebugInfoBtn = document.getElementById('closeDebugInfo')
+  const copyDebugInfoBtn = document.getElementById('copyDebugInfoBtn')
   const closePopupResetBtn = document.getElementById('closePopupReset')
   const completedConfirmBtn = document.getElementById('completedConfirm')
   const cancelPopupResetBtn = document.getElementById('cancelPopupReset')
   const closePopupConfirmBtn = document.getElementById('closePopupConfirm')
   const updateLocalRegistryBtn = document.getElementById('updateLocalRegistry')
-  const emergencyConfigCheckbox = document.getElementById('emergencyConfigCheckbox')
   const resetSettingsToDefaultBtn = document.getElementById('resetSettingsToDefault')
   const parentalControlCheckbox = document.getElementById('parentalControlCheckbox')
 
-  const fetchEmergencyAPIEndpoints = async () => {
-    const apiURL = choice([
-      'https://censortracker.netlify.app/',
-      'https://roskomsvoboda.github.io/ctconf/endpoints.json',
-    ])
-
-    try {
-      const response = await fetch(apiURL)
-
-      return await response.json()
-    } catch (error) {
-      console.error('Error on fetching emergency API endpoints:', error)
-      return {}
-    }
-  }
-
-  storage.get({
-    emergencyMode: false,
-    parentalControl: false,
-  }).then(({ emergencyMode, parentalControl }) => {
-    emergencyConfigCheckbox.checked = emergencyMode
-    parentalControlCheckbox.checked = parentalControl
-  })
-
-  emergencyConfigCheckbox.addEventListener('change', async (event) => {
-    const emergencyMode = event.target.checked
-
-    if (emergencyMode) {
-      const {
-        proxy: proxyAPIEndpoint,
-        ignore: ignoreAPIEndpoint,
-        registry: registryAPIEndpoint,
-      } = await fetchEmergencyAPIEndpoints()
-
-      if (ignoreAPIEndpoint && proxyAPIEndpoint && registryAPIEndpoint) {
-        await storage.set({
-          emergencyMode: true,
-          proxyAPIEndpoint,
-          ignoreAPIEndpoint,
-          registryAPIEndpoint,
-        })
-      } else {
-        console.error('Failed to fetch emergency API endpoints')
-      }
-    } else {
-      await storage.set({ emergencyMode: false })
-      await storage.remove([
-        'proxyAPIEndpoint',
-        'ignoreAPIEndpoint',
-        'registryAPIEndpoint',
-      ])
-    }
-    console.log(`Emergency mode: ${emergencyMode}`)
-  }, false)
+  Browser.storage.local.get({ parentalControl: false })
+    .then(({ parentalControl }) => {
+      parentalControlCheckbox.checked = parentalControl
+    })
 
   parentalControlCheckbox.addEventListener('change', async (event) => {
-    await storage.set({ parentalControl: event.target.checked })
-    console.log(`Parental control: ${event.target.checked}`)
+    await Browser.storage.local.set({
+      parentalControl: event.target.checked,
+    })
   }, false)
 
   const togglePopup = (id) => {
@@ -94,8 +43,14 @@ import Browser from 'Background/webextension'
     }
   }
 
-  debugInfoOkBtn.addEventListener('click', (event) => {
-    togglePopup('popupDebugInformation')
+  copyDebugInfoBtn.addEventListener('click', (event) => {
+    debugInfoJSON.select()
+    document.execCommand('copy')
+    event.target.innerHTML = '&check;'
+
+    setTimeout(() => {
+      togglePopup('popupDebugInformation')
+    }, 500)
   })
   closeDebugInfoBtn.addEventListener('click', (event) => {
     togglePopup('popupDebugInformation')
@@ -118,13 +73,17 @@ import Browser from 'Background/webextension'
 
   updateLocalRegistryBtn.addEventListener('click', async (event) => {
     togglePopup('popupCompletedSuccessfully')
-    const synced = await Registry.sync()
+    ProxyManager.isEnabled().then(async (proxyingEnabled) => {
+      await server.synchronize()
 
-    if (synced) {
-      await ProxyManager.setProxy()
-    } else {
-      console.error('Error on syncing database')
-    }
+      if (proxyingEnabled) {
+        await ProxyManager.removeBadProxies()
+        await ProxyManager.setProxy()
+        await ProxyManager.ping()
+      } else {
+        console.warn('Registry updated, but proxying is disabled.')
+      }
+    })
   })
 
   document.addEventListener('keydown', async (event) => {
@@ -135,31 +94,58 @@ import Browser from 'Background/webextension'
     }
   })
 
-  showDebugInfo.addEventListener('click', async (event) => {
-    const debugInfoJSON = document.getElementById('debugInfoJSON')
+  showDebugInfoBtn.addEventListener('click', async (event) => {
     const thisExtension = await Browser.management.getSelf()
-    const currentConfig = await Registry.getCurrentConfig()
     const extensionsInfo = await Browser.management.getAll()
+    const { version: currentVersion } = Browser.runtime.getManifest()
+
+    const {
+      localConfig = {},
+      fallbackReason,
+      fallbackProxyInUse = false,
+      fallbackProxyError,
+      proxyLastFetchTs,
+    } = await Browser.storage.local.get([
+      'localConfig',
+      'fallbackReason',
+      'fallbackProxyInUse',
+      'fallbackProxyError',
+      'proxyLastFetchTs',
+    ])
 
     if (extensionsInfo.length > 0) {
-      currentConfig.conflictingExtensions = extensionsInfo
+      localConfig.conflictingExtensions = extensionsInfo
         .filter(({ name }) => name !== thisExtension.name)
-        .filter(({ enabled, permissions }) => permissions.includes('proxy') && enabled)
+        .filter(({ enabled, permissions = [] }) =>
+          permissions.includes('proxy') && enabled)
         .map(({ name }) => name.split(' - ')[0])
     }
 
-    currentConfig.currentProxyURI = await ProxyManager.getProxyServerURI()
-    currentConfig.proxyControlled = await ProxyManager.controlledByThisExtension()
-    debugInfoJSON.textContent = JSON.stringify(currentConfig, null, 2)
+    localConfig.version = currentVersion
+
+    if (fallbackProxyInUse) {
+      localConfig.fallbackReason = fallbackReason
+      localConfig.fallbackProxyError = fallbackProxyError
+      localConfig.fallbackProxyInUse = fallbackProxyInUse
+    }
+
+    localConfig.proxyLastFetchTs = proxyLastFetchTs
+    localConfig.currentProxyURI = await ProxyManager.getProxyServerURI()
+    localConfig.proxyControlled = await ProxyManager.controlledByThisExtension()
+    debugInfoJSON.textContent = JSON.stringify(localConfig, null, 2)
     togglePopup('popupDebugInformation')
   })
 
   confirmResetBtn.addEventListener('click', async (event) => {
     togglePopup('popupConfirmReset')
     togglePopup('popupCompletedSuccessfully')
-    await Registry.sync()
-    await ProxyManager.setProxy()
+    await server.synchronize()
     await Settings.enableExtension()
+    await Settings.enableNotifications()
+    await Settings.disableParentalControl()
+    await ProxyManager.removeBadProxies()
+    await ProxyManager.setProxy()
+    await ProxyManager.ping()
     console.warn('Censor Tracker has been reset to default settings.')
   })
 })()

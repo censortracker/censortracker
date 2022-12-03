@@ -11,7 +11,8 @@ import ProxyManager from 'Background/proxy'
     lastFocusedWindow: true,
   })
   const popupUrl = browser.runtime.getURL('popup.html')
-  const allowedIncognitoAccess = await browser.extension.isAllowedIncognitoAccess()
+  const allowedIncognitoAccess =
+    await browser.extension.isAllowedIncognitoAccess()
 
   grantPrivateBrowsingPermissionsButton.hidden = !allowedIncognitoAccess
 

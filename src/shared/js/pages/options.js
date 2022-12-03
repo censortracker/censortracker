@@ -1,9 +1,11 @@
+import Browser from 'Background/browser-api'
 import ProxyManager from 'Background/proxy'
 import Registry from 'Background/registry'
-import * as storage from 'Background/storage'
-import Browser from 'Background/webextension';
+import * as server from 'Background/server'
 
 (async () => {
+  window.server = server
+
   const proxyingEnabled = await ProxyManager.isEnabled()
   const version = document.getElementById('version')
   const proxyStatus = document.getElementById('proxyStatus')
@@ -30,7 +32,7 @@ import Browser from 'Background/webextension';
   )
   const backendIsIntermittentAlert = document.getElementById('backendIsIntermittentAlert')
 
-  storage.get('backendIsIntermittent')
+  Browser.storage.local.get('backendIsIntermittent')
     .then(({ backendIsIntermittent = false }) => {
       if (backendIsIntermittentAlert) {
         backendIsIntermittentAlert.hidden = !backendIsIntermittent
@@ -44,7 +46,7 @@ import Browser from 'Background/webextension';
       })
 
       optionsRegistryProxyingListButton.addEventListener('click', (event) => {
-        window.location.href = 'proxied-websites-editor.html'
+        window.location.href = 'proxy-list.html'
       })
       optionsRegistryIsEmptyWarning.classList.remove('hidden')
     }
@@ -63,9 +65,10 @@ import Browser from 'Background/webextension';
   if (Browser.IS_FIREFOX) {
     const allowedIncognitoAccess =
       await browser.extension.isAllowedIncognitoAccess()
-    const { privateBrowsingPermissionsRequired } = await storage.get({
-      privateBrowsingPermissionsRequired: false,
-    })
+    const { privateBrowsingPermissionsRequired } =
+      await Browser.storage.local.get({
+        privateBrowsingPermissionsRequired: false,
+      })
 
     if (grantPrivateBrowsingPermissionsButton) {
       grantPrivateBrowsingPermissionsButton.hidden = !allowedIncognitoAccess
@@ -102,16 +105,16 @@ import Browser from 'Background/webextension';
     showNotificationsCheckbox.addEventListener('change', async () => {
       if (showNotificationsCheckbox.checked) {
         console.log('Notifications enabled.')
-        await storage.set({ showNotifications: true })
+        await Browser.storage.local.set({ showNotifications: true })
       } else {
         console.log('Notifications disabled.')
-        await storage.set({ showNotifications: false })
+        await Browser.storage.local.set({ showNotifications: false })
       }
     },
     false,
     )
 
-    const { showNotifications } = await storage.get({
+    const { showNotifications } = await Browser.storage.local.get({
       showNotifications: true,
     })
 

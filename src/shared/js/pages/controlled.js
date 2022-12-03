@@ -1,6 +1,6 @@
+import Browser from 'Background/browser-api'
 import ProxyManager from 'Background/proxy'
 import { translateDocument } from 'Background/utilities'
-import Browser from 'Background/webextension'
 
 (async () => {
   const i18nPageProps = {}
@@ -10,15 +10,17 @@ import Browser from 'Background/webextension'
   const controlledByExtensions = document.querySelector('#controlledByOtherExtensions')
   const disableOtherExtensionsButtons = document.querySelectorAll('.disable-other-extensions')
   const extensionsWhichControlsProxy = document.querySelector('#extensionsWhichControlsProxy')
-  const proxyControlledByOtherExtensions = await ProxyManager.controlledByOtherExtensions()
+  const proxyControlledByOtherExtensions =
+    await ProxyManager.controlledByOtherExtensions()
 
   if (proxyControlledByOtherExtensions) {
     const self = await Browser.management.getSelf()
     const installedExtensions = await Browser.management.getAll()
 
-    const extensionsWithProxyPermissions = installedExtensions.filter(({ name, permissions }) => {
-      return permissions.includes('proxy') && name !== self.name
-    })
+    const extensionsWithProxyPermissions =
+      installedExtensions.filter(({ name, permissions }) => {
+        return permissions.includes('proxy') && name !== self.name
+      })
 
     if (extensionsWithProxyPermissions.length === 1) {
       controlledByExtension.hidden = false

@@ -27,8 +27,7 @@
           </svg>
         </a>
       </div>
-      <div class="main-page__title title-mb" data-i18n-key="advancedOptionsTitle"></div>
-      <div class="main-page__about mt-10" id="showDebugInfo" data-i18n-key="debugInfoTip"></div>
+      <div class="main-page__title page-main-title" data-i18n-key="advancedOptionsTitle"></div>
 
       <div class="checkbox__group" id="parentalControlGroup">
         <div class="main-page__turn">
@@ -38,24 +37,19 @@
         <div class="main-page__about" data-i18n-key="parentalControlDesc"></div>
       </div>
 
-      <div>
-        <div class="checkbox__group" id="emergencyConfig">
-          <div class="main-page__turn">
-            <label for="emergencyConfigCheckbox" class="toggle-text" data-i18n-key="emergencyConfigTitle"></label>
-            <input id="emergencyConfigCheckbox" type="checkbox" class="toggle-button emergency">
-          </div>
-          <div class="main-page__about" data-i18n-key="emergencyConfigDesc"></div>
-        </div>
-      </div>
-
       <div class="option">
         <div data-i18n-key="updateLocalRegistryTitle" id="updateLocalRegistry" class="option__link"></div>
         <div data-i18n-key="updateLocalRegistryDesc" class="main-page__about"></div>
       </div>
 
       <div class="option">
-        <div data-i18n-key="resetToDefaultTitle" id="resetSettingsToDefault" class="option__link title_btn"></div>
+        <div data-i18n-key="resetToDefaultTitle" id="resetSettingsToDefault" class="option__link"></div>
         <div data-i18n-key="resetToDefaultDesc" class="main-page__about"></div>
+      </div>
+
+      <div class="option">
+        <div data-i18n-key="showDebugInfoTitle" id="showDebugInfo" class="option__link"></div>
+        <div data-i18n-key="showDebugInfoDesc" class="main-page__about"></div>
       </div>
 
     </div>
@@ -107,10 +101,10 @@
     </div>
     <div class="main-page__title popup-title" data-i18n-key="debugInfoTitle"></div>
     <div class="popup-text">
-      <textarea id="debugInfoJSON"></textarea>
+      <textarea readonly id="debugInfoJSON"></textarea>
     </div>
-    <button class="btn btn-dark" id="debugInfoOk">
-      <span class="btn__text" data-i18n-key="okayButton"></span>
+    <button class="btn btn-dark" id="copyDebugInfoBtn">
+      <span class="btn__text" data-i18n-key="copyButton"></span>
     </button>
   </div>
 </div>

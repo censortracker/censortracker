@@ -1,55 +1,21 @@
+import Browser from './browser-api'
 import Registry from './registry'
-import * as storage from './storage'
-import Browser from './webextension'
-
-const PROXY_CONFIG_API_ENDPOINT = 'https://app.censortracker.org/api/proxy-config/'
-const FALLBACK_PROXY_SERVER_HOST = 'proxy.roskomsvoboda.org'
-const FALLBACK_PROXY_SERVER_URI = `${FALLBACK_PROXY_SERVER_HOST}:33333`
-const FALLBACK_PROXY_SERVER_PING_URI = `${FALLBACK_PROXY_SERVER_HOST}:39263`
 
 class ProxyManager {
-  async fetchReserveConfig () {
-    try {
-      const { proxyAPIEndpoint } = await storage.get({
-        proxyAPIEndpoint: PROXY_CONFIG_API_ENDPOINT,
-      })
-      const response = await fetch(proxyAPIEndpoint)
-      const { server, port, pingHost, pingPort } = await response.json()
-
-      if (server && port && pingHost && pingPort) {
-        const reserveProxyPingURI = `${pingHost}:${pingPort}`
-        const reserveProxyServerURI = `${server}:${port}`
-
-        console.warn(`Proxy fetched: ${reserveProxyServerURI}!`)
-
-        await storage.set({ reserveProxyPingURI, reserveProxyServerURI })
-
-        return { reserveProxyServerURI }
-      }
-      console.warn('Reverse proxy is not provided.')
-    } catch (error) {
-      console.error(
-        'Error on fetching proxy: trying again in 10 minutes...',
-      )
-    }
-    return {}
-  }
-
   async getProxyServerURI () {
-    const { reserveProxyServerURI } = await this.fetchReserveConfig()
-    const { customProxyServerURI } = await storage.get(['customProxyServerURI'])
+    const {
+      proxyServerURI,
+      customProxyServerURI,
+    } = await Browser.storage.local.get([
+      'proxyServerURI',
+      'customProxyServerURI',
+    ])
 
     if (customProxyServerURI) {
       console.warn('Using custom proxy for PAC.')
       return customProxyServerURI
     }
-
-    if (reserveProxyServerURI) {
-      console.warn('Using reserve proxy for PAC.')
-      return reserveProxyServerURI
-    }
-    console.log('Using fallback proxy for PAC.')
-    return FALLBACK_PROXY_SERVER_URI
+    return proxyServerURI
   }
 
   async requestIncognitoAccess () {
@@ -59,10 +25,10 @@ class ProxyManager {
 
       if (!isAllowedIncognitoAccess) {
         await Browser.browserAction.setBadgeText({ text: '✕' })
-        await storage.set({ privateBrowsingPermissionsRequired: true })
+        await Browser.storage.local.set({
+          privateBrowsingPermissionsRequired: true,
+        })
         console.info('Private browsing permissions requested.')
-      } else {
-        console.log('Private browsing permissions already granted.')
       }
     }
   }
@@ -70,8 +36,9 @@ class ProxyManager {
   async grantIncognitoAccess () {
     if (Browser.IS_FIREFOX) {
       await Browser.browserAction.setBadgeText({ text: '' })
-      await storage.set({ privateBrowsingPermissionsRequired: false })
-      console.info('Private browsing permissions granted.')
+      await Browser.storage.local.set({
+        privateBrowsingPermissionsRequired: false,
+      })
     }
   }
 
@@ -108,9 +75,10 @@ class ProxyManager {
       await Browser.proxy.settings.set(config)
       await this.enableProxy()
       await this.grantIncognitoAccess()
-      console.warn('PAC has been generated and set successfully!')
+      console.warn('PAC has been set successfully!')
       return true
     } catch (error) {
+      console.error(`PAC could not be set: ${error}`)
       await this.disableProxy()
       await this.requestIncognitoAccess()
       return false
@@ -129,7 +97,7 @@ class ProxyManager {
 
     const proxyServerURI = await this.getProxyServerURI()
 
-    await storage.set({ proxyServerURI })
+    await Browser.storage.local.set({ proxyServerURI })
 
     domains.sort()
     return `
@@ -181,24 +149,21 @@ class ProxyManager {
   }
 
   async removeProxy () {
-    await storage.set({ useProxy: false })
     await Browser.proxy.settings.clear({})
-    console.warn('PAC data cleaned!')
+    console.warn('Proxy settings removed.')
   }
 
   async alive () {
     const { proxyIsAlive } =
-      await storage.get({ proxyIsAlive: true })
+      await Browser.storage.local.get({ proxyIsAlive: true })
 
     return proxyIsAlive
   }
 
   async ping () {
-    const { reserveProxyPingURI } = await storage.get({
-      reserveProxyPingURI: FALLBACK_PROXY_SERVER_PING_URI,
-    })
+    const { proxyPingURI } = await Browser.storage.local.get('proxyPingURI')
 
-    fetch(`http://${reserveProxyPingURI}`, {
+    fetch(`http://${proxyPingURI}`, {
       method: 'POST',
       headers: {
         'Content-type': 'application/json; charset=UTF-8',
@@ -208,24 +173,24 @@ class ProxyManager {
       }),
     }).catch(() => {
       // We don't care about the result.
-      console.warn(`Pinged ${reserveProxyPingURI}!`)
+      console.log(`Pinged ${proxyPingURI}!`)
     })
   }
 
   async isEnabled () {
-    const { useProxy } = await storage.get({ useProxy: true })
+    const { useProxy } = await Browser.storage.local.get({ useProxy: true })
 
     return useProxy
   }
 
   async enableProxy () {
     console.log('Proxying enabled.')
-    await storage.set({ useProxy: true, proxyIsAlive: true })
+    await Browser.storage.local.set({ useProxy: true, proxyIsAlive: true })
   }
 
   async disableProxy () {
     console.warn('Proxying disabled.')
-    await storage.set({ useProxy: false })
+    await Browser.storage.local.set({ useProxy: false })
   }
 
   async controlledByOtherExtensions () {
@@ -244,15 +209,23 @@ class ProxyManager {
     const self = await Browser.management.getSelf()
     const extensions = await Browser.management.getAll()
 
-    console.group('Taking control of proxy settings.')
-
     for (const { id, name, permissions } of extensions) {
       if (permissions.includes('proxy') && name !== self.name) {
         console.warn(`Disabling ${name}...`)
         await Browser.management.setEnabled(id, false)
       }
     }
-    console.groupEnd()
+  }
+
+  async removeBadProxies () {
+    await Browser.storage.local.set({ badProxies: [] })
+  }
+
+  async getBadProxies () {
+    const { badProxies } =
+      await Browser.storage.local.get({ badProxies: [] })
+
+    return badProxies
   }
 }
 

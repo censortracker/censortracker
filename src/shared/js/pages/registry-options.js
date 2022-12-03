@@ -1,6 +1,7 @@
+import Browser from 'Background/browser-api'
 import ProxyManager from 'Background/proxy'
 import Registry from 'Background/registry'
-import * as storage from 'Background/storage'
+import * as server from 'Background/server'
 
 (async () => {
   const select = document.querySelector('.select')
@@ -9,38 +10,36 @@ import * as storage from 'Background/storage'
   const currentOption = document.querySelector('#select-toggle')
   const useRegistryCheckbox = document.querySelector('#useRegistryCheckbox')
 
-  storage.get({ useRegistry: false, currentRegionName: '' })
-    .then(({ useRegistry, currentRegionName }) => {
-      if (useRegistry) {
-        selectRegion.classList.remove('hidden')
-      }
-      useRegistryCheckbox.checked = useRegistry
-      if (currentRegionName) {
-        currentOption.textContent = currentRegionName
-      }
-    })
+  Browser.storage.local.get({
+    useRegistry: false,
+    currentRegionName: '',
+  }).then(({ useRegistry, currentRegionName }) => {
+    if (useRegistry) {
+      selectRegion.classList.remove('hidden')
+    }
+    useRegistryCheckbox.checked = useRegistry
+    if (currentRegionName) {
+      currentOption.textContent = currentRegionName
+    }
+  })
 
   useRegistryCheckbox.addEventListener('change', async (event) => {
     const useRegistry = event.target.checked
-    const proxyingEnabled = await ProxyManager.isEnabled()
 
     if (useRegistry) {
       selectRegion.classList.remove('hidden')
       await Registry.enableRegistry()
-      await Registry.sync()
-      await ProxyManager.setProxy()
+      await server.synchronize()
     } else {
       selectRegion.classList.add('hidden')
       await Registry.clearRegistry()
       await Registry.disableRegistry()
-      await storage.set({ currentRegionName: '' })
-
-      if (proxyingEnabled) {
-        await ProxyManager.setProxy()
-      }
+      await ProxyManager.removeProxy()
+      await Browser.storage.local.set({ currentRegionName: '' })
     }
 
-    await storage.set({ useRegistry })
+    await ProxyManager.setProxy()
+    await Browser.storage.local.set({ useRegistry })
   }, false)
 
   document.addEventListener('click', (event) => {
@@ -67,18 +66,18 @@ import * as storage from 'Background/storage'
       currentOption.textContent = countryName
       currentOption.dataset.i18nKey = `country${countryCode}`
 
-      await storage.set({
+      await Browser.storage.local.set({
         currentRegionName: countryName,
-        currentRegionCode: countryAutoDetectionEnabled ? '' : countryCode.toLowerCase(),
+        currentRegionCode: countryAutoDetectionEnabled ? '' : countryCode.toUpperCase(),
       })
-      await Registry.sync()
-      const proxyingEnabled = await ProxyManager.isEnabled()
 
-      if (proxyingEnabled) {
-        await ProxyManager.setProxy()
-      }
-
-      console.warn(`Region changed to ${countryName}`)
+      ProxyManager.isEnabled().then(async (proxyingEnabled) => {
+        if (proxyingEnabled) {
+          await server.synchronize()
+          await ProxyManager.setProxy()
+          console.warn(`Region changed to ${countryName}`)
+        }
+      })
     })
   }
 })()

@@ -27,7 +27,7 @@
     "message": "Изменения автоматически сохраняются при нажатии <kbd>Enter</kbd>."
   },
   "backendIsIntermittentDesc": {
-    "message": "Censor Tracker будет использовать резервную конфигурацию до тех пор, пока серверная служба не заработает."
+    "message": "Вы можете отключить Censor Tracker, пока не заработает серверная служба. <br><br> <a target='_blank' href='https://t.me/CensorTracker_feedback'>Напишите нам в Telegram об этой проблеме.</a>"
   },
   "backendIsIntermittentTitle": {
     "message": "Серверная служба сейчас работает с перебоями."
@@ -51,7 +51,7 @@
     "message": "Да, сбросить"
   },
   "controlledByOtherExtensionDesc": {
-    "message": "Для корректной работы Censor Tracker, отключите &laquo;<div class=\"extension__name\">$NAME$</div>&raquo; в настройках браузера.",
+    "message": "Для корректной работы Censor Tracker, отключите &laquo;<div class=\"extension__name\">$name$</div>&raquo;.",
     "placeholders": {
       "name": {
         "content": "$1"
@@ -86,6 +86,9 @@
       }
     }
   },
+  "copyButton": {
+    "message": "Скопировать"
+  },
   "countryAUTO": {
     "message": "Определить автоматически"
   },
@@ -98,14 +101,17 @@
   "countryKZ": {
     "message": "Казахстан"
   },
+  "countryKG": {
+    "message": "Кыргызстан"
+  },
   "countryRU": {
     "message": "Россия"
   },
   "countryUA": {
     "message": "Украина"
   },
-  "debugInfoTip": {
-    "message": "Кликните тут чтобы увидеть отладочную информацию."
+  "countryUZ": {
+    "message": "Узбекистан"
   },
   "debugInfoTitle": {
     "message": "Отладочная информация"
@@ -127,12 +133,6 @@
   },
   "doneDescription": {
     "message": "Операция выполнена успешно."
-  },
-  "emergencyConfigDesc": {
-    "message": "Позволяет обходить блокировки даже в условиях полной блокировки всех наших IP-адресов и хостов. Не используйте этот режим, если в этом нет реальной необходимости."
-  },
-  "emergencyConfigTitle": {
-    "message": "Аварийный режим"
   },
   "extensionDisabledTitle": {
     "message": "Censor Tracker выключен"
@@ -241,6 +241,9 @@
   "optionsProxyDesc": {
     "message": "Если сайт заблокирован - Censor Tracker предоставит к нему доступ. Отключите эту настройку, если вы пользуетесь другим сервисом для обхода блокировок (например, VPN), чтобы увеличить скорость соединения."
   },
+  "optionsProxyPageTitle": {
+    "message": "Настройки Прокси"
+  },
   "optionsProxyStatusTurnedOff": {
     "message": "Выключен"
   },
@@ -255,6 +258,9 @@
   },
   "optionsRegistryIsEmptyTitle": {
     "message": "Сайты для проксирования не найдены."
+  },
+  "optionsRegistryPageTitle": {
+    "message": "Регион"
   },
   "optionsRegistryProxyingListButton": {
     "message": "Проксируемые сайты"
@@ -315,6 +321,9 @@
   "proxiedWebsitesTitle": {
     "message": "Проксируемые сайты"
   },
+  "proxyConnectionIssuesMessage": {
+    "message": "Обнаружена проблема с сетью. Пожалуйста, обратитесь в чат поддержки и расскажите нам о проблеме, мы постараемся ее решить →"
+  },
   "proxyDisabledPageTitle": {
     "message": "Проксирование Отключено"
   },
@@ -354,8 +363,17 @@
   "resetToDefaultTitle": {
     "message": "Сбросить все настройки"
   },
+  "saveChanges": {
+    "message": "Сохранить изменения"
+  },
   "shareFeedback": {
     "message": "Есть вопросы или предложения? Дайте нам знать!"
+  },
+  "showDebugInfoDesc": {
+    "message": "Показать отладочную информацию расширения."
+  },
+  "showDebugInfoTitle": {
+    "message": "Отладочная информация"
   },
   "showNotificationsDesc": {
     "message": "Предупредим, когда какой-то сайт передаёт ваши сообщения, личные данные и весь трафик третьим лицам в автоматическом режиме."
@@ -387,20 +405,14 @@
   "thankYou": {
     "message": "Спасибо!"
   },
-  "trafficShapingDescription": {
-    "message": "Скорость соединения с сайтом замедляется государством. Censor Tracker даёт доступ к сайту с обычной скоростью."
-  },
-  "trafficShapingTitle": {
-    "message": "Шейпинг"
-  },
   "turnOnExtensionToCheckWebsite": {
-    "message": "Включите, чтобы получить доступ заблокированным сайтам."
+    "message": "Включите, чтобы получить доступ к заблокированным сайтам."
   },
   "updateLocalRegistryDesc": {
     "message": "Обновить локальную базу данных для вашего региона."
   },
   "updateLocalRegistryTitle": {
-    "message": "Принудительно обновить локальную базу данных расширения."
+    "message": "Принудительно обновить локальную базу данных расширения"
   },
   "updateTakesTime": {
     "message": "Обновление базы займёт какое-то время"
@@ -428,11 +440,5 @@
   },
   "youCanCloseThisWindow": {
     "message": "Можно закрыть это окно"
-  },
-  "optionsRegistryPageTitle": {
-    "message": "Регион"
-  },
-  "optionsProxyPageTitle": {
-    "message": "Настройки Прокси"
   }
 }

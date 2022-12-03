@@ -1,4 +1,4 @@
-import Browser from './webextension'
+import Browser from './browser-api'
 
 class Task {
   /**
@@ -18,7 +18,6 @@ class Task {
    */
   async schedule (tasks = []) {
     console.groupCollapsed('Task.schedule(tasks)')
-    console.log(`Task.schedule(${JSON.stringify(tasks, null, 2)})`)
     for (const { name, minutes } of tasks) {
       const alarm = await Browser.alarms.get(name)
 
@@ -26,7 +25,7 @@ class Task {
         console.warn(`Task «${name}» already scheduled!`)
       } else {
         Browser.alarms.create(name, { periodInMinutes: minutes })
-        console.info(`Scheduled task «${name}» to run every ${minutes} minutes`)
+        console.log(`Scheduled «${name}» to run every ${minutes} minutes`)
       }
     }
     console.groupEnd()

@@ -27,7 +27,7 @@
     "message": "Changes will be automatically applied upon pressing <kbd>Enter</kbd>."
   },
   "backendIsIntermittentDesc": {
-    "message": "Censor Tracker will use the fallback configuration until the backend service is alive."
+    "message": "You might disable Censor Tracker until the backend service is up. <br><br> <a target='_blank' href='https://t.me/CensorTracker_feedback'>Let us know about this issue.</a>"
   },
   "backendIsIntermittentTitle": {
     "message": "The backend service is intermittent right now."
@@ -51,7 +51,7 @@
     "message": "Yes, I'm sure!"
   },
   "controlledByOtherExtensionDesc": {
-    "message": "To use Censor Tracker, disable &laquo;<div class=\"extension__name\">$name$</div>&raquo; in browser settings.",
+    "message": "To use Censor Tracker, disable &laquo;<div class=\"extension__name\">$name$</div>&raquo;.",
     "placeholders": {
       "name": {
         "content": "$1"
@@ -86,6 +86,9 @@
       }
     }
   },
+  "copyButton": {
+    "message": "Copy"
+  },
   "countryAUTO": {
     "message": "Auto"
   },
@@ -98,14 +101,17 @@
   "countryKZ": {
     "message": "Kazakhstan"
   },
+  "countryKG": {
+    "message": "Kyrgyzstan"
+  },
   "countryRU": {
     "message": "Russia"
   },
   "countryUA": {
     "message": "Ukraine"
   },
-  "debugInfoTip": {
-    "message": "Click here to see debug information."
+  "countryUZ": {
+    "message": "Uzbekistan"
   },
   "debugInfoTitle": {
     "message": "Debug Info"
@@ -127,12 +133,6 @@
   },
   "doneDescription": {
     "message": "Operation completed successfully."
-  },
-  "emergencyConfigDesc": {
-    "message": "This option allows Censor Tracker to work even in case of complete blocking of all our IP addresses and hosts. Do not enable this mode unless there are availability issues."
-  },
-  "emergencyConfigTitle": {
-    "message": "Emergency Mode"
   },
   "extensionDisabledTitle": {
     "message": "Censor Tracker disabled"
@@ -241,6 +241,9 @@
   "optionsProxyDesc": {
     "message": "If a website is blocked, Censor Tracker will bypass restrictions to give you access to it. Disable this setting if you use another service to bypass censorship (for example, a VPN) to increase connection speed."
   },
+  "optionsProxyPageTitle": {
+    "message": "Proxy Settings"
+  },
   "optionsProxyStatusTurnedOff": {
     "message": "Turned off"
   },
@@ -255,6 +258,9 @@
   },
   "optionsRegistryIsEmptyTitle": {
     "message": "A registry is empty: nothing to proxy."
+  },
+  "optionsRegistryPageTitle": {
+    "message": "Region"
   },
   "optionsRegistryProxyingListButton": {
     "message": "Proxying List"
@@ -315,6 +321,9 @@
   "proxiedWebsitesTitle": {
     "message": "Proxying List"
   },
+  "proxyConnectionIssuesMessage": {
+    "message": "A network problem has been detected. Please go to our support chat and tell us about the problem, we will try to solve it →"
+  },
   "proxyDisabledPageTitle": {
     "message": "Proxying Disabled"
   },
@@ -354,8 +363,17 @@
   "resetToDefaultTitle": {
     "message": "Reset to default"
   },
+  "saveChanges": {
+    "message": "Save changes"
+  },
   "shareFeedback": {
     "message": "Got issues or suggestions? Let us know!"
+  },
+  "showDebugInfoDesc": {
+    "message": "Show debug information of the extension."
+  },
+  "showDebugInfoTitle": {
+    "message": "Debug information"
   },
   "showNotificationsDesc": {
     "message": "We will warn you when you visit a service that transmits your messages, personal data, and all traffic to third parties automatically."
@@ -387,12 +405,6 @@
   "thankYou": {
     "message": "Thank you!"
   },
-  "trafficShapingDescription": {
-    "message": "Traffic shaping detected: connection to this website is throttled. Censor Tracker gives you access to it at a normal speed."
-  },
-  "trafficShapingTitle": {
-    "message": "Traffic shaping"
-  },
   "turnOnExtensionToCheckWebsite": {
     "message": "Enable to access blocked websites."
   },
@@ -400,7 +412,7 @@
     "message": "Update the local database of the blocked websites for your region."
   },
   "updateLocalRegistryTitle": {
-    "message": "Force update the extension's local database."
+    "message": "Force update the extension's local database"
   },
   "updateTakesTime": {
     "message": "Database update will take some time."
@@ -428,11 +440,5 @@
   },
   "youCanCloseThisWindow": {
     "message": "You can close this window"
-  },
-  "optionsRegistryPageTitle": {
-    "message": "Region"
-  },
-  "optionsProxyPageTitle": {
-    "message": "Proxy Settings"
   }
 }

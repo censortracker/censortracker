@@ -1,14 +1,13 @@
+import Browser from 'Background/browser-api'
 import Ignore from 'Background/ignore'
 import ProxyManager from 'Background/proxy'
 import Registry from 'Background/registry'
 import Settings from 'Background/settings'
-import * as storage from 'Background/storage'
 import {
   extractHostnameFromUrl,
   i18nGetMessage,
   isValidURL,
 } from 'Background/utilities'
-import Browser from 'Background/webextension';
 
 (async () => {
   // TODO: Refactor this
@@ -48,7 +47,6 @@ import Browser from 'Background/webextension';
   const restrictionsInfoBlock = document.getElementById('restrictions')
   const detailsText = document.querySelectorAll('.details-text')
   const extensionIsOff = document.getElementById('extensionIsOff')
-  const restrictionType = document.getElementById('restrictionType')
   const mainPageInfoBlocks = document.querySelectorAll('.main-page-info')
   const popupProxyStatusOk = document.getElementById('popupProxyStatusOk')
   const popupProxyDisabled = document.getElementById('popupProxyDisabled')
@@ -60,7 +58,7 @@ import Browser from 'Background/webextension';
   const currentDomainHeader = document.getElementById('currentDomainHeader')
   const closeDetailsButtons = document.querySelectorAll('.btn-hide-details')
   const whatThisMeanButtons = document.querySelectorAll('.btn-what-this-mean')
-  const restrictionDescription = document.getElementById('restrictionDescription')
+  const proxyConnectionIssuesButton = document.getElementById('proxyConnectionIssuesButton')
   const controlledByOtherExtensionsButton = document.getElementById('controlledByOtherExtensionsButton')
   const privateBrowsingPermissionsRequiredButton = document.getElementById('privateBrowsingPermissionsRequiredButton')
 
@@ -151,7 +149,7 @@ import Browser from 'Background/webextension';
   const proxyingEnabled = await ProxyManager.isEnabled()
   const extensionEnabled = await Settings.extensionEnabled()
 
-  storage.get('backendIsIntermittent')
+  Browser.storage.local.get('backendIsIntermittent')
     .then(({ backendIsIntermittent = false }) => {
       popupBackedStatusError.hidden = !backendIsIntermittent
     })
@@ -164,6 +162,10 @@ import Browser from 'Background/webextension';
       } else {
         popupProxyStatusOk.hidden = true
         popupProxyStatusError.hidden = false
+        proxyConnectionIssuesButton.hidden = false
+        proxyConnectionIssuesButton.addEventListener('click', async () => {
+          await Browser.tabs.create({ url: 'https://t.me/censortracker_feedback' })
+        })
       }
     } else {
       popupProxyDisabled.hidden = false
@@ -207,7 +209,7 @@ import Browser from 'Background/webextension';
   if (extensionEnabled && Browser.IS_FIREFOX) {
     Browser.extension.isAllowedIncognitoAccess()
       .then((allowedIncognitoAccess) => {
-        storage.get({ privateBrowsingPermissionsRequired: false })
+        Browser.storage.local.get({ privateBrowsingPermissionsRequired: false })
           .then(({ privateBrowsingPermissionsRequired }) => {
             if (!allowedIncognitoAccess || privateBrowsingPermissionsRequired) {
               privateBrowsingPermissionsRequiredButton.hidden = false
@@ -260,7 +262,7 @@ import Browser from 'Background/webextension';
     })
 
     const { url: disseminatorUrl, cooperationRefused } =
-      await Registry.retrieveInformationDisseminationOrganizerJSON(currentHostname)
+      await Registry.retrieveDisseminator(currentHostname)
 
     if (disseminatorUrl) {
       if (!cooperationRefused) {
@@ -282,7 +284,8 @@ import Browser from 'Background/webextension';
       } else {
         const [disseminatorDetailsText] = document.querySelectorAll('#ori [data-render-var="detailsText"]')
 
-        disseminatorDetailsText.innerText = uiText.ori.found.cooperationRefused.message
+        disseminatorDetailsText.innerText =
+          uiText.ori.found.cooperationRefused.message
 
         changeStatusImage('normal')
       }
@@ -293,30 +296,10 @@ import Browser from 'Background/webextension';
         changeStatusImage('ori_blocked')
       }
     }
-
-    Registry.getCustomRegistryRecordByURL(currentHostname)
-      .then(({ restriction }) => {
-        if (restriction && restriction.code) {
-          let titlePlaceholder, descriptionPlaceholder
-
-          const isBanned = restriction.code === 'ban'
-          const isShaped = restriction.code === 'shaping'
-
-          if (isShaped) {
-            titlePlaceholder = 'trafficShapingTitle'
-            descriptionPlaceholder = 'trafficShapingDescription'
-          } else if (isBanned) {
-            titlePlaceholder = 'blockedTitle'
-            descriptionPlaceholder = 'blockedDesc'
-          }
-
-          restrictionType.innerText = i18nGetMessage(titlePlaceholder)
-          restrictionDescription.innerText = i18nGetMessage(descriptionPlaceholder)
-        }
-      })
   } else {
     changeStatusImage('disabled')
     extensionIsOff.hidden = false
+    toggleSiteActionsButton.hidden = true
     mainPageInfoBlocks.forEach((element) => {
       element.hidden = true
     })

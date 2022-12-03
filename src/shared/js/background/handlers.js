@@ -1,17 +1,17 @@
+import Browser from './browser-api'
 import Ignore from './ignore'
 import ProxyManager from './proxy'
 import Registry from './registry'
+import * as server from './server'
 import Settings from './settings'
-import * as storage from './storage'
 import Task from './task'
 import * as utilities from './utilities'
-import Browser from './webextension'
 
 export const handleOnConnect = (port) => {
   if (port.name === 'censortracker') {
     port.onMessage.addListener((message) => {
       if (message.parentalControl === '?') {
-        storage.get({ parentalControl: false })
+        Browser.storage.local.get({ parentalControl: false })
           .then(({ parentalControl }) => {
             port.postMessage({ parentalControl })
           })
@@ -22,14 +22,12 @@ export const handleOnConnect = (port) => {
 
 export const warnAboutInformationDisseminationOrganizer = async (url) => {
   const hostname = utilities.extractDomainFromUrl(url)
-  const { notifiedHosts, showNotifications } = await storage.get({
+  const { notifiedHosts, showNotifications } = await Browser.storage.local.get({
     notifiedHosts: [],
     showNotifications: true,
   })
 
   if (showNotifications && !notifiedHosts.includes(hostname)) {
-    console.log(`Showing notification for ${hostname}`)
-
     await Browser.notifications.create(hostname, {
       type: 'basic',
       title: Settings.getName(),
@@ -39,7 +37,7 @@ export const warnAboutInformationDisseminationOrganizer = async (url) => {
 
     try {
       notifiedHosts.push(hostname)
-      await storage.set({ notifiedHosts })
+      await Browser.storage.local.set({ notifiedHosts })
     } catch (error) {
       console.error(error)
     }
@@ -47,22 +45,19 @@ export const warnAboutInformationDisseminationOrganizer = async (url) => {
 }
 
 export const handleOnAlarm = async ({ name }) => {
-  console.warn(`Alarm received: ${name}`)
+  console.log(`Task received: ${name}`)
 
-  if (name === 'ignore-fetch') {
-    await Ignore.fetch()
-  }
-
-  if (name === 'proxy-setProxy') {
-    const proxyingEnabled = await ProxyManager.isEnabled()
-
-    if (proxyingEnabled) {
-      await ProxyManager.setProxy()
-    }
-  }
-
-  if (name === 'registry-sync') {
-    await Registry.sync()
+  if (name === 'removeBadProxies') {
+    await ProxyManager.removeBadProxies()
+  } else if (name === 'setProxy') {
+    ProxyManager.isEnabled().then(async (proxyingEnabled) => {
+      if (proxyingEnabled) {
+        await server.synchronize()
+        await ProxyManager.setProxy()
+      }
+    })
+  } else {
+    console.warn(`Unknown task: ${name}`)
   }
 }
 
@@ -73,8 +68,6 @@ export const handleBeforeRequest = async (_details) => {
 
 export const handleStartup = async () => {
   console.groupCollapsed('onStartup')
-  await Ignore.fetch()
-  await Registry.sync()
 
   const proxyingEnabled = await ProxyManager.isEnabled()
 
@@ -83,33 +76,37 @@ export const handleStartup = async () => {
   }
 
   await Task.schedule([
-    { name: 'ignore-fetch', minutes: 10 },
-    { name: 'registry-sync', minutes: 20 },
-    { name: 'proxy-setProxy', minutes: 10 },
+    { name: 'setProxy', minutes: 8 },
+    { name: 'removeBadProxies', minutes: 5 },
   ])
   console.groupEnd()
 }
 
-export const handleProxyError = (details) => {
-  console.error(`Proxy error: ${JSON.stringify(details)}`)
-}
-
-export const handleIgnoredHostsChange = async ({ ignoredHosts }, _areaName) => {
-  if (ignoredHosts && ignoredHosts.newValue) {
-    await ProxyManager.setProxy()
+export const handleIgnoredHostsChange = async (
+  { ignoredHosts = {} } = {},
+  _areaName,
+) => {
+  if ('newValue' in ignoredHosts) {
+    ProxyManager.isEnabled().then((enabled) => {
+      if (enabled) {
+        ProxyManager.setProxy().then((proxySet) => {})
+      }
+    })
   }
 }
 
-export const handleCustomProxiedDomainsChange = async ({ customProxiedDomains }, _areaName) => {
+export const handleCustomProxiedDomainsChange = async (
+  { customProxiedDomains: { newValue } = {} } = {},
+  _areaName,
+) => {
   Settings.extensionEnabled().then((enableExtension) => {
-    ProxyManager.isEnabled().then(async (proxyingEnabled) => {
-      if (customProxiedDomains && customProxiedDomains.newValue) {
-        if (enableExtension && proxyingEnabled) {
+    if (enableExtension && newValue) {
+      ProxyManager.isEnabled().then(async (proxyingEnabled) => {
+        if (proxyingEnabled) {
           await ProxyManager.setProxy()
-          console.warn('Updated custom proxied domains.')
         }
-      }
-    })
+      })
+    }
   })
 }
 
@@ -118,15 +115,18 @@ export const handleCustomProxiedDomainsChange = async ({ customProxiedDomains },
  * @param changes Object describing the change. This contains one property for each key that changed.
  * @param _areaName The name of the storage area ("sync", "local") to which the changes were made.
  */
-export const handleStorageChanged = async ({ enableExtension, ignoredHosts, useProxy }, _areaName) => {
-  if (enableExtension || ignoredHosts || useProxy) {
-    console.group('handleStorageChanged')
-
+export const handleStorageChanged = async (
+  { enableExtension, useProxy },
+  _areaName,
+) => {
+  if (enableExtension || useProxy) {
     if (enableExtension) {
       const enableExtensionNewValue = enableExtension.newValue
       const enableExtensionOldValue = enableExtension.oldValue
 
-      console.log(`enableExtension: ${enableExtensionOldValue} -> ${enableExtensionNewValue}`)
+      console.log(
+        `enableExtension: ${enableExtensionOldValue} -> ${enableExtensionNewValue}`,
+      )
 
       Browser.tabs.query({}).then((tabs) => {
         for (const { id } of tabs) {
@@ -138,11 +138,18 @@ export const handleStorageChanged = async ({ enableExtension, ignoredHosts, useP
         }
       })
 
-      if (enableExtensionNewValue === true && enableExtensionOldValue === false) {
+      if (
+        enableExtensionNewValue === true &&
+        enableExtensionOldValue === false
+      ) {
         await ProxyManager.setProxy()
       }
 
-      if (enableExtensionNewValue === false && enableExtensionOldValue === true) {
+      if (
+        enableExtensionNewValue === false &&
+        enableExtensionOldValue === true
+      ) {
+        await ProxyManager.disableProxy()
         await ProxyManager.removeProxy()
       }
     }
@@ -150,9 +157,6 @@ export const handleStorageChanged = async ({ enableExtension, ignoredHosts, useP
     if (useProxy && enableExtension === undefined) {
       const useProxyNewValue = useProxy.newValue
       const useProxyOldValue = useProxy.oldValue
-
-      console.log(`useProxy: ${useProxyOldValue} -> ${useProxyNewValue}`)
-
       const extensionEnabled = await Settings.extensionEnabled()
 
       if (extensionEnabled) {
@@ -161,11 +165,11 @@ export const handleStorageChanged = async ({ enableExtension, ignoredHosts, useP
         }
 
         if (useProxyNewValue === false && useProxyOldValue === true) {
+          await ProxyManager.disableProxy()
           await ProxyManager.removeProxy()
         }
       }
     }
-    console.groupEnd()
   }
 }
 
@@ -181,8 +185,10 @@ export const handleInstalled = async ({ reason }) => {
 
   // In Firefox, the UPDATE can be caused after granting incognito access.
   if (UPDATED && Browser.IS_FIREFOX) {
-    const controlledByThisExtension = await ProxyManager.controlledByThisExtension()
-    const isAllowedIncognitoAccess = await Browser.extension.isAllowedIncognitoAccess()
+    const controlledByThisExtension =
+      await ProxyManager.controlledByThisExtension()
+    const isAllowedIncognitoAccess =
+      await Browser.extension.isAllowedIncognitoAccess()
 
     if (isAllowedIncognitoAccess && !controlledByThisExtension) {
       console.warn('Incognito access granted, setting proxy...')
@@ -195,47 +201,53 @@ export const handleInstalled = async ({ reason }) => {
     await Settings.enableExtension()
     await Settings.enableNotifications()
     await Settings.showInstalledPage()
+
+    await server.synchronize()
     await ProxyManager.enableProxy()
-
-    const synchronized = await Registry.sync()
-
-    if (synchronized) {
-      await ProxyManager.requestIncognitoAccess()
-      await ProxyManager.ping()
-      await ProxyManager.setProxy()
-    } else {
-      console.warn('Synchronization failed')
-    }
+    await ProxyManager.requestIncognitoAccess()
+    await ProxyManager.setProxy()
+    await ProxyManager.ping()
   }
 
   if (UPDATED || INSTALLED) {
     await Task.schedule([
-      { name: 'ignore-fetch', minutes: 10 },
-      { name: 'registry-sync', minutes: 20 },
-      { name: 'proxy-setProxy', minutes: 10 },
+      { name: 'setProxy', minutes: 8 },
+      { name: 'removeBadProxies', minutes: 5 },
     ])
   }
 }
 
-export const handleTabState = async (tabId, { status = 'loading' } = {}, tab) => {
-  if (status === Browser.tabs.TabStatus.LOADING) {
-    Ignore.contains(tab.url).then((isIgnored) => {
-      Settings.extensionEnabled().then(async (extensionEnabled) => {
-        if (extensionEnabled && !isIgnored && utilities.isValidURL(tab.url)) {
-          const blocked = await Registry.contains(tab.url)
-          const { url: disseminatorUrl, cooperationRefused } =
-            await Registry.retrieveInformationDisseminationOrganizerJSON(tab.url)
+export const handleTabState = async (
+  tabId,
+  { status = 'loading' } = {},
+  { url } = {},
+) => {
+  if (url && status === Browser.tabs.TabStatus.LOADING) {
+    Settings.extensionEnabled().then((enabled) => {
+      if (enabled) {
+        Ignore.contains(url).then(async (isIgnored) => {
+          Registry.retrieveDisseminator(url).then(
+            async ({ url: disseminatorUrl, cooperationRefused }) => {
+              if (disseminatorUrl) {
+                if (!cooperationRefused) {
+                  Settings.setDangerIcon(tabId)
+                  await warnAboutInformationDisseminationOrganizer(url)
+                }
+              }
+            },
+          )
 
-          if (blocked) {
-            Settings.setBlockedIcon(tabId)
-          } else if (disseminatorUrl) {
-            if (!cooperationRefused) {
-              Settings.setDangerIcon(tabId)
-              await warnAboutInformationDisseminationOrganizer(tab.url)
-            }
+          if (!isIgnored) {
+            Registry.contains(url).then((blocked) => {
+              if (blocked) {
+                Settings.setBlockedIcon(tabId)
+              }
+            })
           }
-        }
-      })
+        })
+      } else {
+        Settings.setDisableIcon(tabId)
+      }
     })
   }
 }
@@ -248,4 +260,58 @@ export const handleTabCreate = async (tab) => {
       Settings.setDisableIcon(tab.id)
     }
   })
+}
+
+export const handleProxyError = async ({ error }) => {
+  error = error.replace('net::', '')
+
+  const proxyErrors = [
+    // Firefox
+    'NS_ERROR_UNKNOWN_PROXY_HOST',
+    // Chrome
+    'ERR_PROXY_CONNECTION_FAILED',
+  ]
+
+  if (proxyErrors.includes(error)) {
+    const {
+      currentProxyServer,
+      fallbackProxyInUse = false,
+    } = await Browser.storage.local.get([
+      'currentProxyServer',
+      'fallbackProxyInUse',
+    ])
+
+    if (fallbackProxyInUse) {
+      await Browser.storage.local.set({
+        proxyIsAlive: false,
+        fallbackProxyError: error,
+      })
+      console.warn('Fallback proxy is intermittent, interrupting auto fetch...')
+      return
+    }
+
+    console.error(`Error on connection to ${currentProxyServer}: ${error}`)
+
+    if (currentProxyServer) {
+      const { badProxies } = await Browser.storage.local.get({ badProxies: [] })
+
+      if (!badProxies.includes(currentProxyServer)) {
+        badProxies.push(currentProxyServer)
+        await Browser.storage.local.set({ badProxies })
+      }
+
+      Browser.tabs.query({ active: true, lastFocusedWindow: true })
+        .then(async (tab) => {
+          console.warn('Requesting new proxy server...')
+          await server.synchronize({
+            syncIgnore: false,
+            syncRegistry: false,
+            syncProxy: true,
+          })
+          await ProxyManager.setProxy()
+          await ProxyManager.ping()
+          Browser.tabs.reload(tab.id)
+        })
+    }
+  }
 }

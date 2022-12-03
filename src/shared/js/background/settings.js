@@ -1,5 +1,4 @@
-import * as storage from './storage'
-import Browser from './webextension'
+import Browser from './browser-api'
 
 class Settings {
   getName () {
@@ -29,40 +28,38 @@ class Settings {
 
   setDisableIcon (tabId) {
     this.changePageIcon(tabId, 'disabled')
-    console.log('Settings.setDisableIcon()')
   }
 
   setDefaultIcon (tabId) {
     this.changePageIcon(tabId, 'default')
-    console.log('Settings.setDefaultIcon()')
   }
 
   setDangerIcon (tabId) {
     this.changePageIcon(tabId, 'danger')
-    console.log('Settings.setDangerIcon()')
   }
 
   setBlockedIcon (tabId) {
     this.changePageIcon(tabId, 'blocked')
-    console.log('Settings.setBlockedIcon()')
   }
 
   async extensionEnabled () {
-    const { enableExtension } = await storage.get({ enableExtension: false })
+    const { enableExtension } =
+      await Browser.storage.local.get({ enableExtension: false })
 
     return enableExtension
   }
 
   async enableExtension () {
-    await storage.set({ enableExtension: true })
+    await Browser.storage.local.set({ enableExtension: true })
     console.log('Settings.enableExtension()')
   }
 
   async disableExtension () {
-    await storage.set({
+    await Browser.storage.local.set({
       useProxy: false,
       enableExtension: false,
       showNotifications: false,
+      parentalControl: false,
     })
 
     if (Browser.IS_FIREFOX) {
@@ -73,21 +70,19 @@ class Settings {
   }
 
   async enableNotifications () {
-    await storage.set({ showNotifications: true })
-    console.log('Settings.enableNotifications()')
+    await Browser.storage.local.set({ showNotifications: true })
   }
 
   async disableNotifications () {
-    await storage.set({ showNotifications: false })
-    console.log('Settings.disableNotifications()')
+    await Browser.storage.local.set({ showNotifications: false })
   }
 
   async enableParentalControl () {
-    await storage.set({ parentalControl: true })
+    await Browser.storage.local.set({ parentalControl: true })
   }
 
   async disableParentalControl () {
-    await storage.set({ parentalControl: false })
+    await Browser.storage.local.set({ parentalControl: false })
   }
 }
 

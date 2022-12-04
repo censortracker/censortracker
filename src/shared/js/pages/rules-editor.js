@@ -51,11 +51,7 @@ import CodeMirror from 'codemirror'
     const validUrls = parseURLStrings(urls)
 
     if (isIgnorePage) {
-      Ignore.clear().then(() => {
-        for (const url of validUrls) {
-          Ignore.add(url)
-        }
-      })
+      await Ignore.set(validUrls)
     } else {
       await browser.storage.local.set({
         customProxiedDomains: validUrls,

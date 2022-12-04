@@ -40,6 +40,10 @@ export class Ignore {
     return true
   }
 
+  async set (ignoredHosts = []) {
+    await Browser.storage.local.set({ ignoredHosts })
+  }
+
   /**
    * Removes a URL/Hostname from the list of ignored.
    * @param url URL to remove.

@@ -1,3 +1,20 @@
+# 10.1.0
+
+- Fixed ignore list saving issues
+
+# 10.0.0
+
+- Censor Tracker now knows how to automatically re-request proxy servers if there are problems with the availability of the proxy server used.
+- Made server services more fault-tolerant.
+- Fixed inaccuracies and bugs in UI.
+- Updating of proxying/ignoring list was made more obvious: now you have to click on corresponding button to save changes.
+- Added support for Kyrgyzstan and Uzbekistan.
+- Fixed incorrect display of status (icons) on some sites.
+- Made debugging information more detailed, so we can help you when problems.
+- Fixed inaccuracies in English and Russian versions of the extension.
+- Improved overall performance of the extension and reduced the size of the extension (-300kb).
+- Fixed other bugs (see GitHub repository for details)
+
 # 8.5.0
 
 - Improved performance of `popup` and `options`

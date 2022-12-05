@@ -183,33 +183,20 @@ export const handleInstalled = async ({ reason }) => {
   const UPDATED = reason === Browser.runtime.OnInstalledReason.UPDATE
   const INSTALLED = reason === Browser.runtime.OnInstalledReason.INSTALL
 
-  // In Firefox, the UPDATE can be caused after granting incognito access.
-  if (UPDATED && Browser.IS_FIREFOX) {
-    const controlledByThisExtension =
-      await ProxyManager.controlledByThisExtension()
-    const isAllowedIncognitoAccess =
-      await Browser.extension.isAllowedIncognitoAccess()
-
-    if (isAllowedIncognitoAccess && !controlledByThisExtension) {
-      console.warn('Incognito access granted, setting proxy...')
-      await ProxyManager.setProxy()
-    }
+  if (INSTALLED) {
+    await Settings.showInstalledPage()
   }
 
-  if (INSTALLED) {
+  if (UPDATED || INSTALLED) {
     await Registry.enableRegistry()
     await Settings.enableExtension()
     await Settings.enableNotifications()
-    await Settings.showInstalledPage()
 
     await server.synchronize()
     await ProxyManager.enableProxy()
     await ProxyManager.requestIncognitoAccess()
     await ProxyManager.setProxy()
     await ProxyManager.ping()
-  }
-
-  if (UPDATED || INSTALLED) {
     await Task.schedule([
       { name: 'setProxy', minutes: 8 },
       { name: 'removeBadProxies', minutes: 5 },

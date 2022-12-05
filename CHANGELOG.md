@@ -1,3 +1,7 @@
+# 10.2.0
+
+- Fixed updating issue.
+
 # 10.1.0
 
 - Fixed ignore list saving issues

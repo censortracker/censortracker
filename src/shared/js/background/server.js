@@ -1,4 +1,4 @@
-import Browser from './browser-api'
+import browser from './browser-api'
 
 const CLOUDFRONT_CONFIG_URL = 'https://d204gfm9dw21wi.cloudfront.net/'
 const AWS_S3_CONFIG_URL = 'https://censortracker.s3.eu-central-1.amazonaws.com/config.json'
@@ -45,7 +45,7 @@ const inquireCountryCode = async (geoIPServiceURL) => {
  * @returns {Promise<{}|*>} Resolves with the config.
  */
 const fetchConfig = async () => {
-  const { currentRegionCode } = await Browser.storage.local.get({
+  const { currentRegionCode } = await browser.storage.local.get({
     currentRegionCode: '',
   })
 
@@ -74,14 +74,14 @@ const fetchConfig = async () => {
         })
 
         if (!config) {
-          await Browser.storage.local.set({ unsupportedCountry: true })
+          await browser.storage.local.set({ unsupportedCountry: true })
         }
 
         // For debugging purposes
         config.configEndpointUrl = endpointUrl
         config.configEndpointSource = endpointName
 
-        await Browser.storage.local.set({
+        await browser.storage.local.set({
           localConfig: config,
           backendIsIntermittent: false,
         })
@@ -109,7 +109,7 @@ const fetchProxy = async ({ proxyUrl } = {}) => {
     return
   }
 
-  const { badProxies } = await Browser.storage.local.get({ badProxies: [] })
+  const { badProxies } = await browser.storage.local.get({ badProxies: [] })
 
   console.group('[Proxy] Fetching proxy...')
 
@@ -148,15 +148,15 @@ const fetchProxy = async ({ proxyUrl } = {}) => {
     if (fallbackProxyInUse) {
       console.warn(`Using fallback «${proxyServerURI}» for the reason: ${fallbackReason}`)
     } else {
-      await Browser.storage.local.set({ proxyIsAlive: true })
-      await Browser.storage.local.remove([
+      await browser.storage.local.set({ proxyIsAlive: true })
+      await browser.storage.local.remove([
         'fallbackReason',
         'fallbackProxyInUse',
         'fallbackProxyError',
       ])
     }
 
-    await Browser.storage.local.set({
+    await browser.storage.local.set({
       proxyPingURI,
       proxyServerURI,
       currentProxyServer: server,
@@ -204,7 +204,7 @@ const fetchRegistry = async ({ registryUrl, specifics = {} } = {}) => {
 
       console.log(`Fetched: ${url}`)
 
-      await Browser.storage.local.set({ [storageKey]: data })
+      await browser.storage.local.set({ [storageKey]: data })
     } catch (error) {
       console.error(`Error on fetching data from: ${url}`)
     }
@@ -226,14 +226,14 @@ const fetchIgnore = async ({ ignoreUrl } = {}) => {
   fetch(ignoreUrl)
     .then((response) => response.json())
     .then((domains) => {
-      Browser.storag.local.get({ ignoredHosts: [] })
+      browser.storag.local.get({ ignoredHosts: [] })
         .then(({ ignoredHosts }) => {
           for (const domain of domains) {
             if (!ignoredHosts.includes(domain)) {
               ignoredHosts.push(domain)
             }
           }
-          Browser.storag.local.set({ ignoredHosts })
+          browser.storag.local.set({ ignoredHosts })
             .then(() => {
               console.log('[Ignore] Globally ignored domains fetched.')
             })
@@ -268,7 +268,7 @@ export const synchronize = async ({
       await fetchRegistry({ registryUrl, specifics })
     }
   } else {
-    await Browser.storage.local.set({ backendIsIntermittent: true })
+    await browser.storage.local.set({ backendIsIntermittent: true })
   }
   console.groupEnd()
 }

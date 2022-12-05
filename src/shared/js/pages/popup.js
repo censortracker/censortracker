@@ -53,7 +53,6 @@ import {
   const toggleSiteActionsButton = document.getElementById('toggleSiteActions')
   const siteActionDescription = document.getElementById('siteActionDescription')
   const popupProxyStatusError = document.getElementById('popupProxyStatusError')
-  const popupBackedStatusError = document.getElementById('popupBackedStatusError')
   const footerExtensionIsOn = document.getElementById('footerExtensionIsOn')
   const currentDomainHeader = document.getElementById('currentDomainHeader')
   const closeDetailsButtons = document.querySelectorAll('.btn-hide-details')
@@ -151,7 +150,7 @@ import {
 
   Browser.storage.local.get('backendIsIntermittent')
     .then(({ backendIsIntermittent = false }) => {
-      popupBackedStatusError.hidden = !backendIsIntermittent
+      // TODO: DO SOMETHING WHEN BACKEND IS INTERMITTENT
     })
 
   ProxyManager.alive().then((alive) => {

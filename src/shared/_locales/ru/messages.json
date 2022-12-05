@@ -288,9 +288,6 @@
   "parentalControlTitle": {
     "message": "«Родительский» контроль"
   },
-  "popupBackedStatusError": {
-    "message": "серверная служба работают с перебоями"
-  },
   "popupNewTabMessage": {
     "message": "Новая вкладка"
   },

@@ -288,9 +288,6 @@
   "parentalControlTitle": {
     "message": "«Parental» Control"
   },
-  "popupBackedStatusError": {
-    "message": "the backend service is intermittent"
-  },
   "popupNewTabMessage": {
     "message": "New Tab"
   },

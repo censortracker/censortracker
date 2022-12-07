@@ -1,4 +1,4 @@
-import Browser from 'Background/browser-api'
+import Browser, { getBrowserInfo } from 'Background/browser-api'
 import ProxyManager from 'Background/proxy'
 import * as server from 'Background/server'
 import Settings from 'Background/settings'
@@ -128,7 +128,7 @@ import Settings from 'Background/settings'
       localConfig.fallbackProxyError = fallbackProxyError
       localConfig.fallbackProxyInUse = fallbackProxyInUse
     }
-
+    localConfig.browser = getBrowserInfo()
     localConfig.proxyLastFetchTs = proxyLastFetchTs
     localConfig.currentProxyURI = await ProxyManager.getProxyServerURI()
     localConfig.proxyControlled = await ProxyManager.controlledByThisExtension()

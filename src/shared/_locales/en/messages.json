@@ -27,10 +27,10 @@
     "message": "Changes will be automatically applied upon pressing <kbd>Enter</kbd>."
   },
   "backendIsIntermittentDesc": {
-    "message": "You might disable Censor Tracker until the backend service is up. <br><br> <a target='_blank' href='https://t.me/CensorTracker_feedback'>Let us know about this issue.</a>"
+    "message": "Try to <a href=\"advanced-options.html\">reset the settings to defaults</a> or <a target='_blank' href='https://t.me/CensorTracker_feedback'>contact us via Telegram</a>."
   },
   "backendIsIntermittentTitle": {
-    "message": "The backend service is intermittent right now."
+    "message": "There was a problem getting the extension configuration."
   },
   "blockedDesc": {
     "message": "This website is either blocked or added to your custom proxying list, so Censor Tracker provides you access to it through a reliable proxy."

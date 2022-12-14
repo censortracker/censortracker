@@ -27,10 +27,13 @@
     "message": "Изменения автоматически сохраняются при нажатии <kbd>Enter</kbd>."
   },
   "backendIsIntermittentDesc": {
-    "message": "Попробуйте <a href=\"advanced-options.html\">сбросить настройки расширения</a> или <a target='_blank' href='https://t.me/CensorTracker_feedback'>напишите нам в Telegram</a> об этой проблеме."
+    "message": "Попробуйте <a href='advanced-options.html'>сбросить настройки расширения</a> или <a target='_blank' href='https://t.me/censortracker_feedback'>напишите нам в Telegram</a> об этой проблеме."
   },
   "backendIsIntermittentTitle": {
-    "message": "Возникли проблемы при получении конфигурации."
+    "message": "Возникли проблемы при получении конфигурации расширения."
+  },
+  "backendIsIntermittentPopupMessage": {
+    "message": "Возникли проблемы при получении конфигурации →"
   },
   "blockedDesc": {
     "message": "Сайт заблокирован или добавлен в ваш список проксируемых сайтов, поэтому Censor Tracker даёт к нему доступ через надёжный прокси."

@@ -59,6 +59,7 @@ import {
   const whatThisMeanButtons = document.querySelectorAll('.btn-what-this-mean')
   const proxyConnectionIssuesButton = document.getElementById('proxyConnectionIssuesButton')
   const controlledByOtherExtensionsButton = document.getElementById('controlledByOtherExtensionsButton')
+  const backendIsIntermittentPopupMessage = document.getElementById('backendIsIntermittentPopupMessage')
   const privateBrowsingPermissionsRequiredButton = document.getElementById('privateBrowsingPermissionsRequiredButton')
 
   const [{ url: currentUrl }] = await Browser.tabs.query({
@@ -145,12 +146,16 @@ import {
     window.location.href = 'controlled.html'
   })
 
+  backendIsIntermittentPopupMessage.addEventListener('click', async () => {
+    await Browser.runtime.openOptionsPage()
+  })
+
   const proxyingEnabled = await ProxyManager.isEnabled()
   const extensionEnabled = await Settings.extensionEnabled()
 
   Browser.storage.local.get('backendIsIntermittent')
     .then(({ backendIsIntermittent = false }) => {
-      // TODO: DO SOMETHING WHEN BACKEND IS INTERMITTENT
+      backendIsIntermittentPopupMessage.hidden = !backendIsIntermittent
     })
 
   ProxyManager.alive().then((alive) => {

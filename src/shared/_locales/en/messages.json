@@ -29,11 +29,11 @@
   "backendIsIntermittentDesc": {
     "message": "Try to <a href='advanced-options.html'>reset the settings to defaults</a> or <a target='_blank' href='https://t.me/censortracker_feedback'>contact us via Telegram</a>."
   },
-  "backendIsIntermittentTitle": {
-    "message": "There was a problem getting the extension configuration."
-  },
   "backendIsIntermittentPopupMessage": {
     "message": "There was a problem getting the extension configuration →"
+  },
+  "backendIsIntermittentTitle": {
+    "message": "There was a problem getting the extension configuration."
   },
   "blockedDesc": {
     "message": "This website is either blocked or added to your custom proxying list, so Censor Tracker provides you access to it through a reliable proxy."
@@ -101,11 +101,11 @@
   "countryBY": {
     "message": "Belarus"
   },
-  "countryKZ": {
-    "message": "Kazakhstan"
-  },
   "countryKG": {
     "message": "Kyrgyzstan"
+  },
+  "countryKZ": {
+    "message": "Kazakhstan"
   },
   "countryRU": {
     "message": "Russia"

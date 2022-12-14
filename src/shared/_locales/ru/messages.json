@@ -29,11 +29,11 @@
   "backendIsIntermittentDesc": {
     "message": "Попробуйте <a href='advanced-options.html'>сбросить настройки расширения</a> или <a target='_blank' href='https://t.me/censortracker_feedback'>напишите нам в Telegram</a> об этой проблеме."
   },
-  "backendIsIntermittentTitle": {
-    "message": "Возникли проблемы при получении конфигурации расширения."
-  },
   "backendIsIntermittentPopupMessage": {
     "message": "Возникли проблемы при получении конфигурации →"
+  },
+  "backendIsIntermittentTitle": {
+    "message": "Возникли проблемы при получении конфигурации расширения."
   },
   "blockedDesc": {
     "message": "Сайт заблокирован или добавлен в ваш список проксируемых сайтов, поэтому Censor Tracker даёт к нему доступ через надёжный прокси."
@@ -101,11 +101,11 @@
   "countryBY": {
     "message": "Беларусь"
   },
-  "countryKZ": {
-    "message": "Казахстан"
-  },
   "countryKG": {
     "message": "Кыргызстан"
+  },
+  "countryKZ": {
+    "message": "Казахстан"
   },
   "countryRU": {
     "message": "Россия"

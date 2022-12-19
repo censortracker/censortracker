@@ -163,7 +163,7 @@ class ProxyManager {
   async ping () {
     const { proxyPingURI } = await Browser.storage.local.get('proxyPingURI')
 
-    fetch(`http://${proxyPingURI}`, {
+    fetch(`https://${proxyPingURI}`, {
       method: 'POST',
       headers: {
         'Content-type': 'application/json; charset=UTF-8',

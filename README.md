@@ -24,6 +24,16 @@ Censor Tracker provides a lot of useful features, here are the most important:
 - Censorship-resistant itself
 - Warns about websites that transfer data to third parties
 
+
+Requirements
+============
+
+Censor Trecker works with following versions of browsers:
+
+- Mozilla Firefox 98 or higher
+- Chromium (Google Chrome, Brave, Edge, Opera etc.) 94 or higher
+
+
 Development
 ===========
 

@@ -251,6 +251,11 @@ export const handleTabCreate = async (tab) => {
 
 export const handleProxyError = async ({ error }) => {
   error = error.replace('net::', '')
+  const { useOwnProxy } = await Browser.storage.local.get('useOwnProxy')
+
+  if (useOwnProxy) {
+    return
+  }
 
   const proxyErrors = [
     // Firefox

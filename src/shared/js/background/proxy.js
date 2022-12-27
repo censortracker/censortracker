@@ -138,6 +138,10 @@ class ProxyManager {
 
         // Domains, which are blocked.
         let domains = ${JSON.stringify(domains)};
+        
+        if (shExpMatch(host, '*.onion') || shExpMatch(host, '*.i2p')) {
+          return 'HTTPS ${proxyServerURI};';
+        }
 
         // Return result
         if (isHostBlocked(domains, host)) {

@@ -4,8 +4,8 @@ import ProxyManager from 'Background/proxy'
 (async () => {
   const proxyingEnabled = await ProxyManager.isEnabled()
   const proxyIsDown = document.getElementById('proxyIsDown')
-  const proxyHostInput = document.getElementById('proxyHostInput')
-  const proxyPortInput = document.getElementById('proxyPortInput')
+  const proxyServerInput = document.getElementById('proxyServerInput')
+  const saveCustomProxyButton = document.getElementById('saveCustomProxyButton')
   const useProxyCheckbox = document.getElementById('useProxyCheckbox')
   const proxyCustomOptions = document.getElementById('proxyCustomOptions')
   const proxyOptionsInputs = document.getElementById('proxyOptionsInputs')
@@ -15,30 +15,19 @@ import ProxyManager from 'Background/proxy'
     'proxyCustomOptionsRadioGroup',
   )
 
-  const isPort = (value) => {
-    try {
-      const port = parseInt(value, 10)
-
-      return port >= 0 && port < (2 ** 16)
-    } catch (error) {
-      return false
-    }
-  }
-
   ProxyManager.alive().then((alive) => {
     proxyIsDown.hidden = alive
   })
 
   proxyCustomOptions.hidden = !proxyingEnabled
 
-  const { customProxyHost, customProxyPort, useCustomChecked } =
+  const { useOwnProxy, customProxyServerURI } =
     await Browser.storage.local.get([
-      'customProxyHost',
-      'customProxyPort',
-      'useCustomChecked',
+      'useOwnProxy',
+      'customProxyServerURI',
     ])
 
-  if (useCustomChecked) {
+  if (useOwnProxy) {
     proxyOptionsInputs.hidden = false
     useCustomProxyRadioButton.checked = true
     proxyOptionsInputs.classList.remove('hidden')
@@ -47,53 +36,37 @@ import ProxyManager from 'Background/proxy'
     useDefaultProxyRadioButton.checked = true
   }
 
-  if (customProxyHost) {
-    proxyHostInput.value = customProxyHost
+  if (customProxyServerURI) {
+    proxyServerInput.value = customProxyServerURI
   }
 
-  if (customProxyPort) {
-    proxyPortInput.value = customProxyPort
-  }
+  saveCustomProxyButton.addEventListener('click', async (event) => {
+    const customProxyServer = proxyServerInput.value
 
-  document.addEventListener('keydown', async (event) => {
-    const host = proxyHostInput.value
-    const port = proxyPortInput.value
-    const customProxyServerURI = `${host}:${port}`
+    if (customProxyServer) {
+      await Browser.storage.local.set({
+        useOwnProxy: true,
+        customProxyServerURI: customProxyServer,
+      })
 
-    if ((event.ctrlKey && event.key === 's') || event.keyCode === 13) {
-      if (host && isPort(port)) {
-        await Browser.storage.local.set({
-          useCustomChecked: true,
-          customProxyPort: port,
-          customProxyHost: host,
-          customProxyServerURI,
-        })
-        await ProxyManager.setProxy()
+      await ProxyManager.setProxy()
+      proxyServerInput.classList.remove('invalid-input')
 
-        proxyHostInput.classList.remove('invalid-input')
-        proxyPortInput.classList.remove('invalid-input')
-        console.log(`Proxy host changed to: ${customProxyServerURI}`)
-      } else {
-        proxyHostInput.classList.add('invalid-input')
-        proxyPortInput.classList.add('invalid-input')
-      }
-      event.preventDefault()
+      console.log(`Proxy host changed to: ${customProxyServer}`)
+    } else {
+      proxyServerInput.classList.add('invalid-input')
     }
   })
 
   proxyCustomOptionsRadioGroup.addEventListener('change', async (event) => {
-    if (event.target.value !== 'default') {
-      proxyOptionsInputs.classList.remove('hidden')
+    if (event.target.value === 'default') {
+      proxyOptionsInputs.classList.add('hidden')
+      proxyServerInput.value = ''
+      await Browser.storage.local.set({ useOwnProxy: false })
+      await Browser.storage.local.remove(['customProxyServerURI'])
       await ProxyManager.setProxy()
     } else {
-      proxyOptionsInputs.classList.add('hidden')
-      await Browser.storage.local.set({ useCustomChecked: false })
-      await Browser.storage.local.remove([
-        'customProxyHost',
-        'customProxyPort',
-        'customProxyServerURI',
-      ])
-      await ProxyManager.setProxy()
+      proxyOptionsInputs.classList.remove('hidden')
     }
   })
 

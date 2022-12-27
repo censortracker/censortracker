@@ -23,9 +23,6 @@
   "areYouSureYouWantToResetSettingsTitle": {
     "message": "Are you sure you want to reset all settings?"
   },
-  "autosaveTip": {
-    "message": "Changes will be automatically applied upon pressing <kbd>Enter</kbd>."
-  },
   "backendIsIntermittentDesc": {
     "message": "Try to <a href='advanced-options.html'>reset the settings to defaults</a> or <a target='_blank' href='https://t.me/censortracker_feedback'>contact us via Telegram</a>."
   },
@@ -440,5 +437,8 @@
   },
   "youCanCloseThisWindow": {
     "message": "You can close this window"
+  },
+  "saveCustomProxyButton": {
+    "message": "Save"
   }
 }

@@ -364,11 +364,15 @@ a {
   border: 1px solid #c4c2bf;
   box-sizing: border-box;
   border-radius: 4px;
-  height: 30px;
   padding: 0 11px;
   color: #6d675f;
   width: 100%;
   margin: 0;
+  height: 37px;
+}
+
+#saveCustomProxyButton {
+  margin-left: 10px;
 }
 
 #customProxyPort {

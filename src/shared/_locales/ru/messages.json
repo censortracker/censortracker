@@ -23,9 +23,6 @@
   "areYouSureYouWantToResetSettingsTitle": {
     "message": "Вы уверены, что хотите сбросить все настройки?"
   },
-  "autosaveTip": {
-    "message": "Изменения автоматически сохраняются при нажатии <kbd>Enter</kbd>."
-  },
   "backendIsIntermittentDesc": {
     "message": "Попробуйте <a href='advanced-options.html'>сбросить настройки расширения</a> или <a target='_blank' href='https://t.me/censortracker_feedback'>напишите нам в Telegram</a> об этой проблеме."
   },
@@ -440,5 +437,8 @@
   },
   "youCanCloseThisWindow": {
     "message": "Можно закрыть это окно"
+  },
+  "saveCustomProxyButton": {
+    "message": "Сохранить"
   }
 }

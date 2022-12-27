@@ -39,13 +39,13 @@
         </div>
         <div class="main-page__about">
           <div class="use_proxy__text" data-i18n-key="optionsProxyDesc"></div>
-          <div class="main-page__about mt-10" data-i18n-key="autosaveTip"></div>
         </div>
 
         <div id="proxyCustomOptions" hidden>
           <div id="proxyCustomOptionsRadioGroup" class="radio-buttons-group">
             <div class="radio-button">
-              <input id="useDefaultProxy" class="radio-button-input" type="radio" name="proxy-radio" value="default" checked>
+              <input id="useDefaultProxy" class="radio-button-input" type="radio" name="proxy-radio" value="default"
+                     checked>
               <label class="radio-button-label" for="useDefaultProxy" data-i18n-key="useDefaultProxy"></label>
             </div>
             <div class="radio-button">
@@ -55,15 +55,23 @@
           </div>
 
           <div id="proxyOptionsInputs" class="proxy-options-inputs hidden">
-            <input type="text" class="input-proxy host" placeholder="username:password@hostname" id="proxyHostInput">
-            <input type="text" class="input-proxy port" placeholder="Port" id="proxyPortInput">
+            <input type="text"
+                   id="proxyServerInput"
+                   class="input-proxy"
+                   placeholder="username:password@hostname:port">
+
+            <button class="btn btn-dark" id="saveCustomProxyButton">
+              <span class="btn__text" data-i18n-key="saveCustomProxyButton"></span>
+            </button>
           </div>
         </div>
 
         <div id="controlledByOtherExtension" class="main-page__extension" hidden>
-          <div class="extension__title" data-i18n-key="controlledByOtherExtensionTitle" data-i18n-render-prop="extensionName">
+          <div class="extension__title" data-i18n-key="controlledByOtherExtensionTitle"
+               data-i18n-render-prop="extensionName">
           </div>
-          <div class="extension__text" data-i18n-key="controlledByOtherExtensionDesc" data-i18n-render-prop="extensionName">
+          <div class="extension__text" data-i18n-key="controlledByOtherExtensionDesc"
+               data-i18n-render-prop="extensionName">
           </div>
           <a class="default-btn disable-other-extensions" data-i18n-key="disableAll"></a>
         </div>

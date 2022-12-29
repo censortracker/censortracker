@@ -117,6 +117,22 @@ import {
     await Browser.runtime.openOptionsPage()
   })
 
+  toggleSiteActionsButton.addEventListener('click', async (event) => {
+    if (event.target.classList.contains('icon-show')) {
+      siteActions.classList.remove('hidden')
+      event.target.classList.remove('icon-show')
+      event.target.classList.add('icon-hide')
+      disseminatorInfoBlock.classList.add('hidden')
+      restrictionsInfoBlock.classList.add('hidden')
+    } else {
+      siteActions.classList.add('hidden')
+      event.target.classList.add('icon-show')
+      event.target.classList.remove('icon-hide')
+      disseminatorInfoBlock.classList.remove('hidden')
+      restrictionsInfoBlock.classList.remove('hidden')
+    }
+  })
+
   Browser.tabs
     .query({ active: true, lastFocusedWindow: true })
     .then(async ([{ url: currentUrl, id: tabId }]) => {
@@ -171,22 +187,6 @@ import {
                 )
               }
             })
-          }
-        })
-
-        toggleSiteActionsButton.addEventListener('click', async (event) => {
-          if (event.target.classList.contains('icon-show')) {
-            siteActions.classList.remove('hidden')
-            event.target.classList.remove('icon-show')
-            event.target.classList.add('icon-hide')
-            disseminatorInfoBlock.classList.add('hidden')
-            restrictionsInfoBlock.classList.add('hidden')
-          } else {
-            siteActions.classList.add('hidden')
-            event.target.classList.add('icon-show')
-            event.target.classList.remove('icon-hide')
-            disseminatorInfoBlock.classList.remove('hidden')
-            restrictionsInfoBlock.classList.remove('hidden')
           }
         })
 

@@ -559,3 +559,33 @@ div#grantPrivateBrowsingPermissionsButton {
   white-space: pre-wrap;
   word-break: break-all;
 }
+
+.network-description {
+  background: rgba(237, 242, 247, 0.6);
+  border-radius: 4px;
+  text-align: center;
+  padding: 15px;
+}
+
+.network__title {
+  margin-bottom: 5px;
+  font-weight: 600;
+}
+
+.network__title-tor {
+  background: url(../images/popup/tor.svg) no-repeat center / contain;
+  background-size: 18px 18px;
+  display: inline-block;
+  vertical-align: bottom;
+  width: 20px;
+  height: 20px;
+}
+
+.network__title-i2p {
+  background: url(../images/popup/i2p.svg) no-repeat center / contain;
+  background-size: 25px 12px;
+  display: inline-block;
+  vertical-align: bottom;
+  width: 27px;
+  height: 20px;
+}

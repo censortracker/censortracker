@@ -440,5 +440,14 @@
   },
   "saveCustomProxyButton": {
     "message": "Save"
+  },
+  "i2pNetworkTitle": {
+    "message": "Website in <span class=\"network__title-i2p\"></span> I2P"
+  },
+  "torNetworkTitle": {
+    "message": "Website in <span class=\"network__title-tor\"></span> Tor"
+  },
+  "overlayNetworkDesc": {
+    "message": "Censor Tracker allows you to open websites through overlaid networks"
   }
 }

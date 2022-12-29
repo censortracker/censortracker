@@ -6,11 +6,14 @@ import Settings from 'Background/settings'
 import {
   extractHostnameFromUrl,
   i18nGetMessage,
+  isI2PUrl,
+  isOnionUrl,
   isValidURL,
 } from 'Background/utilities'
 
+;
+
 (async () => {
-  // TODO: Refactor this
   const uiText = {
     ori: {
       found: {
@@ -51,92 +54,56 @@ import {
   const popupProxyStatusOk = document.getElementById('popupProxyStatusOk')
   const popupProxyDisabled = document.getElementById('popupProxyDisabled')
   const toggleSiteActionsButton = document.getElementById('toggleSiteActions')
-  const siteActionDescription = document.getElementById('siteActionDescription')
-  const popupProxyStatusError = document.getElementById('popupProxyStatusError')
+  const siteActionDescription = document.getElementById(
+    'siteActionDescription',
+  )
+  const popupProxyStatusError = document.getElementById(
+    'popupProxyStatusError',
+  )
   const footerExtensionIsOn = document.getElementById('footerExtensionIsOn')
   const currentDomainHeader = document.getElementById('currentDomainHeader')
   const closeDetailsButtons = document.querySelectorAll('.btn-hide-details')
   const whatThisMeanButtons = document.querySelectorAll('.btn-what-this-mean')
-  const proxyConnectionIssuesButton = document.getElementById('proxyConnectionIssuesButton')
-  const controlledByOtherExtensionsButton = document.getElementById('controlledByOtherExtensionsButton')
-  const backendIsIntermittentPopupMessage = document.getElementById('backendIsIntermittentPopupMessage')
-  const privateBrowsingPermissionsRequiredButton = document.getElementById('privateBrowsingPermissionsRequiredButton')
+  const proxyConnectionIssuesButton = document.getElementById(
+    'proxyConnectionIssuesButton',
+  )
+  const controlledByOtherExtensionsButton = document.getElementById(
+    'controlledByOtherExtensionsButton',
+  )
+  const backendIsIntermittentPopupMessage = document.getElementById(
+    'backendIsIntermittentPopupMessage',
+  )
+  const privateBrowsingPermissionsRequiredButton = document.getElementById(
+    'privateBrowsingPermissionsRequiredButton',
+  )
 
-  const [{ url: currentUrl }] = await Browser.tabs.query({
-    active: true,
-    lastFocusedWindow: true,
-  })
+  const torNetwork = document.getElementById('torNetwork')
+  const i2pNetwork = document.getElementById('i2pNetwork')
 
-  if (isValidURL(currentUrl)) {
-    toggleSiteActionsButton.classList.remove('hidden')
-    siteActionDescription.textContent = i18nGetMessage('siteActionAutoDesc')
-
-    const checkSiteActionRadioButton = (value) => {
-      document.querySelector(`input[value="${value}"]`).checked = true
-    }
-
-    Ignore.contains(currentUrl).then((ignored) => {
-      if (ignored) {
-        checkSiteActionRadioButton('never')
-        siteActionDescription.textContent = i18nGetMessage('siteActionNeverDesc')
-      } else {
-        Registry.contains(currentUrl).then((blocked) => {
-          if (blocked) {
-            checkSiteActionRadioButton('always')
-            siteActionDescription.textContent = i18nGetMessage('siteActionAlwaysDesc')
-          } else {
-            checkSiteActionRadioButton('auto')
-            siteActionDescription.textContent = i18nGetMessage('siteActionAutoDesc')
-          }
-        })
-      }
+  document
+    .getElementById('enableExtension')
+    .addEventListener('click', async (target) => {
+      await Settings.enableExtension()
+      await Settings.enableNotifications()
+      await ProxyManager.enableProxy()
+      window.location.reload()
     })
 
-    toggleSiteActionsButton.addEventListener('click', async (event) => {
-      if (event.target.classList.contains('icon-show')) {
-        siteActions.classList.remove('hidden')
-        event.target.classList.remove('icon-show')
-        event.target.classList.add('icon-hide')
-        disseminatorInfoBlock.classList.add('hidden')
-        restrictionsInfoBlock.classList.add('hidden')
-      } else {
-        siteActions.classList.add('hidden')
-        event.target.classList.add('icon-show')
-        event.target.classList.remove('icon-hide')
-        disseminatorInfoBlock.classList.remove('hidden')
-        restrictionsInfoBlock.classList.remove('hidden')
-      }
-    })
-
-    const siteActionRadioButtons = document.querySelectorAll('input[name="site-action-radio"]')
-
-    for (const radioButton of siteActionRadioButtons) {
-      radioButton.addEventListener('change', async (event) => {
-        if (event.target.value === 'always') {
-          siteActionDescription.textContent = i18nGetMessage('siteActionAlwaysDesc')
-          Ignore.remove(currentUrl).then((removed) => {
-            if (removed) {
-              Registry.add(currentUrl).then((added) => {
-                console.warn('Proxying strategy was changed to: "always"')
-              })
-            }
-          })
-        } else if (event.target.value === 'never') {
-          await Ignore.add(currentUrl)
-          await Registry.remove(currentUrl)
-          siteActionDescription.textContent = i18nGetMessage('siteActionNeverDesc')
-        } else {
-          await Ignore.remove(currentUrl)
-          await Registry.remove(currentUrl)
-          siteActionDescription.textContent = i18nGetMessage('siteActionAutoDesc')
-        }
-
-        await ProxyManager.setProxy()
-
-        event.target.checked = true
+  document
+    .getElementById('disableExtension')
+    .addEventListener('click', async (target) => {
+      await Settings.disableExtension()
+      mainPageInfoBlocks.forEach((element) => {
+        element.hidden = true
       })
-    }
-  }
+      window.location.reload()
+    })
+
+  document
+    .getElementById('openOptionsPage')
+    .addEventListener('click', async (target) => {
+      await Browser.runtime.openOptionsPage()
+    })
 
   privateBrowsingPermissionsRequiredButton.addEventListener('click', () => {
     window.location.href = 'incognito-required-popup.html'
@@ -150,164 +117,258 @@ import {
     await Browser.runtime.openOptionsPage()
   })
 
-  const proxyingEnabled = await ProxyManager.isEnabled()
-  const extensionEnabled = await Settings.extensionEnabled()
+  Browser.tabs
+    .query({ active: true, lastFocusedWindow: true })
+    .then(async ([{ url: currentUrl, id: tabId }]) => {
+      const proxyingEnabled = await ProxyManager.isEnabled()
+      const extensionEnabled = await Settings.extensionEnabled()
+      const currentHostname = extractHostnameFromUrl(currentUrl)
 
-  Browser.storage.local.get('backendIsIntermittent')
+      ProxyManager.alive().then((alive) => {
+        if (proxyingEnabled) {
+          if (alive) {
+            popupProxyStatusOk.hidden = false
+            popupProxyStatusError.hidden = true
+          } else {
+            popupProxyStatusOk.hidden = true
+            popupProxyStatusError.hidden = false
+            proxyConnectionIssuesButton.hidden = false
+            proxyConnectionIssuesButton.addEventListener('click', async () => {
+              await Browser.tabs.create({
+                url: 'https://t.me/censortracker_feedback',
+              })
+            })
+          }
+        } else {
+          popupProxyDisabled.hidden = false
+        }
+      })
+
+      if (isValidURL(currentUrl)) {
+        currentDomainHeader.innerText = currentHostname
+        toggleSiteActionsButton.classList.remove('hidden')
+        siteActionDescription.textContent = i18nGetMessage(
+          'siteActionAutoDesc',
+        )
+
+        Ignore.contains(currentUrl).then((ignored) => {
+          if (ignored) {
+            document.querySelector('input[value="never"]').checked = true
+            siteActionDescription.textContent = i18nGetMessage(
+              'siteActionNeverDesc',
+            )
+          } else {
+            Registry.contains(currentUrl).then((blocked) => {
+              if (blocked) {
+                document.querySelector('input[value="always"]').checked = true
+                siteActionDescription.textContent = i18nGetMessage(
+                  'siteActionAlwaysDesc',
+                )
+              } else {
+                document.querySelector('input[value="auto"]').checked = true
+                siteActionDescription.textContent = i18nGetMessage(
+                  'siteActionAutoDesc',
+                )
+              }
+            })
+          }
+        })
+
+        toggleSiteActionsButton.addEventListener('click', async (event) => {
+          if (event.target.classList.contains('icon-show')) {
+            siteActions.classList.remove('hidden')
+            event.target.classList.remove('icon-show')
+            event.target.classList.add('icon-hide')
+            disseminatorInfoBlock.classList.add('hidden')
+            restrictionsInfoBlock.classList.add('hidden')
+          } else {
+            siteActions.classList.add('hidden')
+            event.target.classList.add('icon-show')
+            event.target.classList.remove('icon-hide')
+            disseminatorInfoBlock.classList.remove('hidden')
+            restrictionsInfoBlock.classList.remove('hidden')
+          }
+        })
+
+        const siteActionRadioButtons = document.querySelectorAll(
+          'input[name="site-action-radio"]',
+        )
+
+        for (const radioButton of siteActionRadioButtons) {
+          radioButton.addEventListener('change', async (event) => {
+            if (event.target.value === 'always') {
+              siteActionDescription.textContent = i18nGetMessage(
+                'siteActionAlwaysDesc',
+              )
+              Ignore.remove(currentUrl).then((removed) => {
+                if (removed) {
+                  Registry.add(currentUrl).then((added) => {
+                    console.warn('Proxying strategy was changed to: "always"')
+                  })
+                }
+              })
+            } else if (event.target.value === 'never') {
+              await Ignore.add(currentUrl)
+              await Registry.remove(currentUrl)
+              siteActionDescription.textContent = i18nGetMessage(
+                'siteActionNeverDesc',
+              )
+            } else {
+              await Ignore.remove(currentUrl)
+              await Registry.remove(currentUrl)
+              siteActionDescription.textContent = i18nGetMessage(
+                'siteActionAutoDesc',
+              )
+            }
+
+            await ProxyManager.setProxy()
+
+            event.target.checked = true
+          })
+        }
+      } else {
+        const popupNewTabMessage = i18nGetMessage('popupNewTabMessage')
+
+        currentDomainHeader.innerText = popupNewTabMessage
+
+        if (popupNewTabMessage.length >= 25) {
+          currentDomainHeader.style.fontSize = '15px'
+        }
+      }
+
+      if (extensionEnabled) {
+        statusImage.setAttribute('src', 'images/icons/512x512/normal.png')
+
+        if (Browser.IS_FIREFOX) {
+          Browser.extension
+            .isAllowedIncognitoAccess()
+            .then((allowedIncognitoAccess) => {
+              Browser.storage.local
+                .get({
+                  privateBrowsingPermissionsRequired: false,
+                })
+                .then(({ privateBrowsingPermissionsRequired }) => {
+                  if (
+                    !allowedIncognitoAccess ||
+                    privateBrowsingPermissionsRequired
+                  ) {
+                    privateBrowsingPermissionsRequiredButton.hidden = false
+                  }
+                })
+            })
+        }
+
+        if (currentHostname.length >= 22 && currentHostname.length < 25) {
+          currentDomainHeader.style.fontSize = '17px'
+        } else if (currentHostname.length > 25 && currentHostname.length < 30) {
+          currentDomainHeader.style.fontSize = '15px'
+        } else if (currentHostname.length >= 30) {
+          currentDomainHeader.style.fontSize = '13px'
+        }
+
+        currentDomainHeader.classList.add('title-normal')
+        currentDomainHeader.removeAttribute('hidden')
+        footerExtensionIsOn.removeAttribute('hidden')
+
+        const restrictionsFound = await Registry.contains(currentHostname)
+
+        document
+          .querySelectorAll('#restrictions [data-render-var]')
+          .forEach((el) => {
+            const renderVar = el.dataset.renderVar
+            const value = uiText.restrictions[restrictionsFound][renderVar]
+
+            if (restrictionsFound && proxyingEnabled) {
+              statusImage.setAttribute(
+                'src',
+                'images/icons/512x512/blocked.png',
+              )
+            }
+
+            if (renderVar === 'statusIcon') {
+              el.setAttribute('src', value)
+            } else {
+              el.innerText = value
+            }
+          })
+
+        const { url: disseminatorUrl, cooperationRefused } =
+          await Registry.retrieveDisseminator(currentHostname)
+
+        if (disseminatorUrl) {
+          if (!cooperationRefused) {
+            statusImage.setAttribute('src', 'images/icons/512x512/ori.png')
+            currentDomainHeader.classList.add('title-ori')
+
+            for (const element of document.querySelectorAll(
+              '#ori [data-render-var]',
+            )) {
+              const renderVar = element.dataset.renderVar
+              const value = uiText.ori.found[renderVar]
+
+              if (renderVar === 'statusIcon') {
+                element.setAttribute('src', value)
+              } else if (renderVar === 'detailsClasses') {
+                element.classList.add(uiText.ori.found.detailsClasses)
+              } else {
+                element.innerText = value
+              }
+            }
+          } else {
+            const [disseminatorDetailsText] = document.querySelectorAll(
+              '#ori [data-render-var="detailsText"]',
+            )
+
+            disseminatorDetailsText.innerText =
+              uiText.ori.found.cooperationRefused.message
+            statusImage.setAttribute('src', 'images/icons/512x512/normal.png')
+          }
+        }
+
+        if (restrictionsFound && disseminatorUrl) {
+          if (cooperationRefused === false) {
+            statusImage.setAttribute(
+              'src',
+              'images/icons/512x512/ori_blocked.png',
+            )
+          }
+        }
+        if (isOnionUrl(currentUrl)) {
+          torNetwork.hidden = false
+          toggleSiteActionsButton.hidden = true
+          restrictionsInfoBlock.classList.add('hidden')
+          disseminatorInfoBlock.classList.add('hidden')
+          statusImage.setAttribute('src', 'images/icons/512x512/tor.png')
+        } else if (isI2PUrl(currentUrl)) {
+          i2pNetwork.hidden = false
+          toggleSiteActionsButton.hidden = true
+          restrictionsInfoBlock.classList.add('hidden')
+          disseminatorInfoBlock.classList.add('hidden')
+          statusImage.setAttribute('src', 'images/icons/512x512/i2p.png')
+        }
+      } else {
+        statusImage.setAttribute('src', 'images/icons/512x512/disabled.png')
+        extensionIsOff.hidden = false
+        toggleSiteActionsButton.hidden = true
+        mainPageInfoBlocks.forEach((element) => {
+          element.hidden = true
+        })
+      }
+    })
+
+  Browser.storage.local
+    .get('backendIsIntermittent')
     .then(({ backendIsIntermittent = false }) => {
       backendIsIntermittentPopupMessage.hidden = !backendIsIntermittent
     })
 
-  ProxyManager.alive().then((alive) => {
-    if (proxyingEnabled) {
-      if (alive) {
-        popupProxyStatusOk.hidden = false
-        popupProxyStatusError.hidden = true
-      } else {
-        popupProxyStatusOk.hidden = true
-        popupProxyStatusError.hidden = false
-        proxyConnectionIssuesButton.hidden = false
-        proxyConnectionIssuesButton.addEventListener('click', async () => {
-          await Browser.tabs.create({ url: 'https://t.me/censortracker_feedback' })
-        })
-      }
-    } else {
-      popupProxyDisabled.hidden = false
-    }
-  })
-
-  ProxyManager.controlledByOtherExtensions()
-    .then((controlledByOtherExtensions) => {
+  ProxyManager.controlledByOtherExtensions().then(
+    (controlledByOtherExtensions) => {
       if (!Browser.IS_FIREFOX && controlledByOtherExtensions) {
         controlledByOtherExtensionsButton.hidden = false
       }
-    })
-
-  const changeStatusImage = (imageName) => {
-    const imageSrc = Browser.runtime.getURL(`images/icons/512x512/${imageName}.png`)
-
-    statusImage.setAttribute('src', imageSrc)
-  }
-
-  document.addEventListener('click', async (event) => {
-    if (event.target.matches('#enableExtension')) {
-      await Settings.enableExtension()
-      await Settings.enableNotifications()
-      await ProxyManager.enableProxy()
-      window.location.reload()
-    }
-
-    if (event.target.matches('#disableExtension')) {
-      await Settings.disableExtension()
-      mainPageInfoBlocks.forEach((element) => {
-        element.hidden = true
-      })
-      window.location.reload()
-    }
-
-    if (event.target.matches('#openOptionsPage')) {
-      await Browser.runtime.openOptionsPage()
-    }
-  })
-
-  if (extensionEnabled && Browser.IS_FIREFOX) {
-    Browser.extension.isAllowedIncognitoAccess()
-      .then((allowedIncognitoAccess) => {
-        Browser.storage.local.get({ privateBrowsingPermissionsRequired: false })
-          .then(({ privateBrowsingPermissionsRequired }) => {
-            if (!allowedIncognitoAccess || privateBrowsingPermissionsRequired) {
-              privateBrowsingPermissionsRequiredButton.hidden = false
-            }
-          })
-      })
-  }
-
-  const currentHostname = extractHostnameFromUrl(currentUrl) || 'newtab'
-
-  if (isValidURL(currentHostname)) {
-    currentDomainHeader.innerText = currentHostname
-  } else {
-    const popupNewTabMessage = i18nGetMessage('popupNewTabMessage')
-
-    currentDomainHeader.innerText = popupNewTabMessage
-
-    if (popupNewTabMessage.length >= 25) {
-      currentDomainHeader.style.fontSize = '15px'
-    }
-  }
-
-  if (extensionEnabled) {
-    changeStatusImage('normal')
-
-    if (currentHostname.length >= 22 && currentHostname.length < 25) {
-      currentDomainHeader.style.fontSize = '17px'
-    } else if (currentHostname.length >= 25) {
-      currentDomainHeader.style.fontSize = '15px'
-    }
-    currentDomainHeader.classList.add('title-normal')
-    currentDomainHeader.removeAttribute('hidden')
-    footerExtensionIsOn.removeAttribute('hidden')
-
-    const restrictionsFound = await Registry.contains(currentHostname)
-
-    document.querySelectorAll('#restrictions [data-render-var]').forEach((el) => {
-      const renderVar = el.dataset.renderVar
-      const value = uiText.restrictions[restrictionsFound][renderVar]
-
-      if (restrictionsFound && proxyingEnabled) {
-        changeStatusImage('blocked')
-      }
-
-      if (renderVar === 'statusIcon') {
-        el.setAttribute('src', value)
-      } else {
-        el.innerText = value
-      }
-    })
-
-    const { url: disseminatorUrl, cooperationRefused } =
-      await Registry.retrieveDisseminator(currentHostname)
-
-    if (disseminatorUrl) {
-      if (!cooperationRefused) {
-        changeStatusImage('ori')
-        currentDomainHeader.classList.add('title-ori')
-
-        for (const element of document.querySelectorAll('#ori [data-render-var]')) {
-          const renderVar = element.dataset.renderVar
-          const value = uiText.ori.found[renderVar]
-
-          if (renderVar === 'statusIcon') {
-            element.setAttribute('src', value)
-          } else if (renderVar === 'detailsClasses') {
-            element.classList.add(uiText.ori.found.detailsClasses)
-          } else {
-            element.innerText = value
-          }
-        }
-      } else {
-        const [disseminatorDetailsText] = document.querySelectorAll('#ori [data-render-var="detailsText"]')
-
-        disseminatorDetailsText.innerText =
-          uiText.ori.found.cooperationRefused.message
-
-        changeStatusImage('normal')
-      }
-    }
-
-    if (restrictionsFound && disseminatorUrl) {
-      if (cooperationRefused === false) {
-        changeStatusImage('ori_blocked')
-      }
-    }
-  } else {
-    changeStatusImage('disabled')
-    extensionIsOff.hidden = false
-    toggleSiteActionsButton.hidden = true
-    mainPageInfoBlocks.forEach((element) => {
-      element.hidden = true
-    })
-  }
+    },
+  )
 
   const hideDetails = () => {
     detailsText.forEach((element) => {

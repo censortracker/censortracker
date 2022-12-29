@@ -1,4 +1,4 @@
-import { getDomain, getHostname } from 'tldts'
+import { getDomain, getHostname, getPublicSuffix } from 'tldts'
 import isURL from 'validator/lib/isURL'
 
 import Browser from './browser-api'
@@ -14,12 +14,23 @@ const isExtensionUrl = (url) => {
     url.startsWith('chrome-extension:')
 }
 
+export const isOnionUrl = (url) => {
+  return getPublicSuffix(url) === 'onion'
+}
+
+export const isI2PUrl = (url) => {
+  return getPublicSuffix(url) === 'i2p'
+}
+
 /**
  * Validate passed URL using regex.
  * @param url URL to check.
  * @returns {boolean} true if valid otherwise false
  */
 export const isValidURL = (url) => {
+  if (isOnionUrl(url) || isI2PUrl(url)) {
+    return true
+  }
   try {
     if (isExtensionUrl(url)) {
       return false

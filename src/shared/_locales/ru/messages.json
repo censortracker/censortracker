@@ -440,5 +440,14 @@
   },
   "saveCustomProxyButton": {
     "message": "Сохранить"
+  },
+  "i2pNetworkTitle": {
+    "message": "Сайт в сети <span class=\"network__title-i2p\"></span> I2P"
+  },
+  "torNetworkTitle": {
+    "message": "Сайт в сети <span class=\"network__title-tor\"></span> Tor"
+  },
+  "overlayNetworkDesc": {
+    "message": "Censor Tracker позволяет открывать такие сайты в обычном браузере"
   }
 }

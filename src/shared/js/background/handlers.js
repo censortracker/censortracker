@@ -307,3 +307,8 @@ export const handleProxyError = async ({ error }) => {
     }
   }
 }
+
+export const handleOnUpdateAvailable = async ({ version }) => {
+  await Browser.storage.local.set({ updateAvailable: true })
+  console.warn(`Update available: ${version}`)
+}

@@ -449,5 +449,14 @@
   },
   "overlayNetworkDesc": {
     "message": "Censor Tracker allows you to open websites through overlaid networks"
+  },
+  "updateAvailableTitle": {
+    "message": "Update available"
+  },
+  "updateAvailableDesc": {
+    "message": "New version of Censor Tracker is available. Please update the extension."
+  },
+  "updateAvailableButtonTitle": {
+    "message": "Update"
   }
 }

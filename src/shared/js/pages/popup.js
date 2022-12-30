@@ -76,7 +76,6 @@ import {
   const privateBrowsingPermissionsRequiredButton = document.getElementById(
     'privateBrowsingPermissionsRequiredButton',
   )
-
   const torNetwork = document.getElementById('torNetwork')
   const i2pNetwork = document.getElementById('i2pNetwork')
 
@@ -103,6 +102,19 @@ import {
     .getElementById('openOptionsPage')
     .addEventListener('click', async (target) => {
       await Browser.runtime.openOptionsPage()
+    })
+
+  Browser.storage.local
+    .get({ updateAvailable: false })
+    .then(({ updateAvailable }) => {
+      const highlightOptionsIcon =
+        document.getElementById('highlightOptionsIcon')
+
+      if (updateAvailable) {
+        highlightOptionsIcon.classList.remove('hidden')
+      } else {
+        highlightOptionsIcon.classList.add('hidden')
+      }
     })
 
   privateBrowsingPermissionsRequiredButton.addEventListener('click', () => {

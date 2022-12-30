@@ -449,5 +449,14 @@
   },
   "overlayNetworkDesc": {
     "message": "Censor Tracker позволяет открывать такие сайты в обычном браузере"
+  },
+  "updateAvailableTitle": {
+    "message": "Доступно обновление"
+  },
+  "updateAvailableDesc": {
+    "message": "Доступна новая версия Censor Tracker. Пожалуйста, обновите расширение."
+  },
+  "updateAvailableButtonTitle": {
+    "message": "Обновить"
   }
 }

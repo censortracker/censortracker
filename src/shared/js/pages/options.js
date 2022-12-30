@@ -31,6 +31,22 @@ import * as server from 'Background/server'
     'optionsRegistryProxyingListButton',
   )
   const backendIsIntermittentAlert = document.getElementById('backendIsIntermittentAlert')
+  const updateAvailableAlert = document.getElementById('updateAvailableAlert')
+  const updateExtensionButton = document.getElementById('updateExtensionButton')
+
+  Browser.storage.local.get({ updateAvailable: false })
+    .then(({ updateAvailable }) => {
+      if (updateAvailable) {
+        updateAvailableAlert.classList.remove('hidden')
+      }
+    })
+
+  updateExtensionButton.addEventListener('click', async (event) => {
+    Browser.storage.local.set({ updateAvailable: false })
+      .then(() => {
+        Browser.runtime.reload()
+      })
+  })
 
   Browser.storage.local.get('backendIsIntermittent')
     .then(({ backendIsIntermittent = false }) => {

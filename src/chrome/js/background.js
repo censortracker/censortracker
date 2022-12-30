@@ -5,6 +5,7 @@ import {
   handleInstalled,
   handleOnAlarm,
   handleOnConnect,
+  handleOnUpdateAvailable,
   handleProxyError,
   handleStartup,
   handleStorageChanged,
@@ -32,3 +33,4 @@ chrome.webNavigation.onBeforeNavigate.addListener(
 
 chrome.tabs.onUpdated.addListener(handleTabState)
 chrome.tabs.onCreated.addListener(handleTabCreate)
+chrome.runtime.onUpdateAvailable.addListener(handleOnUpdateAvailable)

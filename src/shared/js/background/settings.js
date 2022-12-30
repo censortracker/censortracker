@@ -69,6 +69,10 @@ class Settings {
     console.log('Settings.disableExtension()')
   }
 
+  async unsetPopupRedDot () {
+    await Browser.storage.local.set({ popupRedDot: false })
+  }
+
   async enableNotifications () {
     await Browser.storage.local.set({ showNotifications: true })
   }

@@ -1,3 +1,10 @@
+# 12.0.0
+
+- Fix locale issues
+- Refactor PAC file generator
+- Add support for '*.onion' and '*.i2p' domains
+- Add notification about update availability
+
 # 10.2.0
 
 - Fixed updating issue.

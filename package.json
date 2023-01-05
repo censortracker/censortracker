@@ -40,7 +40,7 @@
     "@typescript-eslint/eslint-plugin": "^5.22.0",
     "@typescript-eslint/parser": "^5.22.0",
     "babel-eslint": "^10.1.0",
-    "babel-loader": "^8.2.5",
+    "babel-loader": "^9.1.2",
     "copy-webpack-plugin": "^10.2.4",
     "css-loader": "^6.6.0",
     "css-minimizer-webpack-plugin": "^4.0.0",

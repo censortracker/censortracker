@@ -130,6 +130,7 @@ import Settings from 'Background/settings'
     }
     localConfig.browser = getBrowserInfo()
     localConfig.proxyLastFetchTs = proxyLastFetchTs
+    localConfig.badProxies = await ProxyManager.getBadProxies()
     localConfig.currentProxyURI = await ProxyManager.getProxyServerURI()
     localConfig.proxyControlled = await ProxyManager.controlledByThisExtension()
     debugInfoJSON.textContent = JSON.stringify(localConfig, null, 2)

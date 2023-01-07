@@ -1,14 +1,14 @@
 import { getPacScript } from 'Background/pac'
 
-import Browser from './browser-api'
-import Registry from './registry'
+import browser from './browser-api'
+import registry from './registry'
 
 class ProxyManager {
   async getProxyServerURI () {
     const {
       proxyServerURI,
       customProxyServerURI,
-    } = await Browser.storage.local.get([
+    } = await browser.storage.local.get([
       'proxyServerURI',
       'customProxyServerURI',
     ])
@@ -21,13 +21,13 @@ class ProxyManager {
   }
 
   async requestIncognitoAccess () {
-    if (Browser.IS_FIREFOX) {
+    if (browser.IS_FIREFOX) {
       const isAllowedIncognitoAccess =
-        await Browser.extension.isAllowedIncognitoAccess()
+        await browser.extension.isAllowedIncognitoAccess()
 
       if (!isAllowedIncognitoAccess) {
-        await Browser.browserAction.setBadgeText({ text: '✕' })
-        await Browser.storage.local.set({
+        await browser.browserAction.setBadgeText({ text: '✕' })
+        await browser.storage.local.set({
           privateBrowsingPermissionsRequired: true,
         })
         console.info('Private browsing permissions requested.')
@@ -36,9 +36,9 @@ class ProxyManager {
   }
 
   async grantIncognitoAccess () {
-    if (Browser.IS_FIREFOX) {
-      await Browser.browserAction.setBadgeText({ text: '' })
-      await Browser.storage.local.set({
+    if (browser.IS_FIREFOX) {
+      await browser.browserAction.setBadgeText({ text: '' })
+      await browser.storage.local.set({
         privateBrowsingPermissionsRequired: false,
       })
     }
@@ -46,7 +46,7 @@ class ProxyManager {
 
   async setProxy () {
     const config = {}
-    const domains = await Registry.getDomains()
+    const domains = await registry.getDomains()
     const proxyServerURI = await this.getProxyServerURI()
     const pacData = getPacScript({ domains, proxyServerURI })
 
@@ -55,7 +55,7 @@ class ProxyManager {
       return false
     }
 
-    if (Browser.IS_FIREFOX) {
+    if (browser.IS_FIREFOX) {
       const blob = new Blob([pacData], {
         type: 'application/x-ns-proxy-autoconfig',
       })
@@ -76,7 +76,7 @@ class ProxyManager {
     }
 
     try {
-      await Browser.proxy.settings.set(config)
+      await browser.proxy.settings.set(config)
       await this.enableProxy()
       await this.grantIncognitoAccess()
       console.warn('PAC has been set successfully!')
@@ -93,7 +93,7 @@ class ProxyManager {
    * ATTENTION: DO NOT MODIFY THIS FUNCTION!
    */
   async generateProxyAutoConfigData () {
-    const domains = await Registry.getDomains()
+    const domains = await registry.getDomains()
 
     if (domains.length === 0) {
       return undefined
@@ -105,19 +105,19 @@ class ProxyManager {
   }
 
   async removeProxy () {
-    await Browser.proxy.settings.clear({})
+    await browser.proxy.settings.clear({})
     console.warn('Proxy settings removed.')
   }
 
   async alive () {
     const { proxyIsAlive } =
-      await Browser.storage.local.get({ proxyIsAlive: true })
+      await browser.storage.local.get({ proxyIsAlive: true })
 
     return proxyIsAlive
   }
 
   async ping () {
-    const { proxyPingURI } = await Browser.storage.local.get('proxyPingURI')
+    const { proxyPingURI } = await browser.storage.local.get('proxyPingURI')
 
     fetch(`https://${proxyPingURI}`, {
       method: 'POST',
@@ -134,52 +134,52 @@ class ProxyManager {
   }
 
   async isEnabled () {
-    const { useProxy } = await Browser.storage.local.get({ useProxy: true })
+    const { useProxy } = await browser.storage.local.get({ useProxy: true })
 
     return useProxy
   }
 
   async enableProxy () {
     console.log('Proxying enabled.')
-    await Browser.storage.local.set({ useProxy: true, proxyIsAlive: true })
+    await browser.storage.local.set({ useProxy: true, proxyIsAlive: true })
   }
 
   async disableProxy () {
     console.warn('Proxying disabled.')
-    await Browser.storage.local.set({ useProxy: false })
+    await browser.storage.local.set({ useProxy: false })
   }
 
   async controlledByOtherExtensions () {
-    const { levelOfControl } = await Browser.proxy.settings.get({})
+    const { levelOfControl } = await browser.proxy.settings.get({})
 
     return levelOfControl === 'controlled_by_other_extensions'
   }
 
   async controlledByThisExtension () {
-    const { levelOfControl } = await Browser.proxy.settings.get({})
+    const { levelOfControl } = await browser.proxy.settings.get({})
 
     return levelOfControl === 'controlled_by_this_extension'
   }
 
   async takeControl () {
-    const self = await Browser.management.getSelf()
-    const extensions = await Browser.management.getAll()
+    const self = await browser.management.getSelf()
+    const extensions = await browser.management.getAll()
 
     for (const { id, name, permissions } of extensions) {
       if (permissions.includes('proxy') && name !== self.name) {
         console.warn(`Disabling ${name}...`)
-        await Browser.management.setEnabled(id, false)
+        await browser.management.setEnabled(id, false)
       }
     }
   }
 
   async removeBadProxies () {
-    await Browser.storage.local.set({ badProxies: [] })
+    await browser.storage.local.set({ badProxies: [] })
   }
 
   async getBadProxies () {
     const { badProxies } =
-      await Browser.storage.local.get({ badProxies: [] })
+      await browser.storage.local.get({ badProxies: [] })
 
     return badProxies
   }

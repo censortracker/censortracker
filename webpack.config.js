@@ -225,7 +225,7 @@ const webConfig = {
       filename: 'advanced-options.html',
       template: 'src/shared/pages/advanced-options.html',
       inject: true,
-      chunks: ['options', 'advanced-options', 'translator'],
+      chunks: ['advanced-options', 'translator'],
       meta: contentSecurityPolicy,
     }),
     new HTMLWebpackPlugin({

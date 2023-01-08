@@ -17,18 +17,14 @@ class Task {
    * @type tasks Array<{ name: string, minutes: number }>.
    */
   async schedule (tasks = []) {
-    console.groupCollapsed('Task.schedule(tasks)')
     for (const { name, minutes } of tasks) {
       const alarm = await Browser.alarms.get(name)
 
-      if (alarm) {
-        console.warn(`Task «${name}» already scheduled!`)
-      } else {
+      if (!alarm) {
         Browser.alarms.create(name, { periodInMinutes: minutes })
         console.log(`Scheduled «${name}» to run every ${minutes} minutes`)
       }
     }
-    console.groupEnd()
   }
 }
 

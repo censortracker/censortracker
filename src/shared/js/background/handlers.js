@@ -7,12 +7,6 @@ import Settings from './settings'
 import Task from './task'
 import * as utilities from './utilities'
 
-const TaskType = {
-  SET_PROXY: 'setProxy',
-  PING_PROXY: 'pingProxy',
-  REMOVE_BAD_PROXIES: 'removeBadProxies',
-}
-
 export const handleOnConnect = (port) => {
   if (port.name === 'censortracker') {
     port.onMessage.addListener((message) => {
@@ -28,11 +22,10 @@ export const handleOnConnect = (port) => {
 
 export const warnAboutInformationDisseminationOrganizer = async (url) => {
   const hostname = utilities.extractDomainFromUrl(url)
-  const { notifiedHosts, showNotifications } =
-    await Browser.storage.local.get({
-      notifiedHosts: [],
-      showNotifications: true,
-    })
+  const { notifiedHosts, showNotifications } = await Browser.storage.local.get({
+    notifiedHosts: [],
+    showNotifications: true,
+  })
 
   if (showNotifications && !notifiedHosts.includes(hostname)) {
     await Browser.notifications.create(hostname, {
@@ -53,17 +46,16 @@ export const warnAboutInformationDisseminationOrganizer = async (url) => {
 
 export const handleOnAlarm = async ({ name }) => {
   console.log(`Task received: ${name}`)
-
   const proxyingEnabled = await ProxyManager.isEnabled()
 
-  if (name === TaskType.REMOVE_BAD_PROXIES) {
+  if (name === 'removeBadProxies') {
     await ProxyManager.removeBadProxies()
-  } else if (name === TaskType.SET_PROXY) {
+  } else if (name === 'setProxy') {
     if (proxyingEnabled) {
       await server.synchronize()
       await ProxyManager.setProxy()
     }
-  } else if (name === TaskType.PING_PROXY) {
+  } else if (name === 'pingProxy') {
     await ProxyManager.ping()
   } else {
     console.warn(`Unknown task: ${name}`)
@@ -85,9 +77,8 @@ export const handleStartup = async () => {
   }
 
   await Task.schedule([
-    { name: TaskType.SET_PROXY, minutes: 8 },
-    { name: TaskType.PING_PROXY, minutes: 3 },
-    { name: TaskType.REMOVE_BAD_PROXIES, minutes: 5 },
+    { name: 'setProxy', minutes: 8 },
+    { name: 'removeBadProxies', minutes: 5 },
   ])
   console.groupEnd()
 }
@@ -97,12 +88,11 @@ export const handleIgnoredHostsChange = async (
   _areaName,
 ) => {
   if ('newValue' in ignoredHosts) {
-    ProxyManager.isEnabled()
-      .then((enabled) => {
-        if (enabled) {
-          ProxyManager.setProxy().then((proxySet) => {})
-        }
-      })
+    ProxyManager.isEnabled().then((enabled) => {
+      if (enabled) {
+        ProxyManager.setProxy().then((proxySet) => {})
+      }
+    })
   }
 }
 
@@ -110,17 +100,15 @@ export const handleCustomProxiedDomainsChange = async (
   { customProxiedDomains: { newValue } = {} } = {},
   _areaName,
 ) => {
-  Settings.extensionEnabled()
-    .then((enableExtension) => {
-      if (enableExtension && newValue) {
-        ProxyManager.isEnabled()
-          .then(async (proxyingEnabled) => {
-            if (proxyingEnabled) {
-              await ProxyManager.setProxy()
-            }
-          })
-      }
-    })
+  Settings.extensionEnabled().then((enableExtension) => {
+    if (enableExtension && newValue) {
+      ProxyManager.isEnabled().then(async (proxyingEnabled) => {
+        if (proxyingEnabled) {
+          await ProxyManager.setProxy()
+        }
+      })
+    }
+  })
 }
 
 /**
@@ -211,8 +199,9 @@ export const handleInstalled = async ({ reason }) => {
     await ProxyManager.setProxy()
     await ProxyManager.ping()
     await Task.schedule([
-      { name: TaskType.SET_PROXY, minutes: 8 },
-      { name: TaskType.REMOVE_BAD_PROXIES, minutes: 5 },
+      { name: 'setProxy', minutes: 8 },
+      { name: 'pingProxy', minutes: 3 },
+      { name: 'removeBadProxies', minutes: 5 },
     ])
   }
 }
@@ -253,8 +242,11 @@ export const handleTabState = async (
 }
 
 export const handleTabCreate = async (tab) => {
-  Settings.extensionEnabled().then((enabled) => {
+  Settings.extensionEnabled().then(async (enabled) => {
     if (enabled) {
+      await Task.schedule([
+        { name: 'pingProxy', minutes: 3 },
+      ])
       Settings.setDefaultIcon(tab.id)
     } else {
       Settings.setDisableIcon(tab.id)
@@ -265,8 +257,6 @@ export const handleTabCreate = async (tab) => {
 export const handleProxyError = async ({ error }) => {
   error = error.replace('net::', '')
   const { useOwnProxy } = await Browser.storage.local.get('useOwnProxy')
-
-  console.error(`Current proxy error: ${error}`)
 
   if (useOwnProxy) {
     return

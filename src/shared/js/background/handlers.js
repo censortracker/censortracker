@@ -7,6 +7,12 @@ import Settings from './settings'
 import Task from './task'
 import * as utilities from './utilities'
 
+const TaskType = {
+  SET_PROXY: 'setProxy',
+  PING_PROXY: 'pingProxy',
+  REMOVE_BAD_PROXIES: 'removeBadProxies',
+}
+
 export const handleOnConnect = (port) => {
   if (port.name === 'censortracker') {
     port.onMessage.addListener((message) => {
@@ -22,10 +28,11 @@ export const handleOnConnect = (port) => {
 
 export const warnAboutInformationDisseminationOrganizer = async (url) => {
   const hostname = utilities.extractDomainFromUrl(url)
-  const { notifiedHosts, showNotifications } = await Browser.storage.local.get({
-    notifiedHosts: [],
-    showNotifications: true,
-  })
+  const { notifiedHosts, showNotifications } =
+    await Browser.storage.local.get({
+      notifiedHosts: [],
+      showNotifications: true,
+    })
 
   if (showNotifications && !notifiedHosts.includes(hostname)) {
     await Browser.notifications.create(hostname, {
@@ -47,15 +54,17 @@ export const warnAboutInformationDisseminationOrganizer = async (url) => {
 export const handleOnAlarm = async ({ name }) => {
   console.log(`Task received: ${name}`)
 
-  if (name === 'removeBadProxies') {
+  const proxyingEnabled = await ProxyManager.isEnabled()
+
+  if (name === TaskType.REMOVE_BAD_PROXIES) {
     await ProxyManager.removeBadProxies()
-  } else if (name === 'setProxy') {
-    ProxyManager.isEnabled().then(async (proxyingEnabled) => {
-      if (proxyingEnabled) {
-        await server.synchronize()
-        await ProxyManager.setProxy()
-      }
-    })
+  } else if (name === TaskType.SET_PROXY) {
+    if (proxyingEnabled) {
+      await server.synchronize()
+      await ProxyManager.setProxy()
+    }
+  } else if (name === TaskType.PING_PROXY) {
+    await ProxyManager.ping()
   } else {
     console.warn(`Unknown task: ${name}`)
   }
@@ -76,8 +85,9 @@ export const handleStartup = async () => {
   }
 
   await Task.schedule([
-    { name: 'setProxy', minutes: 8 },
-    { name: 'removeBadProxies', minutes: 5 },
+    { name: TaskType.SET_PROXY, minutes: 8 },
+    { name: TaskType.PING_PROXY, minutes: 3 },
+    { name: TaskType.REMOVE_BAD_PROXIES, minutes: 5 },
   ])
   console.groupEnd()
 }
@@ -87,11 +97,12 @@ export const handleIgnoredHostsChange = async (
   _areaName,
 ) => {
   if ('newValue' in ignoredHosts) {
-    ProxyManager.isEnabled().then((enabled) => {
-      if (enabled) {
-        ProxyManager.setProxy().then((proxySet) => {})
-      }
-    })
+    ProxyManager.isEnabled()
+      .then((enabled) => {
+        if (enabled) {
+          ProxyManager.setProxy().then((proxySet) => {})
+        }
+      })
   }
 }
 
@@ -99,15 +110,17 @@ export const handleCustomProxiedDomainsChange = async (
   { customProxiedDomains: { newValue } = {} } = {},
   _areaName,
 ) => {
-  Settings.extensionEnabled().then((enableExtension) => {
-    if (enableExtension && newValue) {
-      ProxyManager.isEnabled().then(async (proxyingEnabled) => {
-        if (proxyingEnabled) {
-          await ProxyManager.setProxy()
-        }
-      })
-    }
-  })
+  Settings.extensionEnabled()
+    .then((enableExtension) => {
+      if (enableExtension && newValue) {
+        ProxyManager.isEnabled()
+          .then(async (proxyingEnabled) => {
+            if (proxyingEnabled) {
+              await ProxyManager.setProxy()
+            }
+          })
+      }
+    })
 }
 
 /**
@@ -198,8 +211,8 @@ export const handleInstalled = async ({ reason }) => {
     await ProxyManager.setProxy()
     await ProxyManager.ping()
     await Task.schedule([
-      { name: 'setProxy', minutes: 8 },
-      { name: 'removeBadProxies', minutes: 5 },
+      { name: TaskType.SET_PROXY, minutes: 8 },
+      { name: TaskType.REMOVE_BAD_PROXIES, minutes: 5 },
     ])
   }
 }
@@ -252,6 +265,8 @@ export const handleTabCreate = async (tab) => {
 export const handleProxyError = async ({ error }) => {
   error = error.replace('net::', '')
   const { useOwnProxy } = await Browser.storage.local.get('useOwnProxy')
+
+  console.error(`Current proxy error: ${error}`)
 
   if (useOwnProxy) {
     return

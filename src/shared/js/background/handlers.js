@@ -46,17 +46,16 @@ export const warnAboutInformationDisseminationOrganizer = async (url) => {
 
 export const handleOnAlarm = async ({ name }) => {
   console.log(`Task received: ${name}`)
-  const proxyingEnabled = await ProxyManager.isEnabled()
 
   if (name === 'removeBadProxies') {
     await ProxyManager.removeBadProxies()
   } else if (name === 'setProxy') {
-    if (proxyingEnabled) {
-      await server.synchronize()
-      await ProxyManager.setProxy()
-    }
-  } else if (name === 'pingProxy') {
-    await ProxyManager.ping()
+    ProxyManager.isEnabled().then(async (proxyingEnabled) => {
+      if (proxyingEnabled) {
+        await server.synchronize()
+        await ProxyManager.setProxy()
+      }
+    })
   } else {
     console.warn(`Unknown task: ${name}`)
   }
@@ -200,7 +199,6 @@ export const handleInstalled = async ({ reason }) => {
     await ProxyManager.ping()
     await Task.schedule([
       { name: 'setProxy', minutes: 8 },
-      { name: 'pingProxy', minutes: 3 },
       { name: 'removeBadProxies', minutes: 5 },
     ])
   }
@@ -242,11 +240,8 @@ export const handleTabState = async (
 }
 
 export const handleTabCreate = async (tab) => {
-  Settings.extensionEnabled().then(async (enabled) => {
+  Settings.extensionEnabled().then((enabled) => {
     if (enabled) {
-      await Task.schedule([
-        { name: 'pingProxy', minutes: 3 },
-      ])
       Settings.setDefaultIcon(tab.id)
     } else {
       Settings.setDisableIcon(tab.id)

@@ -95,7 +95,7 @@ export const translateDocument = (doc, props = {}) => {
  * @param urls Array of urls.
  * @returns {Array[string]} Array of valid URLs.
  */
-export const parseURLStrings = (urls) => {
+export const removeDuplicates = (urls) => {
   const result = new Set()
 
   for (const url of urls) {

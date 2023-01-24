@@ -4,9 +4,9 @@ import 'codemirror/addon/search/searchcursor'
 import 'codemirror/addon/display/autorefresh'
 import 'codemirror/lib/codemirror.css'
 
-import browser from 'Background/browser-api'
+import Browser from 'Background/browser-api'
 import Ignore from 'Background/ignore'
-import { parseURLStrings } from 'Background/utilities'
+import { removeDuplicates } from 'Background/utilities'
 import CodeMirror from 'codemirror'
 
 (async () => {
@@ -48,12 +48,12 @@ import CodeMirror from 'codemirror'
   saveChangesButton.addEventListener('click', async (event) => {
     const editorContent = editor.getValue().trim()
     const urls = editorContent.split('\n')
-    const validUrls = parseURLStrings(urls)
+    const validUrls = removeDuplicates(urls)
 
     if (isIgnorePage) {
       await Ignore.set(validUrls)
     } else {
-      await browser.storage.local.set({
+      await Browser.storage.local.set({
         customProxiedDomains: validUrls,
       })
     }
@@ -65,7 +65,7 @@ import CodeMirror from 'codemirror'
       editor.setValue(ignoredHosts.join('\n'))
     })
   } else {
-    browser.storage.local.get({ customProxiedDomains: [] })
+    Browser.storage.local.get({ customProxiedDomains: [] })
       .then(({ customProxiedDomains }) => {
         editor.setValue(customProxiedDomains.join('\n'))
       })

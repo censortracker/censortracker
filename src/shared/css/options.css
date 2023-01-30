@@ -17,10 +17,6 @@ a {
     color: #3b332b;
 }
 
-.options-body {
-    background-color: #fafafa;
-}
-
 .options-page-card {
     padding: 20px 30px;
     width: 100%;
@@ -676,7 +672,7 @@ kbd {
     font-weight: 500;
 }
 
-#state-title {
+.state-title {
     opacity: 0.5;
     color: #3B332B;
     font-size: 13px;
@@ -943,6 +939,7 @@ kbd {
 @media (prefers-color-scheme: dark) {
     .options-body, body {
         background-color: #181A1B;
+        color: #F4F1F1;
     }
 
     .options-page-card {
@@ -1000,7 +997,8 @@ kbd {
         margin-left: 400px;
     }
 
-    .main-page__link:hover, .link-ignored:hover {
+    .main-page__link:hover,
+    .link-ignored:hover {
         color: #F4F1F1;
         opacity: 0.3;
     }
@@ -1012,7 +1010,8 @@ kbd {
 
     .option__link,
     .option__title,
-    .extension__title {
+    .extension__title,
+    .popup-text {
         color: #F4F1F1;
     }
 
@@ -1031,9 +1030,66 @@ kbd {
         background: #61666B;
     }
 
+    .options-page-card .options-hr {
+        height: 0;
+        border: 0.1px solid #3A3C3E;
+    }
+
+    a {
+        color: #F4F1F1;
+    }
+
+    a:hover {
+        color: #FFFFFF;
+    }
+
+    .btn-what-this-mean:hover {
+        color: #FFFFFF;
+    }
+
+    .main-page__turn:hover,
+    .toggle-text:hover,
+    .option:hover,
+    .main-page__link:hover > span,
+    .use_proxy__link:hover {
+        color: #FFFFFF;
+        cursor: pointer;
+    }
+
+    .popup {
+        background-color: #181A1B;
+    }
+
+    .toggle-button {
+        background: #61666B;
+    }
+
+    .popup .popup-content .close-popup path {
+        stroke: #F1F1F1;
+    }
+
+    textarea, input {
+        background: #242728;
+        color: #F4F1F1;
+        caret-color: #F4F1F1;
+    }
+
+    #optionsRegistryIsEmptyWarning {
+        border: 1px solid #61666B;
+    }
+
+    .proxy__disclaimer {
+        border: 1px solid #61666B;
+        background-color: #242728;
+        color: #F4F1F1;
+    }
+
+    .proxy__disclaimer .disclaimer__text {
+        color: #F4F1F1;
+    }
+
+    .proxy__disclaimer .disclaimer__text a {
+        text-decoration: underline;
+    }
+
 }
-
-
-/*@media (prefers-color-scheme: light) {*/
-/*    */
-/*}*/

@@ -139,6 +139,7 @@ a {
 .option__link,
 .main-page__link,
 .extension__title,
+.option__title,
 .disclaimer__title {
     font-size: 16px;
     line-height: 20px;
@@ -675,7 +676,7 @@ kbd {
     font-weight: 500;
 }
 
-#proxyStatus {
+#state-title {
     opacity: 0.5;
     color: #3B332B;
     font-size: 13px;
@@ -939,9 +940,98 @@ kbd {
 }
 
 
-/*@media (prefers-color-scheme: dark) {*/
+@media (prefers-color-scheme: dark) {
+    .options-body, body {
+        background-color: #181A1B;
+    }
 
-/*}*/
+    .options-page-card {
+        background-color: #242728;
+    }
+
+    .main-page__title {
+        color: #F4F1F1;
+    }
+
+    .options-page-card .block__title {
+        color: #F4F1F1;
+        opacity: 0.5;
+    }
+
+    a {
+        color: #F4F1F1;
+    }
+
+    label {
+        color: #F4F1F1;
+    }
+
+    .description, .extension__text, .main-page__about {
+        color: #F4F1F1;
+        opacity: 0.5;
+    }
+
+    .options-page-card {
+        border-bottom: none;
+    }
+
+    .options-page-card .options-hr {
+
+    }
+
+    .options-links .option-link-text {
+        color: #F4F1F1;
+        opacity: none;
+    }
+
+    .main-page__link svg {
+        fill: #F4F1F1;
+    }
+
+    .main-page__return svg {
+        fill: #F4F1F1;
+    }
+
+    .state-title {
+        color: #F4F1F1;
+        opacity: 0.5;
+        font-size: 13px;
+        line-height: 17px;
+        margin-left: 400px;
+    }
+
+    .main-page__link:hover, .link-ignored:hover {
+        color: #F4F1F1;
+        opacity: 0.3;
+    }
+
+    #version {
+        color: #F4F1F1;
+        opacity: 0.5;
+    }
+
+    .option__link,
+    .option__title,
+    .extension__title {
+        color: #F4F1F1;
+    }
+
+    .main-page__extension {
+        background-color: #242728;
+    }
+
+    .btn-dark,
+    .default-btn {
+        background: #484C51;
+        border-radius: 4px;
+    }
+
+    .btn:hover,
+    .default-btn:hover {
+        background: #61666B;
+    }
+
+}
 
 
 /*@media (prefers-color-scheme: light) {*/

@@ -12,6 +12,7 @@ import * as server from 'Background/server'
   const showNotificationsCheckbox = document.getElementById(
     'showNotificationsCheckbox',
   )
+  const useDarkThemeCheckbox = document.getElementById('useDarkThemeCheckbox')
   const howToGrantIncognitoAccess = document.getElementById(
     'howToGrantIncognitoAccess',
   )
@@ -115,6 +116,27 @@ import * as server from 'Background/server'
         )
       }
     }
+  }
+  const { useDarkTheme } = await Browser.storage.local.get({
+    useDarkTheme: false,
+  })
+
+  if (useDarkTheme) {
+    useDarkThemeCheckbox.checked = useDarkTheme
+  }
+
+  if (useDarkThemeCheckbox) {
+    useDarkThemeCheckbox.addEventListener('change', async () => {
+      if (useDarkThemeCheckbox.checked) {
+        await Browser.storage.local.set({
+          useDarkTheme: true,
+        })
+      } else {
+        await Browser.storage.local.set({
+          useDarkTheme: false,
+        })
+      }
+    }, false)
   }
 
   if (showNotificationsCheckbox) {

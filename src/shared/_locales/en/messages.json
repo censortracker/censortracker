@@ -458,5 +458,14 @@
   },
   "updateAvailableButtonTitle": {
     "message": "Update"
+  },
+  "appearanceCardTitle": {
+    "message": "Appearance"
+  },
+  "appearanceDarkThemeTitle": {
+    "message": "Dark Mode"
+  },
+  "appearanceDarkThemeDesc": {
+    "message": "You can turn on a dark theme to work comfortably with the Censor Tracker at night."
   }
 }

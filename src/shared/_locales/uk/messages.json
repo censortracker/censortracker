@@ -458,5 +458,14 @@
    },
    "updateAvailableButtonTitle": {
       "message": "Оновити"
+   },
+   "appearanceCardTitle": {
+      "message": "Зовнішній вигляд"
+   },
+   "appearanceDarkThemeTitle": {
+      "message": "Темна тема"
+   },
+   "appearanceDarkThemeDesc": {
+      "message": "Ви можете ввімкнути темну тему, щоб комфортно працювати з Censor Tracker вночі."
    }
 }

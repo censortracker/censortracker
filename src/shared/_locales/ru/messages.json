@@ -458,5 +458,14 @@
   },
   "updateAvailableButtonTitle": {
     "message": "Обновить"
+  },
+  "appearanceCardTitle": {
+    "message": "Внешний вид"
+  },
+  "appearanceDarkThemeTitle": {
+    "message": "Темная тема"
+  },
+  "appearanceDarkThemeDesc": {
+    "message": "Вы можете включить темную тему, чтобы комфортно работать с Censor Tracker ночью."
   }
 }

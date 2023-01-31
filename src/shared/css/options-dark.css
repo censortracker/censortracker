@@ -153,3 +153,6 @@ textarea, input {
     text-decoration: underline;
 }
 
+#privateBrowsingPermissionsRequiredMessage {
+    border: .1px solid #3a3c3e;
+}

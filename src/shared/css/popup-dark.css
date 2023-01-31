@@ -98,3 +98,8 @@ body {
 .icon__back path {
     fill: #F4F1F1;
 }
+
+#privateBrowsingPermissionsRequiredButton {
+    background: #242728;
+    color: #F4F1F1;
+}

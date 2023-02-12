@@ -57,7 +57,7 @@
     "eslint-plugin-standard": "^5.0.0",
     "file-loader": "^6.2.0",
     "fs": "^0.0.1-security",
-    "got": ">=11.8.5",
+    "got": ">=12.5.3",
     "html-loader": "^3.1.0",
     "html-webpack-plugin": "^5.5.0",
     "merge-jsons-webpack-plugin": "^2.0.1",

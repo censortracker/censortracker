@@ -238,6 +238,11 @@ hr {
     padding: 0.1em 0.6em;
 }
 
+.browsers {
+    column-count: 3;
+    display: block !important;
+}
+
 @media (max-width: 400px) {
     .ml-md-0, .mx-md-0 {
         margin-right: 0.5rem !important;

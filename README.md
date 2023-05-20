@@ -24,21 +24,20 @@ Censor Tracker provides a lot of useful features, here are the most important:
 - Censorship-resistant itself
 - Warns about websites that transfer data to third parties
 
+Права
+=====
 
-Permissions
-===========
+Censor Tracker требует следующих прав:
 
-Censor Tracker requires the following permissions:
-
-- `alarms` to support periodic tasks
-- `activeTab` to detect IDO websites
-- `management` to be able to detect permission conflicts
-- `notifications` to show notifications
-- `proxy` to configure and use Censor Tracker proxy servers
-- `storage` to save preferences
-- `unlimitedStorage` to save the database of blocked websites
-- `webNavigation` for handling requests
-- `http://*/*`/`https://*/*` to proxy any website, retrieve the list of proxy servers, and detect the user's country
+- `alarms` для поддержки периодических заданий (синхронизация базы данных и т.п.)
+- `activeTab` для обнаружения веб-сайтов, являющихся ОРИ
+- `management` для обнаружения конфликтов разрешений
+- `notifications` для отображения уведомлений
+- `proxy` для настройки и использования прокси-серверов Censor Tracker
+- `storage` для сохранения настроек
+- `unlimitedStorage` для сохранения базы данных заблокированных сайтов (в базе более 250 тыс. веб-сайтов)
+- `webNavigation` для обработки запросов
+- `http://*/*`/`https://*/*` для проксирования любого сайта, получения списка прокси-серверов и определения страны пользователя
 
 
 Requirements

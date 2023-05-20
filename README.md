@@ -37,7 +37,7 @@ Censor Tracker requires the following permissions:
 - `storage` to save preferences
 - `unlimitedStorage` to save the database of blocked websites
 - `webNavigation` for handling requests
-- `http://*/*`/`https://*/*` to proxy any website, retrieve the list of proxy servers, and detect the user's country
+- `http://*/*` and `https://*/*` to proxy any website, retrieve the list of proxy servers, and detect the user's country
 
 Requirements
 ============

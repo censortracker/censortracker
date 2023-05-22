@@ -12,7 +12,6 @@ import * as server from 'Background/server'
   const showNotificationsCheckbox = document.getElementById(
     'showNotificationsCheckbox',
   )
-  const useDarkThemeCheckbox = document.getElementById('useDarkThemeCheckbox')
   const howToGrantIncognitoAccess = document.getElementById(
     'howToGrantIncognitoAccess',
   )
@@ -34,22 +33,6 @@ import * as server from 'Background/server'
   const backendIsIntermittentAlert = document.getElementById('backendIsIntermittentAlert')
   const updateAvailableAlert = document.getElementById('updateAvailableAlert')
   const updateExtensionButton = document.getElementById('updateExtensionButton')
-
-  const { useDarkTheme } = await Browser.storage.local.get({
-    useDarkTheme: false,
-  })
-
-  if (useDarkTheme) {
-    useDarkThemeCheckbox.checked = useDarkTheme
-  }
-
-  if (useDarkThemeCheckbox) {
-    useDarkThemeCheckbox.addEventListener('change', async () => {
-      await Browser.storage.local.set({
-        useDarkTheme: useDarkThemeCheckbox.checked,
-      })
-    }, false)
-  }
 
   Browser.storage.local.get({ updateAvailable: false })
     .then(({ updateAvailable }) => {

@@ -93,7 +93,6 @@ const webConfig = {
     'rules-editor': './src/shared/js/pages/rules-editor.js',
     'translator': './src/shared/js/pages/translator.js',
     'controlled': './src/shared/js/pages/controlled.js',
-    'appearance': './src/shared/js/pages/appearance.js'
   },
   output: {
     path: resolve(`dist/${BROWSER}/${OUTPUT_SUB_DIR}`),
@@ -190,21 +189,21 @@ const webConfig = {
       filename: 'popup.html',
       template: 'src/shared/pages/popup.html',
       inject: true,
-      chunks: ['popup', 'translator', 'appearance'],
+      chunks: ['popup', 'translator'],
       meta: contentSecurityPolicy,
     }),
     new HTMLWebpackPlugin({
       filename: 'ignore-list.html',
       template: 'src/shared/pages/ignore-list.html',
       inject: true,
-      chunks: ['rules-editor', 'translator', 'appearance'],
+      chunks: ['rules-editor', 'translator'],
       meta: contentSecurityPolicy,
     }),
     new HTMLWebpackPlugin({
       filename: 'proxy-list.html',
       template: 'src/shared/pages/proxy-list.html',
       inject: true,
-      chunks: ['rules-editor', 'translator', 'appearance'],
+      chunks: ['rules-editor', 'translator'],
       meta: contentSecurityPolicy,
     }),
     new HTMLWebpackPlugin({
@@ -212,21 +211,21 @@ const webConfig = {
       filename: 'registry.html',
       template: 'src/shared/pages/registry.html',
       inject: true,
-      chunks: ['registry-options', 'translator', 'appearance'],
+      chunks: ['registry-options', 'translator'],
       meta: contentSecurityPolicy,
     }),
     new HTMLWebpackPlugin({
       filename: 'options.html',
       template: 'src/shared/pages/options.html',
       inject: true,
-      chunks: ['options', 'translator', 'appearance'],
+      chunks: ['options', 'translator'],
       meta: contentSecurityPolicy,
     }),
     new HTMLWebpackPlugin({
       filename: 'advanced-options.html',
       template: 'src/shared/pages/advanced-options.html',
       inject: true,
-      chunks: ['advanced-options', 'translator', 'appearance'],
+      chunks: ['advanced-options', 'translator'],
       meta: contentSecurityPolicy,
     }),
     new HTMLWebpackPlugin({
@@ -234,7 +233,7 @@ const webConfig = {
       filename: 'proxy-options.html',
       template: 'src/shared/pages/proxy-options.html',
       inject: true,
-      chunks: ['proxy-options', 'controlled', 'appearance'],
+      chunks: ['proxy-options', 'controlled'],
       meta: contentSecurityPolicy,
     }),
     new HTMLWebpackPlugin({
@@ -242,7 +241,7 @@ const webConfig = {
       filename: 'controlled.html',
       template: `src/shared/pages/controlled.html`,
       inject: true,
-      chunks: ['controlled', 'appearance'],
+      chunks: ['controlled'],
       meta: contentSecurityPolicy,
     }),
     new MergeJsonWebpackPlugin({
@@ -277,7 +276,7 @@ if (isFirefox) {
     filename: 'incognito-required-popup.html',
     template: 'src/firefox/pages/incognito-required-popup.html',
     inject: true,
-    chunks: ['translator','incognito_required', 'appearance'],
+    chunks: ['translator','incognito_required'],
     meta: contentSecurityPolicy,
   }))
   webConfig.plugins.push(new HTMLWebpackPlugin({
@@ -285,7 +284,7 @@ if (isFirefox) {
     filename: 'installed.html',
     template: 'src/firefox/pages/installed.html',
     inject: true,
-    chunks: ['installed', 'translator', 'appearance'],
+    chunks: ['installed', 'translator'],
     meta: contentSecurityPolicy,
   }))
   webConfig.plugins.push(new HTMLWebpackPlugin({
@@ -293,7 +292,7 @@ if (isFirefox) {
     filename: 'incognito-required-tab.html',
     template: 'src/firefox/pages/incognito-required-tab.html',
     inject: true,
-    chunks: ['translator', 'incognito_required', 'appearance'],
+    chunks: ['translator', 'incognito_required'],
     meta: contentSecurityPolicy,
   }))
 }
@@ -304,7 +303,7 @@ if (isChromium) {
     filename: 'installed.html',
     template: `src/${BROWSER}/pages/installed.html`,
     inject: true,
-    chunks: ['translator', 'appearance'],
+    chunks: ['translator'],
     meta: contentSecurityPolicy,
   }))
 }

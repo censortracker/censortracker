@@ -467,5 +467,8 @@
   },
   "appearanceDarkThemeDesc": {
     "message": "Вы можете включить темную тему, чтобы комфортно работать с Censor Tracker ночью."
+  },
+  "optionsSavedMessage": {
+    "message": "✅ Изменения сохранены"
   }
 }

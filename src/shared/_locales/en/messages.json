@@ -467,5 +467,8 @@
   },
   "appearanceDarkThemeDesc": {
     "message": "You can turn on a dark theme to work comfortably with the Censor Tracker at night."
+  },
+  "optionsSavedMessage": {
+    "message": "✅ Changes saved"
   }
 }

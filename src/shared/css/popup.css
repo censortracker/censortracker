@@ -641,3 +641,122 @@ div#grantPrivateBrowsingPermissionsButton {
     margin-left: auto;
     margin-right: 28px;
 }
+
+@media (prefers-color-scheme: dark) {
+    body {
+        background: #242728;
+    }
+
+    .censor-tracker {
+        background: #303436;
+    }
+
+    .block__btn span {
+        color: #F4F1F1;
+    }
+
+    .censor-tracker__title,
+    .block__title,
+    .title-disabled {
+        color: #F4F1F1;
+    }
+
+    .censor-tracker__btn {
+        background-color: #484C50;
+    }
+
+    .censor-tracker__btn:hover {
+        background-color: #61666B;
+    }
+
+    .icon__settings {
+        background-color: #94918F;
+    }
+
+    .main-page__info .icon__site_settings.icon-show {
+        background-color: #929191;
+    }
+
+    .main-page__info .icon__site_settings.icon-hide {
+        background-color: #3b332b;
+    }
+
+    .text-normal {
+        background-color: #2B323B;
+        color: #F4F1F1;
+    }
+
+    .btn-ok {
+        border: 1px solid #F4F1F1;
+    }
+
+    .text-warning {
+        background-color: #382E2E;
+    }
+
+    .main-page-setting {
+        background-color: #2B323B;
+    }
+
+    .main-page-setting:after {
+        border-bottom: 10px solid #2B323B;
+    }
+
+    .site-actions-group label {
+        border: 1px solid #F4F1F1;
+        background-color: #2B323B;
+    }
+
+    .site-actions-group input[type=radio]:checked+label {
+        background-color: #F4F1F1;
+        color: #0D0D0D;
+    }
+
+    .site-actions-group {
+        color: #F4F1F1 !important;
+    }
+
+    .proxy_info {
+        color: #f4f1f1 !important;
+        opacity: 0.6;
+    }
+
+    .footer-btn {
+        background-color: #242728;
+        color: #F4F1F1;
+    }
+
+    .text-extension {
+        color: #F4F1F1;
+    }
+
+    .default-btn {
+        background: #484C51;
+        box-shadow: 0px 2.01027px 11.8382px rgba(15, 13, 11, 0.055), 0px 1.12694px 6.63642px rgba(15, 13, 11, 0.0655718), 0px 0.598509px 3.52455px rgba(15, 13, 11, 0.079074);
+        border-radius: 4px;
+    }
+
+    .default-btn:hover {
+        background: #61666B;
+    }
+
+    .icon__back path {
+        fill: #F4F1F1;
+    }
+
+    #privateBrowsingPermissionsRequiredButton {
+        background: #242728;
+        color: #F4F1F1;
+    }
+
+    .footer-btn>div:hover {
+        color: #f4f1f1;
+        cursor: pointer
+    }
+
+    .block__btn:hover {
+        color: #f4f1f1;
+        cursor: pointer
+    }
+
+}

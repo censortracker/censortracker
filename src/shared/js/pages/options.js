@@ -35,6 +35,22 @@ import * as server from 'Background/server'
   const updateAvailableAlert = document.getElementById('updateAvailableAlert')
   const updateExtensionButton = document.getElementById('updateExtensionButton')
 
+  const { useDarkTheme } = await Browser.storage.local.get({
+    useDarkTheme: false,
+  })
+
+  if (useDarkTheme) {
+    useDarkThemeCheckbox.checked = useDarkTheme
+  }
+
+  if (useDarkThemeCheckbox) {
+    useDarkThemeCheckbox.addEventListener('change', async () => {
+      await Browser.storage.local.set({
+        useDarkTheme: useDarkThemeCheckbox.checked,
+      })
+    }, false)
+  }
+
   Browser.storage.local.get({ updateAvailable: false })
     .then(({ updateAvailable }) => {
       if (updateAvailable) {
@@ -117,37 +133,12 @@ import * as server from 'Background/server'
       }
     }
   }
-  const { useDarkTheme } = await Browser.storage.local.get({
-    useDarkTheme: false,
-  })
-
-  if (useDarkTheme) {
-    useDarkThemeCheckbox.checked = useDarkTheme
-  }
-
-  if (useDarkThemeCheckbox) {
-    useDarkThemeCheckbox.addEventListener('change', async () => {
-      if (useDarkThemeCheckbox.checked) {
-        await Browser.storage.local.set({
-          useDarkTheme: true,
-        })
-      } else {
-        await Browser.storage.local.set({
-          useDarkTheme: false,
-        })
-      }
-    }, false)
-  }
 
   if (showNotificationsCheckbox) {
     showNotificationsCheckbox.addEventListener('change', async () => {
-      if (showNotificationsCheckbox.checked) {
-        console.log('Notifications enabled.')
-        await Browser.storage.local.set({ showNotifications: true })
-      } else {
-        console.log('Notifications disabled.')
-        await Browser.storage.local.set({ showNotifications: false })
-      }
+      await Browser.storage.local.set({
+        showNotifications: showNotificationsCheckbox.checked,
+      })
     },
     false,
     )

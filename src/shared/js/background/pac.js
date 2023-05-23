@@ -5,6 +5,7 @@
  * @returns {string} PAC script
  */
 export const getPacScript = ({ domains = [], proxyServerURI }) => {
+  // Sort domains alphabetically to make binary search work.
   domains.sort()
   return `
       function FindProxyForURL(url, host) {

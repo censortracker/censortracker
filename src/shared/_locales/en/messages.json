@@ -17,6 +17,15 @@
   "appName": {
     "message": "Censor Tracker – Proxy for Privacy & Security"
   },
+  "appearanceCardTitle": {
+    "message": "Appearance"
+  },
+  "appearanceDarkThemeDesc": {
+    "message": "You can turn on a dark theme to work comfortably with the Censor Tracker at night."
+  },
+  "appearanceDarkThemeTitle": {
+    "message": "Dark Mode"
+  },
   "areYouSureYouWantToResetSettingsDesc": {
     "message": "Regenerate the PAC file for your current region and reset the settings."
   },
@@ -164,6 +173,9 @@
   "howToGrantIncognitoAccessLink": {
     "message": "https://support.mozilla.org/en-US/kb/extensions-private-browsing"
   },
+  "i2pNetworkTitle": {
+    "message": "<span class=\"network__title-i2p\"></span> I2P"
+  },
   "ignoreEditorPageTitle": {
     "message": "Ignored Websites"
   },
@@ -271,6 +283,9 @@
   "optionsRegistryUpdateDatabaseButton": {
     "message": "Update Database"
   },
+  "optionsSavedMessage": {
+    "message": "✅ Changes saved"
+  },
   "optionsTitle": {
     "message": "Censor Tracker's Options"
   },
@@ -281,6 +296,9 @@
         "content": "$1"
       }
     }
+  },
+  "overlayNetworkDesc": {
+    "message": "Censor Tracker allows you to open websites through overlaid networks"
   },
   "parentalControlDesc": {
     "message": "Protect your parents from propaganda."
@@ -299,6 +317,15 @@
   },
   "popupProxyStatusOk": {
     "message": "proxy is working fine"
+  },
+  "popupServer": {
+    "message": "Proxy Server ID"
+  },
+  "popupTotalBlocked": {
+    "message": "Blocked Websites"
+  },
+  "popupYourRegion": {
+    "message": "Censorship Region"
   },
   "privateBrowsingPermissionsRequiredMessage": {
     "message": "Proxy disabled. Private Windows browsing permissions required →"
@@ -363,6 +390,9 @@
   "saveChanges": {
     "message": "Save changes"
   },
+  "saveCustomProxyButton": {
+    "message": "Save"
+  },
   "shareFeedback": {
     "message": "Got issues or suggestions? Let us know!"
   },
@@ -402,8 +432,20 @@
   "thankYou": {
     "message": "Thank you!"
   },
+  "torNetworkTitle": {
+    "message": "<span class=\"network__title-tor\"></span> Tor"
+  },
   "turnOnExtensionToCheckWebsite": {
     "message": "Enable to access blocked websites."
+  },
+  "updateAvailableButtonTitle": {
+    "message": "Update"
+  },
+  "updateAvailableDesc": {
+    "message": "New version of Censor Tracker is available. Please update the extension."
+  },
+  "updateAvailableTitle": {
+    "message": "Update available"
   },
   "updateLocalRegistryDesc": {
     "message": "Update the local database of the blocked websites for your region."
@@ -438,37 +480,10 @@
   "youCanCloseThisWindow": {
     "message": "You can close this window"
   },
-  "saveCustomProxyButton": {
-    "message": "Save"
+  "popupProxyInfoShowDetails": {
+    "message": "show details"
   },
-  "i2pNetworkTitle": {
-    "message": "<span class=\"network__title-i2p\"></span> I2P"
-  },
-  "torNetworkTitle": {
-    "message": "<span class=\"network__title-tor\"></span> Tor"
-  },
-  "overlayNetworkDesc": {
-    "message": "Censor Tracker allows you to open websites through overlaid networks"
-  },
-  "updateAvailableTitle": {
-    "message": "Update available"
-  },
-  "updateAvailableDesc": {
-    "message": "New version of Censor Tracker is available. Please update the extension."
-  },
-  "updateAvailableButtonTitle": {
-    "message": "Update"
-  },
-  "appearanceCardTitle": {
-    "message": "Appearance"
-  },
-  "appearanceDarkThemeTitle": {
-    "message": "Dark Mode"
-  },
-  "appearanceDarkThemeDesc": {
-    "message": "You can turn on a dark theme to work comfortably with the Censor Tracker at night."
-  },
-  "optionsSavedMessage": {
-    "message": "✅ Changes saved"
+  "popupProxyInfoTitle": {
+    "message": "Proxying Information"
   }
 }

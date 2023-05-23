@@ -203,8 +203,12 @@ a {
 }
 
 .title-ori {
-    color: #b61414;
+    color: #D25048;
     text-transform: uppercase;
+}
+
+#proxyingDetailsText code {
+    display: block;
 }
 
 .icon__status {
@@ -642,121 +646,133 @@ div#grantPrivateBrowsingPermissionsButton {
     margin-right: 28px;
 }
 
+.proxying-details code {
+    font-size: 12px;
+}
+
 @media (prefers-color-scheme: dark) {
     body {
-        background: #242728;
+        background: #242728
     }
 
-    .censor-tracker {
-        background: #303436;
+    .btn-what-this-mean svg path {
+        stroke: #f4f1f1
     }
 
-    .block__btn span {
-        color: #F4F1F1;
-    }
-
-    .censor-tracker__title,
-    .block__title,
-    .title-disabled {
-        color: #F4F1F1;
-    }
-
-    .censor-tracker__btn {
-        background-color: #484C50;
-    }
-
-    .censor-tracker__btn:hover {
-        background-color: #61666B;
-    }
-
-    .icon__settings {
-        background-color: #94918F;
-    }
-
-    .main-page__info .icon__site_settings.icon-show {
-        background-color: #929191;
+    .site-actions-group label:hover {
+        background: #2b323b;
+        opacity: .7
     }
 
     .main-page__info .icon__site_settings.icon-hide {
-        background-color: #3b332b;
+        background-color: #8a8580
+    }
+
+    .main-page__info .icon__site_settings:hover {
+        cursor: pointer;
+        opacity: .8
+    }
+
+    .btn-what-this-mean:hover svg path {
+        stroke: hsla(0, 12%, 95%, .84)
+    }
+
+    .censor-tracker {
+        background: #303436
+    }
+
+    .block__btn span, .block__title, .censor-tracker__title, .title-disabled {
+        color: #f4f1f1
+    }
+
+    .censor-tracker__btn {
+        background-color: #484c50
+    }
+
+    .censor-tracker__btn:hover {
+        background-color: #61666b
+    }
+
+    .icon__settings {
+        background-color: #94918f
+    }
+
+    .main-page__info .icon__site_settings.icon-show {
+        background-color: #929191
     }
 
     .text-normal {
-        background-color: #2B323B;
-        color: #F4F1F1;
+        background-color: #2b323b;
+        color: #f4f1f1
     }
 
     .btn-ok {
-        border: 1px solid #F4F1F1;
+        border: 1px solid #f4f1f1
     }
 
     .text-warning {
-        background-color: #382E2E;
+        background-color: #382e2e
     }
 
     .main-page-setting {
-        background-color: #2B323B;
+        background-color: #2b323b
     }
 
     .main-page-setting:after {
-        border-bottom: 10px solid #2B323B;
+        border-bottom: 10px solid #2b323b
+    }
+
+    .site-actions-group .site-actions-group-item:last-child label {
+        border-radius: 0 6px 6px 0;
+        border-right: 1px solid #23272d;
     }
 
     .site-actions-group label {
-        border: 1px solid #F4F1F1;
-        background-color: #2B323B;
+        border: 1px solid #23272d;
     }
 
-    .site-actions-group input[type=radio]:checked+label {
-        background-color: #F4F1F1;
-        color: #0D0D0D;
+    .site-actions-group input[type=radio]:checked + label {
+        background-color: #23272d;
+        color: #fff;
     }
 
-    .site-actions-group {
-        color: #F4F1F1 !important;
+    .proxy_info, .site-actions-group {
+        color: #f4f1f1 !important
     }
 
     .proxy_info {
-        color: #f4f1f1 !important;
-        opacity: 0.6;
+        opacity: .6
     }
 
     .footer-btn {
-        background-color: #242728;
-        color: #F4F1F1;
+        background-color: #242728
     }
 
-    .text-extension {
-        color: #F4F1F1;
+    .footer-btn, .text-extension {
+        color: #f4f1f1
     }
 
     .default-btn {
-        background: #484C51;
-        box-shadow: 0px 2.01027px 11.8382px rgba(15, 13, 11, 0.055), 0px 1.12694px 6.63642px rgba(15, 13, 11, 0.0655718), 0px 0.598509px 3.52455px rgba(15, 13, 11, 0.079074);
+        background: #484c51;
         border-radius: 4px;
+        box-shadow: 0 2.01027px 11.8382px rgba(15, 13, 11, .055), 0 1.12694px 6.63642px rgba(15, 13, 11, .066), 0 .598509px 3.52455px rgba(15, 13, 11, .079)
     }
 
     .default-btn:hover {
-        background: #61666B;
+        background: #61666b
     }
 
     .icon__back path {
-        fill: #F4F1F1;
+        fill: #f4f1f1
     }
 
     #privateBrowsingPermissionsRequiredButton {
         background: #242728;
-        color: #F4F1F1;
+        color: #f4f1f1
     }
 
-    .footer-btn>div:hover {
+    .block__btn:hover, .footer-btn > div:hover {
         color: #f4f1f1;
         cursor: pointer
     }
-
-    .block__btn:hover {
-        color: #f4f1f1;
-        cursor: pointer
-    }
-
 }

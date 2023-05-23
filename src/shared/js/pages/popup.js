@@ -139,12 +139,14 @@ import {
     const proxyMachineId = proxyServerURI.split('.', 1)[0]
     const proxyingDetailsText = document.getElementById('proxyingDetailsText')
 
+    const regionName = currentRegionName || i18nGetMessage('popupAutoMessage')
+
     const popupServerMsg = i18nGetMessage('popupServer')
     const popupYourRegion = i18nGetMessage('popupYourRegion')
     const popupTotalBlocked = i18nGetMessage('popupTotalBlocked')
 
     proxyingDetailsText.innerHTML += `<code><b>${popupServerMsg}:</b> ${proxyMachineId}</code>`
-    proxyingDetailsText.innerHTML += `<code><b>${popupYourRegion}:</b> ${currentRegionName}</code>`
+    proxyingDetailsText.innerHTML += `<code><b>${popupYourRegion}:</b> ${regionName}</code>`
     proxyingDetailsText.innerHTML += `<code><b>${popupTotalBlocked}:</b> ${domains.length}</code>`
   })
 
@@ -371,12 +373,14 @@ import {
           toggleSiteActionsButton.hidden = true
           restrictionsInfoBlock.classList.add('hidden')
           disseminatorInfoBlock.classList.add('hidden')
+          proxyingInfo.classList.add('hidden')
           statusImage.setAttribute('src', 'images/icons/512x512/tor.png')
         } else if (isI2PUrl(currentUrl)) {
           i2pNetwork.hidden = false
           toggleSiteActionsButton.hidden = true
           restrictionsInfoBlock.classList.add('hidden')
           disseminatorInfoBlock.classList.add('hidden')
+          proxyingInfo.classList.add('hidden')
           statusImage.setAttribute('src', 'images/icons/512x512/i2p.png')
         }
       } else {

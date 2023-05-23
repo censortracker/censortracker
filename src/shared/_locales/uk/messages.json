@@ -14,6 +14,15 @@
   "appDesc": {
     "message": "Розширення для обходу блокувань."
   },
+  "appearanceCardTitle": {
+    "message": "Зовнішній вигляд"
+  },
+  "appearanceDarkThemeDesc": {
+    "message": "Ви можете ввімкнути темну тему, щоб комфортно працювати з Censor Tracker вночі."
+  },
+  "appearanceDarkThemeTitle": {
+    "message": "Темна тема"
+  },
   "appName": {
     "message": "Censor Tracker - Обхід блокувань"
   },
@@ -58,14 +67,6 @@
       }
     }
   },
-  "controlledByOtherExtensionTitle": {
-    "message": "Зараз інше розширення &laquo;<div class=\"extension__name\">$name$</div>&raquo; контролює ваші налаштування проксі",
-    "placeholders": {
-      "name": {
-        "content": "$1"
-      }
-    }
-  },
   "controlledByOtherExtensions": {
     "message": "Інші розширення контролюють ваші налаштування проксі в браузері"
   },
@@ -74,6 +75,14 @@
   },
   "controlledByOtherExtensionsMessage": {
     "message": "Інше розширення контролює проксі. Детальніше →"
+  },
+  "controlledByOtherExtensionTitle": {
+    "message": "Зараз інше розширення &laquo;<div class=\"extension__name\">$name$</div>&raquo; контролює ваші налаштування проксі",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
   },
   "controlledPageDisableExtension": {
     "message": "Вимкнути"
@@ -164,13 +173,16 @@
   "howToGrantIncognitoAccessLink": {
     "message": "https://support.mozilla.org/ru/kb/dopolneniya-v-rezhime-privatnogo-prosmotra"
   },
-  "ignoreEditorPageTitle": {
-    "message": "Ігноровані сайти"
+  "i2pNetworkTitle": {
+    "message": "Сайт у мережі <span class=\"network__title-i2p\"></span> I2P"
   },
   "ignoredSitesDesc": {
     "message": "Адреси, для яких проксування завжди буде вимкнено. Може допомогти, якщо є проблеми з відкриттям сайту. Кожна адреса з нового рядка."
   },
   "ignoredSitesTitle": {
+    "message": "Ігноровані сайти"
+  },
+  "ignoreEditorPageTitle": {
     "message": "Ігноровані сайти"
   },
   "incognitoAccessRequiredDescription": {
@@ -271,6 +283,9 @@
   "optionsRegistryUpdateDatabaseButton": {
     "message": "Оновити базу даних"
   },
+  "optionsSavedMessage": {
+    "message": "✅ Зміни збережено!"
+  },
   "optionsTitle": {
     "message": "Налаштування розширення Censor Tracker"
   },
@@ -282,11 +297,17 @@
       }
     }
   },
+  "overlayNetworkDesc": {
+    "message": "Censor Tracker дає змогу відкривати такі сайти у звичайному браузері"
+  },
   "parentalControlDesc": {
     "message": "Захистіть своїх батьків від пропаганди."
   },
   "parentalControlTitle": {
     "message": "«Батьківський» контроль"
+  },
+  "popupAutoMessage": {
+    "message": "Авто"
   },
   "popupNewTabMessage": {
     "message": "Нова вкладка"
@@ -294,11 +315,26 @@
   "popupProxyDisabled": {
     "message": "проксі вимкнений"
   },
+  "popupProxyInfoShowDetails": {
+    "message": "показати деталі"
+  },
+  "popupProxyInfoTitle": {
+    "message": "Інформація про проксі"
+  },
   "popupProxyStatusError": {
     "message": "проксі працює з перебоями"
   },
   "popupProxyStatusOk": {
     "message": "проксі працює нормально"
+  },
+  "popupServer": {
+    "message": "ID Проксі Сервера"
+  },
+  "popupTotalBlocked": {
+    "message": "Всього заблоковано"
+  },
+  "popupYourRegion": {
+    "message": "Ваш регіон"
   },
   "privateBrowsingPermissionsRequiredMessage": {
     "message": "Проксі вимкнено. Потрібен дозвіл на роботу в приватних вікнах →"
@@ -363,6 +399,9 @@
   "saveChanges": {
     "message": "Зберегти зміни"
   },
+  "saveCustomProxyButton": {
+    "message": "Зберегти"
+  },
   "shareFeedback": {
     "message": "Маєте запитання чи пропозиції? Дайте нам знати!"
   },
@@ -402,8 +441,20 @@
   "thankYou": {
     "message": "Дякую!"
   },
+  "torNetworkTitle": {
+    "message": "Сайт у мережі <span class=\"network__title-tor\"></span> Tor"
+  },
   "turnOnExtensionToCheckWebsite": {
     "message": "Увімкніть, щоб отримати доступ до заблокованих сайтів."
+  },
+  "updateAvailableButtonTitle": {
+    "message": "Оновити"
+  },
+  "updateAvailableDesc": {
+    "message": "Доступна нова версія Censor Tracker. Будь ласка, оновіть розширення."
+  },
+  "updateAvailableTitle": {
+    "message": "Доступне оновлення"
   },
   "updateLocalRegistryDesc": {
     "message": "Оновити локальну базу даних для вашого регіону."
@@ -437,53 +488,5 @@
   },
   "youCanCloseThisWindow": {
     "message": "Можна закрити це вікно"
-  },
-  "saveCustomProxyButton": {
-    "message": "Зберегти"
-  },
-  "i2pNetworkTitle": {
-    "message": "Сайт у мережі <span class=\"network__title-i2p\"></span> I2P"
-  },
-  "torNetworkTitle": {
-    "message": "Сайт у мережі <span class=\"network__title-tor\"></span> Tor"
-  },
-  "overlayNetworkDesc": {
-    "message": "Censor Tracker дає змогу відкривати такі сайти у звичайному браузері"
-  },
-  "updateAvailableTitle": {
-    "message": "Доступне оновлення"
-  },
-  "updateAvailableDesc": {
-    "message": "Доступна нова версія Censor Tracker. Будь ласка, оновіть розширення."
-  },
-  "updateAvailableButtonTitle": {
-    "message": "Оновити"
-  },
-  "appearanceCardTitle": {
-    "message": "Зовнішній вигляд"
-  },
-  "appearanceDarkThemeTitle": {
-    "message": "Темна тема"
-  },
-  "appearanceDarkThemeDesc": {
-    "message": "Ви можете ввімкнути темну тему, щоб комфортно працювати з Censor Tracker вночі."
-  },
-  "optionsSavedMessage": {
-    "message": "✅ Зміни збережено!"
-  },
-  "popupYourRegion": {
-    "message": "Ваш регіон"
-  },
-  "popupServer": {
-    "message": "ID Проксі Сервера"
-  },
-  "popupTotalBlocked": {
-    "message": "Всього заблоковано"
-  },
-  "popupProxyInfoShowDetails": {
-    "message": "показати деталі"
-  },
-  "popupProxyInfoTitle": {
-    "message": "Інформація про проксі"
   }
 }

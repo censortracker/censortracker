@@ -775,4 +775,12 @@ div#grantPrivateBrowsingPermissionsButton {
         color: #f4f1f1;
         cursor: pointer
     }
+
+    .network-description {
+        background: #2b323b;
+        border-radius: 4px;
+        padding: 15px;
+        text-align: center;
+        color: #f4f1f1;
+    }
 }

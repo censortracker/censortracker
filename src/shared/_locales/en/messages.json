@@ -306,11 +306,20 @@
   "parentalControlTitle": {
     "message": "«Parental» Control"
   },
+  "popupAutoMessage": {
+    "message": "Auto"
+  },
   "popupNewTabMessage": {
     "message": "New Tab"
   },
   "popupProxyDisabled": {
     "message": "proxying is disabled"
+  },
+  "popupProxyInfoShowDetails": {
+    "message": "show details"
+  },
+  "popupProxyInfoTitle": {
+    "message": "Proxying Information"
   },
   "popupProxyStatusError": {
     "message": "proxy is intermittent"
@@ -479,11 +488,5 @@
   },
   "youCanCloseThisWindow": {
     "message": "You can close this window"
-  },
-  "popupProxyInfoShowDetails": {
-    "message": "show details"
-  },
-  "popupProxyInfoTitle": {
-    "message": "Proxying Information"
   }
 }

@@ -306,11 +306,20 @@
   "parentalControlTitle": {
     "message": "«Родительский» контроль"
   },
+  "popupAutoMessage": {
+    "message": "Авто"
+  },
   "popupNewTabMessage": {
     "message": "Новая вкладка"
   },
   "popupProxyDisabled": {
     "message": "прокси выключен"
+  },
+  "popupProxyInfoShowDetails": {
+    "message": "подробнее"
+  },
+  "popupProxyInfoTitle": {
+    "message": "Информация о прокси"
   },
   "popupProxyStatusError": {
     "message": "прокси работает с перебоями"
@@ -479,11 +488,5 @@
   },
   "youCanCloseThisWindow": {
     "message": "Можно закрыть это окно"
-  },
-  "popupProxyInfoShowDetails": {
-    "message": "подробнее"
-  },
-  "popupProxyInfoTitle": {
-    "message": "Информация о прокси"
   }
 }

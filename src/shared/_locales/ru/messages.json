@@ -17,6 +17,15 @@
   "appName": {
     "message": "Censor Tracker — Обход блокировок"
   },
+  "appearanceCardTitle": {
+    "message": "Внешний вид"
+  },
+  "appearanceDarkThemeDesc": {
+    "message": "Вы можете включить темную тему, чтобы комфортно работать с Censor Tracker ночью."
+  },
+  "appearanceDarkThemeTitle": {
+    "message": "Темная тема"
+  },
   "areYouSureYouWantToResetSettingsDesc": {
     "message": "Переустановить конфиг и обновить локальную базу данных"
   },
@@ -164,6 +173,9 @@
   "howToGrantIncognitoAccessLink": {
     "message": "https://support.mozilla.org/ru/kb/dopolneniya-v-rezhime-privatnogo-prosmotra"
   },
+  "i2pNetworkTitle": {
+    "message": "Сайт в сети <span class=\"network__title-i2p\"></span> I2P"
+  },
   "ignoreEditorPageTitle": {
     "message": "Игнорируемые сайты"
   },
@@ -271,6 +283,9 @@
   "optionsRegistryUpdateDatabaseButton": {
     "message": "Обновить базу данных"
   },
+  "optionsSavedMessage": {
+    "message": "✅ Изменения сохранены"
+  },
   "optionsTitle": {
     "message": "Настройки расширения Censor Tracker"
   },
@@ -281,6 +296,9 @@
         "content": "$1"
       }
     }
+  },
+  "overlayNetworkDesc": {
+    "message": "Censor Tracker позволяет открывать такие сайты в обычном браузере"
   },
   "parentalControlDesc": {
     "message": "Оградите своих родителей от пропаганды."
@@ -299,6 +317,15 @@
   },
   "popupProxyStatusOk": {
     "message": "прокси работает нормально"
+  },
+  "popupServer": {
+    "message": "ID Прокси Сервера"
+  },
+  "popupTotalBlocked": {
+    "message": "Заблокированных сайтов"
+  },
+  "popupYourRegion": {
+    "message": "Ваш регион"
   },
   "privateBrowsingPermissionsRequiredMessage": {
     "message": "Прокси отключён. Требуется разрешение на работу в приватных окнах →"
@@ -363,6 +390,9 @@
   "saveChanges": {
     "message": "Сохранить изменения"
   },
+  "saveCustomProxyButton": {
+    "message": "Сохранить"
+  },
   "shareFeedback": {
     "message": "Есть вопросы или предложения? Дайте нам знать!"
   },
@@ -402,8 +432,20 @@
   "thankYou": {
     "message": "Спасибо!"
   },
+  "torNetworkTitle": {
+    "message": "Сайт в сети <span class=\"network__title-tor\"></span> Tor"
+  },
   "turnOnExtensionToCheckWebsite": {
     "message": "Включите, чтобы получить доступ к заблокированным сайтам."
+  },
+  "updateAvailableButtonTitle": {
+    "message": "Обновить"
+  },
+  "updateAvailableDesc": {
+    "message": "Доступна новая версия Censor Tracker. Пожалуйста, обновите расширение."
+  },
+  "updateAvailableTitle": {
+    "message": "Доступно обновление"
   },
   "updateLocalRegistryDesc": {
     "message": "Обновить локальную базу данных для вашего региона."
@@ -438,25 +480,10 @@
   "youCanCloseThisWindow": {
     "message": "Можно закрыть это окно"
   },
-  "saveCustomProxyButton": {
-    "message": "Сохранить"
+  "popupProxyInfoShowDetails": {
+    "message": "подробнее"
   },
-  "i2pNetworkTitle": {
-    "message": "Сайт в сети <span class=\"network__title-i2p\"></span> I2P"
-  },
-  "torNetworkTitle": {
-    "message": "Сайт в сети <span class=\"network__title-tor\"></span> Tor"
-  },
-  "overlayNetworkDesc": {
-    "message": "Censor Tracker позволяет открывать такие сайты в обычном браузере"
-  },
-  "updateAvailableTitle": {
-    "message": "Доступно обновление"
-  },
-  "updateAvailableDesc": {
-    "message": "Доступна новая версия Censor Tracker. Пожалуйста, обновите расширение."
-  },
-  "updateAvailableButtonTitle": {
-    "message": "Обновить"
+  "popupProxyInfoTitle": {
+    "message": "Информация о прокси"
   }
 }

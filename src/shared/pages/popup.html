@@ -66,7 +66,9 @@
         </div>
         <div class="block__btn btn-about btn-what-this-mean">
           <span data-i18n-key="whatThisMean"></span>
-          <img class="block__btn icon" src="images/popup/status/arrow-down.svg" width="8px" height="6px" alt=""/>
+          <svg class="block__btn icon" width="8" height="6" viewBox="0 0 8 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0.546875 1.47339L4 5.5L7.48204 1.47339" stroke="#3B332B" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
         </div>
         <div class="block__text text-normal details-text" data-render-var="detailsClasses">
           <span data-render-var="detailsText" data-i18n-key="notDisseminatorDesc"></span>
@@ -87,7 +89,9 @@
         </div>
         <div class="block__btn btn-about btn-what-this-mean">
           <span data-i18n-key="whatThisMean"></span>
-          <img class="block__btn icon" src="images/popup/status/arrow-down.svg" width="8px" height="6px" alt=""/>
+          <svg class="block__btn icon" width="8" height="6" viewBox="0 0 8 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0.546875 1.47339L4 5.5L7.48204 1.47339" stroke="#3B332B" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
         </div>
         <div class="block__text text-normal details-text">
           <span data-render-var="detailsText"></span>
@@ -96,6 +100,29 @@
             <span class="block__btn btn-text">
               <a href="https://reestr.rublacklist.net/" target="_blank" data-i18n-key="readMoreButton"></a>
             </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="main-page__block main-page-info" id="proxying-info">
+        <div class="block__title">
+          <span data-i18n-key="popupProxyInfoTitle"></span>
+          <img class="icon__status proxying-info-icon"
+               data-render-var="statusIcon"
+               src="images/popup/status/question.svg" width="24px"
+               height="24px" alt=""/>
+        </div>
+        <div class="block__btn btn-about btn-what-this-mean">
+          <span data-i18n-key="popupProxyInfoShowDetails"></span>
+          <svg class="block__btn icon" width="8" height="6" viewBox="0 0 8 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0.546875 1.47339L4 5.5L7.48204 1.47339" stroke="#3B332B" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="block__text text-normal details-text proxying-details">
+          <div id="proxyingDetailsText">
+          </div>
+          <div class="block__footer">
+            <span class="block__btn btn-ok btn-hide-details" data-i18n-key="okayButton"></span>
           </div>
         </div>
       </div>

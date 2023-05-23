@@ -47,6 +47,7 @@ import {
   const statusImage = document.getElementById('statusImage')
   const disseminatorInfoBlock = document.getElementById('ori')
   const siteActions = document.getElementById('siteActions')
+  const proxyingInfo = document.getElementById('proxying-info')
   const restrictionsInfoBlock = document.getElementById('restrictions')
   const detailsText = document.querySelectorAll('.details-text')
   const extensionIsOff = document.getElementById('extensionIsOff')
@@ -129,6 +130,24 @@ import {
     await Browser.runtime.openOptionsPage()
   })
 
+  Browser.storage.local.get([
+    'currentRegionName',
+    'proxyServerURI',
+    'proxyLastFetchTs',
+  ]).then(async ({ currentRegionName, proxyServerURI, proxyLastFetchTs }) => {
+    const domains = await Registry.getDomains()
+    const proxyMachineId = proxyServerURI.split('.', 1)[0]
+    const proxyingDetailsText = document.getElementById('proxyingDetailsText')
+
+    const popupServerMsg = i18nGetMessage('popupServer')
+    const popupYourRegion = i18nGetMessage('popupYourRegion')
+    const popupTotalBlocked = i18nGetMessage('popupTotalBlocked')
+
+    proxyingDetailsText.innerHTML += `<code><b>${popupServerMsg}:</b> ${proxyMachineId}</code>`
+    proxyingDetailsText.innerHTML += `<code><b>${popupYourRegion}:</b> ${currentRegionName}</code>`
+    proxyingDetailsText.innerHTML += `<code><b>${popupTotalBlocked}:</b> ${domains.length}</code>`
+  })
+
   toggleSiteActionsButton.addEventListener('click', async (event) => {
     if (event.target.classList.contains('icon-show')) {
       siteActions.classList.remove('hidden')
@@ -136,12 +155,14 @@ import {
       event.target.classList.add('icon-hide')
       disseminatorInfoBlock.classList.add('hidden')
       restrictionsInfoBlock.classList.add('hidden')
+      proxyingInfo.classList.add('hidden')
     } else {
       siteActions.classList.add('hidden')
       event.target.classList.add('icon-show')
       event.target.classList.remove('icon-hide')
       disseminatorInfoBlock.classList.remove('hidden')
       restrictionsInfoBlock.classList.remove('hidden')
+      proxyingInfo.classList.remove('hidden')
     }
   })
 

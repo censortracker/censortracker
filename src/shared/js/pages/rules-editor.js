@@ -6,7 +6,7 @@ import 'codemirror/lib/codemirror.css'
 
 import Browser from 'Background/browser-api'
 import Ignore from 'Background/ignore'
-import { removeDuplicates } from 'Background/utilities'
+import { i18nGetMessage, removeDuplicates } from 'Background/utilities'
 import CodeMirror from 'codemirror'
 
 (async () => {
@@ -46,9 +46,16 @@ import CodeMirror from 'codemirror'
   })
 
   saveChangesButton.addEventListener('click', async (event) => {
+    const button = event.target
     const editorContent = editor.getValue().trim()
     const urls = editorContent.split('\n')
     const validUrls = removeDuplicates(urls)
+
+    button.textContent = i18nGetMessage('optionsSavedMessage')
+
+    setTimeout(() => {
+      button.textContent = i18nGetMessage('saveChanges')
+    }, 500)
 
     if (isIgnorePage) {
       await Ignore.set(validUrls)

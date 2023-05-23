@@ -92,7 +92,7 @@ const webConfig = {
     'registry-options': './src/shared/js/pages/registry-options.js',
     'rules-editor': './src/shared/js/pages/rules-editor.js',
     'translator': './src/shared/js/pages/translator.js',
-    'controlled': `./src/shared/js/pages/controlled.js`
+    'controlled': './src/shared/js/pages/controlled.js',
   },
   output: {
     path: resolve(`dist/${BROWSER}/${OUTPUT_SUB_DIR}`),

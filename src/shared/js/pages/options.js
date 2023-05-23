@@ -119,13 +119,9 @@ import * as server from 'Background/server'
 
   if (showNotificationsCheckbox) {
     showNotificationsCheckbox.addEventListener('change', async () => {
-      if (showNotificationsCheckbox.checked) {
-        console.log('Notifications enabled.')
-        await Browser.storage.local.set({ showNotifications: true })
-      } else {
-        console.log('Notifications disabled.')
-        await Browser.storage.local.set({ showNotifications: false })
-      }
+      await Browser.storage.local.set({
+        showNotifications: showNotificationsCheckbox.checked,
+      })
     },
     false,
     )

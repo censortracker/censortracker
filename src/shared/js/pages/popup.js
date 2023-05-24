@@ -135,19 +135,23 @@ import {
     'proxyServerURI',
     'proxyLastFetchTs',
   ]).then(async ({ currentRegionName, proxyServerURI, proxyLastFetchTs }) => {
-    const domains = await Registry.getDomains()
-    const proxyMachineId = proxyServerURI.split('.', 1)[0]
-    const proxyingDetailsText = document.getElementById('proxyingDetailsText')
+    if (currentRegionName && proxyServerURI && proxyLastFetchTs) {
+      const domains = await Registry.getDomains()
+      const proxyMachineId = proxyServerURI.split('.', 1)[0]
+      const proxyingDetailsText = document.getElementById('proxyingDetailsText')
 
-    const regionName = currentRegionName || i18nGetMessage('popupAutoMessage')
+      const regionName = currentRegionName || i18nGetMessage('popupAutoMessage')
 
-    const popupServerMsg = i18nGetMessage('popupServer')
-    const popupYourRegion = i18nGetMessage('popupYourRegion')
-    const popupTotalBlocked = i18nGetMessage('popupTotalBlocked')
+      const popupServerMsg = i18nGetMessage('popupServer')
+      const popupYourRegion = i18nGetMessage('popupYourRegion')
+      const popupTotalBlocked = i18nGetMessage('popupTotalBlocked')
 
-    proxyingDetailsText.innerHTML += `<code><b>${popupServerMsg}:</b> ${proxyMachineId}</code>`
-    proxyingDetailsText.innerHTML += `<code><b>${popupYourRegion}:</b> ${regionName}</code>`
-    proxyingDetailsText.innerHTML += `<code><b>${popupTotalBlocked}:</b> ${domains.length}</code>`
+      proxyingDetailsText.innerHTML += `<code><b>${popupServerMsg}:</b> ${proxyMachineId}</code>`
+      proxyingDetailsText.innerHTML += `<code><b>${popupYourRegion}:</b> ${regionName}</code>`
+      proxyingDetailsText.innerHTML += `<code><b>${popupTotalBlocked}:</b> ${domains.length}</code>`
+    } else {
+      proxyingInfo.hidden = true
+    }
   })
 
   toggleSiteActionsButton.addEventListener('click', async (event) => {

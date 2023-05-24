@@ -4,6 +4,7 @@ import Registry from 'Background/registry'
 import * as server from 'Background/server'
 
 (async () => {
+  // For debugging purposes.
   window.server = server
 
   const proxyingEnabled = await ProxyManager.isEnabled()
@@ -34,12 +35,18 @@ import * as server from 'Background/server'
   const updateAvailableAlert = document.getElementById('updateAvailableAlert')
   const updateExtensionButton = document.getElementById('updateExtensionButton')
 
-  Browser.storage.local.get({ updateAvailable: false })
-    .then(({ updateAvailable }) => {
-      if (updateAvailable) {
-        updateAvailableAlert.classList.remove('hidden')
-      }
-    })
+  Browser.storage.local.get({
+    updateAvailable: false,
+    backendIsIntermittent: false,
+  }).then(({ updateAvailable, backendIsIntermittent }) => {
+    if (updateAvailable) {
+      updateAvailableAlert.classList.remove('hidden')
+    }
+
+    if (backendIsIntermittentAlert) {
+      backendIsIntermittentAlert.hidden = !backendIsIntermittent
+    }
+  })
 
   updateExtensionButton.addEventListener('click', async (event) => {
     Browser.storage.local.set({ updateAvailable: false })
@@ -47,13 +54,6 @@ import * as server from 'Background/server'
         Browser.runtime.reload()
       })
   })
-
-  Browser.storage.local.get('backendIsIntermittent')
-    .then(({ backendIsIntermittent = false }) => {
-      if (backendIsIntermittentAlert) {
-        backendIsIntermittentAlert.hidden = !backendIsIntermittent
-      }
-    })
 
   Registry.isEmpty().then((isEmpty) => {
     if (isEmpty) {

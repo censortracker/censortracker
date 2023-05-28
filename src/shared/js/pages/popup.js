@@ -135,7 +135,7 @@ import {
     'proxyServerURI',
     'proxyLastFetchTs',
   ]).then(async ({ currentRegionName, proxyServerURI, proxyLastFetchTs }) => {
-    if (currentRegionName && proxyServerURI && proxyLastFetchTs) {
+    if (proxyServerURI && proxyLastFetchTs) {
       const domains = await Registry.getDomains()
       const proxyMachineId = proxyServerURI.split('.', 1)[0]
       const proxyingDetailsText = document.getElementById('proxyingDetailsText')

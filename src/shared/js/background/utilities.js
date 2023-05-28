@@ -99,7 +99,7 @@ export const removeDuplicates = (urls) => {
   const result = new Set()
 
   for (const url of urls) {
-    const domain = getHostname(url)
+    const domain = getDomain(url)
 
     if (domain) {
       result.add(domain)

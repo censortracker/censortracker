@@ -9,41 +9,9 @@ import {
   isI2PUrl,
   isOnionUrl,
   isValidURL,
-} from 'Background/utilities'
-
-;
+} from 'Background/utilities';
 
 (async () => {
-  const uiText = {
-    ori: {
-      found: {
-        title: i18nGetMessage('disseminatorTitle'),
-        statusIcon: 'images/popup/status/danger.svg',
-        detailsText: i18nGetMessage('disseminatorDesc'),
-        detailsClasses: ['text-warning'],
-        cooperationRefused: {
-          message: i18nGetMessage('disseminatorCoopRefused'),
-        },
-      },
-      notFound: {
-        statusIcon: 'images/popup/status/ok.svg',
-        title: i18nGetMessage('notDisseminatorTitle'),
-        detailsText: i18nGetMessage('notDisseminatorDesc'),
-      },
-    },
-    restrictions: {
-      true: {
-        statusIcon: 'images/popup/status/info.svg',
-        title: i18nGetMessage('blockedTitle'),
-        detailsText: i18nGetMessage('blockedDesc'),
-      },
-      false: {
-        statusIcon: 'images/popup/status/ok.svg',
-        title: i18nGetMessage('notBlockedTitle'),
-        detailsText: i18nGetMessage('notBlockedDesc'),
-      },
-    },
-  }
   const statusImage = document.getElementById('statusImage')
   const disseminatorInfoBlock = document.getElementById('ori')
   const siteActions = document.getElementById('siteActions')
@@ -63,13 +31,8 @@ import {
   )
   const footerExtensionIsOn = document.getElementById('footerExtensionIsOn')
   const currentDomainHeader = document.getElementById('currentDomainHeader')
-  const closeDetailsButtons = document.querySelectorAll('.btn-hide-details')
-  const whatThisMeanButtons = document.querySelectorAll('.btn-what-this-mean')
   const proxyConnectionIssuesButton = document.getElementById(
     'proxyConnectionIssuesButton',
-  )
-  const controlledByOtherExtensionsButton = document.getElementById(
-    'controlledByOtherExtensionsButton',
   )
   const backendIsIntermittentPopupMessage = document.getElementById(
     'backendIsIntermittentPopupMessage',
@@ -79,38 +42,33 @@ import {
   )
   const torNetwork = document.getElementById('torNetwork')
   const i2pNetwork = document.getElementById('i2pNetwork')
+  const openOptionsPage = document.getElementById('openOptionsPage')
+  const highlightOptionsIcon = document.getElementById('highlightOptionsIcon')
 
-  document
-    .getElementById('enableExtension')
-    .addEventListener('click', async (target) => {
+  document.addEventListener('click', async (event) => {
+    const targetId = event.target.id
+
+    if (targetId === 'enableExtension') {
       await Settings.enableExtension()
       await Settings.enableNotifications()
       await ProxyManager.enableProxy()
       window.location.reload()
-    })
-
-  document
-    .getElementById('disableExtension')
-    .addEventListener('click', async (target) => {
+    } else if (targetId === 'disableExtension') {
       await Settings.disableExtension()
       mainPageInfoBlocks.forEach((element) => {
         element.hidden = true
       })
       window.location.reload()
-    })
+    }
+  })
 
-  document
-    .getElementById('openOptionsPage')
-    .addEventListener('click', async (target) => {
-      await Browser.runtime.openOptionsPage()
-    })
+  openOptionsPage.addEventListener('click', async (target) => {
+    await Browser.runtime.openOptionsPage()
+  })
 
-  Browser.storage.local
-    .get({ updateAvailable: false })
+  // Highlight settings button when update is available.
+  Browser.storage.local.get({ updateAvailable: false })
     .then(({ updateAvailable }) => {
-      const highlightOptionsIcon =
-        document.getElementById('highlightOptionsIcon')
-
       if (updateAvailable) {
         highlightOptionsIcon.classList.remove('hidden')
       } else {
@@ -118,10 +76,25 @@ import {
       }
     })
 
+  // Highlight settings button when there are nothing to proxy.
+  Registry.isEmpty().then((isEmpty) => {
+    if (isEmpty) {
+      highlightOptionsIcon.classList.remove('hidden')
+    } else {
+      highlightOptionsIcon.classList.add('hidden')
+    }
+  })
+
+  // Show page with instructions about how to grand incognito access
   privateBrowsingPermissionsRequiredButton.addEventListener('click', () => {
     window.location.href = 'incognito-required-popup.html'
   })
 
+  const controlledByOtherExtensionsButton = document.getElementById(
+    'controlledByOtherExtensionsButton',
+  )
+
+  // Show page with list of conflicting extensions
   controlledByOtherExtensionsButton.addEventListener('click', () => {
     window.location.href = 'controlled.html'
   })
@@ -130,30 +103,29 @@ import {
     await Browser.runtime.openOptionsPage()
   })
 
-  Browser.storage.local.get([
-    'currentRegionName',
-    'proxyServerURI',
-    'proxyLastFetchTs',
-  ]).then(async ({ currentRegionName, proxyServerURI, proxyLastFetchTs }) => {
-    if (proxyServerURI && proxyLastFetchTs) {
-      const domains = await Registry.getDomains()
-      const proxyMachineId = proxyServerURI.split('.', 1)[0]
-      const proxyingDetailsText = document.getElementById('proxyingDetailsText')
+  // Show proxying information
+  Browser.storage.local.get(['currentRegionName', 'proxyServerURI', 'proxyLastFetchTs'])
+    .then(async ({ currentRegionName, proxyServerURI, proxyLastFetchTs }) => {
+      if (proxyServerURI && proxyLastFetchTs) {
+        const domains = await Registry.getDomains()
+        const proxyServerId = proxyServerURI.split('.', 1)[0]
+        const proxyingDetailsText = document.getElementById('proxyingDetailsText')
+        const regionName = currentRegionName || i18nGetMessage('popupAutoMessage')
+        const popupServerMsg = i18nGetMessage('popupServer')
+        const popupYourRegion = i18nGetMessage('popupYourRegion')
+        const popupTotalBlocked = i18nGetMessage('popupTotalBlocked')
 
-      const regionName = currentRegionName || i18nGetMessage('popupAutoMessage')
+        proxyingDetailsText.innerHTML = `
+          <code><b>${popupServerMsg}:</b> ${proxyServerId}</code>
+          <code><b>${popupYourRegion}:</b> ${regionName}</code>
+          <code><b>${popupTotalBlocked}:</b> ${domains.length}</code>
+        `
+      } else {
+        proxyingInfo.hidden = true
+      }
+    })
 
-      const popupServerMsg = i18nGetMessage('popupServer')
-      const popupYourRegion = i18nGetMessage('popupYourRegion')
-      const popupTotalBlocked = i18nGetMessage('popupTotalBlocked')
-
-      proxyingDetailsText.innerHTML += `<code><b>${popupServerMsg}:</b> ${proxyMachineId}</code>`
-      proxyingDetailsText.innerHTML += `<code><b>${popupYourRegion}:</b> ${regionName}</code>`
-      proxyingDetailsText.innerHTML += `<code><b>${popupTotalBlocked}:</b> ${domains.length}</code>`
-    } else {
-      proxyingInfo.hidden = true
-    }
-  })
-
+  // Hide all other expandable elements when actions are toggled
   toggleSiteActionsButton.addEventListener('click', async (event) => {
     if (event.target.classList.contains('icon-show')) {
       siteActions.classList.remove('hidden')
@@ -172,8 +144,7 @@ import {
     }
   })
 
-  Browser.tabs
-    .query({ active: true, lastFocusedWindow: true })
+  Browser.tabs.query({ active: true, lastFocusedWindow: true })
     .then(async ([{ url: currentUrl, id: tabId }]) => {
       const proxyingEnabled = await ProxyManager.isEnabled()
       const extensionEnabled = await Settings.extensionEnabled()
@@ -279,13 +250,10 @@ import {
         statusImage.setAttribute('src', 'images/icons/512x512/normal.png')
 
         if (Browser.IS_FIREFOX) {
-          Browser.extension
-            .isAllowedIncognitoAccess()
+          Browser.extension.isAllowedIncognitoAccess()
             .then((allowedIncognitoAccess) => {
               Browser.storage.local
-                .get({
-                  privateBrowsingPermissionsRequired: false,
-                })
+                .get({ privateBrowsingPermissionsRequired: false })
                 .then(({ privateBrowsingPermissionsRequired }) => {
                   if (
                     !allowedIncognitoAccess ||
@@ -311,67 +279,49 @@ import {
 
         const restrictionsFound = await Registry.contains(currentHostname)
 
-        document
-          .querySelectorAll('#restrictions [data-render-var]')
-          .forEach((el) => {
-            const renderVar = el.dataset.renderVar
-            const value = uiText.restrictions[restrictionsFound][renderVar]
+        if (restrictionsFound) {
+          const restrictionsIcon = document.querySelector('#restrictions img')
+          const restrictionsTitle = document.querySelector('#restrictions-title')
+          const restrictionsDesc = document.querySelector('#restrictions-desc')
 
-            if (restrictionsFound && proxyingEnabled) {
-              statusImage.setAttribute(
-                'src',
-                'images/icons/512x512/blocked.png',
-              )
-            }
+          restrictionsIcon.setAttribute('src', 'images/popup/status/info.svg')
 
-            if (renderVar === 'statusIcon') {
-              el.setAttribute('src', value)
-            } else {
-              el.innerText = value
+          restrictionsTitle.textContent = i18nGetMessage('blockedTitle')
+          restrictionsDesc.textContent = i18nGetMessage('blockedDesc')
+          statusImage.setAttribute('src', 'images/icons/512x512/blocked.png')
+        }
+
+        Registry.retrieveDisseminator(currentHostname)
+          .then(({ url: disseminatorUrl, cooperationRefused }) => {
+            if (disseminatorUrl) {
+              const oriTitle = document.querySelector('#ori-title')
+              const oriDesc = document.querySelector('#ori-desc')
+              const oriIcon = document.querySelector('#ori img')
+              const oriDetails = document.querySelector('#ori-details')
+
+              if (!cooperationRefused) {
+                oriDetails.classList.add(['text-warning'])
+                oriTitle.textContent = i18nGetMessage('disseminatorTitle')
+                oriDesc.textContent = i18nGetMessage('disseminatorDesc')
+                oriIcon.setAttribute('src', 'images/popup/status/danger.svg')
+                statusImage.setAttribute('src', 'images/icons/512x512/ori.png')
+                currentDomainHeader.classList.add('title-ori')
+              } else {
+                oriDesc.textContent = i18nGetMessage('disseminatorCoopRefused')
+                statusImage.setAttribute('src', 'images/icons/512x512/normal.png')
+              }
+
+              if (restrictionsFound) {
+                if (cooperationRefused === false) {
+                  statusImage.setAttribute(
+                    'src',
+                    'images/icons/512x512/ori_blocked.png',
+                  )
+                }
+              }
             }
           })
 
-        const { url: disseminatorUrl, cooperationRefused } =
-          await Registry.retrieveDisseminator(currentHostname)
-
-        if (disseminatorUrl) {
-          if (!cooperationRefused) {
-            statusImage.setAttribute('src', 'images/icons/512x512/ori.png')
-            currentDomainHeader.classList.add('title-ori')
-
-            for (const element of document.querySelectorAll(
-              '#ori [data-render-var]',
-            )) {
-              const renderVar = element.dataset.renderVar
-              const value = uiText.ori.found[renderVar]
-
-              if (renderVar === 'statusIcon') {
-                element.setAttribute('src', value)
-              } else if (renderVar === 'detailsClasses') {
-                element.classList.add(uiText.ori.found.detailsClasses)
-              } else {
-                element.innerText = value
-              }
-            }
-          } else {
-            const [disseminatorDetailsText] = document.querySelectorAll(
-              '#ori [data-render-var="detailsText"]',
-            )
-
-            disseminatorDetailsText.innerText =
-              uiText.ori.found.cooperationRefused.message
-            statusImage.setAttribute('src', 'images/icons/512x512/normal.png')
-          }
-        }
-
-        if (restrictionsFound && disseminatorUrl) {
-          if (cooperationRefused === false) {
-            statusImage.setAttribute(
-              'src',
-              'images/icons/512x512/ori_blocked.png',
-            )
-          }
-        }
         if (isOnionUrl(currentUrl)) {
           torNetwork.hidden = false
           toggleSiteActionsButton.hidden = true
@@ -397,8 +347,7 @@ import {
       }
     })
 
-  Browser.storage.local
-    .get('backendIsIntermittent')
+  Browser.storage.local.get('backendIsIntermittent')
     .then(({ backendIsIntermittent = false }) => {
       backendIsIntermittentPopupMessage.hidden = !backendIsIntermittent
     })
@@ -416,6 +365,9 @@ import {
       element.style.display = 'none'
     })
   }
+
+  const whatThisMeanButtons = document.querySelectorAll('.btn-what-this-mean')
+  const closeDetailsButtons = document.querySelectorAll('.btn-hide-details')
 
   const showWhatThisMeanButtons = () => {
     whatThisMeanButtons.forEach((btn) => {
@@ -444,5 +396,5 @@ import {
     document.documentElement.style.visibility = 'initial'
   }
 
-  setTimeout(show, 100)
+  setTimeout(show, 150)
 })()

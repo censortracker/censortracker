@@ -59,10 +59,8 @@
 
       <div class="main-page__block main-page-info" id="ori">
         <div class="block__title">
-          <span data-render-var="title" data-i18n-key="notDisseminatorTitle"></span>
-          <img class="icon__status"
-               data-render-var="statusIcon"
-               src="images/popup/status/ok.svg" width="24px" height="24px" alt=""/>
+          <span id="ori-title" data-i18n-key="notDisseminatorTitle"></span>
+          <img class="icon__status" src="images/popup/status/ok.svg" width="24px" height="24px" alt="Status"/>
         </div>
         <div class="block__btn btn-about btn-what-this-mean">
           <span data-i18n-key="whatThisMean"></span>
@@ -70,8 +68,8 @@
             <path d="M0.546875 1.47339L4 5.5L7.48204 1.47339" stroke="#3B332B" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </div>
-        <div class="block__text text-normal details-text" data-render-var="detailsClasses">
-          <span data-render-var="detailsText" data-i18n-key="notDisseminatorDesc"></span>
+        <div id="ori-details" class="block__text text-normal details-text">
+          <span id="ori-desc" data-i18n-key="notDisseminatorDesc"></span>
           <div class="block__footer">
             <span class="block__btn btn-ok btn-hide-details" data-i18n-key="okayButton"></span>
             <span class="block__btn btn-text">
@@ -83,9 +81,8 @@
 
       <div class="main-page__block main-page-info" id="restrictions">
         <div class="block__title">
-          <span data-render-var="title" data-i18n-key="notBlockedTitle"></span>
-          <img class="icon__status" data-render-var="statusIcon" src="images/popup/status/ok.svg" width="24px"
-               height="24px" alt=""/>
+          <span id="restrictions-title" data-i18n-key="notBlockedTitle"></span>
+          <img class="icon__status" src="images/popup/status/ok.svg" width="24px" height="24px" alt="Status"/>
         </div>
         <div class="block__btn btn-about btn-what-this-mean">
           <span data-i18n-key="whatThisMean"></span>
@@ -94,7 +91,7 @@
           </svg>
         </div>
         <div class="block__text text-normal details-text">
-          <span data-render-var="detailsText"></span>
+          <span id="restrictions-desc" data-i18n-key="notBlockedDesc" ></span>
           <div class="block__footer">
             <span class="block__btn btn-ok btn-hide-details" data-i18n-key="okayButton"></span>
             <span class="block__btn btn-text">

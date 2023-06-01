@@ -366,12 +366,12 @@ import {
     })
   }
 
-  const whatThisMeanButtons = document.querySelectorAll('.btn-what-this-mean')
   const closeDetailsButtons = document.querySelectorAll('.btn-hide-details')
+  const whatThisMeanButtons = document.querySelectorAll('.btn-what-this-mean')
 
   const showWhatThisMeanButtons = () => {
-    whatThisMeanButtons.forEach((btn) => {
-      btn.style.display = 'flex'
+    whatThisMeanButtons.forEach((button) => {
+      button.style.display = 'flex'
     })
   }
 

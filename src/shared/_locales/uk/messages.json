@@ -488,5 +488,38 @@
   },
   "youCanCloseThisWindow": {
     "message": "Можна закрити це вікно"
+  },
+  "optionsLoadFromSource": {
+    "message": "Завантажити список із файлу або URL"
+  },
+  "popupLoadFromSourceTitle": {
+    "message": "Завантажте список сайтів, які завжди будуть відкриватися через проксі"
+  },
+  "popupFromSourceOr": {
+    "message": "або"
+  },
+  "chooseFileOnComputer": {
+    "message": "Виберіть файл на комп'ютері"
+  },
+  "popupFromSourceDesc": {
+    "message": "У текстовому форматі. Кожен домен із нового рядка."
+  },
+  "popupFromSourceLoadButton": {
+    "message": "Завантажити"
+  },
+  "fileSizeError": {
+    "message": "Розмір файлу не повинен перевищувати 64 КБ"
+  },
+  "emptyFileError": {
+    "message": "Файл порожній або пошкоджений. Будь ласка, перевірте його та спробуйте ще раз."
+  },
+  "maxDomainsExceededError": {
+    "message": "Максимальна кількість доменів, яку можна додати - 1000. Будь ласка, скоротіть список і спробуйте ще раз."
+  },
+  "invalidURLError": {
+    "message": "Неправильний URL. Будь ласка, перевірте його і спробуйте ще раз."
+  },
+  "fetchURLError": {
+    "message": "Введена вами URL-адреса недоступна. Будь ласка, перевірте її та спробуйте ще раз."
   }
 }

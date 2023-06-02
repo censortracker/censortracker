@@ -17,6 +17,15 @@ a {
     color: #3b332b;
 }
 
+.main-page__search {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-between;
+    margin: 30px 0 10px;
+    align-items: center;
+}
+
 .options-page-card {
     padding: 20px 30px;
     width: 100%;
@@ -475,7 +484,6 @@ a {
     box-sizing: border-box;
     border-radius: 4px;
     width: 100%;
-    margin: 30px 0 10px;
     height: 30px;
     padding: 0 11px;
     color: #6d675f;

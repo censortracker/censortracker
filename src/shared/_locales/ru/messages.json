@@ -488,5 +488,38 @@
   },
   "youCanCloseThisWindow": {
     "message": "Можно закрыть это окно"
+  },
+  "optionsLoadFromSource": {
+    "message": "Загрузить список из файла или URL"
+  },
+  "popupLoadFromSourceTitle": {
+    "message": "Загрузите список сайтов, которые всегда будут открываться через прокси"
+  },
+  "popupFromSourceOr": {
+    "message": "или"
+  },
+  "chooseFileOnComputer": {
+    "message": "Выберите файл на компьютере"
+  },
+  "popupFromSourceDesc": {
+    "message": "В текстовом формате. Каждый домен с новой строки."
+  },
+  "popupFromSourceLoadButton": {
+    "message": "Загрузить"
+  },
+  "fileSizeError": {
+    "message": "Размер файла не должен превышать 64 КБ"
+  },
+  "emptyFileError": {
+    "message": "Файл пустой или повреждён. Пожалуйста, проверьте его и попробуйте ещё раз."
+  },
+  "maxDomainsExceededError": {
+    "message": "Максимальное количество доменов, которое можно добавить - 1000. Пожалуйста, сократите список и попробуйте ещё раз."
+  },
+  "invalidURLError": {
+    "message": "Неверный URL. Пожалуйста, проверьте его и попробуйте ещё раз."
+  },
+  "fetchURLError": {
+    "message": "Введенный вами URL-адрес недоступен. Пожалуйста, проверьте его и повторите попытку."
   }
 }

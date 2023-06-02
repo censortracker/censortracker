@@ -488,5 +488,38 @@
   },
   "youCanCloseThisWindow": {
     "message": "You can close this window"
+  },
+  "optionsLoadFromSource": {
+    "message": "Load from a file or URL"
+  },
+  "popupLoadFromSourceTitle": {
+    "message": "Load a list of sites that will always open through a proxy"
+  },
+  "popupFromSourceOr": {
+    "message": "or"
+  },
+  "chooseFileOnComputer": {
+    "message": "Choose a file on your computer"
+  },
+  "popupFromSourceDesc": {
+    "message": "In plain text format. Each domain on a new line."
+  },
+  "popupFromSourceLoadButton": {
+    "message": "Load"
+  },
+  "fileSizeError": {
+    "message": "File size should not exceed 64 KB"
+  },
+  "emptyFileError": {
+    "message": "The file is empty or damaged. Please check it and try again."
+  },
+  "maxDomainsExceededError": {
+    "message": "The maximum number of domains that can be added is 1000. Please shorten the list and try again."
+  },
+  "invalidURLError": {
+    "message": "The URL you entered is invalid. Please check it and try again."
+  },
+  "fetchURLError": {
+    "message": "The URL you entered is not available. Please check it and try again."
   }
 }

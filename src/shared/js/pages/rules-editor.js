@@ -7,14 +7,13 @@ import 'codemirror/theme/ayu-mirage.css'
 
 import Browser from 'Background/browser-api'
 import Ignore from 'Background/ignore'
-import { i18nGetMessage, removeDuplicates } from 'Background/utilities'
+import { i18nGetMessage, isValidURL, removeDuplicates } from 'Background/utilities'
 import CodeMirror from 'codemirror'
 
 (async () => {
   const search = document.getElementById('search')
   const textarea = document.getElementById('textarea')
   const saveChangesButton = document.getElementById('saveChanges')
-  const isIgnorePage = textarea.dataset.type === 'ignoredDomains'
   const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)')
 
   const editor = CodeMirror.fromTextArea(
@@ -35,6 +34,7 @@ import CodeMirror from 'codemirror'
     editor.setOption('theme', event.matches ? 'ayu-mirage' : 'default')
   })
 
+  // Handle search highlighting.
   search.addEventListener('input', () => {
     for (const marker of editor.getAllMarks()) {
       marker.clear()
@@ -53,27 +53,28 @@ import CodeMirror from 'codemirror'
     }
   })
 
+  // Handle switching between dark and light mode.
+  const isIgnorePage = textarea.dataset.type === 'ignoredDomains'
+
   saveChangesButton.addEventListener('click', async (event) => {
-    const button = event.target
     const editorContent = editor.getValue().trim()
     const urls = editorContent.split('\n')
-    const validUrls = removeDuplicates(urls)
+    const domains = removeDuplicates(urls)
 
-    button.textContent = i18nGetMessage('optionsSavedMessage')
+    if (isIgnorePage) {
+      await Ignore.set(domains)
+    } else {
+      await Browser.storage.local.set({
+        customProxiedDomains: domains,
+      })
+    }
+    editor.setValue(domains.join('\n'))
+    event.target.textContent = i18nGetMessage('optionsSavedMessage')
 
     // Reset the button text after 500ms.
     setTimeout(() => {
-      button.textContent = i18nGetMessage('saveChanges')
+      event.target.textContent = i18nGetMessage('saveChanges')
     }, 500)
-
-    if (isIgnorePage) {
-      await Ignore.set(validUrls)
-    } else {
-      await Browser.storage.local.set({
-        customProxiedDomains: validUrls,
-      })
-    }
-    editor.setValue(validUrls.join('\n'))
   })
 
   if (isIgnorePage) {
@@ -85,5 +86,104 @@ import CodeMirror from 'codemirror'
       .then(({ customProxiedDomains }) => {
         editor.setValue(customProxiedDomains.join('\n'))
       })
+  }
+
+  const popupFromSource = document.getElementById('popupFromSource')
+
+  if (popupFromSource) {
+    const loadDomainsButton = document.getElementById('loadDomains')
+    const closePopupButton = document.getElementById('closePopup')
+    const textFileInput = document.getElementById('textFileInput')
+    const textFileReadError = document.getElementById('textFileReadError')
+    const loadFromURLButton = document.getElementById('loadFromURLButton')
+
+    const maxSizeBytes = 64000 // 64KB
+    const maxDomainsAllowed = 1000
+
+    const updateEditorContent = async (validDomains) => {
+      const { customProxiedDomains } = await Browser.storage.local.get({
+        customProxiedDomains: [],
+      })
+      const domains = [...validDomains, ...customProxiedDomains]
+
+      if (domains.length > maxDomainsAllowed) {
+        textFileReadError.textContent = i18nGetMessage('maxDomainsExceededError')
+        textFileReadError.classList.remove('hidden')
+        return
+      }
+
+      editor.setValue(domains.join('\n'))
+      popupFromSource.classList.add('hidden')
+    }
+
+    loadFromURLButton.addEventListener('click', async (event) => {
+      const sourceURL = document.getElementById('sourceURL').value
+      const urlSourceError = document.getElementById('urlSourceError')
+
+      if (isValidURL(sourceURL)) {
+        fetch(sourceURL)
+          .then((response) => response.text())
+          .then(async (text) => {
+            const domains = readlines(text)
+
+            if (domains.length === 0) {
+              urlSourceError.textContent = i18nGetMessage('fetchURLError')
+              urlSourceError.classList.remove('hidden')
+              return
+            }
+            await updateEditorContent(domains)
+          }).catch((_error) => {
+            urlSourceError.textContent = i18nGetMessage('fetchURLError')
+            urlSourceError.classList.remove('hidden')
+          })
+      } else {
+        urlSourceError.textContent = i18nGetMessage('invalidURLError')
+        urlSourceError.classList.remove('hidden')
+      }
+    })
+
+    textFileInput.addEventListener('change', async (event) => {
+      const file = event.target.files[0]
+      const fileReader = new FileReader()
+
+      // The file is too large.
+      if (file && file.size > maxSizeBytes) {
+        textFileReadError.textContent = i18nGetMessage('fileSizeError')
+        textFileReadError.classList.remove('hidden')
+        return
+      }
+
+      fileReader.addEventListener('load', async (e) => {
+        const domains = readlines(e.target.result)
+
+        // Show an error if the file is empty.
+        if (domains.length === 0) {
+          textFileReadError.textContent = i18nGetMessage('emptyFileError')
+          textFileReadError.classList.remove('hidden')
+          return
+        }
+        // Set the editor content.
+        await updateEditorContent(domains)
+      })
+      fileReader.readAsText(file)
+    })
+
+    // Show the popup when the button is clicked.
+    loadDomainsButton.addEventListener('click', async (event) => {
+      popupFromSource.classList.remove('hidden')
+    })
+
+    // Hide the popup when the button is clicked.
+    closePopupButton.addEventListener('click', async (event) => {
+      popupFromSource.classList.add('hidden')
+    })
+  }
+
+  const readlines = (contents) => {
+    const domains = contents.split('\n')
+      .map((line) => line.trim())
+      .filter((line) => line.length !== 0)
+
+    return removeDuplicates(domains)
   }
 })()

@@ -1,0 +1,130 @@
+.btn__add_list {
+    color: #5173D3;
+    font-size: 13px;
+    font-weight: 400;
+    border-bottom: 1px solid transparent;
+}
+
+.btn__add_list:hover {
+    cursor: pointer;
+    border-bottom: 1px solid #5173D3;
+}
+
+.btn__add_list span {
+    margin-left: 7px;
+}
+
+.btn__add_list svg {
+    vertical-align: text-bottom;
+}
+
+.popup_upload_list {
+    width: 100%;
+    height: 100%;
+
+    background-color:  rgba(255, 255, 255, 0.97);
+    position: absolute;
+    top:0;
+    left: 0;
+    font-weight: 400;
+    font-size: 15px;
+    line-height: 30px;
+}
+
+.popup_upload_list .popup_upload_list__wrapper {
+    max-width: 620px;
+    width: 620px;
+    margin: 140px auto 0;
+}
+
+.popup_upload_list .close_btn {
+    position: absolute;
+    top: 25px;
+    right: 25px;
+}
+
+.popup_upload_list .close_btn:hover {
+    cursor: pointer;
+}
+
+.popup_upload_list .page-main-title {
+    line-height: 30px;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.popup_upload_list .popup__text {
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 30px;
+}
+
+.popup_upload_list .popup_upload_form {
+    margin-top: 40px;
+}
+
+.popup_upload_list .popup_upload_form .input-url-list {
+    border: 1px solid #c4c2bf;
+    box-sizing: border-box;
+    border-radius: 4px;
+    width: auto;
+    height: 35px;
+    padding: 0 11px;
+    color: #6d675f;
+    flex-grow: 1;
+}
+
+.popup_upload_list .popup_upload_form .input-url-list:focus,
+.popup_upload_list .popup_upload_form .input-url-list:active {
+    outline: none;
+    border: 1px solid #2a251f !important;
+}
+
+.popup_upload_list .upload_form__url-item {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 5px;
+}
+
+.popup_upload_list .upload_form__url {
+    margin-bottom: 15px;
+}
+
+.popup_upload_list .popup_upload_form .btn {
+    border: 1px solid #3B332B;
+    height: 35px;
+}
+
+.popup_upload_list .popup_upload_form .btn:hover {
+    color: #625C55;
+    border-color: #625C55;
+    cursor: pointer;
+}
+
+
+.popup_upload_list .popup_upload_form  .upload_form__file {
+    margin-top: 15px;
+}
+
+
+.popup_upload_list .upload_form__error {
+    margin-top: 5px;
+    color: #B61414;
+}
+
+.popup_upload_list .file-upload {
+    height: 35px;
+}
+
+.popup_upload_list .file-upload input{
+    display:none;
+}
+
+.popup_upload_list .file-upload .btn_upload_file.btn {
+    height: auto;
+}
+
+.input-search {
+    width: 300px;
+}

@@ -144,11 +144,6 @@
         font-size: 20px;
     }
 
-    .popup_upload_list .close_btn:hover svg path {
-        fill: #625c55;
-        cursor: pointer
-    }
-
     .popup__text {
         color: #f4f1f1;
         opacity: .5

@@ -1,130 +1,173 @@
 .btn__add_list {
-    color: #5173D3;
-    font-size: 13px;
-    font-weight: 400;
     border-bottom: 1px solid transparent;
+    color: #5173d3;
+    font-size: 13px;
+    font-weight: 400
 }
 
 .btn__add_list:hover {
-    cursor: pointer;
-    border-bottom: 1px solid #5173D3;
+    border-bottom: 1px solid #5173d3;
+    cursor: pointer
 }
 
 .btn__add_list span {
-    margin-left: 7px;
+    margin-left: 2px;
 }
 
 .btn__add_list svg {
-    vertical-align: text-bottom;
+    vertical-align: text-bottom
 }
 
 .popup_upload_list {
-    width: 100%;
-    height: 100%;
-
-    background-color:  rgba(255, 255, 255, 0.97);
-    position: absolute;
-    top:0;
-    left: 0;
-    font-weight: 400;
+    background-color: hsla(0, 0%, 100%, .97);
     font-size: 15px;
+    font-weight: 400;
+    height: 100%;
+    left: 0;
     line-height: 30px;
+    position: absolute;
+    top: 0;
+    width: 100%
 }
 
 .popup_upload_list .popup_upload_list__wrapper {
-    max-width: 620px;
-    width: 620px;
     margin: 140px auto 0;
+    max-width: 620px;
+    width: 620px
 }
 
 .popup_upload_list .close_btn {
     position: absolute;
-    top: 25px;
     right: 25px;
+    top: 25px
 }
 
 .popup_upload_list .close_btn:hover {
-    cursor: pointer;
+    cursor: pointer
 }
 
 .popup_upload_list .page-main-title {
-    line-height: 30px;
     font-weight: 700;
-    margin-bottom: 10px;
+    line-height: 30px;
+    margin-bottom: 10px
 }
 
 .popup_upload_list .popup__text {
-    font-weight: 400;
     font-size: 20px;
-    line-height: 30px;
+    font-weight: 400;
+    line-height: 30px
 }
 
 .popup_upload_list .popup_upload_form {
-    margin-top: 40px;
+    margin-top: 40px
 }
 
 .popup_upload_list .popup_upload_form .input-url-list {
     border: 1px solid #c4c2bf;
-    box-sizing: border-box;
     border-radius: 4px;
-    width: auto;
-    height: 35px;
-    padding: 0 11px;
+    box-sizing: border-box;
     color: #6d675f;
     flex-grow: 1;
+    height: 35px;
+    padding: 0 11px;
+    width: auto
 }
 
-.popup_upload_list .popup_upload_form .input-url-list:focus,
-.popup_upload_list .popup_upload_form .input-url-list:active {
-    outline: none;
+.popup_upload_list .popup_upload_form .input-url-list:active, .popup_upload_list .popup_upload_form .input-url-list:focus {
     border: 1px solid #2a251f !important;
+    outline: none
 }
 
 .popup_upload_list .upload_form__url-item {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
     gap: 5px;
+    justify-content: space-between
 }
 
 .popup_upload_list .upload_form__url {
-    margin-bottom: 15px;
+    margin-bottom: 15px
 }
 
 .popup_upload_list .popup_upload_form .btn {
-    border: 1px solid #3B332B;
-    height: 35px;
+    border: 1px solid #3b332b;
+    height: 35px
 }
 
 .popup_upload_list .popup_upload_form .btn:hover {
-    color: #625C55;
-    border-color: #625C55;
-    cursor: pointer;
+    border-color: #625c55;
+    color: #625c55;
+    cursor: pointer
 }
 
-
-.popup_upload_list .popup_upload_form  .upload_form__file {
-    margin-top: 15px;
+.popup_upload_list .popup_upload_form .upload_form__file {
+    margin-top: 15px
 }
-
 
 .popup_upload_list .upload_form__error {
-    margin-top: 5px;
-    color: #B61414;
+    color: #b61414;
+    margin-top: 5px
 }
 
 .popup_upload_list .file-upload {
-    height: 35px;
+    height: 35px
 }
 
-.popup_upload_list .file-upload input{
-    display:none;
+.popup_upload_list .file-upload input {
+    display: none
 }
 
 .popup_upload_list .file-upload .btn_upload_file.btn {
-    height: auto;
+    height: auto
 }
 
 .input-search {
-    width: 300px;
+    width: 300px
+}
+
+@media (prefers-color-scheme: dark) {
+    .popup_upload_list {
+        background-color: #181a1b
+    }
+
+    .close_btn svg path {
+        stroke: #f4f1f1
+    }
+
+    #or {
+        color: #f4f1f1;
+        opacity: .5;
+        font-size: 20px;
+    }
+
+    .popup_upload_list .close_btn:hover svg path {
+        fill: #625c55;
+        cursor: pointer
+    }
+
+    .popup__text {
+        color: #f4f1f1;
+        opacity: .5
+    }
+
+    .popup_upload_list .upload_form__error {
+        color: #9f4141
+    }
+
+    .btn {
+        border-color: #61666b !important
+    }
+
+    .popup_upload_list .popup_upload_form .btn:hover {
+        color: #cbccc6;
+    }
+
+    .popup_upload_list .popup_upload_form .btn {
+        height: 35px
+    }
+
+    .file-upload label {
+        border: 1px solid #f4f1f1;
+        color: #f4f1f1
+    }
 }

@@ -18,6 +18,10 @@
     vertical-align: text-bottom
 }
 
+#or {
+    font-size: 20px;
+}
+
 .popup_upload_list {
     background-color: hsla(0, 0%, 100%, .97);
     font-size: 15px;

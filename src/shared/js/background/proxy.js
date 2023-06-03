@@ -17,7 +17,7 @@ class ProxyManager {
       console.warn('Using custom proxy for PAC.')
       return customProxyServerURI
     }
-    return proxyServerURI
+    return `HTTPS ${proxyServerURI}`
   }
 
   async requestIncognitoAccess () {

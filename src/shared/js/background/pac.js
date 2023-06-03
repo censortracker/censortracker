@@ -48,12 +48,12 @@ export const getPacScript = ({ domains = [], proxyServerURI }) => {
         
         // Proxy *.onion and *.i2p domains.
         if (shExpMatch(host, '*.onion') || shExpMatch(host, '*.i2p')) {
-          return 'HTTPS ${proxyServerURI};';
+          return '${proxyServerURI};';
         }
 
         // Return result
         if (isHostBlocked(domains, host)) {
-          return 'HTTPS ${proxyServerURI};';
+          return '${proxyServerURI};';
         } else {
           return 'DIRECT';
         }

@@ -100,20 +100,28 @@ import CodeMirror from 'codemirror'
     const maxSizeBytes = 64000 // 64KB
     const maxDomainsAllowed = 1000
 
-    const updateEditorContent = async (validDomains) => {
+    const updateEditorContent = async (domains) => {
       const { customProxiedDomains } = await Browser.storage.local.get({
         customProxiedDomains: [],
       })
-      const domains = [...validDomains, ...customProxiedDomains]
+      const domainsArray = [...customProxiedDomains, ...domains]
 
-      if (domains.length > maxDomainsAllowed) {
-        textFileReadError.textContent = i18nGetMessage('maxDomainsExceededError')
-        textFileReadError.classList.remove('hidden')
-        return
+      if (domainsArray.length > maxDomainsAllowed) {
+        return false
       }
 
-      editor.setValue(domains.join('\n'))
+      const editorContent = domainsArray.join('\n')
+
+      editor.setValue(`${editorContent}\n`)
+      //
+      editor.focus()
+
+      // Set cursor at last element.
+      editor.setCursor({ line: domainsArray.length + 1, ch: 1 })
+
+      // Hide popup.
       popupFromSource.classList.add('hidden')
+      return true
     }
 
     loadFromURLButton.addEventListener('click', async (event) => {
@@ -131,7 +139,14 @@ import CodeMirror from 'codemirror'
               urlSourceError.classList.remove('hidden')
               return
             }
-            await updateEditorContent(domains)
+
+            updateEditorContent(domains)
+              .then((updated) => {
+                if (!updated) {
+                  urlSourceError.textContent = i18nGetMessage('maxDomainsExceededError')
+                  urlSourceError.classList.remove('hidden')
+                }
+              })
           }).catch((_error) => {
             urlSourceError.textContent = i18nGetMessage('fetchURLError')
             urlSourceError.classList.remove('hidden')
@@ -162,8 +177,13 @@ import CodeMirror from 'codemirror'
           textFileReadError.classList.remove('hidden')
           return
         }
-        // Set the editor content.
-        await updateEditorContent(domains)
+        updateEditorContent(domains)
+          .then((updated) => {
+            if (!updated) {
+              textFileReadError.textContent = i18nGetMessage('maxDomainsExceededError')
+              textFileReadError.classList.remove('hidden')
+            }
+          })
       })
       fileReader.readAsText(file)
     })

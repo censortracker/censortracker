@@ -28,7 +28,7 @@ const storeData = ({ locale, data }) => {
   }
 }
 
-for (const locale of ['ru', 'en']) {
+for (const locale of ['ru', 'en', 'uk']) {
   const data = loadData({ locale })
 
   if (Object.keys(data).length > 0) {

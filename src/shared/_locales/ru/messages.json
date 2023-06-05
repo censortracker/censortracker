@@ -53,6 +53,9 @@
   "censorshipCircumventionBlockTitle": {
     "message": "Обход Блокировок"
   },
+  "chooseFileOnComputer": {
+    "message": "Выберите файл на компьютере"
+  },
   "closeTab": {
     "message": "Закрыть вкладку"
   },
@@ -143,6 +146,9 @@
   "doneDescription": {
     "message": "Операция выполнена успешно."
   },
+  "emptyFileError": {
+    "message": "Файл пустой или повреждён. Пожалуйста, проверьте его и попробуйте ещё раз."
+  },
   "extensionDisabledTitle": {
     "message": "Censor Tracker выключен"
   },
@@ -157,6 +163,12 @@
   },
   "faqLink": {
     "message": "Ответы на вопросы по работе расширения"
+  },
+  "fetchURLError": {
+    "message": "Введенный вами URL-адрес недоступен. Пожалуйста, проверьте его и повторите попытку."
+  },
+  "fileSizeError": {
+    "message": "Размер файла не должен превышать 64 КБ"
   },
   "good": {
     "message": "Хорошо"
@@ -214,8 +226,14 @@
   "installedPageTitle": {
     "message": "Censor Tracker Установлен"
   },
+  "invalidURLError": {
+    "message": "Неверный URL. Пожалуйста, проверьте его и попробуйте ещё раз."
+  },
   "localRegistryUpdated": {
     "message": "Локальная база данных заблокированных сайтов обновлена!"
+  },
+  "maxDomainsExceededError": {
+    "message": "Максимальное количество доменов, которое можно добавить - 1000. Пожалуйста, сократите список и попробуйте ещё раз."
   },
   "notBlockedDesc": {
     "message": "Если доступ к сайту запретят - Censor Tracker предложит открыть сайт через надёжный прокси."
@@ -240,6 +258,9 @@
   },
   "optionsIgnoredWebsitesDesc": {
     "message": "Адреса, для которых прокси всегда будет отключён. Может помочь, если есть проблемы с открытием сайта."
+  },
+  "optionsLoadFromSource": {
+    "message": "Загрузить список из файла или URL"
   },
   "optionsPageTitle": {
     "message": "Настройки"
@@ -308,6 +329,18 @@
   },
   "popupAutoMessage": {
     "message": "Авто"
+  },
+  "popupFromSourceDesc": {
+    "message": "В текстовом формате. Каждый домен с новой строки."
+  },
+  "popupFromSourceLoadButton": {
+    "message": "Загрузить"
+  },
+  "popupFromSourceOr": {
+    "message": "или"
+  },
+  "popupLoadFromSourceTitle": {
+    "message": "Загрузите список сайтов, которые всегда будут открываться через прокси"
   },
   "popupNewTabMessage": {
     "message": "Новая вкладка"
@@ -488,38 +521,5 @@
   },
   "youCanCloseThisWindow": {
     "message": "Можно закрыть это окно"
-  },
-  "optionsLoadFromSource": {
-    "message": "Загрузить список из файла или URL"
-  },
-  "popupLoadFromSourceTitle": {
-    "message": "Загрузите список сайтов, которые всегда будут открываться через прокси"
-  },
-  "popupFromSourceOr": {
-    "message": "или"
-  },
-  "chooseFileOnComputer": {
-    "message": "Выберите файл на компьютере"
-  },
-  "popupFromSourceDesc": {
-    "message": "В текстовом формате. Каждый домен с новой строки."
-  },
-  "popupFromSourceLoadButton": {
-    "message": "Загрузить"
-  },
-  "fileSizeError": {
-    "message": "Размер файла не должен превышать 64 КБ"
-  },
-  "emptyFileError": {
-    "message": "Файл пустой или повреждён. Пожалуйста, проверьте его и попробуйте ещё раз."
-  },
-  "maxDomainsExceededError": {
-    "message": "Максимальное количество доменов, которое можно добавить - 1000. Пожалуйста, сократите список и попробуйте ещё раз."
-  },
-  "invalidURLError": {
-    "message": "Неверный URL. Пожалуйста, проверьте его и попробуйте ещё раз."
-  },
-  "fetchURLError": {
-    "message": "Введенный вами URL-адрес недоступен. Пожалуйста, проверьте его и повторите попытку."
   }
 }

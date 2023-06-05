@@ -17,15 +17,6 @@
   "appName": {
     "message": "Censor Tracker - Обхід блокувань"
   },
-  "appearanceCardTitle": {
-    "message": "Зовнішній вигляд"
-  },
-  "appearanceDarkThemeDesc": {
-    "message": "Ви можете ввімкнути темну тему, щоб комфортно працювати з Censor Tracker вночі."
-  },
-  "appearanceDarkThemeTitle": {
-    "message": "Темна тема"
-  },
   "areYouSureYouWantToResetSettingsDesc": {
     "message": "Перевстановити конфіг і оновити локальну базу даних"
   },

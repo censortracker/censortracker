@@ -17,15 +17,6 @@
   "appName": {
     "message": "Censor Tracker – Proxy for Privacy & Security"
   },
-  "appearanceCardTitle": {
-    "message": "Appearance"
-  },
-  "appearanceDarkThemeDesc": {
-    "message": "You can turn on a dark theme to work comfortably with the Censor Tracker at night."
-  },
-  "appearanceDarkThemeTitle": {
-    "message": "Dark Mode"
-  },
   "areYouSureYouWantToResetSettingsDesc": {
     "message": "Regenerate the PAC file for your current region and reset the settings."
   },

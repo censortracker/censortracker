@@ -319,7 +319,7 @@
     "message": "«Родительский» контроль"
   },
   "popupAutoMessage": {
-    "message": "Авто"
+    "message": "Определить автоматически"
   },
   "popupFromSourceDesc": {
     "message": "В текстовом формате. Каждый домен с новой строки."

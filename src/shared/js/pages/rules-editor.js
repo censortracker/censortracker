@@ -114,10 +114,7 @@ import CodeMirror from 'codemirror'
       const editorContent = domainsArray.join('\n')
 
       editor.setValue(`${editorContent}\n`)
-      //
       editor.focus()
-
-      // Set cursor at last element.
       editor.setCursor({ line: domainsArray.length + 1, ch: 1 })
 
       // Hide popup.

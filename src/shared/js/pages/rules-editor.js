@@ -53,7 +53,7 @@ import CodeMirror from 'codemirror'
     }
   })
 
-  // Handle switching between dark and light mode.
+  // Check whether the page is the ignored domains page.
   const isIgnorePage = textarea.dataset.type === 'ignoredDomains'
 
   saveChangesButton.addEventListener('click', async (event) => {
@@ -96,6 +96,7 @@ import CodeMirror from 'codemirror'
     const textFileInput = document.getElementById('textFileInput')
     const textFileReadError = document.getElementById('textFileReadError')
     const loadFromURLButton = document.getElementById('loadFromURLButton')
+    const urlSourceError = document.getElementById('urlSourceError')
 
     const maxSizeBytes = 64000 // 64KB
     const maxDomainsAllowed = 1000
@@ -126,7 +127,6 @@ import CodeMirror from 'codemirror'
 
     loadFromURLButton.addEventListener('click', async (event) => {
       const sourceURL = document.getElementById('sourceURL').value
-      const urlSourceError = document.getElementById('urlSourceError')
 
       if (isValidURL(sourceURL)) {
         fetch(sourceURL)
@@ -196,9 +196,16 @@ import CodeMirror from 'codemirror'
     // Hide the popup when the button is clicked.
     closePopupButton.addEventListener('click', async (event) => {
       popupFromSource.classList.add('hidden')
+      urlSourceError.classList.add('hidden')
+      textFileReadError.classList.add('hidden')
     })
   }
 
+  /**
+   * Read the contents of a file and return an array of domains.
+   * @param contents The contents of the file.
+   * @returns {*} An array of domains.
+   */
   const readlines = (contents) => {
     const domains = contents.split('\n')
       .map((line) => line.trim())

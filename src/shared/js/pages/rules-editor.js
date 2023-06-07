@@ -42,7 +42,7 @@ import CodeMirror from 'codemirror'
 
     const cursor = editor.getSearchCursor(search.value)
 
-    while (cursor.findNext()) {
+    if (cursor.findNext()) {
       editor.markText(
         cursor.from(),
         cursor.to(),
@@ -50,6 +50,7 @@ import CodeMirror from 'codemirror'
           className: 'highlight',
         },
       )
+      editor.setCursor(cursor.from())
     }
   })
 

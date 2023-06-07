@@ -1,3 +1,10 @@
+# 15.0.0
+
+- Added support for importing proxy lists from a file or URL
+- Fixed styles for dark theme
+- Fixed a bug that caused tabs to reload
+
+
 # 12.0.0
 
 - Fix locale issues

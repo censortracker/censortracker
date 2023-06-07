@@ -321,13 +321,13 @@
   "popupAutoMessage": {
     "message": "Авто"
   },
-  "popupFromSourceDesc": {
+  "popupDesc": {
     "message": "У текстовому форматі. Кожен домен із нового рядка."
   },
-  "popupFromSourceLoadButton": {
+  "popupLoadButton": {
     "message": "Завантажити"
   },
-  "popupFromSourceOr": {
+  "popupOr": {
     "message": "або"
   },
   "popupLoadFromSourceTitle": {

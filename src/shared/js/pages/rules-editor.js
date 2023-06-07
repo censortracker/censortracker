@@ -88,9 +88,9 @@ import CodeMirror from 'codemirror'
       })
   }
 
-  const popupFromSource = document.getElementById('popupFromSource')
+  const popup = document.getElementById('popup')
 
-  if (popupFromSource) {
+  if (popup) {
     const loadDomainsButton = document.getElementById('loadDomains')
     const closePopupButton = document.getElementById('closePopup')
     const textFileInput = document.getElementById('textFileInput')
@@ -118,7 +118,7 @@ import CodeMirror from 'codemirror'
       editor.setCursor({ line: domainsArray.length + 1, ch: 1 })
 
       // Hide popup.
-      popupFromSource.classList.add('hidden')
+      popup.classList.add('hidden')
       return true
     }
 
@@ -187,12 +187,12 @@ import CodeMirror from 'codemirror'
 
     // Show the popup when the button is clicked.
     loadDomainsButton.addEventListener('click', async (event) => {
-      popupFromSource.classList.remove('hidden')
+      popup.classList.remove('hidden')
     })
 
     // Hide the popup when the button is clicked.
     closePopupButton.addEventListener('click', async (event) => {
-      popupFromSource.classList.add('hidden')
+      popup.classList.add('hidden')
       urlSourceError.classList.add('hidden')
       textFileReadError.classList.add('hidden')
     })

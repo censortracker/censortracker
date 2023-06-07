@@ -321,13 +321,13 @@
   "popupAutoMessage": {
     "message": "Определить автоматически"
   },
-  "popupFromSourceDesc": {
+  "popupDesc": {
     "message": "В текстовом формате. Каждый домен с новой строки."
   },
-  "popupFromSourceLoadButton": {
+  "popupLoadButton": {
     "message": "Загрузить"
   },
-  "popupFromSourceOr": {
+  "popupOr": {
     "message": "или"
   },
   "popupLoadFromSourceTitle": {

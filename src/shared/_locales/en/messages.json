@@ -321,13 +321,13 @@
   "popupAutoMessage": {
     "message": "Auto"
   },
-  "popupFromSourceDesc": {
+  "popupDesc": {
     "message": "In plain text format. Each domain on a new line."
   },
-  "popupFromSourceLoadButton": {
+  "popupLoadButton": {
     "message": "Load"
   },
-  "popupFromSourceOr": {
+  "popupOr": {
     "message": "or"
   },
   "popupLoadFromSourceTitle": {

@@ -370,7 +370,7 @@
     "message": "So that we could open blocked websites for you through our proxy. There is no another way to make proxy work in Firefox."
   },
   "proxiedWebsitesEditorPageDesc": {
-    "message": "You can manually add domains that will be proxied by the extension."
+    "message": "You can manually add up to 1000 domains that will be proxied by the extension."
   },
   "proxiedWebsitesEditorPageTitle": {
     "message": "Proxying List"

@@ -327,14 +327,14 @@
   "popupLoadButton": {
     "message": "Загрузить"
   },
-  "popupOr": {
-    "message": "или"
-  },
   "popupLoadFromSourceTitle": {
     "message": "Загрузите список сайтов, которые всегда будут открываться через прокси"
   },
   "popupNewTabMessage": {
     "message": "Новая вкладка"
+  },
+  "popupOr": {
+    "message": "или"
   },
   "popupProxyDisabled": {
     "message": "прокси выключен"

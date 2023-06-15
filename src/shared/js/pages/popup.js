@@ -104,26 +104,42 @@ import {
   })
 
   // Show proxying information
-  Browser.storage.local.get(['currentRegionName', 'proxyServerURI', 'proxyLastFetchTs'])
-    .then(async ({ currentRegionName, proxyServerURI, proxyLastFetchTs }) => {
-      if (proxyServerURI && proxyLastFetchTs) {
-        const domains = await Registry.getDomains()
-        const proxyServerId = proxyServerURI.split('.', 1)[0]
-        const proxyingDetailsText = document.getElementById('proxyingDetailsText')
-        const regionName = currentRegionName || i18nGetMessage('popupAutoMessage')
-        const popupServerMsg = i18nGetMessage('popupServer')
-        const popupYourRegion = i18nGetMessage('popupYourRegion')
-        const popupTotalBlocked = i18nGetMessage('popupTotalBlocked')
+  Browser.storage.local.get([
+    'currentRegionName',
+    'proxyServerURI',
+    'customProxyServerURI',
+    'proxyLastFetchTs',
+  ]).then(async (
+    {
+      currentRegionName,
+      proxyServerURI,
+      customProxyServerURI,
+      proxyLastFetchTs,
+    },
+  ) => {
+    if (proxyServerURI && proxyLastFetchTs) {
+      const domains = await Registry.getDomains()
+      const proxyServerId = proxyServerURI.split('.', 1)[0]
+      const proxyingDetailsText = document.getElementById('proxyingDetailsText')
+      const regionName = currentRegionName || i18nGetMessage('popupAutoMessage')
+      const popupServerMsg = i18nGetMessage('popupServer')
+      const popupYourRegion = i18nGetMessage('popupYourRegion')
+      const popupTotalBlocked = i18nGetMessage('popupTotalBlocked')
 
-        proxyingDetailsText.innerHTML = `
-          <code><b>${popupServerMsg}:</b> ${proxyServerId}</code>
-          <code><b>${popupYourRegion}:</b> ${regionName}</code>
-          <code><b>${popupTotalBlocked}:</b> ${domains.length}</code>
-        `
+      if (customProxyServerURI) {
+        proxyingDetailsText.innerHTML = `<code><b>${popupServerMsg}:</b> — </code>`
       } else {
-        proxyingInfo.hidden = true
+        proxyingDetailsText.innerHTML = `<code><b>${popupServerMsg}:</b> ${proxyServerId}</code>`
       }
-    })
+
+      proxyingDetailsText.innerHTML += `
+        <code><b>${popupYourRegion}:</b> ${regionName}</code>
+        <code><b>${popupTotalBlocked}:</b> ${domains.length}</code>
+      `
+    } else {
+      proxyingInfo.hidden = true
+    }
+  })
 
   // Hide all other expandable elements when actions are toggled
   toggleSiteActionsButton.addEventListener('click', async (event) => {

@@ -31,7 +31,8 @@
     line-height: 30px;
     position: absolute;
     top: 0;
-    width: 100%
+    width: 100%;
+    z-index: 100;
 }
 
 .popup_upload_list .popup_upload_list__wrapper {

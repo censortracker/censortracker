@@ -1,4 +1,5 @@
 import Browser from './browser-api'
+import { TaskType } from './constants'
 import Ignore from './ignore'
 import ProxyManager from './proxy'
 import Registry from './registry'
@@ -7,6 +8,10 @@ import Settings from './settings'
 import Task from './task'
 import * as utilities from './utilities'
 
+/**
+ * Fired when a connection is made from a content script.
+ * @param port A runtime.Port object representing the port connection.
+ */
 export const handleOnConnect = (port) => {
   if (port.name === 'censortracker') {
     port.onMessage.addListener((message) => {
@@ -20,9 +25,12 @@ export const handleOnConnect = (port) => {
   }
 }
 
-export const warnAboutInformationDisseminationOrganizer = async (url) => {
+export const showDisseminatorWarning = async (url) => {
   const hostname = utilities.extractDomainFromUrl(url)
-  const { notifiedHosts, showNotifications } = await Browser.storage.local.get({
+  const {
+    notifiedHosts,
+    showNotifications,
+  } = await Browser.storage.local.get({
     notifiedHosts: [],
     showNotifications: true,
   })
@@ -47,15 +55,17 @@ export const warnAboutInformationDisseminationOrganizer = async (url) => {
 export const handleOnAlarm = async ({ name }) => {
   console.log(`Task received: ${name}`)
 
-  if (name === 'removeBadProxies') {
+  if (name === TaskType.PING) {
+    await ProxyManager.ping()
+  } else if (name === TaskType.REMOVE_BAD_PROXIES) {
     await ProxyManager.removeBadProxies()
-  } else if (name === 'setProxy') {
-    ProxyManager.isEnabled().then(async (proxyingEnabled) => {
-      if (proxyingEnabled) {
-        await server.synchronize()
-        await ProxyManager.setProxy()
-      }
-    })
+  } else if (name === TaskType.SET_PROXY) {
+    const proxyingEnabled = await ProxyManager.isEnabled()
+
+    if (proxyingEnabled) {
+      await server.synchronize()
+      await ProxyManager.setProxy()
+    }
   } else {
     console.warn(`Unknown task: ${name}`)
   }
@@ -76,8 +86,9 @@ export const handleStartup = async () => {
   }
 
   await Task.schedule([
-    { name: 'setProxy', minutes: 8 },
-    { name: 'removeBadProxies', minutes: 5 },
+    { name: TaskType.PING, minutes: 5 },
+    { name: TaskType.SET_PROXY, minutes: 8 },
+    { name: TaskType.REMOVE_BAD_PROXIES, minutes: 5 },
   ])
   console.groupEnd()
 }
@@ -197,9 +208,11 @@ export const handleInstalled = async ({ reason }) => {
     await ProxyManager.requestIncognitoAccess()
     await ProxyManager.setProxy()
     await ProxyManager.ping()
+
+    // Schedule tasks to run in the background.
     await Task.schedule([
-      { name: 'setProxy', minutes: 8 },
-      { name: 'removeBadProxies', minutes: 5 },
+      { name: TaskType.SET_PROXY, minutes: 8 },
+      { name: TaskType.REMOVE_BAD_PROXIES, minutes: 5 },
     ])
   }
 }
@@ -218,7 +231,7 @@ export const handleTabState = async (
               if (disseminatorUrl) {
                 if (!cooperationRefused) {
                   Settings.setDangerIcon(tabId)
-                  await warnAboutInformationDisseminationOrganizer(url)
+                  await showDisseminatorWarning(url)
                 }
               }
             },
@@ -240,13 +253,14 @@ export const handleTabState = async (
 }
 
 export const handleTabCreate = async (tab) => {
-  Settings.extensionEnabled().then((enabled) => {
-    if (enabled) {
-      Settings.setDefaultIcon(tab.id)
-    } else {
-      Settings.setDisableIcon(tab.id)
-    }
-  })
+  Settings.extensionEnabled()
+    .then((enabled) => {
+      if (enabled) {
+        Settings.setDefaultIcon(tab.id)
+      } else {
+        Settings.setDisableIcon(tab.id)
+      }
+    })
 }
 
 export const handleProxyError = async ({ error }) => {
@@ -267,11 +281,11 @@ export const handleProxyError = async ({ error }) => {
   if (proxyErrors.includes(error)) {
     const {
       currentProxyServer,
-      fallbackProxyInUse = false,
-    } = await Browser.storage.local.get([
-      'currentProxyServer',
-      'fallbackProxyInUse',
-    ])
+      fallbackProxyInUse,
+    } = await Browser.storage.local.get({
+      fallbackProxyInUse: false,
+      currentProxyServer: null,
+    })
 
     if (fallbackProxyInUse) {
       await Browser.storage.local.set({
@@ -285,25 +299,26 @@ export const handleProxyError = async ({ error }) => {
     console.error(`Error on connection to ${currentProxyServer}: ${error}`)
 
     if (currentProxyServer) {
-      const { badProxies } = await Browser.storage.local.get({ badProxies: [] })
+      const badProxies = await ProxyManager.getBadProxies()
 
       if (!badProxies.includes(currentProxyServer)) {
         badProxies.push(currentProxyServer)
         await Browser.storage.local.set({ badProxies })
       }
 
-      Browser.tabs.query({ active: true, lastFocusedWindow: true })
-        .then(async (tab) => {
-          console.warn('Requesting new proxy server...')
-          await server.synchronize({
-            syncIgnore: false,
-            syncRegistry: false,
-            syncProxy: true,
-          })
-          await ProxyManager.setProxy()
-          await ProxyManager.ping()
-          Browser.tabs.reload(tab.id)
+      Browser.tabs.query({
+        active: true,
+        lastFocusedWindow: true,
+      }).then(async (tab) => {
+        console.warn('Requesting new proxy server...')
+        await server.synchronize({
+          syncIgnore: false,
+          syncRegistry: false,
+          syncProxy: true,
         })
+        await ProxyManager.setProxy()
+        await ProxyManager.ping()
+      })
     }
   }
 }

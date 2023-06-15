@@ -17,15 +17,6 @@
   "appName": {
     "message": "Censor Tracker – Proxy for Privacy & Security"
   },
-  "appearanceCardTitle": {
-    "message": "Appearance"
-  },
-  "appearanceDarkThemeDesc": {
-    "message": "You can turn on a dark theme to work comfortably with the Censor Tracker at night."
-  },
-  "appearanceDarkThemeTitle": {
-    "message": "Dark Mode"
-  },
   "areYouSureYouWantToResetSettingsDesc": {
     "message": "Regenerate the PAC file for your current region and reset the settings."
   },
@@ -52,6 +43,9 @@
   },
   "censorshipCircumventionBlockTitle": {
     "message": "Censorship Circumvention"
+  },
+  "chooseFileOnComputer": {
+    "message": "Choose a file on your computer"
   },
   "closeTab": {
     "message": "Close tab"
@@ -143,6 +137,9 @@
   "doneDescription": {
     "message": "Operation completed successfully."
   },
+  "emptyFileError": {
+    "message": "The file is empty or damaged. Please check it and try again."
+  },
   "extensionDisabledTitle": {
     "message": "Censor Tracker disabled"
   },
@@ -157,6 +154,12 @@
   },
   "faqLink": {
     "message": "Frequently asked questions"
+  },
+  "fetchURLError": {
+    "message": "The URL you entered is not available. Please check it and try again."
+  },
+  "fileSizeError": {
+    "message": "File size should not exceed 64 KB"
   },
   "good": {
     "message": "Okay"
@@ -214,8 +217,14 @@
   "installedPageTitle": {
     "message": "Censor Tracker Installed"
   },
+  "invalidURLError": {
+    "message": "The URL you entered is invalid. Please check it and try again."
+  },
   "localRegistryUpdated": {
     "message": "Local database updated!"
+  },
+  "maxDomainsExceededError": {
+    "message": "The maximum number of domains that can be added is 1000. Please shorten the list and try again."
   },
   "notBlockedDesc": {
     "message": "If access to the website is blocked, Censor Tracker will offer to load it through a reliable proxy."
@@ -240,6 +249,9 @@
   },
   "optionsIgnoredWebsitesDesc": {
     "message": "For these addresses proxy will always be disabled. If there are problems with opening certain websites, this list may help."
+  },
+  "optionsLoadFromSource": {
+    "message": "Load from a file or URL"
   },
   "optionsPageTitle": {
     "message": "Settings"
@@ -309,6 +321,18 @@
   "popupAutoMessage": {
     "message": "Auto"
   },
+  "popupDesc": {
+    "message": "In plain text format. Each domain on a new line."
+  },
+  "popupLoadButton": {
+    "message": "Load"
+  },
+  "popupOr": {
+    "message": "or"
+  },
+  "popupLoadFromSourceTitle": {
+    "message": "Load a list of sites that will always open through a proxy"
+  },
   "popupNewTabMessage": {
     "message": "New Tab"
   },
@@ -346,7 +370,7 @@
     "message": "So that we could open blocked websites for you through our proxy. There is no another way to make proxy work in Firefox."
   },
   "proxiedWebsitesEditorPageDesc": {
-    "message": "You can manually add domains that will be proxied by the extension."
+    "message": "You can manually add up to 1000 domains that will be proxied by the extension."
   },
   "proxiedWebsitesEditorPageTitle": {
     "message": "Proxying List"
@@ -488,38 +512,5 @@
   },
   "youCanCloseThisWindow": {
     "message": "You can close this window"
-  },
-  "optionsLoadFromSource": {
-    "message": "Load from a file or URL"
-  },
-  "popupLoadFromSourceTitle": {
-    "message": "Load a list of sites that will always open through a proxy"
-  },
-  "popupFromSourceOr": {
-    "message": "or"
-  },
-  "chooseFileOnComputer": {
-    "message": "Choose a file on your computer"
-  },
-  "popupFromSourceDesc": {
-    "message": "In plain text format. Each domain on a new line."
-  },
-  "popupFromSourceLoadButton": {
-    "message": "Load"
-  },
-  "fileSizeError": {
-    "message": "File size should not exceed 64 KB"
-  },
-  "emptyFileError": {
-    "message": "The file is empty or damaged. Please check it and try again."
-  },
-  "maxDomainsExceededError": {
-    "message": "The maximum number of domains that can be added is 1000. Please shorten the list and try again."
-  },
-  "invalidURLError": {
-    "message": "The URL you entered is invalid. Please check it and try again."
-  },
-  "fetchURLError": {
-    "message": "The URL you entered is not available. Please check it and try again."
   }
 }

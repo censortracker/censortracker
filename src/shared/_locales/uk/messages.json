@@ -14,15 +14,6 @@
   "appDesc": {
     "message": "Розширення для обходу блокувань."
   },
-  "appearanceCardTitle": {
-    "message": "Зовнішній вигляд"
-  },
-  "appearanceDarkThemeDesc": {
-    "message": "Ви можете ввімкнути темну тему, щоб комфортно працювати з Censor Tracker вночі."
-  },
-  "appearanceDarkThemeTitle": {
-    "message": "Темна тема"
-  },
   "appName": {
     "message": "Censor Tracker - Обхід блокувань"
   },
@@ -53,6 +44,9 @@
   "censorshipCircumventionBlockTitle": {
     "message": "Обхід Блокувань"
   },
+  "chooseFileOnComputer": {
+    "message": "Виберіть файл на комп'ютері"
+  },
   "closeTab": {
     "message": "Закрити вкладку"
   },
@@ -67,6 +61,14 @@
       }
     }
   },
+  "controlledByOtherExtensionTitle": {
+    "message": "Зараз інше розширення &laquo;<div class=\"extension__name\">$name$</div>&raquo; контролює ваші налаштування проксі",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
   "controlledByOtherExtensions": {
     "message": "Інші розширення контролюють ваші налаштування проксі в браузері"
   },
@@ -75,14 +77,6 @@
   },
   "controlledByOtherExtensionsMessage": {
     "message": "Інше розширення контролює проксі. Детальніше →"
-  },
-  "controlledByOtherExtensionTitle": {
-    "message": "Зараз інше розширення &laquo;<div class=\"extension__name\">$name$</div>&raquo; контролює ваші налаштування проксі",
-    "placeholders": {
-      "name": {
-        "content": "$1"
-      }
-    }
   },
   "controlledPageDisableExtension": {
     "message": "Вимкнути"
@@ -143,6 +137,9 @@
   "doneDescription": {
     "message": "Операцію виконано успішно."
   },
+  "emptyFileError": {
+    "message": "Файл порожній або пошкоджений. Будь ласка, перевірте його та спробуйте ще раз."
+  },
   "extensionDisabledTitle": {
     "message": "Censor Tracker вимкнено"
   },
@@ -157,6 +154,12 @@
   },
   "faqLink": {
     "message": "Відповіді на запитання щодо роботи розширення"
+  },
+  "fetchURLError": {
+    "message": "Введена вами URL-адреса недоступна. Будь ласка, перевірте її та спробуйте ще раз."
+  },
+  "fileSizeError": {
+    "message": "Розмір файлу не повинен перевищувати 64 КБ"
   },
   "good": {
     "message": "Добре"
@@ -176,13 +179,13 @@
   "i2pNetworkTitle": {
     "message": "Сайт у мережі <span class=\"network__title-i2p\"></span> I2P"
   },
+  "ignoreEditorPageTitle": {
+    "message": "Ігноровані сайти"
+  },
   "ignoredSitesDesc": {
     "message": "Адреси, для яких проксування завжди буде вимкнено. Може допомогти, якщо є проблеми з відкриттям сайту. Кожна адреса з нового рядка."
   },
   "ignoredSitesTitle": {
-    "message": "Ігноровані сайти"
-  },
-  "ignoreEditorPageTitle": {
     "message": "Ігноровані сайти"
   },
   "incognitoAccessRequiredDescription": {
@@ -214,8 +217,14 @@
   "installedPageTitle": {
     "message": "Censor Tracker Встановлено"
   },
+  "invalidURLError": {
+    "message": "Неправильний URL. Будь ласка, перевірте його і спробуйте ще раз."
+  },
   "localRegistryUpdated": {
     "message": "Локальну базу даних заблокованих сайтів оновлено!"
+  },
+  "maxDomainsExceededError": {
+    "message": "Максимальна кількість доменів, яку можна додати - 1000. Будь ласка, скоротіть список і спробуйте ще раз."
   },
   "notBlockedDesc": {
     "message": "Якщо доступ до сайту заборонять - Censor Tracker запропонує відкрити сайт через надійний проксі."
@@ -240,6 +249,9 @@
   },
   "optionsIgnoredWebsitesDesc": {
     "message": "Адреси, для яких проксі завжди буде вимкнено. Може допомогти, якщо є проблеми з відкриттям сайту."
+  },
+  "optionsLoadFromSource": {
+    "message": "Завантажити список із файлу або URL"
   },
   "optionsPageTitle": {
     "message": "Налаштування"
@@ -309,6 +321,18 @@
   "popupAutoMessage": {
     "message": "Авто"
   },
+  "popupDesc": {
+    "message": "У текстовому форматі. Кожен домен із нового рядка."
+  },
+  "popupLoadButton": {
+    "message": "Завантажити"
+  },
+  "popupOr": {
+    "message": "або"
+  },
+  "popupLoadFromSourceTitle": {
+    "message": "Завантажте список сайтів, які завжди будуть відкриватися через проксі"
+  },
   "popupNewTabMessage": {
     "message": "Нова вкладка"
   },
@@ -346,7 +370,7 @@
     "message": "Щоб ми могли відкривати для вас заблоковані сайти через проксі. У Firefox без цього ніяк."
   },
   "proxiedWebsitesEditorPageDesc": {
-    "message": "Ви можете вручну керувати сайтами, які будуть проксовані розширенням."
+    "message": "Ви можете вручну додати до 1000 доменів, які будуть проксируватися розширенням."
   },
   "proxiedWebsitesEditorPageTitle": {
     "message": "Проксовані сайти"
@@ -488,38 +512,5 @@
   },
   "youCanCloseThisWindow": {
     "message": "Можна закрити це вікно"
-  },
-  "optionsLoadFromSource": {
-    "message": "Завантажити список із файлу або URL"
-  },
-  "popupLoadFromSourceTitle": {
-    "message": "Завантажте список сайтів, які завжди будуть відкриватися через проксі"
-  },
-  "popupFromSourceOr": {
-    "message": "або"
-  },
-  "chooseFileOnComputer": {
-    "message": "Виберіть файл на комп'ютері"
-  },
-  "popupFromSourceDesc": {
-    "message": "У текстовому форматі. Кожен домен із нового рядка."
-  },
-  "popupFromSourceLoadButton": {
-    "message": "Завантажити"
-  },
-  "fileSizeError": {
-    "message": "Розмір файлу не повинен перевищувати 64 КБ"
-  },
-  "emptyFileError": {
-    "message": "Файл порожній або пошкоджений. Будь ласка, перевірте його та спробуйте ще раз."
-  },
-  "maxDomainsExceededError": {
-    "message": "Максимальна кількість доменів, яку можна додати - 1000. Будь ласка, скоротіть список і спробуйте ще раз."
-  },
-  "invalidURLError": {
-    "message": "Неправильний URL. Будь ласка, перевірте його і спробуйте ще раз."
-  },
-  "fetchURLError": {
-    "message": "Введена вами URL-адреса недоступна. Будь ласка, перевірте її та спробуйте ще раз."
   }
 }

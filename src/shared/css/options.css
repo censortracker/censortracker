@@ -32,7 +32,7 @@ a {
     background: #FFF;
     border-bottom: 1px solid #f1f1f1;
     border-radius: 10px;
-    filter: drop-shadow(0px 2.01027px 11.8382px rgba(15, 13, 11, 0.055)) drop-shadow(0px 1.12694px 6.63642px rgba(15, 13, 11, 0.0655718)) drop-shadow(0px 0.598509px 3.52455px rgba(15, 13, 11, 0.079074));
+    filter: drop-shadow(0px 2px 12px rgba(15, 13, 11, 0.055)) drop-shadow(0px 1px 7px rgba(15, 13, 11, 0.0655718)) drop-shadow(0px 1px 4px rgba(15, 13, 11, 0.079074));
     margin-bottom: 20px;
 
 }
@@ -496,7 +496,7 @@ a {
 }
 
 .highlight {
-    background-color: rgba(81, 115, 211, 0.3);
+    background-color: rgba(70, 115, 245, 0.3);
 }
 
 .return-link {

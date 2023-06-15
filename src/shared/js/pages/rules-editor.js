@@ -42,7 +42,7 @@ import CodeMirror from 'codemirror'
 
     const cursor = editor.getSearchCursor(search.value)
 
-    while (cursor.findNext()) {
+    if (cursor.findNext()) {
       editor.markText(
         cursor.from(),
         cursor.to(),
@@ -50,10 +50,11 @@ import CodeMirror from 'codemirror'
           className: 'highlight',
         },
       )
+      editor.setCursor(cursor.from())
     }
   })
 
-  // Handle switching between dark and light mode.
+  // Check whether the page is the ignored domains page.
   const isIgnorePage = textarea.dataset.type === 'ignoredDomains'
 
   saveChangesButton.addEventListener('click', async (event) => {
@@ -88,37 +89,42 @@ import CodeMirror from 'codemirror'
       })
   }
 
-  const popupFromSource = document.getElementById('popupFromSource')
+  const popup = document.getElementById('popup')
 
-  if (popupFromSource) {
+  if (popup) {
     const loadDomainsButton = document.getElementById('loadDomains')
     const closePopupButton = document.getElementById('closePopup')
     const textFileInput = document.getElementById('textFileInput')
     const textFileReadError = document.getElementById('textFileReadError')
     const loadFromURLButton = document.getElementById('loadFromURLButton')
+    const urlSourceError = document.getElementById('urlSourceError')
 
     const maxSizeBytes = 64000 // 64KB
     const maxDomainsAllowed = 1000
 
-    const updateEditorContent = async (validDomains) => {
+    const updateEditorContent = async (domains) => {
       const { customProxiedDomains } = await Browser.storage.local.get({
         customProxiedDomains: [],
       })
-      const domains = [...validDomains, ...customProxiedDomains]
+      const domainsArray = [...customProxiedDomains, ...domains]
 
-      if (domains.length > maxDomainsAllowed) {
-        textFileReadError.textContent = i18nGetMessage('maxDomainsExceededError')
-        textFileReadError.classList.remove('hidden')
-        return
+      if (domainsArray.length > maxDomainsAllowed) {
+        return false
       }
 
-      editor.setValue(domains.join('\n'))
-      popupFromSource.classList.add('hidden')
+      const editorContent = domainsArray.join('\n')
+
+      editor.setValue(`${editorContent}\n`)
+      editor.focus()
+      editor.setCursor({ line: domainsArray.length + 1, ch: 1 })
+
+      // Hide popup.
+      popup.classList.add('hidden')
+      return true
     }
 
     loadFromURLButton.addEventListener('click', async (event) => {
       const sourceURL = document.getElementById('sourceURL').value
-      const urlSourceError = document.getElementById('urlSourceError')
 
       if (isValidURL(sourceURL)) {
         fetch(sourceURL)
@@ -131,7 +137,14 @@ import CodeMirror from 'codemirror'
               urlSourceError.classList.remove('hidden')
               return
             }
-            await updateEditorContent(domains)
+
+            updateEditorContent(domains)
+              .then((updated) => {
+                if (!updated) {
+                  urlSourceError.textContent = i18nGetMessage('maxDomainsExceededError')
+                  urlSourceError.classList.remove('hidden')
+                }
+              })
           }).catch((_error) => {
             urlSourceError.textContent = i18nGetMessage('fetchURLError')
             urlSourceError.classList.remove('hidden')
@@ -162,23 +175,35 @@ import CodeMirror from 'codemirror'
           textFileReadError.classList.remove('hidden')
           return
         }
-        // Set the editor content.
-        await updateEditorContent(domains)
+        updateEditorContent(domains)
+          .then((updated) => {
+            if (!updated) {
+              textFileReadError.textContent = i18nGetMessage('maxDomainsExceededError')
+              textFileReadError.classList.remove('hidden')
+            }
+          })
       })
       fileReader.readAsText(file)
     })
 
     // Show the popup when the button is clicked.
     loadDomainsButton.addEventListener('click', async (event) => {
-      popupFromSource.classList.remove('hidden')
+      popup.classList.remove('hidden')
     })
 
     // Hide the popup when the button is clicked.
     closePopupButton.addEventListener('click', async (event) => {
-      popupFromSource.classList.add('hidden')
+      popup.classList.add('hidden')
+      urlSourceError.classList.add('hidden')
+      textFileReadError.classList.add('hidden')
     })
   }
 
+  /**
+   * Read the contents of a file and return an array of domains.
+   * @param contents The contents of the file.
+   * @returns {*} An array of domains.
+   */
   const readlines = (contents) => {
     const domains = contents.split('\n')
       .map((line) => line.trim())

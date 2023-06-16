@@ -14,6 +14,9 @@ import ProxyManager from 'Background/proxy'
   const proxyCustomOptionsRadioGroup = document.getElementById(
     'proxyCustomOptionsRadioGroup',
   )
+  const selectProxyProtocol = document.querySelector('.select')
+  const currentProxyProtocol = document.querySelector('#select-toggle')
+  const proxyProtocols = document.querySelectorAll('.select-option')
 
   ProxyManager.alive().then((alive) => {
     proxyIsDown.hidden = alive
@@ -21,11 +24,19 @@ import ProxyManager from 'Background/proxy'
 
   proxyCustomOptions.hidden = !proxyingEnabled
 
-  const { useOwnProxy, customProxyServerURI } =
-    await Browser.storage.local.get([
-      'useOwnProxy',
-      'customProxyServerURI',
-    ])
+  const {
+    useOwnProxy,
+    customProxyProtocol,
+    customProxyServerURI,
+  } = await Browser.storage.local.get([
+    'useOwnProxy',
+    'customProxyProtocol',
+    'customProxyServerURI',
+  ])
+
+  if (customProxyProtocol) {
+    currentProxyProtocol.textContent = customProxyProtocol
+  }
 
   if (useOwnProxy) {
     proxyOptionsInputs.hidden = false
@@ -42,12 +53,16 @@ import ProxyManager from 'Background/proxy'
 
   saveCustomProxyButton.addEventListener('click', async (event) => {
     const customProxyServer = proxyServerInput.value
+    const proxyProtocol = currentProxyProtocol.textContent.trim()
 
     if (customProxyServer) {
       await Browser.storage.local.set({
         useOwnProxy: true,
+        customProxyProtocol: proxyProtocol,
         customProxyServerURI: customProxyServer,
       })
+
+      console.log(customProxyServer, proxyProtocol)
 
       await ProxyManager.setProxy()
       proxyServerInput.classList.remove('invalid-input')
@@ -63,7 +78,10 @@ import ProxyManager from 'Background/proxy'
       proxyOptionsInputs.classList.add('hidden')
       proxyServerInput.value = ''
       await Browser.storage.local.set({ useOwnProxy: false })
-      await Browser.storage.local.remove(['customProxyServerURI'])
+      await Browser.storage.local.remove([
+        'customProxyProtocol',
+        'customProxyServerURI',
+      ])
       await ProxyManager.setProxy()
     } else {
       proxyOptionsInputs.classList.remove('hidden')
@@ -106,4 +124,25 @@ import ProxyManager from 'Background/proxy'
   ProxyManager.isEnabled().then((isEnabled) => {
     useProxyCheckbox.checked = isEnabled
   })
+
+  document.addEventListener('click', (event) => {
+    if (event.target.id === 'select-toggle') {
+      selectProxyProtocol.classList.toggle('show-protocols')
+    }
+
+    if (!event.target.closest('.select')) {
+      for (const element of document.querySelectorAll('.show-protocols')) {
+        element.classList.remove('show-protocols')
+      }
+    }
+  })
+
+  for (const option of proxyProtocols) {
+    option.addEventListener('click', async (event) => {
+      selectProxyProtocol.classList.remove('show-protocols')
+
+      currentProxyProtocol.value = event.target.dataset.value
+      currentProxyProtocol.textContent = event.target.dataset.value
+    })
+  }
 })()

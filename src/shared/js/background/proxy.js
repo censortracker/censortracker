@@ -4,20 +4,28 @@ import browser from './browser-api'
 import registry from './registry'
 
 class ProxyManager {
-  async getProxyServerURI () {
+  async getProxyingRules () {
     const {
       proxyServerURI,
+      customProxyProtocol,
       customProxyServerURI,
     } = await browser.storage.local.get([
       'proxyServerURI',
+      'customProxyProtocol',
       'customProxyServerURI',
     ])
 
-    if (customProxyServerURI) {
-      console.warn('Using custom proxy for PAC.')
-      return customProxyServerURI
+    if (customProxyServerURI && customProxyProtocol) {
+      console.warn(`Using ${customProxyServerURI} ${customProxyProtocol}...`)
+      return {
+        proxyServerProtocol: customProxyProtocol,
+        proxyServerURI: customProxyServerURI,
+      }
     }
-    return proxyServerURI
+    return {
+      proxyServerProtocol: 'HTTPS',
+      proxyServerURI,
+    }
   }
 
   async requestIncognitoAccess () {
@@ -47,8 +55,16 @@ class ProxyManager {
   async setProxy () {
     const config = {}
     const domains = await registry.getDomains()
-    const proxyServerURI = await this.getProxyServerURI()
-    const pacData = getPacScript({ domains, proxyServerURI })
+    const {
+      proxyServerURI,
+      proxyServerProtocol,
+    } = await this.getProxyingRules()
+
+    const pacData = getPacScript({
+      domains,
+      proxyServerURI,
+      proxyServerProtocol,
+    })
 
     if (domains.length === 0) {
       await this.removeProxy()
@@ -87,21 +103,6 @@ class ProxyManager {
       await this.requestIncognitoAccess()
       return false
     }
-  }
-
-  /**
-   * ATTENTION: DO NOT MODIFY THIS FUNCTION!
-   */
-  async generateProxyAutoConfigData () {
-    const domains = await registry.getDomains()
-
-    if (domains.length === 0) {
-      return undefined
-    }
-
-    const proxyServerURI = await this.getProxyServerURI()
-
-    return getPacScript({ domains, proxyServerURI })
   }
 
   async removeProxy () {

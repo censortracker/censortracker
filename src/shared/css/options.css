@@ -449,7 +449,8 @@ a {
 
 .proxy-options-inputs {
     display: flex;
-    margin: 0 45px 60px;
+    margin-left: 45px;
+    margin-bottom: 60px;
 }
 
 /* Ignore Editor Page */
@@ -807,10 +808,6 @@ kbd {
     border: 1px solid #767676;
 }
 
-.show-countries .select-toggle::after {
-    transform: rotate(360deg);
-}
-
 .select-dropdown {
     display: none;
     position: absolute;
@@ -829,12 +826,37 @@ kbd {
     line-height: 24px;
 }
 
+.show-countries .select-toggle::after {
+    transform: rotate(360deg);
+}
+
 .show-countries .select-dropdown {
     display: block;
 }
 
 .show-countries {
     display: block;
+}
+
+.show-protocols .select-toggle::after {
+    transform: rotate(360deg);
+}
+
+.show-protocols .select-dropdown {
+    display: block;
+}
+
+.show-protocols {
+    display: block;
+}
+
+#selectProxyProtocol {
+    width: 110px;
+    margin-right: 10px;
+}
+
+#selectProxyProtocol .select-toggle {
+    height: 37px;
 }
 
 .select-options {

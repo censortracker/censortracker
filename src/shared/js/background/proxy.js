@@ -177,6 +177,16 @@ class ProxyManager {
     }
   }
 
+  async removeCustomProxy () {
+    await browser.storage.local.set({
+      useOwnProxy: false,
+    })
+    await browser.storage.local.remove([
+      'customProxyProtocol',
+      'customProxyServerURI',
+    ])
+  }
+
   async removeBadProxies () {
     await browser.storage.local.set({ badProxies: [] })
   }

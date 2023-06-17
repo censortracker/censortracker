@@ -62,8 +62,6 @@ import ProxyManager from 'Background/proxy'
         customProxyServerURI: customProxyServer,
       })
 
-      console.log(customProxyServer, proxyProtocol)
-
       await ProxyManager.setProxy()
       proxyServerInput.classList.remove('invalid-input')
 
@@ -77,11 +75,7 @@ import ProxyManager from 'Background/proxy'
     if (event.target.value === 'default') {
       proxyOptionsInputs.classList.add('hidden')
       proxyServerInput.value = ''
-      await Browser.storage.local.set({ useOwnProxy: false })
-      await Browser.storage.local.remove([
-        'customProxyProtocol',
-        'customProxyServerURI',
-      ])
+      await ProxyManager.removeCustomProxy()
       await ProxyManager.setProxy()
     } else {
       proxyOptionsInputs.classList.remove('hidden')

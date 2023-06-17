@@ -1126,10 +1126,6 @@ kbd {
         border: .1px solid #3a3c3e;
     }
 
-    .select-option {
-        color: #242728;
-    }
-
     .cm-s-ayu-mirage.CodeMirror {
         background: #1f2430;
         color: #cbccc6 !important;
@@ -1149,5 +1145,56 @@ kbd {
 
     .CodeMirror .CodeMirror-gutters {
         border-right: 1px solid #484d572e !important;
+    }
+
+    .select-options {
+        background: #242728;
+        color: #c4c2bf;
+    }
+
+    .select-option {
+        color: #c4c2bf;
+    }
+
+    #selectProxyProtocol .select-toggle {
+        height: 37px;
+        background: #242728;
+        color: #c4c2bf;
+    }
+
+    .select-toggle:after {
+        background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='#c4c2bf' height='8' width='12'%3E%3Cpath d='m6.583 1.084 4.75 4.666a.806.806 0 0 1 0 1.167.806.806 0 0 1-1.167 0L6.083 2.834 2 6.917a.756.756 0 0 1-.584.25c-.5 0-.833-.333-.833-.833 0-.25.083-.417.25-.584L5.583 1c.167-.25.667-.25 1 .084Z'/%3E%3C/svg%3E");
+    }
+
+    .select-option:hover {
+        background-color: #4e52535c;
+    }
+
+    .select-toggle {
+        background: #242728;
+        color: #c4c2bf;
+        border-color: #292828;
+    }
+
+    .main-page__return:hover svg {
+        fill: #c4c2bf;
+        cursor: pointer;
+    }
+
+    .select-toggle:focus,
+    .select-toggle:hover {
+        border: 1px solid #292828;
+    }
+
+    .input-proxy {
+        border: 1px solid #292828;
+    }
+
+    .input-proxy:active {
+        border: transparent;
+    }
+
+    .invalid-input {
+        border: 1px solid #9e5757 !important;
     }
 }

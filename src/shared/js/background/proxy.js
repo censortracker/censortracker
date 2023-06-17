@@ -15,8 +15,10 @@ class ProxyManager {
       'customProxyServerURI',
     ])
 
-    if (customProxyServerURI && customProxyProtocol) {
-      console.warn(`Using ${customProxyServerURI} ${customProxyProtocol}...`)
+    if (
+      customProxyServerURI &&
+      customProxyProtocol
+    ) {
       return {
         proxyServerProtocol: customProxyProtocol,
         proxyServerURI: customProxyServerURI,
@@ -55,6 +57,12 @@ class ProxyManager {
   async setProxy () {
     const config = {}
     const domains = await registry.getDomains()
+
+    if (domains.length === 0) {
+      await this.removeProxy()
+      return false
+    }
+
     const {
       proxyServerURI,
       proxyServerProtocol,
@@ -65,11 +73,6 @@ class ProxyManager {
       proxyServerURI,
       proxyServerProtocol,
     })
-
-    if (domains.length === 0) {
-      await this.removeProxy()
-      return false
-    }
 
     if (browser.IS_FIREFOX) {
       const blob = new Blob([pacData], {

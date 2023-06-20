@@ -121,20 +121,33 @@ class ProxyManager {
   }
 
   async ping () {
-    const { proxyPingURI } = await browser.storage.local.get('proxyPingURI')
+    const usingCustomProxy = await this.usingCustomProxy()
 
-    fetch(`https://${proxyPingURI}`, {
-      method: 'POST',
-      headers: {
-        'Content-type': 'application/json; charset=UTF-8',
-      },
-      body: JSON.stringify({
-        type: 'ping',
-      }),
-    }).catch(() => {
-      // We don't care about the result.
-      console.log(`Pinged ${proxyPingURI}!`)
-    })
+    if (!usingCustomProxy) {
+      const { proxyPingURI } = await browser.storage.local.get('proxyPingURI')
+
+      fetch(`https://${proxyPingURI}`, {
+        method: 'POST',
+        headers: {
+          'Content-type': 'application/json; charset=UTF-8',
+        },
+        body: JSON.stringify({
+          type: 'ping',
+        }),
+      }).catch(() => {
+        // We don't care about the result.
+        console.log(`Pinged ${proxyPingURI}!`)
+      })
+    }
+  }
+
+  async usingCustomProxy () {
+    const { useOwnProxy } =
+      await browser.storage.local.get({
+        useOwnProxy: false,
+      })
+
+    return useOwnProxy
   }
 
   async isEnabled () {

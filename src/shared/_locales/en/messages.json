@@ -490,7 +490,7 @@
     "message": "Database update will take some time."
   },
   "useDefaultProxy": {
-    "message": "Proxy Censor Tracker"
+    "message": "Censor Tracker's Proxies"
   },
   "useOwnProxy": {
     "message": "Use your own proxy"

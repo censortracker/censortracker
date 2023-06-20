@@ -2,9 +2,16 @@
  * Return PAC Script data.
  * @param domains {Array<string>} - List of domains to proxy.
  * @param proxyServerURI {string} - URI of the proxy server.
+ * @param proxyServerProtocol {string} - Protocol of the proxy server.
  * @returns {string} PAC script
  */
-export const getPacScript = ({ domains = [], proxyServerURI }) => {
+export const getPacScript = (
+  {
+    domains = [],
+    proxyServerURI,
+    proxyServerProtocol,
+  },
+) => {
   // Sort domains alphabetically to make binary search work.
   domains.sort()
   return `
@@ -48,12 +55,12 @@ export const getPacScript = ({ domains = [], proxyServerURI }) => {
         
         // Proxy *.onion and *.i2p domains.
         if (shExpMatch(host, '*.onion') || shExpMatch(host, '*.i2p')) {
-          return 'HTTPS ${proxyServerURI};';
+          return '${proxyServerProtocol} ${proxyServerURI};';
         }
 
         // Return result
         if (isHostBlocked(domains, host)) {
-          return 'HTTPS ${proxyServerURI};';
+          return '${proxyServerProtocol} ${proxyServerURI};';
         } else {
           return 'DIRECT';
         }

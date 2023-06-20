@@ -327,14 +327,14 @@
   "popupLoadButton": {
     "message": "Load"
   },
-  "popupOr": {
-    "message": "or"
-  },
   "popupLoadFromSourceTitle": {
     "message": "Load a list of sites that will always open through a proxy"
   },
   "popupNewTabMessage": {
     "message": "New Tab"
+  },
+  "popupOr": {
+    "message": "or"
   },
   "popupProxyDisabled": {
     "message": "proxying is disabled"
@@ -490,7 +490,7 @@
     "message": "Database update will take some time."
   },
   "useDefaultProxy": {
-    "message": "Proxy Censor Tracker"
+    "message": "Censor Tracker's Proxies"
   },
   "useOwnProxy": {
     "message": "Use your own proxy"

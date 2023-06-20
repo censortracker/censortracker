@@ -1,0 +1,516 @@
+{
+  "advancedOptionsDesc": {
+    "message": "Бұғатталған веб-сайттардың жергілікті дерекқорын қолмен жаңартуға, Censor Tracker конфигурациясын жаңартуға және басқа кеңейтілген опцияларды басқаруға болады."
+  },
+  "advancedOptionsPageTitle": {
+    "message": "Жетілдірілген Реттеулер"
+  },
+  "advancedOptionsTitle": {
+    "message": "Жетілдірілген Реттеулер"
+  },
+  "appAuthor": {
+    "message": "Роскомсвобода"
+  },
+  "appDesc": {
+    "message": "Бұғаттауларды айналып өтуге арналған кеңейту."
+  },
+  "appName": {
+    "message": "Censor Tracker — Бұғаттауларды айналып өту"
+  },
+  "areYouSureYouWantToResetSettingsDesc": {
+    "message": "Конфигурацияны қайта орнатып, жергілікті дерекқорды жаңарту"
+  },
+  "areYouSureYouWantToResetSettingsTitle": {
+    "message": "Сіз барлық реттеулерді бұрыңғы қалпына келтіргіңіз келетініне сенімдісіз бе?"
+  },
+  "backendIsIntermittentDesc": {
+    "message": "Кеңейтім реттеулерін <a href='advanced-options.html'>қалпына қайта келтіріп көріңіз</a> немесе <a target='_blank' href='https://t.me/censortracker_feedback'>осы мәселе туралы бізге Telegram-ға </a> жазыңыз."
+  },
+  "backendIsIntermittentPopupMessage": {
+    "message": "Конфигурацияны алу кезінде қиындықтар туындады →"
+  },
+  "backendIsIntermittentTitle": {
+    "message": "Кеңейту конфигурациясын алу кезінде қиындықтар туындады."
+  },
+  "blockedDesc": {
+    "message": "Сайт бұғатталған немесе прокси-сайттар тізіміне қосылған, сондықтан Censor Tracker оған сенімді прокси арқылы қол жеткізуге мүмкіндік береді."
+  },
+  "blockedTitle": {
+    "message": "Қолжетімділікке тыйым салынады"
+  },
+  "cancel": {
+    "message": "Бас тарту"
+  },
+  "censorshipCircumventionBlockTitle": {
+    "message": "Бұғаттауларды айналып Өту"
+  },
+  "chooseFileOnComputer": {
+    "message": "Компьютерден файлды таңдаңыз"
+  },
+  "closeTab": {
+    "message": "Қойындыны жабу"
+  },
+  "confirmPopupResetSettings": {
+    "message": "Иә, қайта қалпына келтіру"
+  },
+  "controlledByOtherExtensionDesc": {
+    "message": "Censor Tracker-дің дұрыс жұмыс істеуі үшін өшіріңіз &laquo;<div class=\"extension__name\">$name$</div>&raquo;.",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "controlledByOtherExtensionTitle": {
+    "message": "Енді тағы бір &laquo;<div class=\"extension__name\">$name$</div>&raquo; кеңейтімі сіздің прокси параметрлеріңізді басқарады",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "controlledByOtherExtensions": {
+    "message": "Басқа кеңейтімдер сіздің шолғыштағы прокси реттеулерді басқарады"
+  },
+  "controlledByOtherExtensionsDesc": {
+    "message": "Censor Tracker-дің дұрыс жұмыс істеуі үшін шолғыш реттеулеріндегі келесі кеңейтімдерді өшіріңіз:"
+  },
+  "controlledByOtherExtensionsMessage": {
+    "message": "Басқа кеңейтім проксиді басқарады. Толығырақ →"
+  },
+  "controlledPageDisableExtension": {
+    "message": "Өшіру"
+  },
+  "cooperationAcceptedMessage": {
+    "message": "$hostname$ ақпаратты үшінші тұлғаларға бере алады.",
+    "placeholders": {
+      "hostname": {
+        "content": "$1"
+      }
+    }
+  },
+  "copyButton": {
+    "message": "Көшіру"
+  },
+  "countryAUTO": {
+    "message": "Автоматты түрде анықтау"
+  },
+  "countryAZ": {
+    "message": "Әзірбайжан"
+  },
+  "countryBY": {
+    "message": "Беларусь"
+  },
+  "countryKG": {
+    "message": "Қырғызстан"
+  },
+  "countryKZ": {
+    "message": "Қазақстан"
+  },
+  "countryRU": {
+    "message": "Ресей"
+  },
+  "countryUA": {
+    "message": "Украина"
+  },
+  "countryUZ": {
+    "message": "Өзбекстан"
+  },
+  "debugInfoTitle": {
+    "message": "Түзету ақпараты"
+  },
+  "disableAll": {
+    "message": "Барлығын өшіру"
+  },
+  "disseminatorCoopRefused": {
+    "message": "Сервис бұл трафикті Ресейдің мемлекеттік органдарына автоматты түрде жібермейтінін хабарлады."
+  },
+  "disseminatorDesc": {
+    "message": "Сервис сіздің жеке деректеріңізді, соның ішінде хабарламаларыңызды және барлық трафикті Ресей мемлекеттік органдарына автоматты режимде жібере алады."
+  },
+  "disseminatorTitle": {
+    "message": "Ақпаратты таратуды ұйымдастырушы болып табылады"
+  },
+  "done": {
+    "message": "Дайын!"
+  },
+  "doneDescription": {
+    "message": "Операция сәтті орындалды."
+  },
+  "emptyFileError": {
+    "message": "Файл бос немесе бүлінгеy. Оны тексеріп, қайталап көріңіз."
+  },
+  "extensionDisabledTitle": {
+    "message": "Cesar Tracker өшірілді"
+  },
+  "extensionEnabledTitle": {
+    "message": "Қосылды"
+  },
+  "extensionInstalledDesc": {
+    "message": "Кеңейтімді шолғыш тақтасына екі рет басу арқылы бекітіңіз, сонда сіз қай сайттар сіздің хабарламаларыңызды, жеке деректеріңізді және барлық трафикті үшінші тұлғаларға жібере алатындығы туралы үнемі хабардар болып отырасыз."
+  },
+  "extraBlockTitle": {
+    "message": "Қосымша"
+  },
+  "faqLink": {
+    "message": "Кеңейту жұмысы бойынша сұрақтарға жауаптар"
+  },
+  "fetchURLError": {
+    "message": "Сіз енгізген URL мекенжайы қол жетімді емес. Оны тексеріп, қайталап көріңіз."
+  },
+  "fileSizeError": {
+    "message": "Файл өлшемі 64 КБ тан аспауы керек"
+  },
+  "good": {
+    "message": "Жақсы"
+  },
+  "grantPrivateBrowsingPermissions": {
+    "message": "Мен рұқсат бердім, проксиді қосыңыз"
+  },
+  "howToGrantIncognitoAccess": {
+    "message": "Мұны қалай жасауға болады"
+  },
+  "howToGrantIncognitoAccessBtnTitle": {
+    "message": "Рұқсатты қалай беруге болады"
+  },
+  "howToGrantIncognitoAccessLink": {
+    "message": "https://support.mozilla.org/ru/kb/dopolneniya-v-rezhime-privatnogo-prosmotra"
+  },
+  "i2pNetworkTitle": {
+    "message": "Желідегі Сайт <span class=\"network__title-i2p\"></span> I2P"
+  },
+  "ignoreEditorPageTitle": {
+    "message": "Еленбейтін сайттар"
+  },
+  "ignoredSitesDesc": {
+    "message": "Егер сайтты ашуда қиындықтар туындаса, Censor Tracker әрқашан елемейтін мекенжайлар көмектесе алады. Әр мекен-жай жаңа жолдан басталады."
+  },
+  "ignoredSitesTitle": {
+    "message": "Еленбейтін сайттар"
+  },
+  "incognitoAccessRequiredDescription": {
+    "message": "Firefox-та прокси арқылы <b>$hostname$</b> ашу үшін жеке терезелерде жұмыс істеуге рұқсат қажет. Әйтпесе, прокси жұмыс істемейді.",
+    "placeholders": {
+      "hostname": {
+        "content": "$1"
+      }
+    }
+  },
+  "incognitoAccessRequiredTitle": {
+    "message": "Сайт қол жетімді емес немесе бұғатталған. Мұндай сайттарды ашу үшін Censor Tracker-ге жеке терезелерде жұмыс істеуге рұқсат етіңіз"
+  },
+  "incognitoRequiredPageTitle": {
+    "message": "Жеке терезелерде жұмыс істеу үшін рұқсат қажет"
+  },
+  "installedAllowIncognitoDescription": {
+    "message": "Бұл рұқсат прокси арқылы бұғатталған сайттарды сізге ашып беру үшін қажет. Firefox-та басқа жол жоқ."
+  },
+  "installedAllowIncognitoDescriptionThen": {
+    "message": "Осыдан кейін кеңейтімді ашып, құқықтардың берілгенін растаңыз."
+  },
+  "installedAllowIncognitoTitle": {
+    "message": "Жеке терезелерде Censor Tracker жұмысына рұқсат етіңіз"
+  },
+  "installedGratitude": {
+    "message": "Рақмет!"
+  },
+  "installedPageTitle": {
+    "message": "Censor Tracker Орнатылды"
+  },
+  "invalidURLError": {
+    "message": "Қате URL. Оны тексеріп, қайталап көріңіз."
+  },
+  "localRegistryUpdated": {
+    "message": "Бұғатталған сайттардың жергілікті дерекқоры жаңартылды!"
+  },
+  "maxDomainsExceededError": {
+    "message": "Қосуға болатын домендердің максималды саны-1000. Тізімді қысқартып, қайталап көріңіз."
+  },
+  "notBlockedDesc": {
+    "message": "Егер сайтқа кіруге тыйым салынса - Censor Tracker сайтты сенімді прокси арқылы ашуды ұсынады."
+  },
+  "notBlockedTitle": {
+    "message": "Шектеулер жоқ"
+  },
+  "notDisseminatorDesc": {
+    "message": "АТҰ тізілімінен сервистер сіздің жеке деректеріңізді, оның ішінде хабарламалар мен барлық трафикті мемлекеттік органдарға автоматты режимде бере алады. Бұл қызмет АТҰ тізілімінде жоқ."
+  },
+  "notDisseminatorTitle": {
+    "message": "Ақпаратты таратуды ұйымдастырушы болып табылмайды"
+  },
+  "notificationsBlockTitle": {
+    "message": "Хабарламалар"
+  },
+  "okayButton": {
+    "message": "Түсінікті"
+  },
+  "optionsConfirmResetMessage": {
+    "message": "Барлық реттеулер жойылады. Бұл іске сенімдісіз бе?"
+  },
+  "optionsIgnoredWebsitesDesc": {
+    "message": "Прокси үшін мекенжайлар әрқашан өшірілетін болады. Егер сайтты ашуда қиындықтар туындаса, көмектесе алады."
+  },
+  "optionsLoadFromSource": {
+    "message": "Тізімді файлдан немесе URL мекенжайынан жүктеп алыңыз"
+  },
+  "optionsPageTitle": {
+    "message": "Реттеулер"
+  },
+  "optionsProxiedWebsitesEditorDesc": {
+    "message": "Кеңейтім арқылы прокси болатын сайттарды қолмен істі басқаруға болады."
+  },
+  "optionsProxiedWebsitesEditorTitle": {
+    "message": "Менің прокси сайттарымның тізімі"
+  },
+  "optionsProxyDesc": {
+    "message": "Егер сайт бұғатталған болса-Censor Tracker оған кіруге мүмкіндік береді. Қосылу жылдамдығын арттыру кезінде бұғаттаудан айналып өту үшін басқа қызметті (мысалы, VPN) пайдалансаңыз, бұл реттеуді өшіріңіз."
+  },
+  "optionsProxyPageTitle": {
+    "message": "Прокси Реттеулер"
+  },
+  "optionsProxyStatusTurnedOff": {
+    "message": "Өшірілді"
+  },
+  "optionsProxyStatusTurnedOn": {
+    "message": "Қосылды"
+  },
+  "optionsRegistryDesc": {
+    "message": "Censor Tracker мұндай сайттарды прокси арқылы автоматты түрде ашу үшін бұғатталған сайттардың тізілімін жүргізеді."
+  },
+  "optionsRegistryIsEmptyDesc": {
+    "message": "Сіздің қазіргі аймағыңызда әлі проксиге келетін сайттар жоқ, өйткені бұғатталған сайттардың тізілімі бос, жергілікті базаны қолмен жаңартыңыз немесе оларға қол жеткізу үшін «Проксиге келетін сайттарға» қажетті бұғатталған сайттарды қосыңыз."
+  },
+  "optionsRegistryIsEmptyTitle": {
+    "message": "Проксиге келетін сайттар табылған жоқ."
+  },
+  "optionsRegistryPageTitle": {
+    "message": "Аймақ"
+  },
+  "optionsRegistryProxyingListButton": {
+    "message": "Проксиге келетін сайттар"
+  },
+  "optionsRegistryTitle": {
+    "message": "Аймақ"
+  },
+  "optionsRegistryUpdateDatabaseButton": {
+    "message": "Дерекқорды жаңарту"
+  },
+  "optionsSavedMessage": {
+    "message": "✅ Өзгерістер сақталды"
+  },
+  "optionsTitle": {
+    "message": "Censor Tracker кеңейтімінің параметрлері"
+  },
+  "optionsVersion": {
+    "message": "$VERSION$ - нұсқасы",
+    "placeholders": {
+      "version": {
+        "content": "$1"
+      }
+    }
+  },
+  "overlayNetworkDesc": {
+    "message": "Censor Tracker мұндай сайттарды кәдімгі шолғышта ашуға мүмкіндік береді"
+  },
+  "parentalControlDesc": {
+    "message": "Ата-анаңызды насихаттан қорғаңыз."
+  },
+  "parentalControlTitle": {
+    "message": "«Ата-аналық» бақылау"
+  },
+  "popupAutoMessage": {
+    "message": "Автоматты түрде анықтау"
+  },
+  "popupDesc": {
+    "message": "Мәтіндік форматта. Әр домен жаңа жолдан."
+  },
+  "popupLoadButton": {
+    "message": "Жүктеу"
+  },
+  "popupLoadFromSourceTitle": {
+    "message": "Әрқашан прокси арқылы ашылатын сайттардың тізімін жүктеп алыңыз"
+  },
+  "popupNewTabMessage": {
+    "message": "Жаңа қойынды"
+  },
+  "popupOr": {
+    "message": "немесе"
+  },
+  "popupProxyDisabled": {
+    "message": "прокси өшірілді"
+  },
+  "popupProxyInfoShowDetails": {
+    "message": "толығырақ"
+  },
+  "popupProxyInfoTitle": {
+    "message": "Прокси туралы ақпарат"
+  },
+  "popupProxyStatusError": {
+    "message": "прокси үзіліспен жұмыс істейді"
+  },
+  "popupProxyStatusOk": {
+    "message": "прокси жақсы жұмыс істейді"
+  },
+  "popupServer": {
+    "message": "Прокси сервер ID-і"
+  },
+  "popupTotalBlocked": {
+    "message": "Бұғатталған сайттар"
+  },
+  "popupYourRegion": {
+    "message": "Сіздің аймағыңыз"
+  },
+  "privateBrowsingPermissionsRequiredMessage": {
+    "message": "Прокси өшірілген. Жеке терезелерде жұмыс істеуге рұқсат қажет →"
+  },
+  "privateBrowsingRequired": {
+    "message": "Кеңейтімнің жеке терезелерде жұмыс істеуіне рұқсат етіңіз"
+  },
+  "privateBrowsingRequiredDesc": {
+    "message": "Біз сізге прокси арқылы бұғатталған сайттарды аша алатындай болуымыз керек. Firefox-та басқа жол жоқ."
+  },
+  "proxiedWebsitesEditorPageDesc": {
+    "message": "Кеңейтім арқылы проксиге келетін сайттарды қолмен істі басқаруға болады."
+  },
+  "proxiedWebsitesEditorPageTitle": {
+    "message": "Проксиге келетін сайттар"
+  },
+  "proxiedWebsitesTitle": {
+    "message": "Проксиге келетін сайттар"
+  },
+  "proxyConnectionIssuesMessage": {
+    "message": "Желі мәселесі анықталды. Қолдау чатына хабарласып, мәселе туралы айтыңыз, біз оны шешуге тырысатын боламыз →"
+  },
+  "proxyDisabledPageTitle": {
+    "message": "Проксиден өткізу өшірілді"
+  },
+  "proxyHost": {
+    "message": "Прокси-сервер мекен-жайы"
+  },
+  "proxyOptionsStatusDesc": {
+    "message": "Прокси-серверді мүлдем өшіруге немесе прокси-серверге ауысуға болады."
+  },
+  "proxyOptionsStatusTitle": {
+    "message": "Қазір прокси үзіліспен жұмыс істейді"
+  },
+  "proxyPort": {
+    "message": "Порт"
+  },
+  "proxySettings": {
+    "message": "Прокси реттеулері"
+  },
+  "readMoreButton": {
+    "message": "Толығырақ →"
+  },
+  "registrySelectRegionDesc": {
+    "message": "Сіз өзіңіздің еліңізге тән бұғаттауларды айналып өту үшін аймақты таңдай аласыз. Тиімдісі, егер сіз нақты IP-мекен-жайыңызды өзгертетін бағдарламалық жасақтаманы қолдансаңыз (мысалы, VPN),белгілі бір елді таңдау сіздің еліңізді (GeoIP негізінде) автоматты түрде анықтауды өшіреді."
+  },
+  "registrySelectRegionTitle": {
+    "message": "Нақты бұғаттаудан айналып өту үшін аймақ"
+  },
+  "registryTypeComplete": {
+    "message": "Барлығын бұғаттаудан шығару (400 000 + домендер)"
+  },
+  "registryTypeLightweight": {
+    "message": "Қауіпті сайттардан (100 000+ домендерден) басқасының барлығын бұғаттан шығару"
+  },
+  "resetToDefaultDesc": {
+    "message": "Реттеулерді әдепкі реттеулерге қайтару және ағымдағы аймақ үшін PAC файлын қайта жинау. Егер сізде бұғатталған сайттарға кіру проблемалары болса, онда бұл опция сіздің таңдауыңыз болып табылады."
+  },
+  "resetToDefaultTitle": {
+    "message": "Барлық реттеулерді қалпына келтіру"
+  },
+  "saveChanges": {
+    "message": "Өзгерістерді сақтау"
+  },
+  "saveCustomProxyButton": {
+    "message": "Сақтау"
+  },
+  "shareFeedback": {
+    "message": "Сұрақтар немесе ұсыныстар бар ма? Онда бізге хабарлаңыз!"
+  },
+  "showDebugInfoDesc": {
+    "message": "Кеңейту туралы ақпаратты көрсету."
+  },
+  "showDebugInfoTitle": {
+    "message": "Түзету ақпараты"
+  },
+  "showNotificationsDesc": {
+    "message": "Кейбір сайт сіздің хабарламаларыңызды, жеке деректеріңізді және барлық трафикті автоматты түрде үшінші тұлғаларға жіберсе, біз ескертетін боламыз."
+  },
+  "showNotificationsTitle": {
+    "message": "Жүйелік хабарландыруларды көрсету"
+  },
+  "siteActionAlwaysDesc": {
+    "message": "Әрқашан осы сайтты прокси арқылы ашу"
+  },
+  "siteActionAutoDesc": {
+    "message": "Егер сайт бұғаттауға байланысты қол жетімді болмаса, сайтты прокси арқылы ашу"
+  },
+  "siteActionItemLabelAlways": {
+    "message": "Әрқашан"
+  },
+  "siteActionItemLabelAuto": {
+    "message": "Авто"
+  },
+  "siteActionItemLabelNever": {
+    "message": "Ешқашан"
+  },
+  "siteActionNeverDesc": {
+    "message": "Бұл сайтты ешқашан прокси арқылы ашпау (тіпті бұғаттауға байланысты сайт қол жетімді болмаса да)"
+  },
+  "siteActionTitle": {
+    "message": "Бұл сайтты ашу үшін проксиді қашан пайдалану керек?"
+  },
+  "thankYou": {
+    "message": "Рақмет!"
+  },
+  "torNetworkTitle": {
+    "message": "Сайт желіде <span class=\"network__title-tor\"></span> Tor"
+  },
+  "turnOnExtensionToCheckWebsite": {
+    "message": "Бұғатталған сайттарға кіру үшін қосыңыз."
+  },
+  "updateAvailableButtonTitle": {
+    "message": "Жаңарту"
+  },
+  "updateAvailableDesc": {
+    "message": "Censor Tracker бағдарламасының жаңа нұсқасы қол жетімді. Кеңейтімді жаңартыңыз."
+  },
+  "updateAvailableTitle": {
+    "message": "Жаңарту қол жетімді"
+  },
+  "updateLocalRegistryDesc": {
+    "message": "Аймағыңыз үшін жергілікті дерекқорды жаңарту."
+  },
+  "updateLocalRegistryTitle": {
+    "message": "Кеңейтімнің жергілікті дерекқорын жаңартуға мәжбүр ету"
+  },
+  "updateTakesTime": {
+    "message": "Базаны жаңарту біраз уақытты алады"
+  },
+  "useDefaultProxy": {
+    "message": "Прокси Censor Tracker"
+  },
+  "useOwnProxy": {
+    "message": "Өзіңіздің проксиіңіз"
+  },
+  "useProxy": {
+    "message": "Проксиді қолдану"
+  },
+  "useProxyDesc": {
+    "message": "Егер сайт бұғатталған болса - Censor Tracker оған кіруге мүмкіндік береді. Қосылу жылдамдығын арттырып, бұғаттаудан айналып өту үшін басқа қызметті (мысалы, VPN) пайдалансаңыз, бұл реттеулерді өшіріңіз."
+  },
+  "useRegistry": {
+    "message": "Бұғатталған сайттар тізілімінен сайттарды ашу"
+  },
+  "useRegistryDesc": {
+    "message": "Біз бұғатталған сайттардың тізілімдерін оларға прокси арқылы кіруге мүмкіндік беру үшін жүргіземіз. Егер бұл опция өшірулі болса, онда тек тізімде бар сайттар проксиден өте алады."
+  },
+  "whatThisMean": {
+    "message": "бұл нені білдіреді"
+  },
+  "youCanCloseThisWindow": {
+    "message": "Бұл терезені жабуға болады"
+  }
+}

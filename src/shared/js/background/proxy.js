@@ -4,20 +4,30 @@ import browser from './browser-api'
 import registry from './registry'
 
 class ProxyManager {
-  async getProxyServerURI () {
+  async getProxyingRules () {
     const {
       proxyServerURI,
+      customProxyProtocol,
       customProxyServerURI,
     } = await browser.storage.local.get([
       'proxyServerURI',
+      'customProxyProtocol',
       'customProxyServerURI',
     ])
 
-    if (customProxyServerURI) {
-      console.warn('Using custom proxy for PAC.')
-      return customProxyServerURI
+    if (
+      customProxyServerURI &&
+      customProxyProtocol
+    ) {
+      return {
+        proxyServerProtocol: customProxyProtocol,
+        proxyServerURI: customProxyServerURI,
+      }
     }
-    return proxyServerURI
+    return {
+      proxyServerProtocol: 'HTTPS',
+      proxyServerURI,
+    }
   }
 
   async requestIncognitoAccess () {
@@ -47,13 +57,22 @@ class ProxyManager {
   async setProxy () {
     const config = {}
     const domains = await registry.getDomains()
-    const proxyServerURI = await this.getProxyServerURI()
-    const pacData = getPacScript({ domains, proxyServerURI })
 
     if (domains.length === 0) {
       await this.removeProxy()
       return false
     }
+
+    const {
+      proxyServerURI,
+      proxyServerProtocol,
+    } = await this.getProxyingRules()
+
+    const pacData = getPacScript({
+      domains,
+      proxyServerURI,
+      proxyServerProtocol,
+    })
 
     if (browser.IS_FIREFOX) {
       const blob = new Blob([pacData], {
@@ -89,21 +108,6 @@ class ProxyManager {
     }
   }
 
-  /**
-   * ATTENTION: DO NOT MODIFY THIS FUNCTION!
-   */
-  async generateProxyAutoConfigData () {
-    const domains = await registry.getDomains()
-
-    if (domains.length === 0) {
-      return undefined
-    }
-
-    const proxyServerURI = await this.getProxyServerURI()
-
-    return getPacScript({ domains, proxyServerURI })
-  }
-
   async removeProxy () {
     await browser.proxy.settings.clear({})
     console.warn('Proxy settings removed.')
@@ -117,20 +121,33 @@ class ProxyManager {
   }
 
   async ping () {
-    const { proxyPingURI } = await browser.storage.local.get('proxyPingURI')
+    const usingCustomProxy = await this.usingCustomProxy()
 
-    fetch(`https://${proxyPingURI}`, {
-      method: 'POST',
-      headers: {
-        'Content-type': 'application/json; charset=UTF-8',
-      },
-      body: JSON.stringify({
-        type: 'ping',
-      }),
-    }).catch(() => {
-      // We don't care about the result.
-      console.log(`Pinged ${proxyPingURI}!`)
-    })
+    if (!usingCustomProxy) {
+      const { proxyPingURI } = await browser.storage.local.get('proxyPingURI')
+
+      fetch(`https://${proxyPingURI}`, {
+        method: 'POST',
+        headers: {
+          'Content-type': 'application/json; charset=UTF-8',
+        },
+        body: JSON.stringify({
+          type: 'ping',
+        }),
+      }).catch(() => {
+        // We don't care about the result.
+        console.log(`Pinged ${proxyPingURI}!`)
+      })
+    }
+  }
+
+  async usingCustomProxy () {
+    const { useOwnProxy } =
+      await browser.storage.local.get({
+        useOwnProxy: false,
+      })
+
+    return useOwnProxy
   }
 
   async isEnabled () {
@@ -171,6 +188,16 @@ class ProxyManager {
         await browser.management.setEnabled(id, false)
       }
     }
+  }
+
+  async removeCustomProxy () {
+    await browser.storage.local.set({
+      useOwnProxy: false,
+    })
+    await browser.storage.local.remove([
+      'customProxyProtocol',
+      'customProxyServerURI',
+    ])
   }
 
   async removeBadProxies () {

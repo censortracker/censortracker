@@ -327,14 +327,14 @@
   "popupLoadButton": {
     "message": "Завантажити"
   },
-  "popupOr": {
-    "message": "або"
-  },
   "popupLoadFromSourceTitle": {
     "message": "Завантажте список сайтів, які завжди будуть відкриватися через проксі"
   },
   "popupNewTabMessage": {
     "message": "Нова вкладка"
+  },
+  "popupOr": {
+    "message": "або"
   },
   "popupProxyDisabled": {
     "message": "проксі вимкнений"

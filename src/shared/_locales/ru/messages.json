@@ -322,19 +322,19 @@
     "message": "Определить автоматически"
   },
   "popupDesc": {
-    "message": "В текстовом формате. Каждый домен с новой строки."
+    "message": "В текстовом формате. Каждый домен с новой строки. Допускается добавление не более 1000 доменов."
   },
   "popupLoadButton": {
     "message": "Загрузить"
-  },
-  "popupOr": {
-    "message": "или"
   },
   "popupLoadFromSourceTitle": {
     "message": "Загрузите список сайтов, которые всегда будут открываться через прокси"
   },
   "popupNewTabMessage": {
     "message": "Новая вкладка"
+  },
+  "popupOr": {
+    "message": "или"
   },
   "popupProxyDisabled": {
     "message": "прокси выключен"

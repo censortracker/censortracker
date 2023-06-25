@@ -12,12 +12,12 @@
     <meta property="og:type" content="website"/>
     <meta property="og:title" content="Censor Tracker"/>
     <meta property="og:url" content="https://censortracker.org"/>
-    <meta property="og:image" content="https://censortracker.org/static/img/preview.png"/>
+    <meta property="og:image" content="https://censortracker.org/static/img/preview.png" />
     <meta property="og:site_name" content="Censor Tracker">
-    <meta property="og:description" content="Плагин для обхода блокировок от Роскомсвободы"/>
+    <meta property="og:description" content="Плагин для обхода блокировок от Роскомсвободы" />
     <meta name="twitter:title" content="Censor Tracker"/>
-    <meta name="twitter:description" content="Плагин для обхода блокировок от Роскомсвободы"/>
-    <meta name="twitter:image" content="https://censortracker.org/static/img/preview.png"/>
+    <meta name="twitter:description" content="Плагин для обхода блокировок от Роскомсвободы" />
+    <meta name="twitter:image" content="https://censortracker.org/static/img/preview.png" />
     <meta name="twitter:card" content="summary_large_image"/>
     <meta name="twitter:site" content="@RuBlackListNET"/>
 
@@ -27,11 +27,12 @@
     <link href="static/css/bootstrap.min.css" rel="stylesheet">
 
     <!--Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@700&family=Inter:wght@400;700&display=swap"
-          rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
 
     <link href="static/css/styles.css" rel="stylesheet">
     <script defer data-domain="censortracker.org" src="https://apl.roskomsvoboda.org/js/script.js"></script>
+
+    <!-- SEO -->
     <script type='application/ld+json'>
         {
           "@context": "https://schema.org",
@@ -46,6 +47,7 @@
            ]
          }
     </script>
+
 </head>
 
 <body>
@@ -187,16 +189,16 @@
     <h2 id="faq" class="h2 py-5 text-center mb-4">Ответы на частые вопросы</h2>
     <div class="accordion" id="accordionExample">
         <div class="card">
-            <div class="card-header bg-transparent" id="heading13">
+            <div class="card-header bg-transparent" id="heading1">
                 <h2 class="mb-0">
                     <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse"
-                            data-target="#collapse13" aria-expanded="true" aria-controls="collapse13">
+                            data-target="#collapse1" aria-expanded="true" aria-controls="collapse1">
                         Где я могу установить ваше расширение?
                     </button>
                 </h2>
             </div>
 
-            <div id="collapse13" class="collapse" aria-labelledby="heading13" data-parent="#accordionExample">
+            <div id="collapse1" class="collapse" aria-labelledby="heading1" data-parent="#accordionExample">
                 <div class="card-body  text-secondary">
                    Расширение Censor Tracker можно скачать <b>только из официальных магазинов</b> расширений <a href="https://addons.mozilla.org/ru/firefox/addon/censor-tracker/">Mozilla Addons</a> и 
                    <a href="https://chrome.google.com/webstore/detail/censor-tracker-%E2%80%93-proxy-fo/gaidoampbkcknofoejhnhbhbhhifgdop">Google Web Store</a>, а также можно альтернативно установить с помощью <a href="https://github.com/roskomsvoboda/censortracker/releases">Архивов</a> с GitHub.
@@ -207,32 +209,52 @@
             </div>
         </div>
         <div class="card">
-            <div class="card-header bg-transparent" id="heading11">
+            <div class="card-header bg-transparent" id="heading2">
                 <h2 class="mb-0">
                     <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse"
-                            data-target="#collapse11" aria-expanded="true" aria-controls="collapse11">
+                            data-target="#collapse2" aria-expanded="true" aria-controls="collapse2">
                         У меня не работает расширение, что делать?
                     </button>
                 </h2>
             </div>
 
-            <div id="collapse11" class="collapse" aria-labelledby="heading11" data-parent="#accordionExample">
+            <div id="collapse2" class="collapse" aria-labelledby="heading2" data-parent="#accordionExample">
                 <div class="card-body  text-secondary">
-                   Посмотрите версию вашего браузера, расширение поддерживает сборки - <kbd>Firefox 98+</kbd> и <kbd>Google Chrome 94+</kbd>.
+                <ol>
+                    <li>Посмотрите версию вашего браузера. Расширение поддерживает сборки - <kbd>Firefox 98+</kbd> и <kbd>Google Chrome 94+</kbd>.</li>
+                    <li>Проверьте, выданы для расширению права на работу в приватных окнах (только для браузера Firefox или созданных на его основе).
+                        Политика браузерного API от Firefox не позволяет обеспечить работу прокси, если расширению не выданы права на работу в приватных окнах (<a href="https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/proxy/settings" target="_blank">подробнее на сайте разработчика</a>).</li>
+                    <li>Проверьте настройки антивируса. Если у вас имеется установленный не системный Антивирус, то отключите в нем модуль/настройку, которая отвечает за проверку HTTPS-соединений, 
+                        если такого модуля/настройки нет, то на время использования расширения отключите антивирус.</li>
+                    <li>Отключите VPN. Из-за использования VPN страну и реестр для нее не всегда получается определить корректно, 
+                        поэтому многие сайты могут не проксироваться, так как расширение будет считать, что вы находитесь в стране, где данные сайты не заблокированы. 
+                        Если вам приходится использовать VPN, то в настройках расширения, а именно в разделе <kbd>Регион</kbd>, 
+                        выберите свой регион пребывания для корректного определения реестра заблокированных ресурсов.</li>
+                    <li>Отключите все Прокси-расширения (они также могут называться VPN-расширениями) в настройках вашего браузера. Возможность использовать настройки Прокси предоставляются только одному установленному расширению, 
+                        поэтому, если у вас их много, то они могут конфликтовать, мешать друг другу, и даже если вы отключите их через выпадающее окошко самого расширения, 
+                        то не факт, что оно перестанет мешать из-за этого их важно отключать в настройках. Также, после удаления/отключения сторонних прокси-расширения, 
+                        может возникнуть необходимость будет перезапустить браузер и/или переустановить расширение, так как сторонние расширения могут оставлять “хвосты”, 
+                        которые могут мешать нормальной работе Censor Tracker.</li>
+                    <li>Обновите локальную базу расширения. Сделать это можно, если нажать на иконку расширения —> нажать на шестеренку в правом верхнем углу внутри появившегося окна —> перейти в раздел <kbd>Продвинутые настройки</kbd> —> нажмите на пункт <kbd>Принудительно обновить локальную базу данных расширения</kbd>.</li>
+                    <li>Произведите сброс настроек. Сделать это можно, если нажать на иконку расширения —> нажать на шестеренку в правом верхнем углу внутри появившегося окна —> перейти в раздел <kbd>Продвинутые настройки</kbd> —> нажмите на пункт <kbd>Сбросить все настройки</kbd>.</li>
+                    <li>Переустановите расширение. Иногда, после обновления расширения, возникают ошибки, которые удается исправить переустановкой.</li>
+                    <br>
+                    <p>Если ничего из&nbsp;этого вам не&nbsp;помогло <a href="https://t.me/CensorTracker_feedback" target="_blank">напишите нам</a>!</p>
+                <ol>
                 </div>
             </div>
         </div>
         <div class="card">
-            <div class="card-header bg-transparent" id="heading0">
+            <div class="card-header bg-transparent" id="heading3">
                 <h2 class="mb-0">
                     <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse"
-                            data-target="#collapse0" aria-expanded="true" aria-controls="collapse0">
+                            data-target="#collapse3" aria-expanded="true" aria-controls="collapse3">
                         Что ещё за суверенный рунет?
                     </button>
                 </h2>
             </div>
 
-            <div id="collapse0" class="collapse" aria-labelledby="heading0" data-parent="#accordionExample">
+            <div id="collapse3" class="collapse" aria-labelledby="heading3" data-parent="#accordionExample">
                 <div class="card-body  text-secondary">
                     Вы можете подробнее почитать об этом в карточке <a
                         href="https://roskomsvoboda.org/cards/card/o-suverennom-runete/" target="_blank">«Суверенизация
@@ -241,100 +263,32 @@
             </div>
         </div>
         <div class="card">
-            <div class="card-header bg-transparent" id="headingOne">
-                <h2 class="mb-0">
-                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse"
-                            data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                        У&nbsp;меня не&nbsp;открывается Twitter/YouTube/Любой другой сайт, что
-                        мне делать?
-                    </button>
-                </h2>
-            </div>
-
-            <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">
-                <div class="card-body  text-secondary">
-                    <ol>
-                        <li>Проверьте установлена&nbsp;ли у&nbsp;вас последняя версия расширения.</li>
-                        <li>Если у&nbsp;вас включен VPN&nbsp;&mdash; то&nbsp;отключите его, это может мешать работе
-                            расширения.
-                        </li>
-                        <li>Зайдите в&nbsp;продвинутые настройки и&nbsp;обновите базу данных (сделать это можно так&nbsp;&mdash;
-                            нажать на&nbsp;иконку расширения &mdash;&gt; нажать на&nbsp;шестеренку в&nbsp;правом верхнем
-                            углу внутри появившегося окна &mdash;&gt; продвинутые настройки &mdash;&gt; принудительно
-                            обновить локальную базу данных).
-                        </li>
-                        <li>Если у вас есть расширение или расширения, которые контролируют настройки прокси,
-                            то следует отключить их в настройках браузера,
-                            так как расширения, контролирующие настройки прокси, могут конфликтовать.
-                        </li>
-                        <li>Переустановите расширение.</li>
-                    </ol>
-                    <p>Если ничего из&nbsp;этого вам не&nbsp;помогло <a href="https://t.me/CensorTracker_feedback"
-                                                                        target="_blank">напишите нам</a>!</p>
-                </div>
-            </div>
-        </div>
-        <div class="card">
-            <div class="card-header bg-transparent" id="headingTwo">
-                <h2 class="mb-0">
-                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse"
-                            data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                        Почему с включенным расширением возникают проблемы с доступом к YouTube?
-                    </button>
-                </h2>
-            </div>
-            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
-                <div class="card-body  text-secondary">
-                    Это происходит из-за того, что Google считает трафик подозрительным, если с одного и того же
-                    IP адреса поступает слишком много запросов.
-                    <br>
-                    <br>
-                    Одно из возможных решений этой проблемы — добавить <code>youtube.com</code> в список игнорируемых
-                    сайтов.
-
-                </div>
-            </div>
-        </div>
-        <div class="card">
-            <div class="card-header bg-transparent" id="headingThree">
-                <h2 class="mb-0">
-                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse"
-                            data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                        Могу ли я получить доступ к сайтам, заблокированным с использованием ТСПУ?
-                    </button>
-                </h2>
-            </div>
-            <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
-                <div class="card-body  text-secondary">
-                    Да, можете!
-
-                    Мы ведем реестр веб-сайтов, блокируемых с использованием ТСПУ.
-                    Вам не нужно что-либо делать, так как Censor Tracker автоматически получает обновления по
-                    заблокированным сайтам каждые 40 минут, однако если у вас возникают какие-то проблемы, то вы сможете
-                    самостоятельно добавить сайт в список проксируемых.
-                    <br>
-                    <br>
-                    Для этого нажмите на иконку расширения &mdash;&gt; в правом
-                    верхнем углу щелкните на шестеренку &mdash;&gt; "Проксируемые сайты" и внесите интересующий вас
-                    сайт, а затем нажмите <kbd>Enter</kbd>.
-                </div>
-            </div>
-        </div>
-        <div class="card">
             <div class="card-header bg-transparent" id="heading4">
                 <h2 class="mb-0">
                     <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse"
                             data-target="#collapse4" aria-expanded="false" aria-controls="collapse4">
-                        Можно использовать свой proxy-сервер?
+                        Могу ли я получить доступ к сайтам, заблокированным с использованием ТСПУ?
                     </button>
                 </h2>
             </div>
+
             <div id="collapse4" class="collapse" aria-labelledby="heading4" data-parent="#accordionExample">
                 <div class="card-body  text-secondary">
-                    Да, расширение предоставляет вам такую возможность для этого зайдите в расширение (иконка
-                    расширения &mdash;&gt; нажать на шестеренку в правом верхнем углу внутри появившегося окна
-                    &mdash;&gt; Настройка Прокси). Расширение поддерживает только HTTPS прокси. Корректный ввод выглядит
-                    так &mdash; в первое поле водим <code>username:password@hostname</code>, во втором поле вводим порт.
+                    Да, можете! 
+                    <br>
+                    Мы ведем реестр веб-сайтов, блокируемых с использованием ТСПУ. 
+                    Вам не нужно что-либо делать, так как Censor Tracker автоматически получает обновления по заблокированным сайтам каждые 40 минут, 
+                    однако если у вас возникают какие-то проблемы, то вы сможете самостоятельно добавить сайт в список проксируемых.
+                    <br>
+                    <br>
+                    <b>Первый способ:</b>
+                    <br>
+                    Нажмите на иконку расширения —> в правом верхнем углу щелкните на шестеренку —> <kbd>Мой список проксируемых сайтов</kbd> и внесите интересующий вас сайт, а затем нажмите <kbd>Enter</kbd>, а после на кнопку <kbd>Сохранить изменения</kbd>.
+                    <br>
+                    <br>
+                    <b>Второй способ:</b>
+                    <br>
+                    Нажмите на иконку расширения —> возле домена нажмите на <kbd>⁝</kbd>  —> выберите правило для проксирования <kbd>Всегда</kbd>.
                 </div>
             </div>
         </div>
@@ -343,15 +297,50 @@
                 <h2 class="mb-0">
                     <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse"
                             data-target="#collapse5" aria-expanded="false" aria-controls="collapse5">
-                        Могу ли я принять участие в разработке Censor Tracker?
+                        Можно использовать свой Proxy-сервер*?
                     </button>
                 </h2>
             </div>
+
             <div id="collapse5" class="collapse" aria-labelledby="heading5" data-parent="#accordionExample">
                 <div class="card-body  text-secondary">
-                    Да, можете! Censor Tracker имеет <a href="https://github.com/roskomsvoboda/censortracker"
-                                                       target="_blank">открытый исходный код</a> и любой желающий может
-                    внести свой вклад.
+                    Да, расширение предоставляет вам такую возможность, для этого зайдите в настройки расширения (нажмите на иконку расширения —> нажмите на шестеренку в правом верхнем углу появившегося окна —> перейдите в раздел <kbd>Настройки Прокси</kbd>). 
+                    В этом разделе вы сможете настроить собственный прокси на любом из поддерживаемых протоколов - <kbd>HTTP</kbd>, <kbd>HTTPS</kbd>, <kbd>SOCKS4</kbd> и <kbd>SOCKS5</kbd>.
+                    Корректный ввод данных для подключения - <code>[username[:password]@]hostname:port</code> (все что находится в <code>[ ]</code> скобках является не обязательным для ввода, например, если вы используете локальный SOCKS-прокси, то корректный ввод выглядит так - <code>127.0.0.1:3345</code>).
+                    <br>
+                    <br>
+                    В качестве Программного Обеспечения для поднятия своего локального <b>SOCKS5 или HTTPS</b> прокси <b>команда Censor Tracker рекомендует</b>:
+
+                    <ul class="lead list-unstyled">
+                    <h3>Tor</h3>
+                    <p>Для того, чтобы воспользоваться SOCKS over Tor нужно:</p>
+
+                        <li>1. Установить Tor Browser на свое устройство (это можно сделать с их <a href="https://www.torproject.org/download/" target="_blank">официального сайта</a>. 
+                            Сайт заблокирован на территории РФ, поэтому расширение Censor Tracker должно быть включено, чтобы Вы могли зайти)</li>
+                        <li>2. Запустите Tor Browser и настройте предпочитаемый Plagguable Transport для подключения к Tor (<kbd>meek-azure</kbd>, <kbd>obfs4</kbd>, <kbd>Snowflake</kbd>), подключитесь</li>
+                        <li>3. Откройте браузер, где установлен Censor Tracker</li>
+                        <li>4. Нажмите на иконку расширения, далее кликните на шестеренку в правом верхнем углу появившегося окошке и перейдите в раздел <kbd>Настройки прокси</kbd></li>
+                        <li>5. Выберите пункт <kbd>Свой прокси</kbd>, далее выберите протокол SOCKS5 и пропишите там - <code>127.0.0.1:9150</code> и нажмите кнопку <kbd>Сохранить</kbd></li>
+                        <li>6. Готово!</li>
+
+                    </ul>
+
+                    <ul class="lead list-unstyled">
+                    <h3>Psiphon</h3>
+                    <p>Для того, чтобы воспользоваться SOCKS over Psiphon нужно:</p>
+
+                        <li>1. Установить Psiphon клиент на свое устройство (это можно сделать с их <a href="https://psiphon.ca/ru/download.html" target="_blank">официального сайта</a>. 
+                            Сайт заблокирован на территории РФ, поэтому расширение Censor Tracker должно быть включено, чтобы Вы могли зайти)</li>
+                        <li>2. Запустите Psiphon и подключитесь, далее откройте раздел <kbd>Логи</kbd> и посмотрите на каких портах у вас активировался HTTPS и SOCKS прокси</li>
+                        <li>3. Откройте браузер, где установлен Censor Tracker</li>
+                        <li>4. Нажмите на иконку расширения, далее кликните на шестеренку в правом верхнем углу появившегося окошке и перейдите в раздел <kbd>Настройки прокси</kbd></li>
+                        <li>5. Выберите пункт <kbd>Свой прокси</kbd>, далее выберите протокол SOCKS5 или HTTPS и пропишите там - <code>127.0.0.1:<порт, который отображается в логах Psiphon согласно выбранному протоколу></code> и нажмите кнопку <kbd>Сохранить</kbd></li>
+                        <li>6. Готово!</li>
+
+                    </ul>
+                    <br>
+                    <b>*</b> - <i>В разделе настроек Psiphon вы можете самостоятельно прописать статический порт для SOCKS и HTTPS прокси, чтобы каждый раз не смотреть Лог в поисках нужного порта.</i>
+
                 </div>
             </div>
         </div>
@@ -360,14 +349,15 @@
                 <h2 class="mb-0">
                     <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse"
                             data-target="#collapse6" aria-expanded="false" aria-controls="collapse6">
-                        На некоторых сайтах мне пишет, что мой IP &mdash; немецкий, все хорошо?
+                        Могу ли я принять участие в разработке Censor Tracker?
                     </button>
                 </h2>
             </div>
+
             <div id="collapse6" class="collapse" aria-labelledby="heading6" data-parent="#accordionExample">
                 <div class="card-body  text-secondary">
-                    Это нормально, так как наши серверы физически находятся в странах ЕС, в том числе и в
-                    Германии.
+                    Да, можете! Censor Tracker имеет <a href="https://github.com/roskomsvoboda/censortracker" target="_blank">открытый исходный код</a> и любой желающий может
+                    внести свой вклад.
                 </div>
             </div>
         </div>
@@ -375,20 +365,39 @@
             <div class="card-header bg-transparent" id="heading7">
                 <h2 class="mb-0">
                     <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse"
-                            data-target="#collapse7" aria-expanded="false" aria-controls="collapse7">
+                            data-target="#collapse7" aria-expanded="false" aria-controls="collapse6">
+                        Могу ли я зайти на *.onion и/или *.i2p сайт?
+                    </button>
+                </h2>
+            </div>
+
+            <div id="collapse7" class="collapse" aria-labelledby="heading7" data-parent="#accordionExample">
+                <div class="card-body  text-secondary">
+                    Да! Proxy-сервера расширения настроены так, что вы без использования постороннего ПО можете зайти на любой <kbd>*.onion</kbd>/<kbd>*.i2p</kbd> сайт. 
+                    <br>
+                    <br>
+                    <b>Важно!</b> Tor изменил домены с V2 на V3, поэтому, например, сайт Flibusta старого образца (V2 - <code>http://flibustahezeous3.onion/</code>) - не откроется, и вам нужно будет воспользоваться ссылкой нового образца (V3 - <code>http://flibustaongezhld6dibs2dps6vm4nvqg2kp7vgowbu76tzopgnhazqd.onion/</code>). 
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header bg-transparent" id="heading8">
+                <h2 class="mb-0">
+                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse"
+                            data-target="#collapse8" aria-expanded="false" aria-controls="collapse7">
                         Могу ли я использовать Censor Tracker на смартфоне?
                     </button>
                 </h2>
             </div>
-            <div id="collapse7" class="collapse" aria-labelledby="heading7" data-parent="#accordionExample">
+            <div id="collapse8" class="collapse" aria-labelledby="heading8" data-parent="#accordionExample">
                 <div class="card-body  text-secondary">
                     В данный момент основные мобильные браузеры (Chrome для Android и Safari для iOS) не поддерживают расширения.
                     А брать на себя ответственность за рекомендации людям использовать сторонние браузеры (которые поддерживают) мы не можем.
-                    </br>
-                    </br>
+                    <br>
+                    <br>
                     Censor Tracker - это прокси-расширение конкретно для веб-браузеров, а не VPN. А создавать VPN от Censor Tracker мы пока не планируем.
-                    Если вам нужен хороший VPN, вы можете воспользоваться сайтом <a href="https://vpnlove.me/">VPN Love</a> для выбора надёжного провайдера или установить <a href="https://ru.amnezia.org/">AmneziaVPN</a>,
-                    который является выпускником Privacy Accelerator (организованного нашими же специалистами).
+                    Если вам нужен хороший VPN, вы можете воспользоваться сайтом <a href="https://vpnlove.me/" target="_blank">VPN Love</a> для выбора надёжного провайдера или установить <a href="https://ru.amnezia.org/" target="_blank">AmneziaVPN</a>,
+                    который является выпускником <a href="https://privacyaccelerator.org/" target="_blank">Privacy Accelerator</a>.
                 </div>
             </div>
         </div>
@@ -425,11 +434,32 @@
             </div>
         </div>
         <div class="card">
+            <div class="card-header bg-transparent" id="heading11">
+                <h2 class="mb-0">
+                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse"
+                            data-target="#collapse11" aria-expanded="false" aria-controls="collapse11">
+                        Могу ли я загрузить собственный список сайтов для Проксирования?
+                    </button>
+                </h2>
+            </div>
+            <div id="collapse11" class="collapse" aria-labelledby="heading11" data-parent="#accordionExample">
+                <div class="card-body  text-secondary">
+                    Да. Данная функция доступна в настройках расширения, чтобы попасть в настройки нажмите на иконку расширения —> в правом верхнем углу щелкните на шестеренку —> <kbd>Мой список проксируемых сайтов</kbd> —> нажмите на кнопку <kbd>Загрузить список из файла или URL</kbd>. 
+                    Также вы можете загрузить файл с доменами для добавления их в список проксирования локально с вашего устройства. 
+                    Для загрузки файлов по URL мы рекомендуем использовать, к примеру, <a href="https://gist.github.com/" target="_blank">GitHub Gist</a>.
+                    <br>
+                    <br>
+                    <b>Важно!</b> Каждый домен в списке должен начинаться с новой строки. Максимальное количество доменов доступное для загрузки - <kbd>1000</kbd>. Максимальный размер загружаемого файла - <kbd>64 Кб</kbd>
+
+                </div>
+            </div>
+        </div>
+        <div class="card">
             <div class="card-header bg-transparent" id="heading12">
                 <h2 class="mb-0">
                     <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse"
                             data-target="#collapse12" aria-expanded="false" aria-controls="collapse12">
-                            Какие есть альтернативные способы установки расширения?
+                        Какие есть альтернативные способы установки расширения?
                     </button>
                 </h2>
             </div>

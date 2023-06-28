@@ -182,6 +182,7 @@ import Settings from 'Background/settings'
       const data = JSON.parse(contents)
 
       await Settings.importSettings(data)
+      await server.synchronize({ syncRegistry: true })
       await ProxyManager.setProxy()
       await ProxyManager.ping()
       window.location.reload()

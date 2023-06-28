@@ -16,6 +16,7 @@ import Settings from 'Background/settings'
   const updateLocalRegistryBtn = document.getElementById('updateLocalRegistry')
   const resetSettingsToDefaultBtn = document.getElementById('resetSettingsToDefault')
   const parentalControlCheckbox = document.getElementById('parentalControlCheckbox')
+  const exportSettingsBtn = document.getElementById('exportSettings')
 
   Browser.storage.local.get({ parentalControl: false })
     .then(({ parentalControl }) => {
@@ -148,5 +149,43 @@ import Settings from 'Background/settings'
     await ProxyManager.setProxy()
     await ProxyManager.ping()
     console.warn('Censor Tracker has been reset to default settings.')
+  })
+
+  exportSettingsBtn.addEventListener('click', (event) => {
+    Settings.exportSettings().then((settings) => {
+      const data = JSON.stringify(settings, null, 2)
+      const blob = new Blob([data], { type: 'application/json' })
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+
+      link.href = url
+      link.download = 'censortracker.settings.json'
+
+      link.style.display = 'none'
+      document.body.append(link)
+
+      link.click()
+
+      document.body.removeChild(link)
+      URL.revokeObjectURL(url)
+    })
+  })
+
+  const importSettingsInput = document.getElementById('importSettingsInput')
+
+  importSettingsInput.addEventListener('change', async (_event) => {
+    const file = event.target.files[0]
+    const fileReader = new FileReader()
+
+    fileReader.addEventListener('load', async (e) => {
+      const contents = event.target.result
+      const data = JSON.parse(contents)
+
+      await Settings.importSettings(data)
+      await ProxyManager.setProxy()
+      await ProxyManager.ping()
+      window.location.reload()
+    })
+    fileReader.readAsText(file)
   })
 })()

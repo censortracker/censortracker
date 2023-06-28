@@ -512,5 +512,17 @@
   },
   "youCanCloseThisWindow": {
     "message": "Бұл терезені жабуға болады"
+  },
+  "exportSettingsTitle": {
+    "message": "Экспорттау Параметрлері"
+  },
+  "exportSettingsDesc": {
+    "message": "Параметрлерді JSON файлына экспорттап, кейінірек импорттай аласыз."
+  },
+  "importSettingsTitle": {
+    "message": "Импорттау Параметрлері"
+  },
+  "importSettingsDesc": {
+    "message": "Сіз параметрлерді JSON файлынан импорттай аласыз."
   }
 }

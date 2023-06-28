@@ -512,5 +512,17 @@
   },
   "youCanCloseThisWindow": {
     "message": "You can close this window"
+  },
+  "exportSettingsTitle": {
+    "message": "Export Settings"
+  },
+  "exportSettingsDesc": {
+    "message": "You can export your settings to a JSON file and import them later."
+  },
+  "importSettingsTitle": {
+    "message": "Import Settings"
+  },
+  "importSettingsDesc": {
+    "message": "You can import your settings from a JSON file."
   }
 }

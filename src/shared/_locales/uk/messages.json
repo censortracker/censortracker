@@ -512,5 +512,17 @@
   },
   "youCanCloseThisWindow": {
     "message": "Можна закрити це вікно"
+  },
+  "exportSettingsTitle": {
+    "message": "Експортувати Налаштування"
+  },
+  "exportSettingsDesc": {
+    "message": "Ви можете експортувати налаштування Censor Tracker у файл JSON та імпортувати їх пізніше."
+  },
+  "importSettingsTitle": {
+    "message": "Імпортувати Налаштування"
+  },
+  "importSettingsDesc": {
+    "message": "Ви можете імпортувати налаштування з файлу JSON."
   }
 }

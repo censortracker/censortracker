@@ -84,6 +84,19 @@ class Settings {
   async disableParentalControl () {
     await Browser.storage.local.set({ parentalControl: false })
   }
+
+  async exportSettings () {
+    const settings = await Browser.storage.local.get(null)
+
+    settings.domains = []
+    settings.disseminators = []
+    return settings
+  }
+
+  async importSettings (settings) {
+    await Browser.storage.local.clear()
+    await Browser.storage.local.set(settings)
+  }
 }
 
 export default new Settings()

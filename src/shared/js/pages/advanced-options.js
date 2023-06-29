@@ -17,6 +17,7 @@ import Settings from 'Background/settings'
   const resetSettingsToDefaultBtn = document.getElementById('resetSettingsToDefault')
   const parentalControlCheckbox = document.getElementById('parentalControlCheckbox')
   const exportSettingsBtn = document.getElementById('exportSettings')
+  const importSettingsInput = document.getElementById('importSettingsInput')
 
   Browser.storage.local.get({ parentalControl: false })
     .then(({ parentalControl }) => {
@@ -171,21 +172,22 @@ import Settings from 'Background/settings'
     })
   })
 
-  const importSettingsInput = document.getElementById('importSettingsInput')
-
-  importSettingsInput.addEventListener('change', async (_event) => {
+  importSettingsInput.addEventListener('change', async (event) => {
     const file = event.target.files[0]
     const fileReader = new FileReader()
 
     fileReader.addEventListener('load', async (e) => {
-      const contents = event.target.result
+      const contents = e.target.result
       const data = JSON.parse(contents)
 
       await Settings.importSettings(data)
+
+      // Render new state
+      window.location.reload()
+
       await server.synchronize({ syncRegistry: true })
       await ProxyManager.setProxy()
       await ProxyManager.ping()
-      window.location.reload()
     })
     fileReader.readAsText(file)
   })

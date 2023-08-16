@@ -2,14 +2,9 @@ import browser from './browser-api'
 
 const CLOUDFRONT_CONFIG_URL = 'https://d204gfm9dw21wi.cloudfront.net/'
 const AWS_S3_CONFIG_URL = 'https://censortracker.s3.eu-central-1.amazonaws.com/config.json'
-const GOOGLEAPIS_CONFIG_URL = 'https://storage.googleapis.com/censortracker/config.json'
 
 const getConfigAPIEndpoints = () => {
   return [
-    {
-      endpointName: 'Google Cloud Storage',
-      endpointUrl: GOOGLEAPIS_CONFIG_URL,
-    },
     {
       endpointName: 'Amazon S3',
       endpointUrl: AWS_S3_CONFIG_URL,

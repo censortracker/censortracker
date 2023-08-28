@@ -966,6 +966,10 @@ kbd {
 }
 
 @media (prefers-color-scheme: dark) {
+    :root {
+        color-scheme: dark;
+    }
+    
     .options-body, body {
         background-color: #181A1B;
         color: #F4F1F1;

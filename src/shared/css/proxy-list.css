@@ -170,4 +170,7 @@
         border: 1px solid #f4f1f1;
         color: #f4f1f1
     }
+    .CodeMirror-vscrollbar {
+        color-scheme: dark;
+    }
 }

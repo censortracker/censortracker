@@ -1,17 +1,17 @@
 import browser from './browser-api'
 
-const CLOUDFRONT_CONFIG_URL = 'https://d204gfm9dw21wi.cloudfront.net/'
-const AWS_S3_CONFIG_URL = 'https://censortracker.s3.eu-central-1.amazonaws.com/config.json'
+const NETLIFY_CONFIG_URL = 'https://censortracker.netlify.app/config.json'
+const GITHUB_CONFIG_URL = 'https://raw.githubusercontent.com/roskomsvoboda/ctconf/main/config.json'
 
 const getConfigAPIEndpoints = () => {
   return [
     {
-      endpointName: 'Amazon S3',
-      endpointUrl: AWS_S3_CONFIG_URL,
+      endpointName: 'GitHub',
+      endpointUrl: GITHUB_CONFIG_URL,
     },
     {
-      endpointName: 'Amazon CloudFront',
-      endpointUrl: CLOUDFRONT_CONFIG_URL,
+      endpointName: 'Netlify',
+      endpointUrl: NETLIFY_CONFIG_URL,
     },
   ]
 }

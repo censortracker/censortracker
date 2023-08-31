@@ -23,11 +23,11 @@
     <div class="main-page__info">
 
       <div class="main-page__title title-domain">
-        <div class="current-domain title-normal current-domain" id="currentDomainHeader"></div>
+        <div class="current-domain title-normal current-domain unselectable" id="currentDomainHeader"></div>
         <span class="icon__site_settings icon-show hidden" id="toggleSiteActions"></span>
       </div>
 
-      <div class="main-page__block main-page-setting hidden" id="siteActions">
+      <div class="main-page__block main-page-setting hidden unselectable" id="siteActions">
         <div class="block__title" data-i18n-key="siteActionTitle"></div>
 
         <div class="site-actions-group">
@@ -57,7 +57,7 @@
         <div class="network__about" data-i18n-key="overlayNetworkDesc"></div>
       </div>
 
-      <div class="main-page__block main-page-info" id="ori">
+      <div class="main-page__block main-page-info unselectable" id="ori">
         <div class="block__title">
           <span id="ori-title" data-i18n-key="notDisseminatorTitle"></span>
           <img class="icon__status" src="images/popup/status/ok.svg" width="24px" height="24px" alt="Status"/>
@@ -79,7 +79,7 @@
         </div>
       </div>
 
-      <div class="main-page__block main-page-info" id="restrictions">
+      <div class="main-page__block main-page-info unselectable" id="restrictions">
         <div class="block__title">
           <span id="restrictions-title" data-i18n-key="notBlockedTitle"></span>
           <img class="icon__status" src="images/popup/status/ok.svg" width="24px" height="24px" alt="Status"/>
@@ -103,13 +103,13 @@
 
       <div class="main-page__block main-page-info" id="proxying-info">
         <div class="block__title">
-          <span data-i18n-key="popupProxyInfoTitle"></span>
-          <img class="icon__status proxying-info-icon"
+          <span class="unselectable" data-i18n-key="popupProxyInfoTitle"></span>
+          <img class="icon__status proxying-info-icon unselectable"
                data-render-var="statusIcon"
                src="images/popup/status/question.svg" width="24px"
                height="24px" alt=""/>
         </div>
-        <div class="block__btn btn-about btn-what-this-mean">
+        <div class="block__btn btn-about unselectable btn-what-this-mean">
           <span data-i18n-key="popupProxyInfoShowDetails"></span>
           <svg class="block__btn icon" width="8" height="6" viewBox="0 0 8 6" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M0.546875 1.47339L4 5.5L7.48204 1.47339" stroke="#3B332B" stroke-linecap="round" stroke-linejoin="round"/>
@@ -124,7 +124,7 @@
         </div>
       </div>
 
-      <div class="main-page__info" id="extensionIsOff" hidden>
+      <div class="main-page__info unselectable" id="extensionIsOff" hidden>
         <div class="main-page__title title-disabled" data-i18n-key="extensionDisabledTitle"></div>
         <div class="main-page__block">
           <div class="block__title text-about block-disabled">
@@ -157,7 +157,7 @@
     <div data-i18n-key="privateBrowsingPermissionsRequiredMessage"></div>
   </div>
 
-  <div class="footer" id="footerExtensionIsOn" hidden>
+  <div class="footer unselectable" id="footerExtensionIsOn" hidden>
     <div class="censor-tracker">
       <div class="censor-tracker__column">
         <div class="censor-tracker__title">

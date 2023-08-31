@@ -246,6 +246,14 @@ a {
     opacity: 0.6;
 }
 
+.unselectable {
+  -moz-user-select: -moz-none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+}
+
 .block__btn:hover {
     color: #625c55;
     cursor: pointer;
@@ -463,7 +471,7 @@ div#grantPrivateBrowsingPermissionsButton {
 .main-page__info .icon__site_settings {
     width: 16px;
     height: 16px;
-    margin-left: 8px;
+    margin-left: 6px;
 }
 
 .main-page__title.title-domain {
@@ -478,7 +486,7 @@ div#grantPrivateBrowsingPermissionsButton {
     -webkit-mask: url(../images/popup/more.svg) no-repeat center / contain;
     background-color: #3b332b;
     background-size: auto 100%;
-    height: 10px;
+    height: 15px;
 }
 
 .main-page__info .icon__site_settings.icon-hide {
@@ -656,7 +664,7 @@ div#grantPrivateBrowsingPermissionsButton {
     :root {
         color-scheme: dark;
     }
-    
+
     body {
         background: #242728
     }

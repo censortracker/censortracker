@@ -346,7 +346,7 @@
     "message": "Proxying Information"
   },
   "popupProxyStatusError": {
-    "message": "proxy is intermittent"
+    "message": "failed to establish a connection to the proxy server"
   },
   "popupProxyStatusOk": {
     "message": "proxy is working fine"
@@ -391,7 +391,7 @@
     "message": "You can disable proxying or switch to your own proxy."
   },
   "proxyOptionsStatusTitle": {
-    "message": "The proxy is working intermittently right now."
+    "message": "Failed to establish a connection to the proxy server"
   },
   "proxyPort": {
     "message": "Port"

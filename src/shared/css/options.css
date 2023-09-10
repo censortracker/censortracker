@@ -1201,4 +1201,8 @@ kbd {
     .invalid-input {
         border: 1px solid #9e5757 !important;
     }
+
+    .update_available {
+        color-scheme: light;
+    }
 }

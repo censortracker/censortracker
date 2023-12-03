@@ -22,7 +22,7 @@
 
       <div id="updateAvailableAlert" class="update_available hidden">
         <div class="disclaimer__title" data-i18n-key="updateAvailableTitle"></div>
-        <div  class="disclaimer__text disclaimer-mb" data-i18n-key="updateAvailableDesc"></div>
+        <div class="disclaimer__text disclaimer-mb" data-i18n-key="updateAvailableDesc"></div>
         <a id="updateExtensionButton" class="update-btn" data-i18n-key="updateAvailableButtonTitle"></a>
       </div>
 
@@ -128,6 +128,22 @@
       </div>
 
       <div class="options-page-card">
+        <div class="block__title">VK Bots Detector</div>
+        <div class="options-hr"></div>
+        <div class="checkbox__group" id="detectVKBot">
+          <div class="main-page__turn">
+            <label for="showNotificationsCheckbox" class="toggle-text">Detect VK Bots</label>
+            <input id="detectVKBotCheckbox" type="checkbox" class="toggle-button">
+          </div>
+          <div class="main-page__about">
+            This option allows you to detect VK Bots. If you enable this option, you will see a warning when you visit a
+            page with a VK Bot.
+          </div>
+        </div>
+      </div>
+
+
+      <div class="options-page-card">
         <div class="block__title" data-i18n-key="extraBlockTitle"></div>
         <div class="options-hr"></div>
         <div id="advancedOptions">
@@ -147,10 +163,12 @@
 
         <div class="options-links">
           <a href="https://censortracker.org/#faq" target="_blank" class="options-link">
-            <span class="main-page__about option-link-text" data-i18n-key="faqLink"></span><span class="option-link-text">&rarr;</span>
+            <span class="main-page__about option-link-text" data-i18n-key="faqLink"></span><span
+            class="option-link-text">&rarr;</span>
           </a>
           <a href="https://t.me/censortracker_feedback" target="_blank" class="options-link">
-            <span class="main-page__about option-link-text" data-i18n-key="shareFeedback"></span><span class="option-link-text">&rarr;</span>
+            <span class="main-page__about option-link-text" data-i18n-key="shareFeedback"></span><span
+            class="option-link-text">&rarr;</span>
           </a>
         </div>
       </div>

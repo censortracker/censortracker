@@ -14,6 +14,7 @@
   "permissions": [
     "alarms",
     "activeTab",
+    "scripting",
     "management",
     "notifications",
     "proxy",

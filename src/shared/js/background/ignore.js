@@ -1,4 +1,4 @@
-import Browser from './browser-api'
+import browser from './browser-api'
 import * as utilities from './utilities'
 import { extractDomainFromUrl } from './utilities'
 
@@ -8,7 +8,7 @@ export class Ignore {
    * @returns {Promise<undefined>}
    */
   async clear () {
-    await Browser.storage.local.set({ ignoredHosts: [] })
+    await browser.storage.local.set({ ignoredHosts: [] })
   }
 
   /**
@@ -17,7 +17,7 @@ export class Ignore {
    */
   async getAll () {
     const { ignoredHosts } =
-      await Browser.storage.local.get({ ignoredHosts: [] })
+      await browser.storage.local.get({ ignoredHosts: [] })
 
     return ignoredHosts
   }
@@ -30,18 +30,18 @@ export class Ignore {
   async add (url) {
     const hostname = extractDomainFromUrl(url)
     const { ignoredHosts } =
-      await Browser.storage.local.get({ ignoredHosts: [] })
+      await browser.storage.local.get({ ignoredHosts: [] })
 
     if (!ignoredHosts.includes(hostname)) {
       ignoredHosts.push(hostname)
       console.warn(`Adding ${hostname} to ignore`)
-      await Browser.storage.local.set({ ignoredHosts })
+      await browser.storage.local.set({ ignoredHosts })
     }
     return true
   }
 
   async set (ignoredHosts = []) {
-    await Browser.storage.local.set({ ignoredHosts })
+    await browser.storage.local.set({ ignoredHosts })
   }
 
   /**
@@ -52,13 +52,13 @@ export class Ignore {
   async remove (url) {
     const hostname = extractDomainFromUrl(url)
     const { ignoredHosts } =
-      await Browser.storage.local.get({ ignoredHosts: [] })
+      await browser.storage.local.get({ ignoredHosts: [] })
 
     if (ignoredHosts.includes(hostname)) {
       const index = ignoredHosts.indexOf(hostname)
 
       ignoredHosts.splice(index, 1)
-      await Browser.storage.local.set({ ignoredHosts })
+      await browser.storage.local.set({ ignoredHosts })
       console.warn(`Removing ${hostname} from ignore`)
     }
     return true

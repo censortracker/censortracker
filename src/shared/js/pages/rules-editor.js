@@ -5,7 +5,7 @@ import 'codemirror/addon/display/autorefresh'
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/ayu-mirage.css'
 
-import Browser from 'Background/browser-api'
+import browser from 'Background/browser-api'
 import Ignore from 'Background/ignore'
 import { i18nGetMessage, isValidURL, removeDuplicates } from 'Background/utilities'
 import CodeMirror from 'codemirror'
@@ -65,7 +65,7 @@ import CodeMirror from 'codemirror'
     if (isIgnorePage) {
       await Ignore.set(domains)
     } else {
-      await Browser.storage.local.set({
+      await browser.storage.local.set({
         customProxiedDomains: domains,
       })
     }
@@ -83,7 +83,7 @@ import CodeMirror from 'codemirror'
       editor.setValue(ignoredHosts.join('\n'))
     })
   } else {
-    Browser.storage.local.get({ customProxiedDomains: [] })
+    browser.storage.local.get({ customProxiedDomains: [] })
       .then(({ customProxiedDomains }) => {
         editor.setValue(customProxiedDomains.join('\n'))
       })
@@ -103,7 +103,7 @@ import CodeMirror from 'codemirror'
     const maxDomainsAllowed = 1000
 
     const updateEditorContent = async (domains) => {
-      const { customProxiedDomains } = await Browser.storage.local.get({
+      const { customProxiedDomains } = await browser.storage.local.get({
         customProxiedDomains: [],
       })
       const domainsArray = [...customProxiedDomains, ...domains]

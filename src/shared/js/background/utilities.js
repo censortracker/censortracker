@@ -1,7 +1,7 @@
 import { getDomain, getHostname, getPublicSuffix } from 'tldts'
 import isURL from 'validator/lib/isURL'
 
-import Browser from './browser-api'
+import browser from './browser-api'
 
 /**
  * Checks if passed value is a extension URL.
@@ -64,7 +64,7 @@ export const extractHostnameFromUrl = (url) => {
 }
 
 export const i18nGetMessage = (key, props = {}) => {
-  return Browser.i18n.getMessage(key)
+  return browser.i18n.getMessage(key)
 }
 
 /**
@@ -78,10 +78,10 @@ export const translateDocument = (doc, props = {}) => {
     // Extract value with the given name from "props".
     const renderProp = element.getAttribute('data-i18n-render-prop')
 
-    let message = Browser.i18n.getMessage(value)
+    let message = browser.i18n.getMessage(value)
 
     if (renderProp && Object.hasOwnProperty.call(props, renderProp)) {
-      message = Browser.i18n.getMessage(value, props[renderProp])
+      message = browser.i18n.getMessage(value, props[renderProp])
     }
 
     if (message) {

@@ -1,4 +1,4 @@
-import Browser from './browser-api'
+import browser from './browser-api'
 
 class Settings {
   getName () {
@@ -6,24 +6,24 @@ class Settings {
   }
 
   getDangerIcon () {
-    return Browser.runtime.getURL('images/icons/128x128/danger.png')
+    return browser.runtime.getURL('images/icons/128x128/danger.png')
   }
 
   changePageIcon (tabId, filename) {
     const title = this.getName()
-    const path = Browser.runtime.getURL(`images/icons/128x128/${filename}.png`)
+    const path = browser.runtime.getURL(`images/icons/128x128/${filename}.png`)
 
-    if (Browser.isFirefox) {
-      Browser.browserAction.setIcon({ tabId, path })
-      Browser.browserAction.setTitle({ title, tabId })
+    if (browser.isFirefox) {
+      browser.browserAction.setIcon({ tabId, path })
+      browser.browserAction.setTitle({ title, tabId })
     } else {
-      Browser.action.setIcon({ tabId, path })
-      Browser.action.setTitle({ title, tabId })
+      browser.action.setIcon({ tabId, path })
+      browser.action.setTitle({ title, tabId })
     }
   }
 
   async showInstalledPage (tabId) {
-    await Browser.tabs.create({ url: 'installed.html' })
+    await browser.tabs.create({ url: 'installed.html' })
   }
 
   setDisableIcon (tabId) {
@@ -44,40 +44,40 @@ class Settings {
 
   async extensionEnabled () {
     const { enableExtension } =
-      await Browser.storage.local.get({ enableExtension: false })
+      await browser.storage.local.get({ enableExtension: false })
 
     return enableExtension
   }
 
   async enableExtension () {
-    await Browser.storage.local.set({ enableExtension: true })
+    await browser.storage.local.set({ enableExtension: true })
     console.log('Settings.enableExtension()')
   }
 
   async disableExtension () {
-    await Browser.storage.local.set({
+    await browser.storage.local.set({
       useProxy: false,
       enableExtension: false,
       showNotifications: false,
     })
 
-    if (Browser.isFirefox) {
-      await Browser.browserAction.setBadgeText({ text: '' })
+    if (browser.isFirefox) {
+      await browser.browserAction.setBadgeText({ text: '' })
     }
 
     console.log('Settings.disableExtension()')
   }
 
   async enableNotifications () {
-    await Browser.storage.local.set({ showNotifications: true })
+    await browser.storage.local.set({ showNotifications: true })
   }
 
   async disableNotifications () {
-    await Browser.storage.local.set({ showNotifications: false })
+    await browser.storage.local.set({ showNotifications: false })
   }
 
   async exportSettings () {
-    const settings = await Browser.storage.local.get(null)
+    const settings = await browser.storage.local.get(null)
 
     settings.domains = []
     settings.disseminators = []
@@ -85,8 +85,8 @@ class Settings {
   }
 
   async importSettings (settings) {
-    await Browser.storage.local.clear()
-    await Browser.storage.local.set(settings)
+    await browser.storage.local.clear()
+    await browser.storage.local.set(settings)
   }
 }
 

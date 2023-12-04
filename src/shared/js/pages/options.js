@@ -82,7 +82,7 @@ import * as server from 'Background/server'
     proxyStatus.hidden = false
   }
 
-  if (browser.IS_FIREFOX) {
+  if (browser.isFirefox) {
     const allowedIncognitoAccess =
       await browser.extension.isAllowedIncognitoAccess()
     const { privateBrowsingPermissionsRequired } =

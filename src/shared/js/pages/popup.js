@@ -265,7 +265,7 @@ import {
       if (extensionEnabled) {
         statusImage.setAttribute('src', 'images/icons/512x512/normal.png')
 
-        if (Browser.IS_FIREFOX) {
+        if (Browser.isFirefox) {
           Browser.extension.isAllowedIncognitoAccess()
             .then((allowedIncognitoAccess) => {
               Browser.storage.local
@@ -370,7 +370,7 @@ import {
 
   ProxyManager.controlledByOtherExtensions().then(
     (controlledByOtherExtensions) => {
-      if (!Browser.IS_FIREFOX && controlledByOtherExtensions) {
+      if (!Browser.isFirefox && controlledByOtherExtensions) {
         controlledByOtherExtensionsButton.hidden = false
       }
     },

@@ -26,10 +26,10 @@ export const getBrowserInfo = () => {
  */
 const getBrowser = () => {
   if (typeof browser !== 'undefined') {
-    browser.IS_FIREFOX = true
+    browser.isFirefox = true
     return browser
   }
-  chrome.IS_FIREFOX = false
+  chrome.isFirefox = false
   return chrome
 }
 

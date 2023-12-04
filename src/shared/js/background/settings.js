@@ -13,7 +13,7 @@ class Settings {
     const title = this.getName()
     const path = Browser.runtime.getURL(`images/icons/128x128/${filename}.png`)
 
-    if (Browser.IS_FIREFOX) {
+    if (Browser.isFirefox) {
       Browser.browserAction.setIcon({ tabId, path })
       Browser.browserAction.setTitle({ title, tabId })
     } else {
@@ -61,7 +61,7 @@ class Settings {
       showNotifications: false,
     })
 
-    if (Browser.IS_FIREFOX) {
+    if (Browser.isFirefox) {
       await Browser.browserAction.setBadgeText({ text: '' })
     }
 

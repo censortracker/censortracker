@@ -34,6 +34,7 @@ Censor Tracker requires the following permissions:
 - `management` to be able to detect permission conflicts
 - `notifications` to show notifications
 - `proxy` to configure and use Censor Tracker proxy servers
+- `scripting` to inject content scripts into websites
 - `storage` to save preferences
 - `unlimitedStorage` to save the database of blocked websites
 - `webNavigation` for handling requests
@@ -42,7 +43,7 @@ Censor Tracker requires the following permissions:
 Requirements
 ============
 
-Censor Trecker works with following versions of browsers:
+Censor Tracker works with following versions of browsers:
 
 - Mozilla Firefox 98 or higher
 - Chromium (Google Chrome, Brave, Edge, Opera etc.) 94 or higher

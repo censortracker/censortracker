@@ -4,7 +4,6 @@ import {
   handleIgnoredHostsChange,
   handleInstalled,
   handleOnAlarm,
-  handleOnConnect,
   handleOnUpdateAvailable,
   handleProxyError,
   handleStartup,
@@ -16,7 +15,6 @@ import {
 browser.alarms.onAlarm.addListener(handleOnAlarm)
 browser.proxy.onError.addListener(handleProxyError)
 browser.runtime.onStartup.addListener(handleStartup)
-browser.runtime.onConnect.addListener(handleOnConnect)
 browser.runtime.onInstalled.addListener(handleInstalled)
 browser.storage.onChanged.addListener(handleStorageChanged)
 browser.storage.onChanged.addListener(handleIgnoredHostsChange)

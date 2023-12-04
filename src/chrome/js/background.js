@@ -4,7 +4,6 @@ import {
   handleIgnoredHostsChange,
   handleInstalled,
   handleOnAlarm,
-  handleOnConnect,
   handleOnUpdateAvailable,
   handleProxyError,
   handleStartup,
@@ -15,7 +14,6 @@ import {
 
 chrome.alarms.onAlarm.addListener(handleOnAlarm)
 chrome.runtime.onStartup.addListener(handleStartup)
-chrome.runtime.onConnect.addListener(handleOnConnect)
 chrome.runtime.onInstalled.addListener(handleInstalled)
 chrome.proxy.onProxyError.addListener(handleProxyError)
 chrome.storage.onChanged.addListener(handleStorageChanged)

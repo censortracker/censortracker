@@ -59,7 +59,6 @@ class Settings {
       useProxy: false,
       enableExtension: false,
       showNotifications: false,
-      parentalControl: false,
     })
 
     if (Browser.IS_FIREFOX) {
@@ -75,14 +74,6 @@ class Settings {
 
   async disableNotifications () {
     await Browser.storage.local.set({ showNotifications: false })
-  }
-
-  async enableParentalControl () {
-    await Browser.storage.local.set({ parentalControl: true })
-  }
-
-  async disableParentalControl () {
-    await Browser.storage.local.set({ parentalControl: false })
   }
 
   async exportSettings () {

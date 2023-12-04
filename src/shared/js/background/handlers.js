@@ -8,23 +8,6 @@ import Settings from './settings'
 import Task from './task'
 import * as utilities from './utilities'
 
-/**
- * Fired when a connection is made from a content script.
- * @param port A runtime.Port object representing the port connection.
- */
-export const handleOnConnect = (port) => {
-  if (port.name === 'censortracker') {
-    port.onMessage.addListener((message) => {
-      if (message.parentalControl === '?') {
-        Browser.storage.local.get({ parentalControl: false })
-          .then(({ parentalControl }) => {
-            port.postMessage({ parentalControl })
-          })
-      }
-    })
-  }
-}
-
 export const showDisseminatorWarning = async (url) => {
   const hostname = utilities.extractDomainFromUrl(url)
   const {

@@ -15,20 +15,8 @@ import Settings from 'Background/settings'
   const closePopupConfirmBtn = document.getElementById('closePopupConfirm')
   const updateLocalRegistryBtn = document.getElementById('updateLocalRegistry')
   const resetSettingsToDefaultBtn = document.getElementById('resetSettingsToDefault')
-  const parentalControlCheckbox = document.getElementById('parentalControlCheckbox')
   const exportSettingsBtn = document.getElementById('exportSettings')
   const importSettingsInput = document.getElementById('importSettingsInput')
-
-  Browser.storage.local.get({ parentalControl: false })
-    .then(({ parentalControl }) => {
-      parentalControlCheckbox.checked = parentalControl
-    })
-
-  parentalControlCheckbox.addEventListener('change', async (event) => {
-    await Browser.storage.local.set({
-      parentalControl: event.target.checked,
-    })
-  }, false)
 
   const togglePopup = (id) => {
     const showPopupClass = 'popup-show'

@@ -51,7 +51,7 @@ if (browser.isFirefox) {
   )
 } else {
   // Chrome-specific handlers
-  chrome.webNavigation.onBeforeNavigate.addListener(
+  browser.webNavigation.onBeforeNavigate.addListener(
     handleBeforeRequest, {
       urls: [
         'http://*/*',
@@ -62,5 +62,5 @@ if (browser.isFirefox) {
       ],
     },
   )
-  chrome.proxy.onProxyError.addListener(handleProxyError)
+  browser.proxy.onProxyError.addListener(handleProxyError)
 }

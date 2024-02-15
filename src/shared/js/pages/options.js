@@ -34,15 +34,12 @@ import * as server from 'Background/server'
   const backendIsIntermittentAlert = document.getElementById('backendIsIntermittentAlert')
   const updateAvailableAlert = document.getElementById('updateAvailableAlert')
   const updateExtensionButton = document.getElementById('updateExtensionButton')
-  const botDetectionCheckbox = document.getElementById('detectVKBotCheckbox')
 
   browser.storage.local.get({
     updateAvailable: false,
     backendIsIntermittent: false,
     botDetection: false,
   }).then(({ updateAvailable, backendIsIntermittent, botDetection }) => {
-    botDetectionCheckbox.checked = botDetection
-
     if (updateAvailable) {
       updateAvailableAlert.classList.remove('hidden')
     }
@@ -120,32 +117,6 @@ import * as server from 'Background/server'
       }
     }
   }
-
-  // VK Bot Detection
-  botDetectionCheckbox.addEventListener('change', async (_event) => {
-    const checked = botDetectionCheckbox.checked
-    const contentScriptId = 'CT_VK'
-
-    if (checked) {
-      browser.scripting.registerContentScripts([{
-        id: contentScriptId,
-        runAt: 'document_idle',
-        matches: ['*://vk.com/*', '*://*.vk.com/*'],
-        js: ['content-scripts/vk-metabot.user.js'],
-      }]).then(() => {
-        console.warn('Bot detection enabled')
-      }).catch((error) => {
-        console.warn('Unexpected error', error)
-      })
-    } else {
-      browser.scripting.unregisterContentScripts({ ids: [contentScriptId] })
-      console.log('Bot detection disabled')
-    }
-
-    await browser.storage.local.set({
-      botDetection: botDetectionCheckbox.checked,
-    })
-  })
 
   if (showNotificationsCheckbox) {
     showNotificationsCheckbox.addEventListener('change', async () => {

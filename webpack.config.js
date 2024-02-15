@@ -178,10 +178,6 @@ const webConfig = {
           from: resolve('src/shared/_locales/'),
           to: resolve(`dist/${BROWSER}/${OUTPUT_SUB_DIR}/_locales`),
         },
-        {
-          from: resolve('src/shared/js/content-scripts'),
-          to: resolve(`dist/${BROWSER}/${OUTPUT_SUB_DIR}/content-scripts`),
-        },
       ],
     }),
     new HTMLWebpackPlugin({

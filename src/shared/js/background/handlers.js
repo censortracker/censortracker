@@ -69,9 +69,9 @@ export const handleStartup = async () => {
   }
 
   await Task.schedule([
-    { name: TaskType.PING, minutes: 5 },
-    { name: TaskType.SET_PROXY, minutes: 8 },
-    { name: TaskType.REMOVE_BAD_PROXIES, minutes: 5 },
+    { name: TaskType.PING, minutes: 10 },
+    { name: TaskType.SET_PROXY, minutes: 15 },
+    { name: TaskType.REMOVE_BAD_PROXIES, minutes: 20 },
   ])
   console.groupEnd()
 }
@@ -194,7 +194,7 @@ export const handleInstalled = async ({ reason }) => {
 
     // Schedule tasks to run in the background.
     await Task.schedule([
-      { name: TaskType.SET_PROXY, minutes: 8 },
+      { name: TaskType.SET_PROXY, minutes: 15 },
       { name: TaskType.REMOVE_BAD_PROXIES, minutes: 5 },
     ])
   }

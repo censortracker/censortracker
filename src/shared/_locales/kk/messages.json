@@ -312,12 +312,6 @@
   "overlayNetworkDesc": {
     "message": "Censor Tracker мұндай сайттарды кәдімгі шолғышта ашуға мүмкіндік береді"
   },
-  "parentalControlDesc": {
-    "message": "Ата-анаңызды насихаттан қорғаңыз."
-  },
-  "parentalControlTitle": {
-    "message": "«Ата-аналық» бақылау"
-  },
   "popupAutoMessage": {
     "message": "Автоматты түрде анықтау"
   },

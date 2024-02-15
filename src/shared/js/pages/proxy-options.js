@@ -1,4 +1,4 @@
-import Browser from 'Background/browser-api'
+import browser from 'Background/browser-api'
 import ProxyManager from 'Background/proxy'
 
 (async () => {
@@ -28,7 +28,7 @@ import ProxyManager from 'Background/proxy'
     useOwnProxy,
     customProxyProtocol,
     customProxyServerURI,
-  } = await Browser.storage.local.get([
+  } = await browser.storage.local.get([
     'useOwnProxy',
     'customProxyProtocol',
     'customProxyServerURI',
@@ -56,7 +56,7 @@ import ProxyManager from 'Background/proxy'
     const proxyProtocol = currentProxyProtocol.textContent.trim()
 
     if (customProxyServer) {
-      await Browser.storage.local.set({
+      await browser.storage.local.set({
         useOwnProxy: true,
         customProxyProtocol: proxyProtocol,
         customProxyServerURI: customProxyServer,

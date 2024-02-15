@@ -1,4 +1,4 @@
-import Browser from 'Background/browser-api'
+import browser from 'Background/browser-api'
 import ProxyManager from 'Background/proxy'
 import Registry from 'Background/registry'
 import * as server from 'Background/server'
@@ -35,10 +35,11 @@ import * as server from 'Background/server'
   const updateAvailableAlert = document.getElementById('updateAvailableAlert')
   const updateExtensionButton = document.getElementById('updateExtensionButton')
 
-  Browser.storage.local.get({
+  browser.storage.local.get({
     updateAvailable: false,
     backendIsIntermittent: false,
-  }).then(({ updateAvailable, backendIsIntermittent }) => {
+    botDetection: false,
+  }).then(({ updateAvailable, backendIsIntermittent, botDetection }) => {
     if (updateAvailable) {
       updateAvailableAlert.classList.remove('hidden')
     }
@@ -49,9 +50,9 @@ import * as server from 'Background/server'
   })
 
   updateExtensionButton.addEventListener('click', async (event) => {
-    Browser.storage.local.set({ updateAvailable: false })
+    browser.storage.local.set({ updateAvailable: false })
       .then(() => {
-        Browser.runtime.reload()
+        browser.runtime.reload()
       })
   })
 
@@ -74,15 +75,15 @@ import * as server from 'Background/server'
     if (proxyingEnabled) {
       proxyStatusMessage = 'optionsProxyStatusTurnedOn'
     }
-    proxyStatus.innerText = Browser.i18n.getMessage(proxyStatusMessage)
+    proxyStatus.innerText = browser.i18n.getMessage(proxyStatusMessage)
     proxyStatus.hidden = false
   }
 
-  if (Browser.IS_FIREFOX) {
+  if (browser.isFirefox) {
     const allowedIncognitoAccess =
       await browser.extension.isAllowedIncognitoAccess()
     const { privateBrowsingPermissionsRequired } =
-      await Browser.storage.local.get({
+      await browser.storage.local.get({
         privateBrowsingPermissionsRequired: false,
       })
 
@@ -119,23 +120,23 @@ import * as server from 'Background/server'
 
   if (showNotificationsCheckbox) {
     showNotificationsCheckbox.addEventListener('change', async () => {
-      await Browser.storage.local.set({
+      await browser.storage.local.set({
         showNotifications: showNotificationsCheckbox.checked,
       })
     },
     false,
     )
 
-    const { showNotifications } = await Browser.storage.local.get({
+    const { showNotifications } = await browser.storage.local.get({
       showNotifications: true,
     })
 
     showNotificationsCheckbox.checked = showNotifications
   }
 
-  const { version: currentVersion } = Browser.runtime.getManifest()
+  const { version: currentVersion } = browser.runtime.getManifest()
 
   if (version) {
-    version.textContent = await Browser.i18n.getMessage('optionsVersion', currentVersion)
+    version.textContent = await browser.i18n.getMessage('optionsVersion', currentVersion)
   }
 })()

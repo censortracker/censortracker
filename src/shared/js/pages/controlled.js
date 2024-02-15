@@ -1,4 +1,4 @@
-import Browser from 'Background/browser-api'
+import browser from 'Background/browser-api'
 import ProxyManager from 'Background/proxy'
 import { translateDocument } from 'Background/utilities'
 
@@ -14,8 +14,8 @@ import { translateDocument } from 'Background/utilities'
     await ProxyManager.controlledByOtherExtensions()
 
   if (proxyControlledByOtherExtensions) {
-    const self = await Browser.management.getSelf()
-    const installedExtensions = await Browser.management.getAll()
+    const self = await browser.management.getSelf()
+    const installedExtensions = await browser.management.getAll()
 
     const extensionsWithProxyPermissions =
       installedExtensions.filter(({ name, permissions }) => {

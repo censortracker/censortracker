@@ -1,4 +1,4 @@
-import Browser, { getBrowserInfo } from 'Background/browser-api'
+import browser, { getBrowserInfo } from 'Background/browser-api'
 import ProxyManager from 'Background/proxy'
 import * as server from 'Background/server'
 import Settings from 'Background/settings'
@@ -15,20 +15,8 @@ import Settings from 'Background/settings'
   const closePopupConfirmBtn = document.getElementById('closePopupConfirm')
   const updateLocalRegistryBtn = document.getElementById('updateLocalRegistry')
   const resetSettingsToDefaultBtn = document.getElementById('resetSettingsToDefault')
-  const parentalControlCheckbox = document.getElementById('parentalControlCheckbox')
   const exportSettingsBtn = document.getElementById('exportSettings')
   const importSettingsInput = document.getElementById('importSettingsInput')
-
-  Browser.storage.local.get({ parentalControl: false })
-    .then(({ parentalControl }) => {
-      parentalControlCheckbox.checked = parentalControl
-    })
-
-  parentalControlCheckbox.addEventListener('change', async (event) => {
-    await Browser.storage.local.set({
-      parentalControl: event.target.checked,
-    })
-  }, false)
 
   const togglePopup = (id) => {
     const showPopupClass = 'popup-show'
@@ -97,9 +85,9 @@ import Settings from 'Background/settings'
   })
 
   showDebugInfoBtn.addEventListener('click', async (event) => {
-    const thisExtension = await Browser.management.getSelf()
-    const extensionsInfo = await Browser.management.getAll()
-    const { version: currentVersion } = Browser.runtime.getManifest()
+    const thisExtension = await browser.management.getSelf()
+    const extensionsInfo = await browser.management.getAll()
+    const { version: currentVersion } = browser.runtime.getManifest()
 
     const {
       localConfig = {},
@@ -107,7 +95,7 @@ import Settings from 'Background/settings'
       fallbackProxyInUse = false,
       fallbackProxyError,
       proxyLastFetchTs,
-    } = await Browser.storage.local.get([
+    } = await browser.storage.local.get([
       'localConfig',
       'fallbackReason',
       'fallbackProxyInUse',

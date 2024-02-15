@@ -1,7 +1,11 @@
 import { getDomain, getHostname, getPublicSuffix } from 'tldts'
 import isURL from 'validator/lib/isURL'
 
-import Browser from './browser-api'
+import browser from './browser-api'
+
+function startsWithExtension (string) {
+  return /^(chrome|moz)-extension:/.test(string)
+}
 
 /**
  * Checks if passed value is a extension URL.
@@ -9,9 +13,7 @@ import Browser from './browser-api'
  * @returns {boolean} true if valid, false otherwise.
  */
 const isExtensionUrl = (url) => {
-  return url.startsWith('about:') ||
-    url.startsWith('moz-extension:') ||
-    url.startsWith('chrome-extension:')
+  return url.startsWith('about:') || startsWithExtension(url)
 }
 
 export const isOnionUrl = (url) => {
@@ -35,7 +37,13 @@ export const isValidURL = (url) => {
     if (isExtensionUrl(url)) {
       return false
     }
-    return isURL(url, { protocols: ['http', 'https'], validate_length: true })
+    return isURL(url, {
+      protocols: [
+        'http',
+        'https',
+      ],
+      validate_length: true,
+    })
   } catch (error) {
     return false
   }
@@ -64,7 +72,7 @@ export const extractHostnameFromUrl = (url) => {
 }
 
 export const i18nGetMessage = (key, props = {}) => {
-  return Browser.i18n.getMessage(key)
+  return browser.i18n.getMessage(key)
 }
 
 /**
@@ -78,10 +86,10 @@ export const translateDocument = (doc, props = {}) => {
     // Extract value with the given name from "props".
     const renderProp = element.getAttribute('data-i18n-render-prop')
 
-    let message = Browser.i18n.getMessage(value)
+    let message = browser.i18n.getMessage(value)
 
     if (renderProp && Object.hasOwnProperty.call(props, renderProp)) {
-      message = Browser.i18n.getMessage(value, props[renderProp])
+      message = browser.i18n.getMessage(value, props[renderProp])
     }
 
     if (message) {

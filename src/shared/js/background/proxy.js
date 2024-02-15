@@ -31,7 +31,7 @@ class ProxyManager {
   }
 
   async requestIncognitoAccess () {
-    if (browser.IS_FIREFOX) {
+    if (browser.isFirefox) {
       const isAllowedIncognitoAccess =
         await browser.extension.isAllowedIncognitoAccess()
 
@@ -46,7 +46,7 @@ class ProxyManager {
   }
 
   async grantIncognitoAccess () {
-    if (browser.IS_FIREFOX) {
+    if (browser.isFirefox) {
       await browser.browserAction.setBadgeText({ text: '' })
       await browser.storage.local.set({
         privateBrowsingPermissionsRequired: false,
@@ -74,7 +74,7 @@ class ProxyManager {
       proxyServerProtocol,
     })
 
-    if (browser.IS_FIREFOX) {
+    if (browser.isFirefox) {
       const blob = new Blob([pacData], {
         type: 'application/x-ns-proxy-autoconfig',
       })

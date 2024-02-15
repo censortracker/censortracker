@@ -312,12 +312,6 @@
   "overlayNetworkDesc": {
     "message": "Censor Tracker дає змогу відкривати такі сайти у звичайному браузері"
   },
-  "parentalControlDesc": {
-    "message": "Захистіть своїх батьків від пропаганди."
-  },
-  "parentalControlTitle": {
-    "message": "«Батьківський» контроль"
-  },
   "popupAutoMessage": {
     "message": "Авто"
   },

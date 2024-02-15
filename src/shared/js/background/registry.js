@@ -1,4 +1,4 @@
-import Browser from './browser-api'
+import browser from './browser-api'
 import {
   extractDomainFromUrl,
 } from './utilities'
@@ -14,7 +14,7 @@ class Registry {
       useRegistry,
       ignoredHosts,
       customProxiedDomains,
-    } = await Browser.storage.local.get({
+    } = await browser.storage.local.get({
       domains: [],
       useRegistry: true,
       ignoredHosts: [],
@@ -50,11 +50,11 @@ class Registry {
   async add (url) {
     const domain = extractDomainFromUrl(url)
     const { customProxiedDomains } =
-      await Browser.storage.local.get({ customProxiedDomains: [] })
+      await browser.storage.local.get({ customProxiedDomains: [] })
 
     if (!customProxiedDomains.includes(domain)) {
       customProxiedDomains.push(domain)
-      await Browser.storage.local.set({ customProxiedDomains })
+      await browser.storage.local.set({ customProxiedDomains })
       console.warn(`${domain} added to the custom registry.`)
     }
     return true
@@ -63,13 +63,13 @@ class Registry {
   async remove (url) {
     const domain = extractDomainFromUrl(url)
     const { customProxiedDomains } =
-      await Browser.storage.local.get({ customProxiedDomains: [] })
+      await browser.storage.local.get({ customProxiedDomains: [] })
 
     if (customProxiedDomains.includes(domain)) {
       const index = customProxiedDomains.indexOf(domain)
 
       customProxiedDomains.splice(index, 1)
-      await Browser.storage.local.set({ customProxiedDomains })
+      await browser.storage.local.set({ customProxiedDomains })
       console.warn(`${domain} removed from custom registry`)
     }
     return true
@@ -84,7 +84,7 @@ class Registry {
       domains,
       ignoredHosts,
       customProxiedDomains,
-    } = await Browser.storage.local.get({
+    } = await browser.storage.local.get({
       domains: [],
       ignoredHosts: [],
       customProxiedDomains: [],
@@ -105,7 +105,7 @@ class Registry {
   async retrieveDisseminator (url) {
     const domain = extractDomainFromUrl(url)
     const { disseminators } =
-      await Browser.storage.local.get({ disseminators: [] })
+      await browser.storage.local.get({ disseminators: [] })
 
     const dataObject = disseminators.find(
       ({ url: innerUrl }) => domain === innerUrl,
@@ -118,15 +118,15 @@ class Registry {
   }
 
   async enableRegistry () {
-    await Browser.storage.local.set({ useRegistry: true })
+    await browser.storage.local.set({ useRegistry: true })
   }
 
   async disableRegistry () {
-    await Browser.storage.local.set({ useRegistry: false })
+    await browser.storage.local.set({ useRegistry: false })
   }
 
   async clearRegistry () {
-    await Browser.storage.local.set({ domains: [] })
+    await browser.storage.local.set({ domains: [] })
   }
 }
 

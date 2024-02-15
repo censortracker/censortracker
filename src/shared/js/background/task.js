@@ -1,4 +1,4 @@
-import Browser from './browser-api'
+import browser from './browser-api'
 
 class Task {
   /**
@@ -7,7 +7,7 @@ class Task {
    * @param minutes Delay in minutes.
    */
   async delay (name, { minutes }) {
-    Browser.alarms.create(name, { delayInMinutes: minutes })
+    browser.alarms.create(name, { delayInMinutes: minutes })
     console.log(`Task.delay('${name}', { minutes: ${minutes} })`)
   }
 
@@ -19,12 +19,12 @@ class Task {
   async schedule (tasks = []) {
     console.groupCollapsed('Task.schedule([tasks])')
     for (const { name, minutes } of tasks) {
-      const alarm = await Browser.alarms.get(name)
+      const alarm = await browser.alarms.get(name)
 
       if (alarm) {
         console.warn(`Task «${name}» already scheduled!`)
       } else {
-        Browser.alarms.create(name, { periodInMinutes: minutes })
+        browser.alarms.create(name, { periodInMinutes: minutes })
         console.log(`Scheduled «${name}» to run every ${minutes} minutes`)
       }
     }

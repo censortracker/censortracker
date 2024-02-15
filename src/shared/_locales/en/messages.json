@@ -312,12 +312,6 @@
   "overlayNetworkDesc": {
     "message": "Censor Tracker allows you to open websites through overlaid networks"
   },
-  "parentalControlDesc": {
-    "message": "Protect your parents from propaganda."
-  },
-  "parentalControlTitle": {
-    "message": "«Parental» Control"
-  },
   "popupAutoMessage": {
     "message": "Auto"
   },

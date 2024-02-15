@@ -1,4 +1,4 @@
-import Browser from 'Background/browser-api'
+import browser from 'Background/browser-api'
 import Ignore from 'Background/ignore'
 import ProxyManager from 'Background/proxy'
 import Registry from 'Background/registry'
@@ -63,11 +63,11 @@ import {
   })
 
   openOptionsPage.addEventListener('click', async (target) => {
-    await Browser.runtime.openOptionsPage()
+    await browser.runtime.openOptionsPage()
   })
 
   // Highlight settings button when update is available.
-  Browser.storage.local.get({ updateAvailable: false })
+  browser.storage.local.get({ updateAvailable: false })
     .then(({ updateAvailable }) => {
       if (updateAvailable) {
         highlightOptionsIcon.classList.remove('hidden')
@@ -100,11 +100,11 @@ import {
   })
 
   backendIsIntermittentPopupMessage.addEventListener('click', async () => {
-    await Browser.runtime.openOptionsPage()
+    await browser.runtime.openOptionsPage()
   })
 
   // Show proxying information
-  Browser.storage.local.get([
+  browser.storage.local.get([
     'currentRegionName',
     'proxyServerURI',
     'customProxyServerURI',
@@ -160,7 +160,7 @@ import {
     }
   })
 
-  Browser.tabs.query({ active: true, lastFocusedWindow: true })
+  browser.tabs.query({ active: true, lastFocusedWindow: true })
     .then(async ([{ url: currentUrl, id: tabId }]) => {
       const proxyingEnabled = await ProxyManager.isEnabled()
       const extensionEnabled = await Settings.extensionEnabled()
@@ -176,7 +176,7 @@ import {
             popupProxyStatusError.hidden = false
             proxyConnectionIssuesButton.hidden = false
             proxyConnectionIssuesButton.addEventListener('click', async () => {
-              await Browser.tabs.create({
+              await browser.tabs.create({
                 url: 'https://t.me/censortracker_feedback',
               })
             })
@@ -265,10 +265,10 @@ import {
       if (extensionEnabled) {
         statusImage.setAttribute('src', 'images/icons/512x512/normal.png')
 
-        if (Browser.IS_FIREFOX) {
-          Browser.extension.isAllowedIncognitoAccess()
+        if (browser.isFirefox) {
+          browser.extension.isAllowedIncognitoAccess()
             .then((allowedIncognitoAccess) => {
-              Browser.storage.local
+              browser.storage.local
                 .get({ privateBrowsingPermissionsRequired: false })
                 .then(({ privateBrowsingPermissionsRequired }) => {
                   if (
@@ -363,14 +363,14 @@ import {
       }
     })
 
-  Browser.storage.local.get('backendIsIntermittent')
+  browser.storage.local.get('backendIsIntermittent')
     .then(({ backendIsIntermittent = false }) => {
       backendIsIntermittentPopupMessage.hidden = !backendIsIntermittent
     })
 
   ProxyManager.controlledByOtherExtensions().then(
     (controlledByOtherExtensions) => {
-      if (!Browser.IS_FIREFOX && controlledByOtherExtensions) {
+      if (!browser.isFirefox && controlledByOtherExtensions) {
         controlledByOtherExtensionsButton.hidden = false
       }
     },

@@ -32,7 +32,7 @@ const webWorkerConfig = {
   mode: NODE_ENV,
   target: isFirefox ? 'webworker' : 'web',
   entry: {
-    background: './src/chrome/js/background.js',
+    background: './src/shared/js/background/background.js',
   },
   output: {
     path: resolve(`dist/chrome/${OUTPUT_SUB_DIR}`),
@@ -178,10 +178,6 @@ const webConfig = {
           from: resolve('src/shared/_locales/'),
           to: resolve(`dist/${BROWSER}/${OUTPUT_SUB_DIR}/_locales`),
         },
-        {
-          from: resolve('src/shared/js/content-scripts'),
-          to: resolve(`dist/${BROWSER}/${OUTPUT_SUB_DIR}/content-scripts`),
-        },
       ],
     }),
     new HTMLWebpackPlugin({
@@ -268,7 +264,7 @@ const webConfig = {
 }
 
 if (isFirefox) {
-  webConfig.entry.background = `./src/firefox/js/background.js`
+  webConfig.entry.background = `./src/shared/js/background/background.js`
   webConfig.entry.incognito_required = `./src/firefox/js/pages/incognito-required.js`
   webConfig.entry.installed = './src/firefox/js/pages/installed.js'
   webConfig.plugins.push(new HTMLWebpackPlugin({

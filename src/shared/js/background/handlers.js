@@ -1,4 +1,4 @@
-import Browser from './browser-api'
+import browser from './browser-api'
 import { TaskType } from './constants'
 import Ignore from './ignore'
 import ProxyManager from './proxy'
@@ -8,44 +8,27 @@ import Settings from './settings'
 import Task from './task'
 import * as utilities from './utilities'
 
-/**
- * Fired when a connection is made from a content script.
- * @param port A runtime.Port object representing the port connection.
- */
-export const handleOnConnect = (port) => {
-  if (port.name === 'censortracker') {
-    port.onMessage.addListener((message) => {
-      if (message.parentalControl === '?') {
-        Browser.storage.local.get({ parentalControl: false })
-          .then(({ parentalControl }) => {
-            port.postMessage({ parentalControl })
-          })
-      }
-    })
-  }
-}
-
 export const showDisseminatorWarning = async (url) => {
   const hostname = utilities.extractDomainFromUrl(url)
   const {
     notifiedHosts,
     showNotifications,
-  } = await Browser.storage.local.get({
+  } = await browser.storage.local.get({
     notifiedHosts: [],
     showNotifications: true,
   })
 
   if (showNotifications && !notifiedHosts.includes(hostname)) {
-    await Browser.notifications.create(hostname, {
+    await browser.notifications.create(hostname, {
       type: 'basic',
       title: Settings.getName(),
       iconUrl: Settings.getDangerIcon(),
-      message: Browser.i18n.getMessage('cooperationAcceptedMessage', hostname),
+      message: browser.i18n.getMessage('cooperationAcceptedMessage', hostname),
     })
 
     try {
       notifiedHosts.push(hostname)
-      await Browser.storage.local.set({ notifiedHosts })
+      await browser.storage.local.set({ notifiedHosts })
     } catch (error) {
       console.error(error)
     }
@@ -86,9 +69,9 @@ export const handleStartup = async () => {
   }
 
   await Task.schedule([
-    { name: TaskType.PING, minutes: 5 },
-    { name: TaskType.SET_PROXY, minutes: 8 },
-    { name: TaskType.REMOVE_BAD_PROXIES, minutes: 5 },
+    { name: TaskType.PING, minutes: 10 },
+    { name: TaskType.SET_PROXY, minutes: 15 },
+    { name: TaskType.REMOVE_BAD_PROXIES, minutes: 20 },
   ])
   console.groupEnd()
 }
@@ -139,7 +122,7 @@ export const handleStorageChanged = async (
         `enableExtension: ${enableExtensionOldValue} -> ${enableExtensionNewValue}`,
       )
 
-      Browser.tabs.query({}).then((tabs) => {
+      browser.tabs.query({}).then((tabs) => {
         for (const { id } of tabs) {
           if (enableExtensionNewValue) {
             Settings.setDefaultIcon(id)
@@ -191,8 +174,8 @@ export const handleStorageChanged = async (
  * @returns {Promise<void>}
  */
 export const handleInstalled = async ({ reason }) => {
-  const UPDATED = reason === Browser.runtime.OnInstalledReason.UPDATE
-  const INSTALLED = reason === Browser.runtime.OnInstalledReason.INSTALL
+  const UPDATED = reason === browser.runtime.OnInstalledReason.UPDATE
+  const INSTALLED = reason === browser.runtime.OnInstalledReason.INSTALL
 
   if (INSTALLED) {
     await Settings.showInstalledPage()
@@ -211,7 +194,7 @@ export const handleInstalled = async ({ reason }) => {
 
     // Schedule tasks to run in the background.
     await Task.schedule([
-      { name: TaskType.SET_PROXY, minutes: 8 },
+      { name: TaskType.SET_PROXY, minutes: 15 },
       { name: TaskType.REMOVE_BAD_PROXIES, minutes: 5 },
     ])
   }
@@ -222,7 +205,7 @@ export const handleTabState = async (
   { status = 'loading' } = {},
   { url } = {},
 ) => {
-  if (url && status === Browser.tabs.TabStatus.LOADING) {
+  if (url && status === browser.tabs.TabStatus.LOADING) {
     Settings.extensionEnabled().then((enabled) => {
       if (enabled) {
         Ignore.contains(url).then(async (isIgnored) => {
@@ -284,13 +267,13 @@ export const handleProxyError = async ({ error }) => {
     const {
       currentProxyServer,
       fallbackProxyInUse,
-    } = await Browser.storage.local.get({
+    } = await browser.storage.local.get({
       fallbackProxyInUse: false,
       currentProxyServer: null,
     })
 
     if (fallbackProxyInUse) {
-      await Browser.storage.local.set({
+      await browser.storage.local.set({
         proxyIsAlive: false,
         fallbackProxyError: error,
       })
@@ -305,10 +288,10 @@ export const handleProxyError = async ({ error }) => {
 
       if (!badProxies.includes(currentProxyServer)) {
         badProxies.push(currentProxyServer)
-        await Browser.storage.local.set({ badProxies })
+        await browser.storage.local.set({ badProxies })
       }
 
-      Browser.tabs.query({
+      browser.tabs.query({
         active: true,
         lastFocusedWindow: true,
       }).then(async (tab) => {
@@ -326,6 +309,6 @@ export const handleProxyError = async ({ error }) => {
 }
 
 export const handleOnUpdateAvailable = async ({ version }) => {
-  await Browser.storage.local.set({ updateAvailable: true })
+  await browser.storage.local.set({ updateAvailable: true })
   console.warn(`Update available: ${version}`)
 }

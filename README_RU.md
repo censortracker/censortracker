@@ -1,8 +1,7 @@
-[![Logo](/.github/media/promo-logo.png)](https://github.com/roskomsvoboda/censortracker)
 
-![Build](https://github.com/roskomsvoboda/censortracker/workflows/Build/badge.svg?branch=master)
+![Build](https://github.com/censortracker/censortracker/workflows/Build/badge.svg?branch=master)
 ![Netlify](https://img.shields.io/netlify/1137e5c4-6b68-42a3-ab0b-804b92c482b8)
-[![CodeFactor](https://www.codefactor.io/repository/github/roskomsvoboda/censortracker/badge)](https://www.codefactor.io/repository/github/roskomsvoboda/censortracker)
+[![CodeFactor](https://www.codefactor.io/repository/github/censortracker/censortracker/badge)](https://www.codefactor.io/repository/github/censortracker/censortracker)
 [![Chrome Web Store](https://img.shields.io/chrome-web-store/v/gaidoampbkcknofoejhnhbhbhhifgdop)](https://chrome.google.com/webstore/detail/censor-tracker/gaidoampbkcknofoejhnhbhbhhifgdop)
 [![Mozilla Add-on](https://img.shields.io/amo/v/censor-tracker)](https://addons.mozilla.org/ru/firefox/addon/censor-tracker/)
 

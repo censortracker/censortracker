@@ -1,7 +1,7 @@
 
 ![Build](https://github.com/censortracker/censortracker/workflows/Build/badge.svg?branch=master)
 ![Netlify](https://img.shields.io/netlify/1137e5c4-6b68-42a3-ab0b-804b92c482b8)
-[![CodeFactor](https://www.codefactor.io/repository/github/censortracker/censortracker/badge)](https://www.codefactor.io/repository/github/roskomsvoboda/censortracker)
+[![CodeFactor](https://www.codefactor.io/repository/github/censortracker/censortracker/badge)](https://www.codefactor.io/repository/github/censortracker/censortracker)
 [![Chrome Web Store](https://img.shields.io/chrome-web-store/v/gaidoampbkcknofoejhnhbhbhhifgdop)](https://chrome.google.com/webstore/detail/censor-tracker/gaidoampbkcknofoejhnhbhbhhifgdop)
 [![Mozilla Add-on](https://img.shields.io/amo/v/censor-tracker)](https://addons.mozilla.org/ru/firefox/addon/censor-tracker/)
 
@@ -122,6 +122,6 @@ Censor Tracker is licensed under the MIT License. See [LICENSE] for more
 information.
 
   [DPI]: https://en.wikipedia.org/wiki/Deep_packet_inspection
-  [LICENSE]: https://github.com/roskomsvoboda/censortracker/blob/master/LICENSE
+  [LICENSE]: https://github.com/censortracker/censortracker/blob/master/LICENSE
   [Google Chrome]: https://www.google.com/chrome/
   [Mozilla Firefox]: https://www.mozilla.org/en-US/firefox/new/

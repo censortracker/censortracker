@@ -2,7 +2,7 @@
   "name": "censortracker",
   "version": "18.0.0",
   "description": "|",
-  "author": "Roskomsvoboda",
+  "author": "Censor Tracker",
   "license": "MIT",
   "main": "dist/index.js",
   "scripts": {

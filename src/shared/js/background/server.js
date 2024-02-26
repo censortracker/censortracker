@@ -1,17 +1,12 @@
 import browser from './browser-api'
 
-const NETLIFY_CONFIG_URL = 'https://censortracker.netlify.app/config.json'
-const GITHUB_CONFIG_URL = 'https://raw.githubusercontent.com/roskomsvoboda/ctconf/main/config.json'
+const GITHUB_CONFIG_URL = 'https://raw.githubusercontent.com/censortracker/ctconf/main/config.json'
 
 const getConfigAPIEndpoints = () => {
   return [
     {
       endpointName: 'GitHub',
       endpointUrl: GITHUB_CONFIG_URL,
-    },
-    {
-      endpointName: 'Netlify',
-      endpointUrl: NETLIFY_CONFIG_URL,
     },
   ]
 }

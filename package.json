@@ -73,12 +73,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/roskomsvoboda/censortracker.git"
+    "url": "git+https://github.com/censortracker/censortracker.git"
   },
   "bugs": {
-    "url": "https://github.com/roskomsvoboda/censortracker/issues"
+    "url": "https://github.com/censortracker/censortracker/issues"
   },
-  "homepage": "https://github.com/roskomsvoboda/censortracker#readme",
+  "homepage": "https://github.com/censortracker/censortracker#readme",
   "husky": {
     "hooks": {
       "pre-push": "npm run lint:fix"

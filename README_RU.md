@@ -122,6 +122,6 @@ shell поддерживает командные переменные окру�
 Censor Tracker распространяется под лицензией MIT License. Смотрите [LICENSE] для подробной ифнормации.
 
   [DPI]: https://en.wikipedia.org/wiki/Deep_packet_inspection
-  [LICENSE]: https://github.com/roskomsvoboda/censortracker/blob/master/LICENSE
+  [LICENSE]: https://github.com/censortracker/censortracker/blob/master/LICENSE
   [Google Chrome]: https://www.google.com/chrome/
   [Mozilla Firefox]: https://www.mozilla.org/en-US/firefox/new/

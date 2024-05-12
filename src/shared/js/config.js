@@ -54,22 +54,6 @@ const generateConfigActions = () => {
   return configActions
 }
 
-// const getAssignmentObject = () => {
-//   const assignmentObject = {}
-
-//   configKeys.map(async (key) => {
-//     const localeStorageKeyObject = {}
-
-//     localeStorageKeyObject[key] = defaultConfig[key]
-//     assignmentObject[key] = (
-//       await browser.storage.local.get(localeStorageKeyObject)
-//     )
-//     return true
-//   })
-
-//   return assignmentObject
-// }
-
 export const configMachine = createMachine(
   {
     id: 'config',

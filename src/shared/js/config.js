@@ -57,6 +57,7 @@ const generateConfigActions = () => {
 export const configMachine = createMachine(
   {
     id: 'config',
+    context: defaultConfig,
     on: {
       ...generateConfigActions(),
       '*': {

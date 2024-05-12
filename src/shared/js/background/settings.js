@@ -1,3 +1,4 @@
+import { getConfig, setConfig } from '../config'
 import browser from './browser-api'
 
 class Settings {
@@ -43,22 +44,20 @@ class Settings {
   }
 
   async extensionEnabled () {
-    const { enableExtension } =
-      await browser.storage.local.get({ enableExtension: false })
+    const { enableExtension } = await getConfig('enableExtension')
 
     return enableExtension
   }
 
   async enableExtension () {
-    await browser.storage.local.set({ enableExtension: true })
+    setConfig({ enableExtension: true })
     console.log('Settings.enableExtension()')
   }
 
   async disableExtension () {
-    await browser.storage.local.set({
+    setConfig({
       useProxy: false,
       enableExtension: false,
-      showNotifications: false,
     })
 
     if (browser.isFirefox) {
@@ -69,24 +68,25 @@ class Settings {
   }
 
   async enableNotifications () {
-    await browser.storage.local.set({ showNotifications: true })
+    setConfig({ showNotifications: true })
   }
 
   async disableNotifications () {
-    await browser.storage.local.set({ showNotifications: false })
+    setConfig({ showNotifications: false })
   }
 
   async exportSettings () {
-    const settings = await browser.storage.local.get(null)
+    const settings = Object.assign({}, await getConfig())
 
     settings.domains = []
     settings.disseminators = []
+
     return settings
   }
 
   async importSettings (settings) {
     await browser.storage.local.clear()
-    await browser.storage.local.set(settings)
+    setConfig(settings)
   }
 }
 

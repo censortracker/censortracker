@@ -9,7 +9,9 @@ import {
   isI2PUrl,
   isOnionUrl,
   isValidURL,
-} from 'Background/utilities';
+} from 'Background/utilities'
+
+import { getConfig } from '../config'
 
 (async () => {
   const statusImage = document.getElementById('statusImage')
@@ -50,7 +52,6 @@ import {
 
     if (targetId === 'enableExtension') {
       await Settings.enableExtension()
-      await Settings.enableNotifications()
       await ProxyManager.enableProxy()
       window.location.reload()
     } else if (targetId === 'disableExtension') {
@@ -67,7 +68,7 @@ import {
   })
 
   // Highlight settings button when update is available.
-  browser.storage.local.get({ updateAvailable: false })
+  getConfig('updateAvailable')
     .then(({ updateAvailable }) => {
       if (updateAvailable) {
         highlightOptionsIcon.classList.remove('hidden')
@@ -104,12 +105,12 @@ import {
   })
 
   // Show proxying information
-  browser.storage.local.get([
+  getConfig(
     'currentRegionName',
     'proxyServerURI',
     'customProxyServerURI',
     'proxyLastFetchTs',
-  ]).then(async (
+  ).then(async (
     {
       currentRegionName,
       proxyServerURI,
@@ -363,7 +364,7 @@ import {
       }
     })
 
-  browser.storage.local.get('backendIsIntermittent')
+  getConfig('backendIsIntermittent')
     .then(({ backendIsIntermittent = false }) => {
       backendIsIntermittentPopupMessage.hidden = !backendIsIntermittent
     })

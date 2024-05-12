@@ -1,5 +1,6 @@
 import { getPacScript } from 'Background/pac'
 
+import { getConfig, setConfig } from '../config'
 import browser from './browser-api'
 import registry from './registry'
 
@@ -9,11 +10,11 @@ class ProxyManager {
       proxyServerURI,
       customProxyProtocol,
       customProxyServerURI,
-    } = await browser.storage.local.get([
+    } = await getConfig(
       'proxyServerURI',
       'customProxyProtocol',
       'customProxyServerURI',
-    ])
+    )
 
     if (
       customProxyServerURI &&
@@ -37,7 +38,7 @@ class ProxyManager {
 
       if (!isAllowedIncognitoAccess) {
         await browser.browserAction.setBadgeText({ text: '✕' })
-        await browser.storage.local.set({
+        setConfig({
           privateBrowsingPermissionsRequired: true,
         })
         console.info('Private browsing permissions requested.')
@@ -48,17 +49,17 @@ class ProxyManager {
   async grantIncognitoAccess () {
     if (browser.isFirefox) {
       await browser.browserAction.setBadgeText({ text: '' })
-      await browser.storage.local.set({
+      setConfig({
         privateBrowsingPermissionsRequired: false,
       })
     }
   }
 
   async setProxy () {
-    const config = {}
-    const domains = await registry.getDomains()
+    const proxyConfig = {}
+    const domains = await registry.getDomainsByLevel()
 
-    if (domains.length === 0) {
+    if (Object.keys(domains).length === 0) {
       await this.removeProxy()
       return false
     }
@@ -68,24 +69,31 @@ class ProxyManager {
       proxyServerProtocol,
     } = await this.getProxyingRules()
 
+    const { localConfig: { countryCode } } = await getConfig('localConfig')
+
+    console.log('COUNTRY:', countryCode)
+
     const pacData = getPacScript({
       domains,
       proxyServerURI,
       proxyServerProtocol,
+      countryCode,
     })
+
+    console.log('pacData:', pacData)
 
     if (browser.isFirefox) {
       const blob = new Blob([pacData], {
         type: 'application/x-ns-proxy-autoconfig',
       })
 
-      config.value = {
+      proxyConfig.value = {
         proxyType: 'autoConfig',
         autoConfigUrl: URL.createObjectURL(blob),
       }
     } else {
-      config.scope = 'regular'
-      config.value = {
+      proxyConfig.scope = 'regular'
+      proxyConfig.value = {
         mode: 'pac_script',
         pacScript: {
           data: pacData,
@@ -95,7 +103,7 @@ class ProxyManager {
     }
 
     try {
-      await browser.proxy.settings.set(config)
+      await browser.proxy.settings.set(proxyConfig)
       await this.enableProxy()
       await this.grantIncognitoAccess()
       console.warn('PAC has been set successfully!')
@@ -114,8 +122,7 @@ class ProxyManager {
   }
 
   async alive () {
-    const { proxyIsAlive } =
-      await browser.storage.local.get({ proxyIsAlive: true })
+    const { proxyIsAlive } = await getConfig('proxyIsAlive')
 
     return proxyIsAlive
   }
@@ -124,7 +131,7 @@ class ProxyManager {
     const usingCustomProxy = await this.usingCustomProxy()
 
     if (!usingCustomProxy) {
-      const { proxyPingURI } = await browser.storage.local.get('proxyPingURI')
+      const { proxyPingURI } = await getConfig('proxyPingURI')
 
       fetch(`https://${proxyPingURI}`, {
         method: 'POST',
@@ -142,28 +149,25 @@ class ProxyManager {
   }
 
   async usingCustomProxy () {
-    const { useOwnProxy } =
-      await browser.storage.local.get({
-        useOwnProxy: false,
-      })
+    const { useOwnProxy } = await getConfig('useOwnProxy')
 
     return useOwnProxy
   }
 
   async isEnabled () {
-    const { useProxy } = await browser.storage.local.get({ useProxy: true })
+    const { useProxy } = await getConfig('useProxy')
 
     return useProxy
   }
 
   async enableProxy () {
     console.log('Proxying enabled.')
-    await browser.storage.local.set({ useProxy: true, proxyIsAlive: true })
+    setConfig({ useProxy: true, proxyIsAlive: true })
   }
 
   async disableProxy () {
     console.warn('Proxying disabled.')
-    await browser.storage.local.set({ useProxy: false })
+    setConfig({ useProxy: false })
   }
 
   async controlledByOtherExtensions () {
@@ -191,7 +195,7 @@ class ProxyManager {
   }
 
   async removeCustomProxy () {
-    await browser.storage.local.set({
+    setConfig({
       useOwnProxy: false,
     })
     await browser.storage.local.remove([
@@ -201,12 +205,11 @@ class ProxyManager {
   }
 
   async removeBadProxies () {
-    await browser.storage.local.set({ badProxies: [] })
+    setConfig({ badProxies: [] })
   }
 
   async getBadProxies () {
-    const { badProxies } =
-      await browser.storage.local.get({ badProxies: [] })
+    const { badProxies } = await getConfig('badProxies')
 
     return badProxies
   }

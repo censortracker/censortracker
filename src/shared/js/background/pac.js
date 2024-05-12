@@ -10,59 +10,68 @@ export const getPacScript = (
     domains = [],
     proxyServerURI,
     proxyServerProtocol,
+    countryCode,
   },
 ) => {
-  // Sort domains alphabetically to make binary search work.
-  domains.sort()
   return `
-      function FindProxyForURL(url, host) {
-        function isHostBlocked(array, target) {
-          let left = 0;
-          let right = array.length - 1;
-
-          while (left <= right) {
-            const mid = left + Math.floor((right - left) / 2);
-
-            if (array[mid] === target) {
-              return true;
-            }
-
-            if (array[mid] < target) {
-              left = mid + 1;
-            } else {
-              right = mid - 1;
-            }
-          }
-          return false;
+  function FindProxyForURL(url, host) {
+    function binaryCheck(array, target) {
+      let left = 0;
+      let right = array.length - 1;
+  
+      while (left <= right) {
+        const mid = left + Math.floor((right - left) / 2);
+  
+        if (array[mid] === target) {
+          return true;
         }
-
-        // Remove ending dot
-        if (host.endsWith('.')) {
-          host = host.substring(0, host.length - 1);
-        }
-
-        // Make domain second-level.
-        let lastDot = host.lastIndexOf('.');
-        if (lastDot !== -1) {
-          lastDot = host.lastIndexOf('.', lastDot - 1);
-          if (lastDot !== -1) {
-            host = host.substr(lastDot + 1);
-          }
-        }
-
-        // Domains, which are blocked.
-        let domains = ${JSON.stringify(domains)};
-        
-        // Proxy *.onion and *.i2p domains.
-        if (shExpMatch(host, '*.onion') || shExpMatch(host, '*.i2p')) {
-          return '${proxyServerProtocol} ${proxyServerURI};';
-        }
-
-        // Return result
-        if (isHostBlocked(domains, host)) {
-          return '${proxyServerProtocol} ${proxyServerURI};';
+  
+        if (array[mid] < target) {
+          left = mid + 1;
         } else {
-          return 'DIRECT';
+          right = mid - 1;
         }
-      }`
+      }
+      return false;
+    }
+
+    // Remove ending dot
+    if (host.endsWith('.')) {
+      host = host.substring(0, host.length - 1);
+    }
+
+    // Proxy Ukrainian domains from Russia 
+    if ('${countryCode}' === 'RU' && host.substring(host.lastIndexOf('.') + 1) === 'ua') {
+      return '${proxyServerProtocol} ${proxyServerURI};';
+    }
+
+    // Proxy *.onion and *.i2p domains.
+    // if (shExpMatch(host, '*.onion') || shExpMatch(host, '*.i2p')) {
+    //   return '${proxyServerProtocol} ${proxyServerURI};';
+    // }
+  
+    let isHostBlocked = false;
+    const domainLevel = host.split('.').length;
+    
+    // Domains, which are blocked.
+    let domains = ${JSON.stringify(domains)};
+  
+    // Slice a host, so its level matches level of one in registry
+    for (let i=domainLevel; i > 1; i--) {
+      if (domainLevel - i) {
+        host = host.substring(host.indexOf('.') + 1);
+      }
+      if (binaryCheck(domains['blockedDomainsOfLevel' + i], host)) {
+        isHostBlocked = true;
+        break;
+      }
+    } 
+  
+    // Return result
+    if (isHostBlocked) {
+      return '${proxyServerProtocol} ${proxyServerURI};';
+    } else {
+      return 'DIRECT';
+    }
+  }`
 }

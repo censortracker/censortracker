@@ -3,6 +3,8 @@ import ProxyManager from 'Background/proxy'
 import * as server from 'Background/server'
 import Settings from 'Background/settings'
 
+import { getConfig } from '../config'
+
 (async () => {
   const debugInfoJSON = document.getElementById('debugInfoJSON')
   const showDebugInfoBtn = document.getElementById('showDebugInfo')
@@ -95,13 +97,13 @@ import Settings from 'Background/settings'
       fallbackProxyInUse = false,
       fallbackProxyError,
       proxyLastFetchTs,
-    } = await browser.storage.local.get([
+    } = await getConfig(
       'localConfig',
       'fallbackReason',
       'fallbackProxyInUse',
       'fallbackProxyError',
       'proxyLastFetchTs',
-    ])
+    )
 
     if (extensionsInfo.length > 0) {
       localConfig.conflictingExtensions = extensionsInfo

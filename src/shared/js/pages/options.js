@@ -3,6 +3,8 @@ import ProxyManager from 'Background/proxy'
 import Registry from 'Background/registry'
 import * as server from 'Background/server'
 
+import { getConfig, setConfig } from '../config'
+
 (async () => {
   // For debugging purposes.
   window.server = server
@@ -35,11 +37,11 @@ import * as server from 'Background/server'
   const updateAvailableAlert = document.getElementById('updateAvailableAlert')
   const updateExtensionButton = document.getElementById('updateExtensionButton')
 
-  browser.storage.local.get({
-    updateAvailable: false,
-    backendIsIntermittent: false,
-    botDetection: false,
-  }).then(({ updateAvailable, backendIsIntermittent, botDetection }) => {
+  getConfig(
+    'updateAvailable',
+    'backendIsIntermittent',
+    'botDetection',
+  ).then(({ updateAvailable, backendIsIntermittent, botDetection }) => {
     if (updateAvailable) {
       updateAvailableAlert.classList.remove('hidden')
     }
@@ -50,7 +52,7 @@ import * as server from 'Background/server'
   })
 
   updateExtensionButton.addEventListener('click', async (event) => {
-    browser.storage.local.set({ updateAvailable: false })
+    setConfig({ updateAvailable: false })
       .then(() => {
         browser.runtime.reload()
       })
@@ -83,9 +85,7 @@ import * as server from 'Background/server'
     const allowedIncognitoAccess =
       await browser.extension.isAllowedIncognitoAccess()
     const { privateBrowsingPermissionsRequired } =
-      await browser.storage.local.get({
-        privateBrowsingPermissionsRequired: false,
-      })
+      await getConfig('privateBrowsingPermissionsRequired')
 
     if (grantPrivateBrowsingPermissionsButton) {
       grantPrivateBrowsingPermissionsButton.hidden = !allowedIncognitoAccess
@@ -120,16 +120,14 @@ import * as server from 'Background/server'
 
   if (showNotificationsCheckbox) {
     showNotificationsCheckbox.addEventListener('change', async () => {
-      await browser.storage.local.set({
+      setConfig({
         showNotifications: showNotificationsCheckbox.checked,
       })
     },
     false,
     )
 
-    const { showNotifications } = await browser.storage.local.get({
-      showNotifications: true,
-    })
+    const { showNotifications } = getConfig('showNotifications')
 
     showNotificationsCheckbox.checked = showNotifications
   }

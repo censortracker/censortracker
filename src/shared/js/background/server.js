@@ -1,3 +1,4 @@
+import { getConfig, setConfig } from '../config'
 import browser from './browser-api'
 
 const GITHUB_CONFIG_URL = 'https://raw.githubusercontent.com/censortracker/ctconf/main/config.json'
@@ -35,9 +36,7 @@ const inquireCountryCode = async (geoIPServiceURL) => {
  * @returns {Promise<{}|*>} Resolves with the config.
  */
 const fetchConfig = async () => {
-  const { currentRegionCode } = await browser.storage.local.get({
-    currentRegionCode: '',
-  })
+  const { currentRegionCode } = await getConfig('currentRegionCode')
 
   for (const { endpointName, endpointUrl } of getConfigAPIEndpoints()) {
     try {
@@ -64,14 +63,14 @@ const fetchConfig = async () => {
         })
 
         if (!config) {
-          await browser.storage.local.set({ unsupportedCountry: true })
+          setConfig({ unsupportedCountry: true })
         }
 
         // For debugging purposes
         config.configEndpointUrl = endpointUrl
         config.configEndpointSource = endpointName
 
-        await browser.storage.local.set({
+        setConfig({
           localConfig: config,
           backendIsIntermittent: false,
         })
@@ -99,7 +98,7 @@ const fetchProxy = async ({ proxyUrl } = {}) => {
     return
   }
 
-  const { badProxies } = await browser.storage.local.get({ badProxies: [] })
+  const { badProxies } = await getConfig('badProxies')
 
   console.group('[Proxy] Fetching proxy...')
 
@@ -138,7 +137,7 @@ const fetchProxy = async ({ proxyUrl } = {}) => {
     if (fallbackProxyInUse) {
       console.warn(`Using fallback «${proxyServerURI}» for the reason: ${fallbackReason}`)
     } else {
-      await browser.storage.local.set({ proxyIsAlive: true })
+      setConfig({ proxyIsAlive: true })
       await browser.storage.local.remove([
         'fallbackReason',
         'fallbackProxyInUse',
@@ -146,7 +145,7 @@ const fetchProxy = async ({ proxyUrl } = {}) => {
       ])
     }
 
-    await browser.storage.local.set({
+    setConfig({
       proxyPingURI,
       proxyServerURI,
       currentProxyServer: server,
@@ -194,7 +193,7 @@ const fetchRegistry = async ({ registryUrl, specifics = {} } = {}) => {
 
       console.log(`Fetched: ${url}`)
 
-      await browser.storage.local.set({ [storageKey]: data })
+      setConfig({ [storageKey]: data })
     } catch (error) {
       console.error(`Error on fetching data from: ${url}`)
     }
@@ -241,10 +240,10 @@ export const synchronize = async ({
 } = {}) => {
   console.groupCollapsed('[Server] Synchronizing config...')
 
-  const config = await fetchConfig()
+  const configFromServer = await fetchConfig()
 
-  if (Object.keys(config).length > 0) {
-    const { proxyUrl, ignoreUrl, registryUrl, specifics } = config
+  if (Object.keys(configFromServer).length > 0) {
+    const { proxyUrl, ignoreUrl, registryUrl, specifics } = configFromServer
 
     if (syncIgnore) {
       await fetchIgnore({ ignoreUrl })
@@ -258,7 +257,7 @@ export const synchronize = async ({
       await fetchRegistry({ registryUrl, specifics })
     }
   } else {
-    await browser.storage.local.set({ backendIsIntermittent: true })
+    setConfig({ backendIsIntermittent: true })
   }
   console.groupEnd()
 }

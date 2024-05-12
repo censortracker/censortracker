@@ -1,3 +1,4 @@
+import { getConfig, setConfig } from '../config'
 import browser from './browser-api'
 import { TaskType } from './constants'
 import Ignore from './ignore'
@@ -11,14 +12,12 @@ import * as utilities from './utilities'
 export const showDisseminatorWarning = async (url) => {
   const hostname = utilities.extractDomainFromUrl(url)
   const {
+    enableExtension,
     notifiedHosts,
     showNotifications,
-  } = await browser.storage.local.get({
-    notifiedHosts: [],
-    showNotifications: true,
-  })
+  } = await getConfig('enableExtension', 'notifiedHosts', 'showNotifications')
 
-  if (showNotifications && !notifiedHosts.includes(hostname)) {
+  if (enableExtension && showNotifications && !notifiedHosts.includes(hostname)) {
     await browser.notifications.create(hostname, {
       type: 'basic',
       title: Settings.getName(),
@@ -28,7 +27,7 @@ export const showDisseminatorWarning = async (url) => {
 
     try {
       notifiedHosts.push(hostname)
-      await browser.storage.local.set({ notifiedHosts })
+      setConfig({ notifiedHosts })
     } catch (error) {
       console.error(error)
     }
@@ -267,13 +266,10 @@ export const handleProxyError = async ({ error }) => {
     const {
       currentProxyServer,
       fallbackProxyInUse,
-    } = await browser.storage.local.get({
-      fallbackProxyInUse: false,
-      currentProxyServer: null,
-    })
+    } = await getConfig('currentProxyServer', 'fallbackProxyInUse')
 
     if (fallbackProxyInUse) {
-      await browser.storage.local.set({
+      setConfig({
         proxyIsAlive: false,
         fallbackProxyError: error,
       })
@@ -288,7 +284,7 @@ export const handleProxyError = async ({ error }) => {
 
       if (!badProxies.includes(currentProxyServer)) {
         badProxies.push(currentProxyServer)
-        await browser.storage.local.set({ badProxies })
+        setConfig({ badProxies })
       }
 
       browser.tabs.query({
@@ -309,6 +305,6 @@ export const handleProxyError = async ({ error }) => {
 }
 
 export const handleOnUpdateAvailable = async ({ version }) => {
-  await browser.storage.local.set({ updateAvailable: true })
+  setConfig({ updateAvailable: true })
   console.warn(`Update available: ${version}`)
 }

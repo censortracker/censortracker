@@ -1,15 +1,13 @@
-import browser from 'Background/browser-api'
-import ProxyManager from 'Background/proxy'
-import Registry from 'Background/registry'
-import * as server from 'Background/server'
-
-import { getConfig, setConfig } from '../config'
+import browser from '../browser-api'
+import { server } from '../extension'
+import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './messaging'
 
 (async () => {
   // For debugging purposes.
   window.server = server
 
-  const proxyingEnabled = await ProxyManager.isEnabled()
+  const source = 'options'
+  const { useProxy: proxyingEnabled } = await sendConfigFetchMsg('useProxy')
   const version = document.getElementById('version')
   const proxyStatus = document.getElementById('proxyStatus')
   const showNotificationsCheckbox = document.getElementById(
@@ -37,7 +35,7 @@ import { getConfig, setConfig } from '../config'
   const updateAvailableAlert = document.getElementById('updateAvailableAlert')
   const updateExtensionButton = document.getElementById('updateExtensionButton')
 
-  getConfig(
+  sendConfigFetchMsg(
     'updateAvailable',
     'backendIsIntermittent',
     'botDetection',
@@ -52,13 +50,10 @@ import { getConfig, setConfig } from '../config'
   })
 
   updateExtensionButton.addEventListener('click', async (event) => {
-    setConfig({ updateAvailable: false })
-      .then(() => {
-        browser.runtime.reload()
-      })
+    sendExtensionCallMsg(source, 'update')
   })
 
-  Registry.isEmpty().then((isEmpty) => {
+  sendExtensionCallMsg(source, 'isRegistryEmpty').then((isEmpty) => {
     if (isEmpty) {
       optionsRegistryUpdateDatabaseButton.addEventListener('click', (event) => {
         window.location.href = 'advanced-options.html'
@@ -85,7 +80,7 @@ import { getConfig, setConfig } from '../config'
     const allowedIncognitoAccess =
       await browser.extension.isAllowedIncognitoAccess()
     const { privateBrowsingPermissionsRequired } =
-      await getConfig('privateBrowsingPermissionsRequired')
+      await sendConfigFetchMsg('privateBrowsingPermissionsRequired')
 
     if (grantPrivateBrowsingPermissionsButton) {
       grantPrivateBrowsingPermissionsButton.hidden = !allowedIncognitoAccess
@@ -106,10 +101,10 @@ import { getConfig, setConfig } from '../config'
 
       if (grantPrivateBrowsingPermissionsButton) {
         grantPrivateBrowsingPermissionsButton.addEventListener('click', async () => {
-          const proxySet = await ProxyManager.setProxy()
+          const proxySet = await sendExtensionCallMsg('proxy-options', 'setProxy')
 
           if (proxySet === true) {
-            await ProxyManager.grantIncognitoAccess()
+            sendExtensionCallMsg(source, 'grantIncognitoAccess')
             privateBrowsingPermissionsRequiredMessage.hidden = true
           }
         },
@@ -120,14 +115,16 @@ import { getConfig, setConfig } from '../config'
 
   if (showNotificationsCheckbox) {
     showNotificationsCheckbox.addEventListener('change', async () => {
-      setConfig({
-        showNotifications: showNotificationsCheckbox.checked,
-      })
+      showNotificationsCheckbox.checked ? (
+        sendTransitionMsg('enableNotifications')
+      ) : (
+        sendTransitionMsg('disableNotifications')
+      )
     },
     false,
     )
 
-    const { showNotifications } = getConfig('showNotifications')
+    const { showNotifications } = await sendConfigFetchMsg('showNotifications')
 
     showNotificationsCheckbox.checked = showNotifications
   }

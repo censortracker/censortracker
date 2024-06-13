@@ -1,3 +1,5 @@
+import { binaryContains } from '../../../utilities'
+
 /**
  * Return PAC Script data.
  * @param domains {Array<string>} - List of domains to proxy.
@@ -15,25 +17,7 @@ export const getPacScript = (
 ) => {
   return `
   function FindProxyForURL(url, host) {
-    function binaryCheck(array, target) {
-      let left = 0;
-      let right = array.length - 1;
-  
-      while (left <= right) {
-        const mid = left + Math.floor((right - left) / 2);
-  
-        if (array[mid] === target) {
-          return true;
-        }
-  
-        if (array[mid] < target) {
-          left = mid + 1;
-        } else {
-          right = mid - 1;
-        }
-      }
-      return false;
-    }
+    const binaryContains = ${binaryContains}
 
     // Remove ending dot
     if (host.endsWith('.')) {
@@ -61,7 +45,7 @@ export const getPacScript = (
       if (domainLevel - i) {
         host = host.substring(host.indexOf('.') + 1);
       }
-      if (binaryCheck(domains['blockedDomainsOfLevel' + i], host)) {
+      if (binaryContains(domains['blockedDomainsOfLevel' + i], host)) {
         isHostBlocked = true;
         break;
       }

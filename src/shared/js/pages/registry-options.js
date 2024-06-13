@@ -1,17 +1,14 @@
-import ProxyManager from 'Background/proxy'
-import Registry from 'Background/registry'
-import * as server from 'Background/server'
-
-import { getConfig, setConfig } from '../config'
+import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './messaging'
 
 (async () => {
+  const source = 'registry-oprtions'
   const select = document.querySelector('.select')
   const options = document.querySelectorAll('.select-option')
   const selectRegion = document.querySelector('#selectRegion')
   const currentOption = document.querySelector('#select-toggle')
   const useRegistryCheckbox = document.querySelector('#useRegistryCheckbox')
 
-  getConfig(
+  sendConfigFetchMsg(
     'useRegistry',
     'currentRegionName',
   ).then(({ useRegistry, currentRegionName }) => {
@@ -29,18 +26,11 @@ import { getConfig, setConfig } from '../config'
 
     if (useRegistry) {
       selectRegion.classList.remove('hidden')
-      await Registry.enableRegistry()
-      await server.synchronize()
+      sendExtensionCallMsg(source, 'enableRegistry')
     } else {
       selectRegion.classList.add('hidden')
-      await Registry.clearRegistry()
-      await Registry.disableRegistry()
-      await ProxyManager.removeProxy()
-      setConfig({ currentRegionName: '' })
+      sendExtensionCallMsg(source, 'disableRegistry')
     }
-
-    await ProxyManager.setProxy()
-    setConfig({ useRegistry })
   }, false)
 
   document.addEventListener('click', (event) => {
@@ -67,18 +57,12 @@ import { getConfig, setConfig } from '../config'
       currentOption.textContent = countryName
       currentOption.dataset.i18nKey = `country${countryCode}`
 
-      setConfig({
+      sendExtensionCallMsg(source, 'setCountry', {
         currentRegionName: countryName,
         currentRegionCode: countryAutoDetectionEnabled ? '' : countryCode.toUpperCase(),
       })
-
-      ProxyManager.isEnabled().then(async (proxyingEnabled) => {
-        if (proxyingEnabled) {
-          await server.synchronize()
-          await ProxyManager.setProxy()
-          console.warn(`Region changed to ${countryName}`)
-        }
-      })
+      sendTransitionMsg('updateRegistry')
+      console.warn(`Region changed to ${countryName}`)
     })
   }
 })()

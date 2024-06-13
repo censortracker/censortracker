@@ -1,4 +1,4 @@
-import { translateDocument } from 'Background/utilities'
+import { translateDocument } from '../utilities'
 
 (() => {
   translateDocument(document)

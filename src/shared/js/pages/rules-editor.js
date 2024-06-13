@@ -5,13 +5,13 @@ import 'codemirror/addon/display/autorefresh'
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/ayu-mirage.css'
 
-import Ignore from 'Background/ignore'
-import { i18nGetMessage, isValidURL, removeDuplicates } from 'Background/utilities'
 import CodeMirror from 'codemirror'
 
-import { getConfig, setConfig } from '../config'
+import { i18nGetMessage, isValidURL, removeDuplicates } from '../utilities'
+import { sendConfigFetchMsg, sendExtensionCallMsg } from './messaging'
 
 (async () => {
+  const source = 'rules-editor'
   const search = document.getElementById('search')
   const textarea = document.getElementById('textarea')
   const saveChangesButton = document.getElementById('saveChanges')
@@ -64,11 +64,9 @@ import { getConfig, setConfig } from '../config'
     const domains = removeDuplicates(urls)
 
     if (isIgnorePage) {
-      await Ignore.set(domains)
+      await sendExtensionCallMsg(source, 'setIgnoredDomains', { domains })
     } else {
-      setConfig({
-        customProxiedDomains: domains,
-      })
+      await sendExtensionCallMsg(source, 'setCustomProxiedDomains', { domains })
     }
     editor.setValue(domains.join('\n'))
     event.target.textContent = i18nGetMessage('optionsSavedMessage')
@@ -80,11 +78,11 @@ import { getConfig, setConfig } from '../config'
   })
 
   if (isIgnorePage) {
-    Ignore.getAll().then((ignoredHosts) => {
+    sendExtensionCallMsg(source, 'getIgnoredDomains').then((ignoredHosts) => {
       editor.setValue(ignoredHosts.join('\n'))
     })
   } else {
-    getConfig('customProxiedDomains')
+    sendConfigFetchMsg('customProxiedDomains')
       .then(({ customProxiedDomains }) => {
         editor.setValue(customProxiedDomains.join('\n'))
       })
@@ -104,7 +102,8 @@ import { getConfig, setConfig } from '../config'
     const maxDomainsAllowed = 1000
 
     const updateEditorContent = async (domains) => {
-      const { customProxiedDomains } = await getConfig('customProxiedDomains')
+      const { customProxiedDomains } =
+        await sendConfigFetchMsg('customProxiedDomains')
       const domainsArray = [...customProxiedDomains, ...domains]
 
       if (domainsArray.length > maxDomainsAllowed) {

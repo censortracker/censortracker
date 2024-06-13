@@ -1,4 +1,4 @@
-import ProxyManager from 'Background/proxy'
+import ProxyManager from '../../../shared/js/extension/base/proxy'
 
 (async () => {
   const closeTab = document.querySelector('#closeTab')

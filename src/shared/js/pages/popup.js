@@ -1,19 +1,16 @@
-import browser from 'Background/browser-api'
-import Ignore from 'Background/ignore'
-import ProxyManager from 'Background/proxy'
-import Registry from 'Background/registry'
-import Settings from 'Background/settings'
+import browser from '../browser-api'
 import {
   extractHostnameFromUrl,
   i18nGetMessage,
   isI2PUrl,
   isOnionUrl,
   isValidURL,
-} from 'Background/utilities'
-
-import { getConfig } from '../config'
+} from '../utilities'
+import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './messaging'
 
 (async () => {
+  const source = 'popup'
+
   const statusImage = document.getElementById('statusImage')
   const disseminatorInfoBlock = document.getElementById('ori')
   const siteActions = document.getElementById('siteActions')
@@ -48,14 +45,15 @@ import { getConfig } from '../config'
   const highlightOptionsIcon = document.getElementById('highlightOptionsIcon')
 
   document.addEventListener('click', async (event) => {
+    // targetIdPossibleValues = 'disableExtension' | 'enableExtension'
     const targetId = event.target.id
 
     if (targetId === 'enableExtension') {
-      await Settings.enableExtension()
-      await ProxyManager.enableProxy()
+      sendTransitionMsg(targetId)
       window.location.reload()
     } else if (targetId === 'disableExtension') {
-      await Settings.disableExtension()
+      console.log('disableExtension')
+      sendTransitionMsg(targetId)
       mainPageInfoBlocks.forEach((element) => {
         element.hidden = true
       })
@@ -68,17 +66,17 @@ import { getConfig } from '../config'
   })
 
   // Highlight settings button when update is available.
-  getConfig('updateAvailable')
-    .then(({ updateAvailable }) => {
-      if (updateAvailable) {
-        highlightOptionsIcon.classList.remove('hidden')
-      } else {
-        highlightOptionsIcon.classList.add('hidden')
-      }
-    })
+  sendConfigFetchMsg('updateAvailable').then(({ updateAvailable }) => {
+    if (updateAvailable) {
+      highlightOptionsIcon.classList.remove('hidden')
+    } else {
+      highlightOptionsIcon.classList.add('hidden')
+    }
+  })
 
   // Highlight settings button when there are nothing to proxy.
-  Registry.isEmpty().then((isEmpty) => {
+  sendExtensionCallMsg(source, 'isRegistryEmpty').then((isEmpty) => {
+    console.log('isEmpty:', isEmpty)
     if (isEmpty) {
       highlightOptionsIcon.classList.remove('hidden')
     } else {
@@ -105,7 +103,7 @@ import { getConfig } from '../config'
   })
 
   // Show proxying information
-  getConfig(
+  sendConfigFetchMsg(
     'currentRegionName',
     'proxyServerURI',
     'customProxyServerURI',
@@ -119,7 +117,9 @@ import { getConfig } from '../config'
     },
   ) => {
     if (proxyServerURI && proxyLastFetchTs) {
-      const domains = await Registry.getDomains()
+      const domains = await sendExtensionCallMsg(source, 'getDomains')
+
+      console.log('domains:', domains)
       const proxyServerId = proxyServerURI.split('.', 1)[0]
       const proxyingDetailsText = document.getElementById('proxyingDetailsText')
       const regionName = currentRegionName || i18nGetMessage('popupAutoMessage')
@@ -162,30 +162,36 @@ import { getConfig } from '../config'
   })
 
   browser.tabs.query({ active: true, lastFocusedWindow: true })
-    .then(async ([{ url: currentUrl, id: tabId }]) => {
-      const proxyingEnabled = await ProxyManager.isEnabled()
-      const extensionEnabled = await Settings.extensionEnabled()
+    .then(async (tabData) => {
+      const currentUrl = tabData[0]?.url
+
+      const { enableExtension: extensionEnabled } = await sendConfigFetchMsg('enableExtension')
       const currentHostname = extractHostnameFromUrl(currentUrl)
 
-      ProxyManager.alive().then((alive) => {
-        if (proxyingEnabled) {
-          if (alive) {
-            popupProxyStatusOk.hidden = false
-            popupProxyStatusError.hidden = true
-          } else {
-            popupProxyStatusOk.hidden = true
-            popupProxyStatusError.hidden = false
-            proxyConnectionIssuesButton.hidden = false
-            proxyConnectionIssuesButton.addEventListener('click', async () => {
-              await browser.tabs.create({
-                url: 'https://t.me/censortracker_feedback',
+      console.log('HOST:', currentHostname)
+
+      sendConfigFetchMsg('useProxy', 'proxyIsAlive').then(
+        ({ useProxy: proxyingEnabled, proxyIsAlive }) => {
+          console.log('proxyingEnabled proxyIsAlive:', proxyingEnabled, proxyIsAlive)
+          if (proxyingEnabled) {
+            if (proxyIsAlive) {
+              popupProxyStatusOk.hidden = false
+              popupProxyStatusError.hidden = true
+            } else {
+              popupProxyStatusOk.hidden = true
+              popupProxyStatusError.hidden = false
+              proxyConnectionIssuesButton.hidden = false
+              proxyConnectionIssuesButton.addEventListener('click', async () => {
+                await browser.tabs.create({
+                  url: 'https://t.me/censortracker_feedback',
+                })
               })
-            })
+            }
+          } else {
+            popupProxyDisabled.hidden = false
           }
-        } else {
-          popupProxyDisabled.hidden = false
-        }
-      })
+        },
+      )
 
       if (isValidURL(currentUrl)) {
         currentDomainHeader.innerText = currentHostname
@@ -194,28 +200,28 @@ import { getConfig } from '../config'
           'siteActionAutoDesc',
         )
 
-        Ignore.contains(currentUrl).then((ignored) => {
-          if (ignored) {
-            document.querySelector('input[value="never"]').checked = true
-            siteActionDescription.textContent = i18nGetMessage(
-              'siteActionNeverDesc',
-            )
-          } else {
-            Registry.contains(currentUrl).then((blocked) => {
-              if (blocked) {
-                document.querySelector('input[value="always"]').checked = true
-                siteActionDescription.textContent = i18nGetMessage(
-                  'siteActionAlwaysDesc',
-                )
-              } else {
-                document.querySelector('input[value="auto"]').checked = true
-                siteActionDescription.textContent = i18nGetMessage(
-                  'siteActionAutoDesc',
-                )
-              }
-            })
-          }
-        })
+        sendExtensionCallMsg(source, 'processHostName', { url: currentHostname }).then(
+          ({ ignored, blocked }) => {
+            console.log('ignored, blocked:', ignored, blocked)
+
+            if (ignored) {
+              document.querySelector('input[value="never"]').checked = true
+              siteActionDescription.textContent = i18nGetMessage(
+                'siteActionNeverDesc',
+              )
+            } else if (blocked) {
+              document.querySelector('input[value="always"]').checked = true
+              siteActionDescription.textContent = i18nGetMessage(
+                'siteActionAlwaysDesc',
+              )
+            } else {
+              document.querySelector('input[value="auto"]').checked = true
+              siteActionDescription.textContent = i18nGetMessage(
+                'siteActionAutoDesc',
+              )
+            }
+          },
+        )
 
         const siteActionRadioButtons = document.querySelectorAll(
           'input[name="site-action-radio"]',
@@ -223,32 +229,22 @@ import { getConfig } from '../config'
 
         for (const radioButton of siteActionRadioButtons) {
           radioButton.addEventListener('change', async (event) => {
-            if (event.target.value === 'always') {
-              siteActionDescription.textContent = i18nGetMessage(
-                'siteActionAlwaysDesc',
-              )
-              Ignore.remove(currentUrl).then((removed) => {
-                if (removed) {
-                  Registry.add(currentUrl).then((added) => {
-                    console.warn('Proxying strategy was changed to: "always"')
-                  })
-                }
+            sendExtensionCallMsg(
+              source,
+              'changeIgnoredStatus', {
+                url: currentUrl,
+                newState: event.target.value,
               })
-            } else if (event.target.value === 'never') {
-              await Ignore.add(currentUrl)
-              await Registry.remove(currentUrl)
-              siteActionDescription.textContent = i18nGetMessage(
-                'siteActionNeverDesc',
-              )
-            } else {
-              await Ignore.remove(currentUrl)
-              await Registry.remove(currentUrl)
-              siteActionDescription.textContent = i18nGetMessage(
-                'siteActionAutoDesc',
-              )
+
+            const actionDescriptions = {
+              always: 'siteActionAlwaysDesc',
+              never: 'siteActionNeverDesc',
+              auto: 'siteActionAutoDesc',
             }
 
-            await ProxyManager.setProxy()
+            siteActionDescription.textContent = i18nGetMessage(
+              actionDescriptions[event.target.value],
+            )
 
             event.target.checked = true
           })
@@ -269,8 +265,7 @@ import { getConfig } from '../config'
         if (browser.isFirefox) {
           browser.extension.isAllowedIncognitoAccess()
             .then((allowedIncognitoAccess) => {
-              browser.storage.local
-                .get({ privateBrowsingPermissionsRequired: false })
+              sendConfigFetchMsg('privateBrowsingPermissionsRequired')
                 .then(({ privateBrowsingPermissionsRequired }) => {
                   if (
                     !allowedIncognitoAccess ||
@@ -282,11 +277,11 @@ import { getConfig } from '../config'
             })
         }
 
-        if (currentHostname.length >= 22 && currentHostname.length < 25) {
+        if (currentHostname?.length >= 22 && currentHostname?.length < 25) {
           currentDomainHeader.style.fontSize = '17px'
-        } else if (currentHostname.length > 25 && currentHostname.length < 30) {
+        } else if (currentHostname?.length > 25 && currentHostname?.length < 30) {
           currentDomainHeader.style.fontSize = '15px'
-        } else if (currentHostname.length >= 30) {
+        } else if (currentHostname?.length >= 30) {
           currentDomainHeader.style.fontSize = '13px'
         }
 
@@ -294,9 +289,10 @@ import { getConfig } from '../config'
         currentDomainHeader.removeAttribute('hidden')
         footerExtensionIsOn.removeAttribute('hidden')
 
-        const restrictionsFound = await Registry.contains(currentHostname)
+        const { blocked, isDisseminator, cooperationRefused } =
+          await sendExtensionCallMsg(source, 'processHostName', { url: currentHostname })
 
-        if (restrictionsFound) {
+        if (blocked) {
           const restrictionsIcon = document.querySelector('#restrictions img')
           const restrictionsTitle = document.querySelector('#restrictions-title')
           const restrictionsDesc = document.querySelector('#restrictions-desc')
@@ -308,36 +304,33 @@ import { getConfig } from '../config'
           statusImage.setAttribute('src', 'images/icons/512x512/blocked.png')
         }
 
-        Registry.retrieveDisseminator(currentHostname)
-          .then(({ url: disseminatorUrl, cooperationRefused }) => {
-            if (disseminatorUrl) {
-              const oriTitle = document.querySelector('#ori-title')
-              const oriDesc = document.querySelector('#ori-desc')
-              const oriIcon = document.querySelector('#ori img')
-              const oriDetails = document.querySelector('#ori-details')
+        if (isDisseminator) {
+          const oriTitle = document.querySelector('#ori-title')
+          const oriDesc = document.querySelector('#ori-desc')
+          const oriIcon = document.querySelector('#ori img')
+          const oriDetails = document.querySelector('#ori-details')
 
-              if (!cooperationRefused) {
-                oriDetails.classList.add(['text-warning'])
-                oriTitle.textContent = i18nGetMessage('disseminatorTitle')
-                oriDesc.textContent = i18nGetMessage('disseminatorDesc')
-                oriIcon.setAttribute('src', 'images/popup/status/danger.svg')
-                statusImage.setAttribute('src', 'images/icons/512x512/ori.png')
-                currentDomainHeader.classList.add('title-ori')
-              } else {
-                oriDesc.textContent = i18nGetMessage('disseminatorCoopRefused')
-                statusImage.setAttribute('src', 'images/icons/512x512/normal.png')
-              }
+          if (!cooperationRefused) {
+            oriDetails.classList.add(['text-warning'])
+            oriTitle.textContent = i18nGetMessage('disseminatorTitle')
+            oriDesc.textContent = i18nGetMessage('disseminatorDesc')
+            oriIcon.setAttribute('src', 'images/popup/status/danger.svg')
+            statusImage.setAttribute('src', 'images/icons/512x512/ori.png')
+            currentDomainHeader.classList.add('title-ori')
+          } else {
+            oriDesc.textContent = i18nGetMessage('disseminatorCoopRefused')
+            statusImage.setAttribute('src', 'images/icons/512x512/normal.png')
+          }
 
-              if (restrictionsFound) {
-                if (cooperationRefused === false) {
-                  statusImage.setAttribute(
-                    'src',
-                    'images/icons/512x512/ori_blocked.png',
-                  )
-                }
-              }
+          if (blocked) {
+            if (cooperationRefused === false) {
+              statusImage.setAttribute(
+                'src',
+                'images/icons/512x512/ori_blocked.png',
+              )
             }
-          })
+          }
+        }
 
         if (isOnionUrl(currentUrl)) {
           torNetwork.hidden = false
@@ -364,13 +357,14 @@ import { getConfig } from '../config'
       }
     })
 
-  getConfig('backendIsIntermittent')
+  sendConfigFetchMsg('backendIsIntermittent')
     .then(({ backendIsIntermittent = false }) => {
       backendIsIntermittentPopupMessage.hidden = !backendIsIntermittent
     })
 
-  ProxyManager.controlledByOtherExtensions().then(
+  sendExtensionCallMsg('controlled', 'controlledByOtherExtensions').then(
     (controlledByOtherExtensions) => {
+      console.log('controlledByOtherExtensions:', controlledByOtherExtensions)
       if (!browser.isFirefox && controlledByOtherExtensions) {
         controlledByOtherExtensionsButton.hidden = false
       }

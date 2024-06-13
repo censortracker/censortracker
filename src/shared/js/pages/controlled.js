@@ -1,8 +1,9 @@
-import browser from 'Background/browser-api'
-import ProxyManager from 'Background/proxy'
-import { translateDocument } from 'Background/utilities'
+import browser from '../browser-api'
+import { translateDocument } from '../utilities'
+import { sendExtensionCallMsg } from './messaging'
 
 (async () => {
+  const source = 'controlled'
   const i18nPageProps = {}
   const backToPopup = document.querySelector('#backToPopup')
   const useProxyCheckbox = document.querySelector('#useProxyCheckbox')
@@ -11,7 +12,7 @@ import { translateDocument } from 'Background/utilities'
   const disableOtherExtensionsButtons = document.querySelectorAll('.disable-other-extensions')
   const extensionsWhichControlsProxy = document.querySelector('#extensionsWhichControlsProxy')
   const proxyControlledByOtherExtensions =
-    await ProxyManager.controlledByOtherExtensions()
+    await sendExtensionCallMsg(source, 'controlledByOtherExtensions')
 
   if (proxyControlledByOtherExtensions) {
     const self = await browser.management.getSelf()
@@ -42,15 +43,14 @@ import { translateDocument } from 'Background/utilities'
     disableButton.addEventListener('click', async () => {
       const currentPage = window.location.pathname.split('/').pop()
 
-      await ProxyManager.takeControl()
-      await ProxyManager.setProxy()
+      sendExtensionCallMsg(source, 'takeControl')
 
       if (currentPage.startsWith('controlled')) {
         window.close()
       }
 
       if (currentPage.startsWith('proxy-options')) {
-        if (await ProxyManager.controlledByThisExtension()) {
+        if (await sendExtensionCallMsg(source, 'controlledByThisExtension')) {
           useProxyCheckbox.checked = true
           useProxyCheckbox.disabled = false
         }

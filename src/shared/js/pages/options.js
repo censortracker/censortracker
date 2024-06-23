@@ -115,10 +115,8 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
 
   if (showNotificationsCheckbox) {
     showNotificationsCheckbox.addEventListener('change', async () => {
-      showNotificationsCheckbox.checked ? (
-        sendTransitionMsg('enableNotifications')
-      ) : (
-        sendTransitionMsg('disableNotifications')
+      sendTransitionMsg(
+        showNotificationsCheckbox.checked ? 'enableNotifications' : 'disableNotifications',
       )
     },
     false,

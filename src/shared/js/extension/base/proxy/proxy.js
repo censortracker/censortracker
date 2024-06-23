@@ -31,10 +31,6 @@ export const getProxyingRules = async () => {
     'customProxyServerURI',
   )
 
-  console.log(proxyServerURI,
-    customProxyProtocol,
-    customProxyServerURI)
-
   if (
     customProxyServerURI &&
     customProxyProtocol

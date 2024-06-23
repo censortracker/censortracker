@@ -1,7 +1,7 @@
 import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './messaging'
 
 (async () => {
-  const source = 'registry-oprtions'
+  const source = 'registry-options'
   const select = document.querySelector('.select')
   const options = document.querySelectorAll('.select-option')
   const selectRegion = document.querySelector('#selectRegion')

@@ -1,10 +1,11 @@
 import { TaskType } from '../config/constants'
 import proxyManager from '../proxy'
 import * as server from '../server'
+import { schedule } from './task'
 
 export const handleStartup = async () => {
   console.groupCollapsed('onStartup')
-  await this.taskManager.schedule([
+  await schedule([
     { name: TaskType.PING, minutes: 10 },
     { name: TaskType.SET_PROXY, minutes: 15 },
     { name: TaskType.REMOVE_BAD_PROXIES, minutes: 20 },

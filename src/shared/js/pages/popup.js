@@ -52,7 +52,6 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
       sendTransitionMsg(targetId)
       window.location.reload()
     } else if (targetId === 'disableExtension') {
-      console.log('disableExtension')
       sendTransitionMsg(targetId)
       mainPageInfoBlocks.forEach((element) => {
         element.hidden = true
@@ -76,7 +75,6 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
 
   // Highlight settings button when there are nothing to proxy.
   sendExtensionCallMsg(source, 'isRegistryEmpty').then((isEmpty) => {
-    console.log('isEmpty:', isEmpty)
     if (isEmpty) {
       highlightOptionsIcon.classList.remove('hidden')
     } else {
@@ -118,8 +116,6 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
   ) => {
     if (proxyServerURI && proxyLastFetchTs) {
       const domains = await sendExtensionCallMsg(source, 'getDomains')
-
-      console.log('domains:', domains)
       const proxyServerId = proxyServerURI.split('.', 1)[0]
       const proxyingDetailsText = document.getElementById('proxyingDetailsText')
       const regionName = currentRegionName || i18nGetMessage('popupAutoMessage')
@@ -138,7 +134,7 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
         <code><b>${popupTotalBlocked}:</b> ${domains.length}</code>
       `
     } else {
-      proxyingInfo.hidden = true
+      // proxyingInfo.hidden = true
     }
   })
 
@@ -168,11 +164,8 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
       const { enableExtension: extensionEnabled } = await sendConfigFetchMsg('enableExtension')
       const currentHostname = extractHostnameFromUrl(currentUrl)
 
-      console.log('HOST:', currentHostname)
-
       sendConfigFetchMsg('useProxy', 'proxyIsAlive').then(
         ({ useProxy: proxyingEnabled, proxyIsAlive }) => {
-          console.log('proxyingEnabled proxyIsAlive:', proxyingEnabled, proxyIsAlive)
           if (proxyingEnabled) {
             if (proxyIsAlive) {
               popupProxyStatusOk.hidden = false
@@ -202,8 +195,6 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
 
         sendExtensionCallMsg(source, 'processHostName', { url: currentHostname }).then(
           ({ ignored, blocked }) => {
-            console.log('ignored, blocked:', ignored, blocked)
-
             if (ignored) {
               document.querySelector('input[value="never"]').checked = true
               siteActionDescription.textContent = i18nGetMessage(
@@ -364,7 +355,6 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
 
   sendExtensionCallMsg('controlled', 'controlledByOtherExtensions').then(
     (controlledByOtherExtensions) => {
-      console.log('controlledByOtherExtensions:', controlledByOtherExtensions)
       if (!browser.isFirefox && controlledByOtherExtensions) {
         controlledByOtherExtensionsButton.hidden = false
       }

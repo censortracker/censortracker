@@ -6,9 +6,9 @@ const configMachine = createMachine({
   id: 'config',
   initial: 'enabled',
   always: {
-    actions: (state) => {
-      // console.log('transition:', state)
-    },
+    // actions: (state) => {
+    //   console.log('transition in machine:', state)
+    // },
   },
   on: {
     installed: {
@@ -16,6 +16,16 @@ const configMachine = createMachine({
       actions: async ({ event }) => {
         await Extension.handlers.handleInstalled(event)
       },
+    },
+    enableExtension: {
+      target: '.enabled',
+      actions: [Extension.enable, Extension.proxy.enable],
+    },
+    disableExtension: {
+      target: '.disabled',
+      actions: [
+        Extension.disable,
+      ],
     },
     resetExtension: {
       target: '.enabled',
@@ -27,9 +37,9 @@ const configMachine = createMachine({
         async ({ event }) => {
           await Extension.config.importSettings(event.settings)
           await server.synchronize({ syncRegistry: true })
+          await Extension.proxy.setProxy()
+          await Extension.proxy.ping()
         },
-        Extension.proxy.setProxy,
-        Extension.proxy.ping,
       ],
     },
   },
@@ -53,10 +63,6 @@ const configMachine = createMachine({
     enabled: {
       type: 'parallel',
       on: {
-        disableExtension: {
-          target: 'disabled',
-          actions: [Extension.disable],
-        },
         handleTabCreate: {
           actions: ({ event }) => {
             Extension.icon.set(event.tabId, 'default')
@@ -74,7 +80,7 @@ const configMachine = createMachine({
           states: {
             undefined: {
               exit: () => {
-                console.log('left initial state')
+                // console.log('left initial state')
               },
               invoke: {
                 src: fromPromise(Extension.proxy.isEnabled),
@@ -146,20 +152,20 @@ const configMachine = createMachine({
               },
             },
             enabled: {
-              on: {
-                disableNotifications: {
-                  target: 'disabled',
-                  actions: [Extension.notifications.disable],
-                },
-              },
             },
             disabled: {
-              on: {
-                enableNotifications: {
-                  target: 'enabled',
-                  actions: [Extension.notifications.enable],
-                },
-              },
+            },
+          },
+          on: {
+            enableNotifications: {
+              target: '.enabled',
+              actions: [Extension.notifications.enable],
+            },
+            disableNotifications: {
+              target: '.disabled',
+              actions: [
+                Extension.notifications.disable,
+              ],
             },
           },
         },
@@ -167,10 +173,6 @@ const configMachine = createMachine({
     },
     disabled: {
       on: {
-        enableExtension: {
-          target: 'enabled',
-          actions: [Extension.enable, Extension.proxy.enable],
-        },
         handleTabCreate: {
           actions: ({ event }) => {
             Extension.icon.set(event.tabId, 'disabled')

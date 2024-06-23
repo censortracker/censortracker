@@ -3,10 +3,6 @@ import configManager from '../config'
 import * as server from '../server'
 import { getBadProxies, ping, requestIncognitoAccess, setProxy, usingCustomProxy } from './proxy'
 
-// constructor (proxyManager) {
-//   this.proxy = proxyManager
-// }
-
 export const handleBeforeRequest = async (_details) => {
   await ping()
   await requestIncognitoAccess()

@@ -1,11 +1,5 @@
 import configService from './stateMachine'
 
-console.log('INIT MACHINE ACTIONS')
-
-export const initStateMachine = () => {
-  configService.start()
-}
-
 export const enableExtension = () => {
   configService.send({ type: 'enableExtension' })
 }

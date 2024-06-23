@@ -19,9 +19,6 @@ export const get = async (...keys) => {
 
 export const set = async (state) => {
   return browser.storage.local.set(state)
-  // const xx = await browser.storage.local.get(...Object.keys(state))
-
-  // console.log('storage transition:', xx)
 }
 
 export const remove = async (...keys) => {

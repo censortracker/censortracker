@@ -18,11 +18,11 @@ export const handleMessage = (message, _sender, sendResponse) => {
   const { type: messageType, request, source } = message
 
   if (messageType === 'transition') {
-    configService.send({ type: request })
-    return true
+    configService.send({ type: request, settings: message?.payload?.settings })
+    return undefined
   }
   if (messageType === 'dataFetch') {
-    Extension.config.get(request).then((data) => {
+    Extension.config.get(...request).then((data) => {
       sendResponse(data)
       return true
     })
@@ -53,7 +53,7 @@ export const handleMessage = (message, _sender, sendResponse) => {
       handleRulesMessage(message, _sender, sendResponse)
       return true
     default:
-      console.warn(`unknown source: ${request}`)
+      console.warn(`unknown source: ${source}`)
   }
   return true
 }

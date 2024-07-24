@@ -5,7 +5,7 @@ import { extensionName } from '../config/constants'
 import IconManager from '../icon'
 
 export const areEnabled = async () => {
-  const { showNotifications } = configManager.get('showNotifications')
+  const { showNotifications } = await configManager.get('showNotifications')
 
   return showNotifications
 }

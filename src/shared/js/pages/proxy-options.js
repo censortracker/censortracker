@@ -28,7 +28,7 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
     useOwnProxy,
     customProxyProtocol,
     customProxyServerURI,
-  } = sendConfigFetchMsg(
+  } = await sendConfigFetchMsg(
     'useOwnProxy',
     'customProxyProtocol',
     'customProxyServerURI',

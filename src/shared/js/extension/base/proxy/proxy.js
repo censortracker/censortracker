@@ -12,7 +12,7 @@ export const isEnabled = async () => {
 
 export const enable = async () => {
   console.log('Proxying enabled.')
-  configManager.set({ useProxy: true, proxyIsAlive: true })
+  await configManager.set({ useProxy: true, proxyIsAlive: true })
 }
 
 export const disable = async () => {

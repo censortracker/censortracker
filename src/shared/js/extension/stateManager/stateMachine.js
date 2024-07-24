@@ -2,7 +2,7 @@ import { createActor, createMachine, fromPromise } from 'xstate'
 
 import { Extension, server } from '../base'
 
-// machine visualization: https://stately.ai/registry/editor/embed/6651ce8e-8e22-4467-aaff-e23b76eea51b?mode=design&machineId=315554cf-d377-4c71-b06b-ed507c94685b
+// Machine visualization: https://stately.ai/registry/editor/embed/6651ce8e-8e22-4467-aaff-e23b76eea51b?mode=design&machineId=315554cf-d377-4c71-b06b-ed507c94685b
 const configMachine = createMachine({
   id: 'config',
   initial: 'undefined',

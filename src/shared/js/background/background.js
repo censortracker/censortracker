@@ -6,8 +6,10 @@
  * Otherwise, we use handlers from 'base/.../handlers'.
  */
 import browser from '../browser-api'
-import { actions, Extension } from '../extension'
+import { actions, configService, Extension } from '../extension'
 import { handleMessage } from './messaging/messageHandler'
+
+configService.start()
 
 // Handle alarms for async tasks
 browser.alarms.onAlarm.addListener(Extension.taskManager.handleOnAlarm)

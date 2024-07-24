@@ -1,3 +1,3 @@
-import Extension from './extension'
+import * as Extension from './extension'
 
 export default Extension

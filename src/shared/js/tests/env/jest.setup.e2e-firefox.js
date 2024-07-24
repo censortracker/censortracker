@@ -7,7 +7,7 @@ let browser
 beforeAll(async () => {
   browser = await puppeteer.launch({
     headless: false,
-    product: 'firefox', // or 'chrome'
+    product: 'firefox',
     protocol: 'webDriverBiDi',
     args: [
       `--disable-extensions-except=${EXTENSION_PATH}`,
@@ -23,10 +23,8 @@ afterAll(async () => {
   browser = undefined
 })
 
-// Define a global function to get a page instance
 global.getPage = async () => {
   const page = await browser.newPage()
-  // Set any page defaults here
 
   await page.bringToFront()
   return page

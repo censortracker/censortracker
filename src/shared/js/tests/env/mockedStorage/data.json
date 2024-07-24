@@ -1,0 +1,38 @@
+{
+  "backendIsIntermittent": false,
+  "botDetection": false,
+  "currentRegionCode": "",
+  "currentRegionName": "",
+  "enableExtension": true,
+  "localConfig": {},
+  "privateBrowserPermissionRequired": false,
+  "showNotifications": true,
+  "unsuppoprtedCountry": false,
+  "updateAvailable": false,
+  "badProxies": [],
+  "currentProxyServer": "",
+  "customProxyProtocol": "",
+  "customProxyServerURI": "",
+  "fallbackProxyError": "",
+  "fallbackProxyInUse": false,
+  "fallbackReason": "",
+  "proxyIsAlive": true,
+  "proxyLastFetchTs": 1721743327793,
+  "proxyPingURI": "",
+  "proxyServerURI": "",
+  "useOwnProxy": false,
+  "useProxy": false,
+  "customDPIDomains": [],
+  "customProxiedDomains": [],
+  "disseminators": [
+    {
+      "cooperationRefused": false,
+      "url": "avito.ru"
+    }
+  ],
+  "domains": [],
+  "ignoredHosts": [],
+  "notifiedHosts": [],
+  "useRegistry": true,
+  "icon": ""
+}

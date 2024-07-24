@@ -232,6 +232,34 @@ const fetchIgnore = async ({ ignoreUrl } = {}) => {
     })
 }
 
+/**
+ * Fetches database of blocked websites from registry.
+ * @param registryUrl Registry URL.
+ * @param specifics Specific attributes.
+ * @returns {Promise<void>} Resolves when the database is fetched.
+ */
+const fetchCustomDPIRegistry = async ({ customRegistryUrl } = {}) => {
+  if (!customRegistryUrl) {
+    console.warn('[Custom DPI registry] customRegistryUrl is not present in config.')
+    return
+  }
+
+  console.group('[Custom DPI registry] Fetching registry...')
+
+  try {
+    const response = await fetch(customRegistryUrl)
+    const data = await response.json()
+
+    console.log(`Fetched: ${customRegistryUrl}`)
+    console.log(data.flatMap((e) => e.domains))
+    ConfigManager.set({ customDPIDomains: data.flatMap((e) => e.domains) })
+  } catch (error) {
+    console.error(`Error on fetching data from: ${customRegistryUrl}`)
+  }
+
+  console.groupEnd()
+}
+
 export const synchronize = async ({
   syncRegistry = true,
   syncIgnore = true,
@@ -254,6 +282,10 @@ export const synchronize = async ({
 
     if (syncRegistry) {
       await fetchRegistry({ registryUrl, specifics })
+    }
+
+    if (customRegistryUrl) {
+      await fetchCustomDPIRegistry({ customRegistryUrl })
     }
   } else {
     ConfigManager.set({ backendIsIntermittent: true })

@@ -39,6 +39,7 @@ export const defaultConfig = {
   useProxy: false,
 
   // registry
+  customDPIDomains: [],
   customProxiedDomains: [],
   disseminators: [],
   domains: [],

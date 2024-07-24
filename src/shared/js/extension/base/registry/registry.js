@@ -18,11 +18,13 @@ export const getDomains = async () => {
     useRegistry,
     ignoredHosts,
     customProxiedDomains,
+    customDPIDomains,
   } = await configManager.get(
     'domains',
     'useRegistry',
     'ignoredHosts',
     'customProxiedDomains',
+    'customDPIDomains',
   )
 
   if (!useRegistry) {
@@ -34,6 +36,7 @@ export const getDomains = async () => {
 
   const allDomains = [
     ...domains,
+    ...customDPIDomains,
     ...customProxiedDomains,
   ].filter((element) => {
     return !ignoredHosts.includes(element)

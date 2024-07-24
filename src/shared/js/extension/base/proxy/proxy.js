@@ -112,7 +112,6 @@ export const setProxy = async () => {
       },
     }
   }
-
   try {
     await browser.proxy.settings.set(proxyConfig)
     await enable()
@@ -168,7 +167,10 @@ export const usingCustomProxy = async () => {
 export const controlledByThisExtension = async () => {
   const { levelOfControl } = await browser.proxy.settings.get({})
 
-  return levelOfControl === 'controlled_by_this_extension'
+  return (
+    levelOfControl === 'controlled_by_this_extension' ||
+    levelOfControl === 'controllable_by_this_extension'
+  )
 }
 
 export const controlledByOtherExtensions = async () => {

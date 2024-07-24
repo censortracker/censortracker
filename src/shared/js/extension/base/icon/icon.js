@@ -14,6 +14,14 @@ export const set = async (tabId, filename) => {
   }
 }
 
+export const updateIcons = async (newFilename) => {
+  browser.tabs.query({}).then((tabs) => {
+    for (const { id } of tabs) {
+      set(id, newFilename)
+    }
+  })
+}
+
 export const getDangerIcon = () => {
   return browser.runtime.getURL('images/icons/128x128/danger.png')
 }

@@ -19,12 +19,21 @@ const configMachine = createMachine({
     },
     enableExtension: {
       target: '.enabled',
-      actions: [Extension.enable, Extension.proxy.enable],
+      actions: [
+        Extension.enable,
+        Extension.proxy.enable,
+        async () => {
+          await Extension.icon.updateIcons('default')
+        },
+      ],
     },
     disableExtension: {
       target: '.disabled',
       actions: [
         Extension.disable,
+        async () => {
+          await Extension.icon.updateIcons('disabled')
+        },
       ],
     },
     resetExtension: {

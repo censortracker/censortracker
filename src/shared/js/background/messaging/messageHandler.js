@@ -32,28 +32,21 @@ export const handleMessage = (message, _sender, sendResponse) => {
   // message.type === 'stateFetch'
   switch (source) {
     case 'advanced-options':
-      handleAdvancedOptionsMessage(message, _sender, sendResponse)
-      return true
+      return handleAdvancedOptionsMessage(message, _sender, sendResponse)
     case 'controlled':
-      handleControlledMessage(message, _sender, sendResponse)
-      return true
+      return handleControlledMessage(message, _sender, sendResponse)
     case 'options':
-      handleOptionsMessage(message, _sender, sendResponse)
-      return true
+      return handleOptionsMessage(message, _sender, sendResponse)
     case 'popup':
-      handlePopupMessage(message, _sender, sendResponse)
-      return true
+      return handlePopupMessage(message, _sender, sendResponse)
     case 'proxy-options':
-      handleProxyOptionsMessage(message, _sender, sendResponse)
-      return true
+      return handleProxyOptionsMessage(message, _sender, sendResponse)
     case 'registry-options':
-      handleRegistryOptionsMessage(message, _sender, sendResponse)
-      return true
+      return handleRegistryOptionsMessage(message, _sender, sendResponse)
     case 'rules-editor':
-      handleRulesMessage(message, _sender, sendResponse)
-      return true
+      return handleRulesMessage(message, _sender, sendResponse)
     default:
       console.warn(`unknown source: ${source}`)
   }
-  return true
+  return undefined
 }

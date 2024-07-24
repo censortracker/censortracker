@@ -16,7 +16,15 @@ export const handlePopupMessage = (message, _sender, sendResponse) => {
       (async () => {
         const { url, newState } = payload
 
-        if (newState === 'always' || newState === 'auto') {
+        if (newState === 'always') {
+          Extension.ignoredDomains.remove(url).then((removed) => {
+            if (removed) {
+              Extension.registry.add(url).then((added) => {
+                console.warn('Proxying strategy was changed to: "always"')
+              })
+            }
+          })
+        } else if (newState === 'auto') {
           await Extension.ignoredDomains.remove(url)
           await Extension.registry.remove(url)
         } else { // newState === 'never'

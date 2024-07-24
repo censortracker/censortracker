@@ -117,6 +117,10 @@ export const removeDuplicates = (urls) => {
 }
 
 export const binaryContains = (array, target) => {
+  if (!array) {
+    return false
+  }
+
   let left = 0
   let right = array.length - 1
 
@@ -134,4 +138,19 @@ export const binaryContains = (array, target) => {
     }
   }
   return false
+}
+
+/**
+ * Extract name from icon path.
+ * @param path path string.
+ * @returns {string} name.
+ */
+export const getIconName = (path) => {
+  const pattern = /([^/]+)\.png$/
+  const match = path.match(pattern)
+
+  if (match) {
+    return match[1]
+  }
+  return undefined
 }

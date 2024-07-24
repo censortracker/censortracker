@@ -16,20 +16,19 @@ export const handleProxyOptionsMessage = (
     case 'setCustomProxy':
       Extension.config.set({
         useOwnProxy: true,
-        customProxyProtocol: request.proxyProtocol,
-        customProxyServerURI: request.customProxyServer,
+        customProxyProtocol: message.payload.proxyProtocol,
+        customProxyServerURI: message.payload.customProxyServer,
       }).then(() => {
         Extension.proxy.setProxy()
-        return true
       })
-      return true
+      break
     case 'removeCustomProxy':
       Extension.proxy.removeCustomProxy().then(() => {
         Extension.proxy.setProxy()
       })
-      return true
+      break
     default:
       console.warn(`unknown request: ${request}`)
   }
-  return true
+  return undefined
 }

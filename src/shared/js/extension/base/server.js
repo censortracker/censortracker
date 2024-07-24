@@ -1,4 +1,5 @@
 import browser from '../../browser-api'
+import { Extension } from '.'
 import ConfigManager from './config'
 import { githubConfigUrl } from './config/constants'
 
@@ -191,7 +192,6 @@ const fetchRegistry = async ({ registryUrl, specifics = {} } = {}) => {
       const data = await response.json()
 
       console.log(`Fetched: ${url}`)
-
       ConfigManager.set({ [storageKey]: data })
     } catch (error) {
       console.error(`Error on fetching data from: ${url}`)
@@ -267,10 +267,14 @@ export const synchronize = async ({
 } = {}) => {
   console.groupCollapsed('[Server] Synchronizing config...')
 
+  await Extension.proxy.removeProxy()
   const configFromServer = await fetchConfig()
 
+  console.log(configFromServer)
   if (Object.keys(configFromServer).length > 0) {
-    const { proxyUrl, ignoreUrl, registryUrl, specifics } = configFromServer
+    const {
+      proxyUrl, ignoreUrl, registryUrl, specifics, customRegistryUrl,
+    } = configFromServer
 
     if (syncIgnore) {
       await fetchIgnore({ ignoreUrl })
@@ -289,6 +293,11 @@ export const synchronize = async ({
     }
   } else {
     ConfigManager.set({ backendIsIntermittent: true })
+  }
+  const isEnabled = await Extension.proxy.isEnabled()
+
+  if (isEnabled) {
+    await Extension.proxy.setProxy()
   }
   console.groupEnd()
 }

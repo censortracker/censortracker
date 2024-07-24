@@ -62,6 +62,7 @@ export const handleProxyError = async ({ error }) => {
         })
         await setProxy()
         await ping()
+        browser.tabs.reload(tab.id)
       })
     }
   }

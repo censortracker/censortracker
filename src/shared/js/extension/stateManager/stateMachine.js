@@ -2,13 +2,14 @@ import { createActor, createMachine, fromPromise } from 'xstate'
 
 import { Extension, server } from '../base'
 
+// machine visualization: https://stately.ai/registry/editor/embed/6651ce8e-8e22-4467-aaff-e23b76eea51b?mode=design&machineId=315554cf-d377-4c71-b06b-ed507c94685b
 const configMachine = createMachine({
   id: 'config',
-  initial: 'enabled',
+  initial: 'undefined',
   always: {
-    // actions: (state) => {
-    //   console.log('transition in machine:', state)
-    // },
+    actions: (state) => {
+      // console.log('transition in machine:', state.event.type, state)
+    },
   },
   on: {
     installed: {
@@ -86,6 +87,15 @@ const configMachine = createMachine({
       states: {
         proxy: {
           initial: 'undefined',
+          on: {
+            enableProxy: {
+              target: '.enabled',
+            },
+            disableProxy: {
+              target: '.disabled',
+              actions: [Extension.proxy.disable, Extension.proxy.removeProxy],
+            },
+          },
           states: {
             undefined: {
               exit: () => {
@@ -109,9 +119,6 @@ const configMachine = createMachine({
               entry: [Extension.proxy.setProxy],
               exit: [Extension.proxy.disable, Extension.proxy.removeProxy],
               on: {
-                disableProxy: {
-                  target: 'disabled',
-                },
                 handleObservedHostsChange: {
                   actions: [Extension.proxy.setProxy],
                 },
@@ -127,9 +134,6 @@ const configMachine = createMachine({
             },
             disabled: {
               on: {
-                enableProxy: {
-                  target: 'enabled',
-                },
                 updateRegistry: {
                   actions: [
                     server.synchronize,
@@ -192,13 +196,19 @@ const configMachine = createMachine({
             Extension.icon.set(event.tabId, 'disabled')
           },
         },
+        enableNotifications: {
+          actions: [Extension.notifications.enable],
+        },
+        disableNotifications: {
+          actions: [
+            Extension.notifications.disable,
+          ],
+        },
       },
     },
   },
 })
 
 const configService = createActor(configMachine)
-
-configService.start()
 
 export default configService

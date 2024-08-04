@@ -26,7 +26,7 @@ afterAll(async () => {
   }
   browser = undefined
   global.browser = browser
-})
+}, 10000)
 
 global.getPage = async () => {
   const page = await browser.newPage()

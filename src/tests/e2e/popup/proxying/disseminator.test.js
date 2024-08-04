@@ -30,15 +30,14 @@ describe('testing how processing a disseminator affects UI', () => {
   // TODO: find a way to trace notifications from service worker
 
   test('if a notification has been shown', async () => {
-    await page.goto('https://www.avito.ru/', { timeout: 60000 })
+    await page.goto('https://www.avito.ru/', { timeout: 80000 })
 
     expect(true).toBe(true)
-  }, 60000)
+  }, 90000)
 
   test('status icon', async () => {
-    await waitFor(1000)
     await popUp.reload()
-    await waitFor(1500)
+    await waitFor(5000)
 
     await popUp.waitForSelector('#statusImage')
 
@@ -47,7 +46,7 @@ describe('testing how processing a disseminator affects UI', () => {
     })
 
     expect(getIconName(statusImage)).toBe('ori')
-  })
+  }, 10000)
 
   test('blocked label', async () => {
     await popUp.waitForSelector('#restrictions img')

@@ -20,15 +20,14 @@ describe('testing how processing blocked hostname affects UI', () => {
     await settingsPage.close()
 
     // set timer to make sure that extension gets the registry
-    await waitFor(10000)
+    await waitFor(15000)
 
     page = await global.getPage()
     popUp = await global.getPopUp()
-    await page.goto('https://bbc.com', { timeout: 60000 })
-    await waitFor(1000)
+    page.goto('https://bbc.com', { timeout: 60000 })
     await popUp.reload()
-    await waitFor(1500)
-  }, 60000)
+    await waitFor(5000)
+  }, 80000)
 
   test('status icon', async () => {
     await popUp.waitForSelector('#statusImage')

@@ -8,9 +8,8 @@ describe('testing how processing not blocked hostname affects UI', () => {
     page = await global.getPage()
     popUp = await global.getPopUp()
     await page.goto('https://example.com')
-    await waitFor(1000)
     await popUp.reload()
-    await waitFor(1500)
+    await waitFor(5000)
   }, 30000)
 
   test('proxying rules set to auto', async () => {

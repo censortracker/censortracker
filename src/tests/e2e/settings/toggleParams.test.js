@@ -1,7 +1,7 @@
 import { waitFor } from '../utils'
 
-const optionsLink = `chrome-extension://${global.extensionId}/options.html`
-const advancedOptionsLink = `chrome-extension://${global.extensionId}/advanced-options.html`
+const optionsLink = `${global.extensionUrlPrefix}://${global.extensionId}/options.html`
+const advancedOptionsLink = `${global.extensionUrlPrefix}://${global.extensionId}/advanced-options.html`
 
 describe('testing changes in settings', () => {
   let page

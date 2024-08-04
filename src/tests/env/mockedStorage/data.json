@@ -17,21 +17,30 @@
   "fallbackProxyInUse": false,
   "fallbackReason": "",
   "proxyIsAlive": true,
-  "proxyLastFetchTs": 1721743327793,
+  "proxyLastFetchTs": 1722652584322,
   "proxyPingURI": "",
   "proxyServerURI": "",
   "useOwnProxy": false,
   "useProxy": false,
   "customDPIDomains": [],
-  "customProxiedDomains": [],
+  "customProxiedDomains": [
+    "example.com"
+  ],
   "disseminators": [
     {
       "cooperationRefused": false,
       "url": "avito.ru"
     }
   ],
-  "domains": [],
-  "ignoredHosts": [],
+  "domains": [
+    "0-00.lordfilm0.biz",
+    "bbc.co.uk",
+    "bbc.com",
+    "ru.iherb.com"
+  ],
+  "ignoredHosts": [
+    "example.com"
+  ],
   "notifiedHosts": [],
   "useRegistry": true,
   "icon": ""

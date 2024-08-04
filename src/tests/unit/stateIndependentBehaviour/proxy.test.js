@@ -1,4 +1,4 @@
-import ProxyManager from '../../../extension/base/proxy'
+import ProxyManager from '../../../shared/js/extension/base/proxy'
 import * as mockedStorage from '../../env/mockedStorage/dataAccess'
 
 test('default setting proxy', async () => {

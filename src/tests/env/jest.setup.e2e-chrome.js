@@ -1,9 +1,11 @@
+import path from 'path'
 import puppeteer from 'puppeteer'
 
-const EXTENSION_PATH = 'D:/code_archive/CensorTracker/censortracker/dist/chrome/prod'
+const EXTENSION_PATH = path.resolve(__dirname, '../../../dist/chrome/prod')
 
 let browser
 
+global.extensionUrlPrefix = 'chrome-extension'
 global.extensionId = 'fidihkickpeobmmalmnpopckjinegfdb'
 
 beforeAll(async () => {

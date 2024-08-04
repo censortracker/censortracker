@@ -1,4 +1,4 @@
-import { Extension } from '../../../extension/base'
+import { Extension } from '../../../shared/js/extension/base'
 
 test('adding hostname to the list of ignored', async () => {
   await Extension.ignoredDomains.add('bbc.com')

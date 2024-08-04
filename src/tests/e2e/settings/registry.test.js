@@ -1,7 +1,7 @@
 import { waitFor } from '../utils'
 
-const registryLink = `chrome-extension://${global.extensionId}/proxy-list.html`
-const ignoredLink = `chrome-extension://${global.extensionId}/ignore-list.html`
+const registryLink = `${global.extensionUrlPrefix}://${global.extensionId}/proxy-list.html`
+const ignoredLink = `${global.extensionUrlPrefix}://${global.extensionId}/ignore-list.html`
 
 describe('testing changes in registry', () => {
   let page

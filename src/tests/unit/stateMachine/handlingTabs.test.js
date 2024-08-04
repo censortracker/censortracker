@@ -1,12 +1,20 @@
-import { get as getConfig } from '../../../extension/base/config/configManager'
-import { actions, configService } from '../../../extension/stateManager'
-import { getIconName } from '../../../utilities'
+import { actions, configService } from '../../../shared/js/extension'
+import { getIconName } from '../../../shared/js/utilities'
+import { get as getConfig } from '../../env/mockedStorage/dataAccess'
 
 jest.mock(
-  '../../../extension/base/icon/icon',
+  '../../../shared/js/extension/base/icon/icon',
   () => ({
-    ...jest.requireActual('../../../extension/base/icon/icon'),
+    ...jest.requireActual('../../../shared/js/extension/base/icon/icon'),
     updateIcons: jest.fn(() => {}),
+  }),
+)
+
+jest.mock(
+  '../../../shared/js/extension/base/proxy/proxy',
+  () => ({
+    ...jest.requireActual('../../../shared/js/extension/base/proxy/proxy'),
+    takeControl: jest.fn(() => {}),
   }),
 )
 

@@ -1,18 +1,26 @@
-import { get as getConfig } from '../../../extension/base/config/configManager'
-import { actions, configService } from '../../../extension/stateManager'
+import { actions, configService } from '../../../shared/js/extension'
+import { get as getConfig } from '../../env/mockedStorage/dataAccess'
 
 jest.mock(
-  '../../../extension/base/icon/icon',
+  '../../../shared/js/extension/base/icon/icon',
   () => ({
-    ...jest.requireActual('../../../extension/base/icon/icon'),
+    ...jest.requireActual('../../../shared/js/extension/base/icon/icon'),
     updateIcons: jest.fn(() => {}),
+  }),
+)
+
+jest.mock(
+  '../../../shared/js/extension/base/proxy/proxy',
+  () => ({
+    ...jest.requireActual('../../../shared/js/extension/base/proxy/proxy'),
+    takeControl: jest.fn(() => {}),
   }),
 )
 
 test('transitions independent from Extension', () => {
   jest.resetModules()
   jest.mock(
-    '../../../extension/base/extension/extension',
+    '../../../shared/js/extension/base/extension/extension',
     () => jest.requireActual('../../env/deepMock').deepMock(),
   )
   configService.start()

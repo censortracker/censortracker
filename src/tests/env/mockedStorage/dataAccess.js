@@ -1,9 +1,9 @@
 /* eslint-disable guard-for-in */
 import fs from 'fs/promises'
 
-import { defaultConfig } from '../../../extension/base/config/constants'
+import { defaultConfig } from '../../../shared/js/extension/base/config/constants'
 
-const mockedStorageFilePath = 'src/shared/js/tests/env/mockedStorage/data.json'
+const mockedStorageFilePath = 'src/tests/env/mockedStorage/data.json'
 
 const writeData = async (data) => {
   await fs.writeFile(
@@ -30,8 +30,6 @@ export async function initialiseStorage () {
     },
   ]
   mockedData.icon = ''
-  // storageMock.proxyServerProtocol = 'HTTPS'
-  // storageMock.proxyServerURI = 'c.ctreserve.de:12431'
   await writeData(mockedData)
 }
 
@@ -52,7 +50,6 @@ export async function get (...args) {
     }
   } else {
     args.map((key) => {
-      console.log('key:', key)
       fetchedData[key] = jsonData[key] ?? defaultConfig[key]
       return true
     })

@@ -1,4 +1,4 @@
-import extension from '../../../extension/base/extension'
+import extension from '../../../shared/js/extension/base/extension'
 
 test('testing norn=mal host', async () => {
   const result = await extension.handlers.handleTabState({
@@ -24,8 +24,8 @@ test('testing blocked host of level 3', async () => {
   expect(result).toBe('blocked')
 })
 
-jest.mock('../../../extension/base/notifications/notifications', () => ({
-  ...jest.requireActual('../../../extension/base/notifications/notifications'),
+jest.mock('../../../shared/js/extension/base/notifications/notifications', () => ({
+  ...jest.requireActual('../../../shared/js/extension/base/notifications/notifications'),
   showDisseminatorWarning: (url) => console.log('Notification from:', url),
 }))
 

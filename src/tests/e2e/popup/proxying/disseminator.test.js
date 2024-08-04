@@ -1,24 +1,36 @@
 import { getIconName, waitFor } from '../../utils'
 
+const settingsLink = `${global.extensionUrlPrefix}://${global.extensionId}/registry.html`
+
 describe('testing how processing a disseminator affects UI', () => {
+  // eslint-disable-next-line no-unused-vars
   let page
   let popUp
 
   beforeAll(async () => {
-    page = await global.getPage()
-    popUp = await global.getPopUp()
+    // configure region manually
+    const settingsPage = await global.getPage()
+
+    await settingsPage.goto(settingsLink)
+    await waitFor(1000)
+    await settingsPage.click('#select-toggle')
+    await settingsPage.click('.select-option[data-value="RU"]')
+    await settingsPage.close()
 
     // set timer to make sure that extension gets the registry
     await waitFor(10000)
+
+    page = await global.getPage()
+    popUp = await global.getPopUp()
   }, 60000)
 
-  test('if a notification has been shown', async () => {
-    await page.goto('https://www.avito.ru/')
+  // TODO: find a way to trace notifications from service worker
 
-    // TODO: find a way to trace notifications from service worker
+  test('if a notification has been shown', async () => {
+    await page.goto('https://www.avito.ru/', { timeout: 60000 })
 
     expect(true).toBe(true)
-  }, 15000)
+  }, 60000)
 
   test('status icon', async () => {
     await waitFor(1000)

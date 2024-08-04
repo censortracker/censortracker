@@ -13,9 +13,8 @@ export const handleRegistryOptionsMessage = (
         await Extension.registry.enable()
         await server.synchronize()
         await Extension.proxy.setProxy()
-        return true
       })()
-      return true
+      break
     case 'disableRegistry':
       (async () => {
         await Extension.registry.clear()
@@ -23,14 +22,12 @@ export const handleRegistryOptionsMessage = (
         await Extension.proxy.removeProxy()
         await Extension.config.set({ currentRegionName: '' })
         await Extension.proxy.setProxy()
-        return true
       })()
-      return true
+      break
     case 'setCountry':
       Extension.config.set(payload)
-      return true
+      break
     default:
       console.warn(`unknown request: ${request}`)
   }
-  return true
 }

@@ -12,10 +12,14 @@ import { handleMessage } from './messaging/messageHandler'
 configService.start()
 
 // Handle alarms for async tasks
-browser.alarms.onAlarm.addListener(Extension.taskManager.handleOnAlarm)
+browser.alarms.onAlarm.addListener(
+  Extension.taskManager.handlers.handleOnAlarm,
+)
 // Handle extension lifecycle events
 browser.runtime.onInstalled.addListener(actions.handleInstalled)
-browser.runtime.onUpdateAvailable.addListener(Extension.handleOnUpdateAvailable)
+browser.runtime.onUpdateAvailable.addListener(
+  Extension.handlers.handleOnUpdateAvailable,
+)
 // Handle tab changes (e.g. new tab, tab closed)
 browser.tabs.onUpdated.addListener(actions.handleTabState)
 browser.tabs.onCreated.addListener(actions.handleTabCreate)
@@ -30,9 +34,9 @@ browser.storage.onChanged.addListener(
 
 if (browser.isFirefox) {
   // Firefox-specific handlers
-  browser.proxy.onError.addListener(Extension.proxy.handleProxyError)
+  browser.proxy.onError.addListener(Extension.proxy.handlers.handleProxyError)
   browser.webRequest.onBeforeRequest.addListener(
-    Extension.proxy.handleBeforeRequest,
+    Extension.proxy.handlers.handleBeforeRequest,
     {
       urls: [
         'http://*/*',
@@ -44,7 +48,7 @@ if (browser.isFirefox) {
     },
   )
   browser.webRequest.onErrorOccurred.addListener(
-    Extension.proxy.handleProxyError,
+    Extension.proxy.handlers.handleProxyError,
     {
       urls: [
         '<all_urls>',
@@ -54,7 +58,7 @@ if (browser.isFirefox) {
 } else {
   // Chrome-specific handlers
   browser.webNavigation.onBeforeNavigate.addListener(
-    Extension.proxy.handleBeforeRequest, {
+    Extension.proxy.handlers.handleBeforeRequest, {
       urls: [
         'http://*/*',
         'https://*/*',
@@ -64,7 +68,7 @@ if (browser.isFirefox) {
       ],
     },
   )
-  browser.proxy.onProxyError.addListener(Extension.proxy.handleProxyError)
+  browser.proxy.onProxyError.addListener(Extension.proxy.handlers.handleProxyError)
 }
 
 browser.runtime.onMessage.addListener(handleMessage)

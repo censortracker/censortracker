@@ -24,7 +24,6 @@ export const handleMessage = (message, _sender, sendResponse) => {
   if (messageType === 'dataFetch') {
     Extension.config.get(...request).then((data) => {
       sendResponse(data)
-      return true
     })
     return true
   }

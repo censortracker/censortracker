@@ -16,6 +16,8 @@ import { sendExtensionCallMsg, sendTransitionMsg } from './messaging'
   const exportSettingsBtn = document.getElementById('exportSettings')
   const importSettingsInput = document.getElementById('importSettingsInput')
 
+  let shouldToggle = false
+
   const togglePopup = (id) => {
     const showPopupClass = 'popup-show'
     const popup = document.getElementById(id)
@@ -34,11 +36,14 @@ import { sendExtensionCallMsg, sendTransitionMsg } from './messaging'
   copyDebugInfoBtn.addEventListener('click', (event) => {
     debugInfoJSON.select()
     document.execCommand('copy')
+    if (shouldToggle) {
+      setTimeout(() => {
+        togglePopup('popupDebugInformation')
+      }, 500)
+      return
+    }
+    shouldToggle = true
     event.target.innerHTML = '&check;'
-
-    setTimeout(() => {
-      togglePopup('popupDebugInformation')
-    }, 500)
   })
   closeDebugInfoBtn.addEventListener('click', (event) => {
     togglePopup('popupDebugInformation')

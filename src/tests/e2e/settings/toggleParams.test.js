@@ -16,6 +16,7 @@ describe('testing changes in settings', () => {
     // set timer to make sure that extension gets the registry
     await waitFor(10000)
     await page.goto(optionsLink)
+    await waitFor(5000)
 
     await page.click('#showNotificationsCheckbox')
     await waitFor(125)

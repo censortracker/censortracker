@@ -14,7 +14,7 @@ describe('testing how processing blocked hostname affects UI', () => {
     const settingsPage = await global.getPage()
 
     await settingsPage.goto(settingsLink)
-    await waitFor(1000)
+    await waitFor(3000)
     await settingsPage.click('#select-toggle')
     await settingsPage.click('.select-option[data-value="RU"]')
     await settingsPage.close()

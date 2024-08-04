@@ -92,7 +92,7 @@
   },
   "jest": {
     "setupFilesAfterEnv": [
-      "./src/shared/js/tests/env/jest.setup.unit.js"
+      "./src/tests/env/jest.setup.unit.js"
     ],
     "projects": [
       {
@@ -101,7 +101,7 @@
           "(/unit/.*\\.test)\\.js$"
         ],
         "setupFilesAfterEnv": [
-          "./src/shared/js/tests/env/jest.setup.unit.js"
+          "./src/tests/env/jest.setup.unit.js"
         ]
       },
       {
@@ -110,16 +110,16 @@
           "(/e2e/.*\\.test)\\.js$"
         ],
         "setupFilesAfterEnv": [
-          "./src/shared/js/tests/env/jest.setup.e2e-chrome.js"
+          "./src/tests/env/jest.setup.e2e-chrome.js"
         ]
       },
       {
         "displayName": "end-to-end firefox",
         "testRegex": [
-          "not Implemented; fix firefox messaging first"
+          "not implemented"
         ],
         "setupFilesAfterEnv": [
-          "./src/shared/js/tests/env/jest.setup.e2e-firefox.js"
+          "./src/tests/env/jest.setup.e2e-firefox.js"
         ]
       }
     ]

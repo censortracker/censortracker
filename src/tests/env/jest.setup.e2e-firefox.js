@@ -6,7 +6,6 @@ const EXTENSION_PATH = path.resolve(__dirname, '../../../dist/chrome/prod')
 let browser
 
 global.extensionUrlPrefix = 'moz-extension'
-global.extensionId = 'fidihkickpeobmmalmnpopckjinegfdb'
 
 beforeAll(async () => {
   browser = await puppeteer.launch({

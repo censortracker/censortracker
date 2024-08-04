@@ -798,3 +798,9 @@ div#grantPrivateBrowsingPermissionsButton {
         color: #f4f1f1;
     }
 }
+
+.inisible-message {
+    opacity: 0;
+    position: absolute;
+    top: 0;
+}

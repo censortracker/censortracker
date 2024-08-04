@@ -1,12 +1,16 @@
 import { waitFor } from '../utils'
 
-const optionsLink = `${global.extensionUrlPrefix}://${global.extensionId}/options.html`
-const advancedOptionsLink = `${global.extensionUrlPrefix}://${global.extensionId}/advanced-options.html`
-
 describe('testing changes in settings', () => {
   let page
+  let optionsLink
+  let advancedOptionsLink
 
   beforeAll(async () => {
+    const extensionId = await global.getExtensionId()
+
+    optionsLink = `${global.extensionUrlPrefix}://${extensionId}/options.html`
+    advancedOptionsLink = `${global.extensionUrlPrefix}://${extensionId}/advanced-options.html`
+
     page = await global.getPage()
 
     // set timer to make sure that extension gets the registry

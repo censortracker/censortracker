@@ -1,13 +1,16 @@
 import { getIconName, waitFor } from '../../utils'
 
-const settingsLink = `${global.extensionUrlPrefix}://${global.extensionId}/registry.html`
-
 describe('testing how processing a disseminator affects UI', () => {
   // eslint-disable-next-line no-unused-vars
   let page
   let popUp
+  let settingsLink
 
   beforeAll(async () => {
+    const extensionId = await global.getExtensionId()
+
+    settingsLink = `${global.extensionUrlPrefix}://${extensionId}/registry.html`
+
     // configure region manually
     const settingsPage = await global.getPage()
 

@@ -11,6 +11,10 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
 (async () => {
   const source = 'popup'
 
+  const extensionIdlabel = document.getElementById('extension-id')
+
+  extensionIdlabel.textContent = browser.runtime.id
+
   const statusImage = document.getElementById('statusImage')
   const disseminatorInfoBlock = document.getElementById('ori')
   const siteActions = document.getElementById('siteActions')

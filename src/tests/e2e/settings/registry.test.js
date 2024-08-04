@@ -1,12 +1,14 @@
 import { waitFor } from '../utils'
 
-const registryLink = `${global.extensionUrlPrefix}://${global.extensionId}/proxy-list.html`
-const ignoredLink = `${global.extensionUrlPrefix}://${global.extensionId}/ignore-list.html`
-
 describe('testing changes in registry', () => {
   let page
+  let registryLink
 
   beforeAll(async () => {
+    const extensionId = await global.getExtensionId()
+
+    registryLink = `${global.extensionUrlPrefix}://${extensionId}/proxy-list.html`
+
     page = await global.getPage()
 
     // set timer to make sure that extension gets the registry
@@ -50,8 +52,12 @@ describe('testing changes in registry', () => {
 
 describe('testing changes in ignored', () => {
   let page
+  let ignoredLink
 
   beforeAll(async () => {
+    const extensionId = await global.getExtensionId()
+
+    ignoredLink = `${global.extensionUrlPrefix}://${extensionId}/ignore-list.html`
     page = await global.getPage()
 
     // set timer to make sure that extension gets the registry

@@ -1,13 +1,16 @@
 import { getIconName, waitFor } from '../../utils'
 
-const settingsLink = `${global.extensionUrlPrefix}://${global.extensionId}/registry.html`
-
 describe('testing how processing blocked hostname affects UI', () => {
   let page
   let popUp
+  let settingsLink
 
   beforeAll(async () => {
     // configure region manually
+    const extensionId = await global.getExtensionId()
+
+    settingsLink = `${global.extensionUrlPrefix}://${extensionId}/registry.html`
+
     const settingsPage = await global.getPage()
 
     await settingsPage.goto(settingsLink)

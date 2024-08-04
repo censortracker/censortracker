@@ -6,7 +6,6 @@ const EXTENSION_PATH = path.resolve(__dirname, '../../../dist/chrome/prod')
 let browser
 
 global.extensionUrlPrefix = 'chrome-extension'
-global.extensionId = 'fidihkickpeobmmalmnpopckjinegfdb'
 
 beforeAll(async () => {
   browser = await puppeteer.launch({
@@ -53,4 +52,11 @@ global.getPopUp = async () => {
   const popupPage = await popupTarget.asPage()
 
   return popupPage
+}
+
+global.getExtensionId = async () => {
+  const popUp = await global.getPopUp()
+  const extensionId = await popUp.evaluate(() => document.querySelector('#extension-id').textContent)
+
+  return extensionId
 }

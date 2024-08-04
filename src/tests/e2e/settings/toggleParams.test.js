@@ -44,7 +44,7 @@ describe('testing changes in settings', () => {
       return document.querySelector('#proxyStatus').textContent
     })
 
-    expect(notificationsEnabled).toBe('Выключен')
+    expect(notificationsEnabled).toBe('Turned off')
   })
 
   test('restarting extension', async () => {
@@ -56,7 +56,7 @@ describe('testing changes in settings', () => {
     await waitFor(5000)
 
     await page.goto(optionsLink)
-    await waitFor(1000)
+    await waitFor(2000)
 
     expect(true).toBe(true)
   }, 20000)
@@ -79,6 +79,6 @@ describe('testing changes in settings', () => {
       return document.querySelector('#proxyStatus').textContent
     })
 
-    expect(notificationsEnabled).toBe('Включен')
+    expect(notificationsEnabled).toBe('Turned on')
   })
 })

@@ -14,14 +14,18 @@ const configMachine = createMachine({
   on: {
     installed: {
       target: '.enabled',
-      actions: async ({ event }) => {
-        await Extension.handlers.handleInstalled(event)
-      },
+      actions: [
+        async ({ event }) => {
+          await Extension.handlers.handleInstalled(event)
+        },
+        Extension.proxy.takeControl,
+      ],
     },
     enableExtension: {
       target: '.enabled',
       actions: [
         Extension.enable,
+        Extension.proxy.takeControl,
         Extension.proxy.enable,
         async () => {
           await Extension.icon.updateIcons('default')

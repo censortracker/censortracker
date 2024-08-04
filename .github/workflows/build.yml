@@ -1,25 +1,36 @@
-name: Build
+name: Extension auto tesing
 
-on: [push]
+on:
+  push:
+    branches: [ "main" ]
 
 jobs:
   build:
-    name: Test on node ${{ matrix.node_version }} and ${{ matrix.os }}
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [15.4]
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
-    - run: npm install -g node-pre-gyp
-    - run: npm install
-    - run: npm run lint
-    - run: npm run locales:check
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Build project
+      run: npm run build:chrome:prod
+
+    - name: Install Google Chrome
+      run: |
+        wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+        sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
+        sudo apt-get update
+        sudo apt-get install -y google-chrome-stable
+
+    - name: Run tests
+      run: npm test
+
       env:
         CI: true
         PROJECT_NAME: censortracker

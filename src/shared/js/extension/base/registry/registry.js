@@ -1,4 +1,4 @@
-import { binaryContains, extractDomainFromUrl, extractHostnameFromUrl } from '../../../utilities'
+import { binaryContains, extractDomainFromUrl, extractHostnameFromUrl, removePrefix } from '../../../utilities'
 import configManager from '../config'
 
 export const enable = async () => {
@@ -139,11 +139,15 @@ export const contains = async (url) => {
  * This method makes sense only for some countries (Russia).
  */
 export const retrieveDisseminator = async (url) => {
-  const domain = extractDomainFromUrl(url)
+  const domain = removePrefix(
+    extractHostnameFromUrl(url),
+    'www.',
+  )
+
   const { disseminators } = await configManager.get('disseminators')
 
   const dataObject = disseminators.find(
-    ({ url: innerUrl }) => domain === innerUrl,
+    ({ url: innerUrl }) => domain === removePrefix(innerUrl, 'www.'),
   )
 
   return dataObject ?? {}

@@ -154,3 +154,10 @@ export const getIconName = (path) => {
   }
   return undefined
 }
+
+export const removePrefix = (str, prefix) => {
+  if (str.startsWith(prefix)) {
+    return str.slice(prefix.length)
+  }
+  return str
+}

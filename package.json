@@ -1,6 +1,6 @@
 {
   "name": "censortracker",
-  "version": "18.0.0",
+  "version": "18.5.0",
   "description": "|",
   "author": "Censor Tracker",
   "license": "MIT",
@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "codemirror": "^5.65.3",
+    "dompurify": "^3.1.6",
     "tldts": "^5.7.93",
     "validator": "^13.6.0"
   },

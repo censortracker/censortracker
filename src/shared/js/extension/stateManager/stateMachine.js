@@ -17,8 +17,8 @@ const configMachine = createMachine({
       actions: [
         async ({ event }) => {
           await Extension.handlers.handleInstalled(event)
+          await Extension.proxy.takeControl()
         },
-        Extension.proxy.takeControl,
       ],
     },
     enableExtension: {

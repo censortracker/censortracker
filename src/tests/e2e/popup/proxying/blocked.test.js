@@ -23,8 +23,13 @@ describe('testing how processing blocked hostname affects UI', () => {
     await waitFor(15000)
 
     page = await global.getPage()
+    try {
+      await page.goto('https://bbc.com', { timeout: 60000 })
+    } catch (error) {
+      console.log(error)
+    }
+    await waitFor(1000)
     popUp = await global.getPopUp()
-    page.goto('https://bbc.com', { timeout: 60000 })
     await popUp.reload()
     await waitFor(5000)
   }, 80000)

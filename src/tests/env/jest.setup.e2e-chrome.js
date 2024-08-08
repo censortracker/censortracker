@@ -18,7 +18,7 @@ beforeAll(async () => {
     ],
   })
   global.browser = browser
-})
+}, 15000)
 
 afterAll(async () => {
   if (browser) {

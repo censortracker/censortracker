@@ -24,7 +24,6 @@ describe('testing how processing a disseminator affects UI', () => {
     await waitFor(10000)
 
     page = await global.getPage()
-    popUp = await global.getPopUp()
   }, 60000)
 
   // TODO: find a way to trace notifications from service worker
@@ -36,6 +35,7 @@ describe('testing how processing a disseminator affects UI', () => {
   }, 90000)
 
   test('status icon', async () => {
+    popUp = await global.getPopUp()
     await popUp.reload()
     await waitFor(5000)
 

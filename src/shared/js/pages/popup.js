@@ -127,16 +127,50 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
       const popupYourRegion = i18nGetMessage('popupYourRegion')
       const popupTotalBlocked = i18nGetMessage('popupTotalBlocked')
 
+      let textInCode
+
       if (customProxyServerURI) {
-        proxyingDetailsText.innerHTML = `<code><b>${popupServerMsg}:</b> — </code>`
+        textInCode = document.createElement('b')
+        textInCode.textContent = popupServerMsg
       } else {
-        proxyingDetailsText.innerHTML = `<code><b>${popupServerMsg}:</b> ${proxyServerId}</code>`
+        textInCode = document.createElement('span')
+        const serverMsgElement = document.createElement('b')
+
+        serverMsgElement.textContent = popupServerMsg
+        textInCode.append(
+          serverMsgElement,
+          document.createTextNode(` ${proxyServerId}`),
+        )
       }
 
-      proxyingDetailsText.innerHTML += `
-        <code><b>${popupYourRegion}:</b> ${regionName}</code>
-        <code><b>${popupTotalBlocked}:</b> ${domains.length}</code>
-      `
+      const proxyInfoEl = document.createElement('code')
+
+      proxyInfoEl.append(textInCode)
+      proxyingDetailsText.append(proxyInfoEl)
+
+      const regionInfoEl = document.createElement('code')
+      const regionInfoBoldText = document.createElement('b')
+
+      regionInfoBoldText.textContent = popupYourRegion
+
+      regionInfoEl.append(
+        regionInfoBoldText,
+        document.createTextNode(` ${regionName}`),
+      )
+
+      const blockedInfoEl = document.createElement('code')
+      const blockedInfoBoldText = document.createElement('b')
+
+      blockedInfoBoldText.textContent = popupTotalBlocked
+
+      blockedInfoEl.append(
+        blockedInfoBoldText,
+        document.createTextNode(` ${domains.length}`),
+      )
+      proxyingDetailsText.append(
+        regionInfoEl,
+        blockedInfoEl,
+      )
     } else {
       // proxyingInfo.hidden = true
     }

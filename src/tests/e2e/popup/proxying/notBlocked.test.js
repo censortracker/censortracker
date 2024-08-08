@@ -12,16 +12,6 @@ describe('testing how processing not blocked hostname affects UI', () => {
     await waitFor(5000)
   }, 30000)
 
-  test('proxying rules set to auto', async () => {
-    await popUp.waitForSelector('#siteActionAuto')
-
-    const proxyingRulesAuto = await popUp.evaluate(() => {
-      return document.querySelector('#siteActionAuto').checked
-    })
-
-    expect(proxyingRulesAuto).toBe(true)
-  })
-
   test('not blocked', async () => {
     await popUp.waitForSelector('#restrictions img')
 

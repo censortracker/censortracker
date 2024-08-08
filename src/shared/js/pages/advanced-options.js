@@ -2,6 +2,7 @@ import browser, { getBrowserInfo } from 'Background/browser-api'
 import ProxyManager from 'Background/proxy'
 import * as server from 'Background/server'
 import Settings from 'Background/settings'
+import DOMPurify from 'dompurify'
 
 (async () => {
   const debugInfoJSON = document.getElementById('debugInfoJSON')
@@ -36,7 +37,7 @@ import Settings from 'Background/settings'
   copyDebugInfoBtn.addEventListener('click', (event) => {
     debugInfoJSON.select()
     document.execCommand('copy')
-    event.target.innerHTML = '&check;'
+    event.target.innerHTML = DOMPurify.sanitize('&check;')
 
     setTimeout(() => {
       togglePopup('popupDebugInformation')

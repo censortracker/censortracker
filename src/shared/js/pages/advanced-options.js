@@ -1,3 +1,5 @@
+import DOMPurify from 'dompurify'
+
 import { sendExtensionCallMsg, sendTransitionMsg } from './messaging'
 
 (async () => {
@@ -43,7 +45,7 @@ import { sendExtensionCallMsg, sendTransitionMsg } from './messaging'
       return
     }
     shouldToggle = true
-    event.target.innerHTML = '&check;'
+    event.target.innerHTML = DOMPurify.sanitize('&check;')
   })
   closeDebugInfoBtn.addEventListener('click', (event) => {
     togglePopup('popupDebugInformation')

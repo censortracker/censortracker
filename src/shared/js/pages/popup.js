@@ -1,3 +1,5 @@
+import DOMPurify from 'dompurify'
+
 import browser from '../browser-api'
 import {
   extractHostnameFromUrl,
@@ -6,7 +8,6 @@ import {
   isOnionUrl,
   isValidURL,
 } from '../utilities'
-import DOMPurify from 'dompurify'
 import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './messaging'
 
 (async () => {

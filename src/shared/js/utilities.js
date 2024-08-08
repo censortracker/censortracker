@@ -1,3 +1,4 @@
+import DOMPurify from 'dompurify'
 import { getDomain, getHostname, getPublicSuffix } from 'tldts'
 import isURL from 'validator/lib/isURL'
 
@@ -93,7 +94,7 @@ export const translateDocument = (doc, props = {}) => {
     }
 
     if (message) {
-      element.innerHTML = message
+      element.innerHTML = DOMPurify.sanitize(message)
     }
   }
 }

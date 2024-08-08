@@ -127,16 +127,17 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
       const popupYourRegion = i18nGetMessage('popupYourRegion')
       const popupTotalBlocked = i18nGetMessage('popupTotalBlocked')
 
-      let textInCode
+      const textInCode = document.createElement('span')
+      const serverMsgElement = document.createElement('b')
+
+      serverMsgElement.textContent = popupServerMsg
 
       if (customProxyServerURI) {
-        textInCode = document.createElement('b')
-        textInCode.textContent = popupServerMsg
+        textInCode.append(
+          serverMsgElement,
+          document.createTextNode(' — '),
+        )
       } else {
-        textInCode = document.createElement('span')
-        const serverMsgElement = document.createElement('b')
-
-        serverMsgElement.textContent = popupServerMsg
         textInCode.append(
           serverMsgElement,
           document.createTextNode(` ${proxyServerId}`),

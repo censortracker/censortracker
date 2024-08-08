@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "codemirror": "^5.65.3",
+    "dompurify": "^3.1.6",
     "jest-webextension-mock": "^3.9.0",
     "puppeteer": "^22.13.1",
     "tldts": "^5.7.93",

@@ -6,6 +6,7 @@ import {
   isOnionUrl,
   isValidURL,
 } from '../utilities'
+import DOMPurify from 'dompurify'
 import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './messaging'
 
 (async () => {
@@ -127,51 +128,15 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
       const popupYourRegion = i18nGetMessage('popupYourRegion')
       const popupTotalBlocked = i18nGetMessage('popupTotalBlocked')
 
-      const textInCode = document.createElement('span')
-      const serverMsgElement = document.createElement('b')
-
-      serverMsgElement.textContent = popupServerMsg
-
       if (customProxyServerURI) {
-        textInCode.append(
-          serverMsgElement,
-          document.createTextNode(' — '),
-        )
+        proxyingDetailsText.innerHTML = DOMPurify.sanitize(`<code><b>${popupServerMsg}:</b> — </code>`)
       } else {
-        textInCode.append(
-          serverMsgElement,
-          document.createTextNode(` ${proxyServerId}`),
-        )
+        proxyingDetailsText.innerHTML = DOMPurify.sanitize(`<code><b>${popupServerMsg}:</b> ${proxyServerId}</code>`)
       }
 
-      const proxyInfoEl = document.createElement('code')
-
-      proxyInfoEl.append(textInCode)
-      proxyingDetailsText.append(proxyInfoEl)
-
-      const regionInfoEl = document.createElement('code')
-      const regionInfoBoldText = document.createElement('b')
-
-      regionInfoBoldText.textContent = popupYourRegion
-
-      regionInfoEl.append(
-        regionInfoBoldText,
-        document.createTextNode(` ${regionName}`),
-      )
-
-      const blockedInfoEl = document.createElement('code')
-      const blockedInfoBoldText = document.createElement('b')
-
-      blockedInfoBoldText.textContent = popupTotalBlocked
-
-      blockedInfoEl.append(
-        blockedInfoBoldText,
-        document.createTextNode(` ${domains.length}`),
-      )
-      proxyingDetailsText.append(
-        regionInfoEl,
-        blockedInfoEl,
-      )
+      proxyingDetailsText.innerHTML += DOMPurify.sanitize(
+        `<code><b>${popupYourRegion}:</b> ${regionName}</code>
+        <code><b>${popupTotalBlocked}:</b> ${domains.length}</code>`)
     } else {
       // proxyingInfo.hidden = true
     }

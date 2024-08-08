@@ -9,7 +9,8 @@ import {
   isI2PUrl,
   isOnionUrl,
   isValidURL,
-} from 'Background/utilities';
+} from 'Background/utilities'
+import DOMPurify from 'dompurify'
 
 (async () => {
   const statusImage = document.getElementById('statusImage')
@@ -127,15 +128,14 @@ import {
       const popupTotalBlocked = i18nGetMessage('popupTotalBlocked')
 
       if (customProxyServerURI) {
-        proxyingDetailsText.innerHTML = `<code><b>${popupServerMsg}:</b> — </code>`
+        proxyingDetailsText.innerHTML = DOMPurify.sanitize(`<code><b>${popupServerMsg}:</b> — </code>`)
       } else {
-        proxyingDetailsText.innerHTML = `<code><b>${popupServerMsg}:</b> ${proxyServerId}</code>`
+        proxyingDetailsText.innerHTML = DOMPurify.sanitize(`<code><b>${popupServerMsg}:</b> ${proxyServerId}</code>`)
       }
 
-      proxyingDetailsText.innerHTML += `
-        <code><b>${popupYourRegion}:</b> ${regionName}</code>
-        <code><b>${popupTotalBlocked}:</b> ${domains.length}</code>
-      `
+      proxyingDetailsText.innerHTML += DOMPurify.sanitize(
+        `<code><b>${popupYourRegion}:</b> ${regionName}</code>
+        <code><b>${popupTotalBlocked}:</b> ${domains.length}</code>`)
     } else {
       proxyingInfo.hidden = true
     }

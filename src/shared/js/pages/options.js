@@ -1,13 +1,13 @@
-import browser from 'Background/browser-api'
-import ProxyManager from 'Background/proxy'
-import Registry from 'Background/registry'
-import * as server from 'Background/server'
+import browser from '../browser-api'
+import { server } from '../extension'
+import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './messaging'
 
 (async () => {
   // For debugging purposes.
   window.server = server
 
-  const proxyingEnabled = await ProxyManager.isEnabled()
+  const source = 'options'
+  const { useProxy: proxyingEnabled } = await sendConfigFetchMsg('useProxy')
   const version = document.getElementById('version')
   const proxyStatus = document.getElementById('proxyStatus')
   const showNotificationsCheckbox = document.getElementById(
@@ -35,11 +35,11 @@ import * as server from 'Background/server'
   const updateAvailableAlert = document.getElementById('updateAvailableAlert')
   const updateExtensionButton = document.getElementById('updateExtensionButton')
 
-  browser.storage.local.get({
-    updateAvailable: false,
-    backendIsIntermittent: false,
-    botDetection: false,
-  }).then(({ updateAvailable, backendIsIntermittent, botDetection }) => {
+  sendConfigFetchMsg(
+    'updateAvailable',
+    'backendIsIntermittent',
+    'botDetection',
+  ).then(({ updateAvailable, backendIsIntermittent, botDetection }) => {
     if (updateAvailable) {
       updateAvailableAlert.classList.remove('hidden')
     }
@@ -50,13 +50,10 @@ import * as server from 'Background/server'
   })
 
   updateExtensionButton.addEventListener('click', async (event) => {
-    browser.storage.local.set({ updateAvailable: false })
-      .then(() => {
-        browser.runtime.reload()
-      })
+    sendExtensionCallMsg(source, 'update')
   })
 
-  Registry.isEmpty().then((isEmpty) => {
+  sendExtensionCallMsg(source, 'isRegistryEmpty').then((isEmpty) => {
     if (isEmpty) {
       optionsRegistryUpdateDatabaseButton.addEventListener('click', (event) => {
         window.location.href = 'advanced-options.html'
@@ -83,9 +80,7 @@ import * as server from 'Background/server'
     const allowedIncognitoAccess =
       await browser.extension.isAllowedIncognitoAccess()
     const { privateBrowsingPermissionsRequired } =
-      await browser.storage.local.get({
-        privateBrowsingPermissionsRequired: false,
-      })
+      await sendConfigFetchMsg('privateBrowsingPermissionsRequired')
 
     if (grantPrivateBrowsingPermissionsButton) {
       grantPrivateBrowsingPermissionsButton.hidden = !allowedIncognitoAccess
@@ -106,10 +101,10 @@ import * as server from 'Background/server'
 
       if (grantPrivateBrowsingPermissionsButton) {
         grantPrivateBrowsingPermissionsButton.addEventListener('click', async () => {
-          const proxySet = await ProxyManager.setProxy()
+          const proxySet = await sendExtensionCallMsg('proxy-options', 'setProxy')
 
           if (proxySet === true) {
-            await ProxyManager.grantIncognitoAccess()
+            sendExtensionCallMsg(source, 'grantIncognitoAccess')
             privateBrowsingPermissionsRequiredMessage.hidden = true
           }
         },
@@ -120,16 +115,14 @@ import * as server from 'Background/server'
 
   if (showNotificationsCheckbox) {
     showNotificationsCheckbox.addEventListener('change', async () => {
-      await browser.storage.local.set({
-        showNotifications: showNotificationsCheckbox.checked,
-      })
+      sendTransitionMsg(
+        showNotificationsCheckbox.checked ? 'enableNotifications' : 'disableNotifications',
+      )
     },
     false,
     )
 
-    const { showNotifications } = await browser.storage.local.get({
-      showNotifications: true,
-    })
+    const { showNotifications } = await sendConfigFetchMsg('showNotifications')
 
     showNotificationsCheckbox.checked = showNotifications
   }

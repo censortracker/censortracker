@@ -1,12 +1,13 @@
-import browser from './browser-api'
-
-const GITHUB_CONFIG_URL = 'https://raw.githubusercontent.com/censortracker/ctconf/main/config.json'
+import browser from '../../browser-api'
+import { Extension } from '.'
+import ConfigManager from './config'
+import { githubConfigUrl } from './config/constants'
 
 const getConfigAPIEndpoints = () => {
   return [
     {
       endpointName: 'GitHub',
-      endpointUrl: GITHUB_CONFIG_URL,
+      endpointUrl: githubConfigUrl,
     },
   ]
 }
@@ -35,9 +36,7 @@ const inquireCountryCode = async (geoIPServiceURL) => {
  * @returns {Promise<{}|*>} Resolves with the config.
  */
 const fetchConfig = async () => {
-  const { currentRegionCode } = await browser.storage.local.get({
-    currentRegionCode: '',
-  })
+  const { currentRegionCode } = await ConfigManager.get('currentRegionCode')
 
   for (const { endpointName, endpointUrl } of getConfigAPIEndpoints()) {
     try {
@@ -64,14 +63,14 @@ const fetchConfig = async () => {
         })
 
         if (!config) {
-          await browser.storage.local.set({ unsupportedCountry: true })
+          ConfigManager.set({ unsupportedCountry: true })
         }
 
         // For debugging purposes
         config.configEndpointUrl = endpointUrl
         config.configEndpointSource = endpointName
 
-        await browser.storage.local.set({
+        ConfigManager.set({
           localConfig: config,
           backendIsIntermittent: false,
         })
@@ -99,12 +98,12 @@ const fetchProxy = async ({ proxyUrl } = {}) => {
     return
   }
 
-  const { badProxies } = await browser.storage.local.get({ badProxies: [] })
+  const { badProxies } = await ConfigManager.get('badProxies')
 
   console.group('[Proxy] Fetching proxy...')
 
   try {
-    if (badProxies.length > 0) {
+    if (badProxies?.length > 0) {
       const params = new URLSearchParams()
 
       for (const badProxy of badProxies) {
@@ -138,15 +137,15 @@ const fetchProxy = async ({ proxyUrl } = {}) => {
     if (fallbackProxyInUse) {
       console.warn(`Using fallback «${proxyServerURI}» for the reason: ${fallbackReason}`)
     } else {
-      await browser.storage.local.set({ proxyIsAlive: true })
-      await browser.storage.local.remove([
+      ConfigManager.set({ proxyIsAlive: true })
+      await ConfigManager.remove(
         'fallbackReason',
         'fallbackProxyInUse',
         'fallbackProxyError',
-      ])
+      )
     }
 
-    await browser.storage.local.set({
+    ConfigManager.set({
       proxyPingURI,
       proxyServerURI,
       currentProxyServer: server,
@@ -193,8 +192,7 @@ const fetchRegistry = async ({ registryUrl, specifics = {} } = {}) => {
       const data = await response.json()
 
       console.log(`Fetched: ${url}`)
-
-      await browser.storage.local.set({ [storageKey]: data })
+      ConfigManager.set({ [storageKey]: data })
     } catch (error) {
       console.error(`Error on fetching data from: ${url}`)
     }
@@ -234,6 +232,34 @@ const fetchIgnore = async ({ ignoreUrl } = {}) => {
     })
 }
 
+/**
+ * Fetches database of blocked websites from registry.
+ * @param registryUrl Registry URL.
+ * @param specifics Specific attributes.
+ * @returns {Promise<void>} Resolves when the database is fetched.
+ */
+const fetchCustomDPIRegistry = async ({ customRegistryUrl } = {}) => {
+  if (!customRegistryUrl) {
+    console.warn('[Custom DPI registry] customRegistryUrl is not present in config.')
+    return
+  }
+
+  console.group('[Custom DPI registry] Fetching registry...')
+
+  try {
+    const response = await fetch(customRegistryUrl)
+    const data = await response.json()
+
+    console.log(`Fetched: ${customRegistryUrl}`)
+    console.log(data.flatMap((e) => e.domains))
+    ConfigManager.set({ customDPIDomains: data.flatMap((e) => e.domains) })
+  } catch (error) {
+    console.error(`Error on fetching data from: ${customRegistryUrl}`)
+  }
+
+  console.groupEnd()
+}
+
 export const synchronize = async ({
   syncRegistry = true,
   syncIgnore = true,
@@ -241,10 +267,14 @@ export const synchronize = async ({
 } = {}) => {
   console.groupCollapsed('[Server] Synchronizing config...')
 
-  const config = await fetchConfig()
+  await Extension.proxy.removeProxy()
+  const configFromServer = await fetchConfig()
 
-  if (Object.keys(config).length > 0) {
-    const { proxyUrl, ignoreUrl, registryUrl, specifics } = config
+  console.log(configFromServer)
+  if (Object.keys(configFromServer).length > 0) {
+    const {
+      proxyUrl, ignoreUrl, registryUrl, specifics, customRegistryUrl,
+    } = configFromServer
 
     if (syncIgnore) {
       await fetchIgnore({ ignoreUrl })
@@ -257,8 +287,17 @@ export const synchronize = async ({
     if (syncRegistry) {
       await fetchRegistry({ registryUrl, specifics })
     }
+
+    if (customRegistryUrl) {
+      await fetchCustomDPIRegistry({ customRegistryUrl })
+    }
   } else {
-    await browser.storage.local.set({ backendIsIntermittent: true })
+    ConfigManager.set({ backendIsIntermittent: true })
+  }
+  const isEnabled = await Extension.proxy.isEnabled()
+
+  if (isEnabled) {
+    await Extension.proxy.setProxy()
   }
   console.groupEnd()
 }

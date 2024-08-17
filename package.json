@@ -19,19 +19,23 @@
     "stylelint": "stylelint ./src/",
     "lint:fix": "eslint --fix --ext=.js ./src/",
     "locales:fmt": "node scripts/orderLocaleMessages.js",
-    "locales:check": "node scripts/checkLocaleStructureMatch.js"
+    "locales:check": "node scripts/checkLocaleStructureMatch.js",
+    "test": "jest --detectOpenHandles"
   },
   "dependencies": {
     "codemirror": "^5.65.3",
     "dompurify": "^3.1.6",
+    "jest-webextension-mock": "^3.9.0",
+    "puppeteer": "^22.13.1",
     "tldts": "^5.7.93",
-    "validator": "^13.6.0"
+    "validator": "^13.6.0",
+    "xstate": "^5.13.0"
   },
   "devDependencies": {
     "@atomix/eslint-config": "^7.0.0-next.1",
     "@babel/core": "^7.18.2",
     "@babel/plugin-transform-runtime": "^7.18.9",
-    "@babel/preset-env": "^7.18.2",
+    "@babel/preset-env": "^7.24.7",
     "@babel/preset-react": "^7.17.12",
     "@babel/preset-typescript": "^7.17.12",
     "@babel/runtime": "^7.18.3",
@@ -41,6 +45,7 @@
     "@typescript-eslint/eslint-plugin": "^5.22.0",
     "@typescript-eslint/parser": "^5.22.0",
     "babel-eslint": "^10.1.0",
+    "babel-jest": "^29.7.0",
     "babel-loader": "^8.2.5",
     "copy-webpack-plugin": "^10.2.4",
     "css-loader": "^6.6.0",
@@ -61,6 +66,7 @@
     "got": ">=11.8.5",
     "html-loader": "^3.1.0",
     "html-webpack-plugin": "^5.5.0",
+    "jest": "^29.7.0",
     "merge-jsons-webpack-plugin": "^2.0.1",
     "mini-css-extract-plugin": "^2.6.1",
     "prettier": "^2.0.5",
@@ -84,5 +90,39 @@
     "hooks": {
       "pre-push": "npm run lint:fix"
     }
+  },
+  "jest": {
+    "setupFilesAfterEnv": [
+      "./src/tests/env/jest.setup.unit.js"
+    ],
+    "projects": [
+      {
+        "displayName": "unit",
+        "testRegex": [
+          "(/unit/.*\\.test)\\.js$"
+        ],
+        "setupFilesAfterEnv": [
+          "./src/tests/env/jest.setup.unit.js"
+        ]
+      },
+      {
+        "displayName": "end-to-end chrome",
+        "testRegex": [
+          "(/e2e/.*\\.test)\\.js$"
+        ],
+        "setupFilesAfterEnv": [
+          "./src/tests/env/jest.setup.e2e-chrome.js"
+        ]
+      },
+      {
+        "displayName": "end-to-end firefox",
+        "testRegex": [
+          "not implemented"
+        ],
+        "setupFilesAfterEnv": [
+          "./src/tests/env/jest.setup.e2e-firefox.js"
+        ]
+      }
+    ]
   }
 }

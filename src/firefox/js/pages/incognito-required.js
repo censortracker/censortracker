@@ -1,4 +1,4 @@
-import ProxyManager from 'Background/proxy'
+import ProxyManager from '../../../shared/js/extension/base/proxy'
 
 (async () => {
   const closeTab = document.querySelector('#closeTab')
@@ -10,7 +10,6 @@ import ProxyManager from 'Background/proxy'
     active: true,
     lastFocusedWindow: true,
   })
-  const popupUrl = browser.runtime.getURL('popup.html')
   const allowedIncognitoAccess =
     await browser.extension.isAllowedIncognitoAccess()
 
@@ -18,7 +17,7 @@ import ProxyManager from 'Background/proxy'
 
   if (backToPopup) {
     backToPopup.addEventListener('click', () => {
-      window.location.href = popupUrl
+      window.location.reload()
     })
   }
 
@@ -40,7 +39,7 @@ import ProxyManager from 'Background/proxy'
 
       if (proxySet) {
         await ProxyManager.grantIncognitoAccess()
-        window.location.href = popupUrl
+        window.location.reload()
       }
     })
   }

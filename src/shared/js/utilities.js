@@ -108,11 +108,57 @@ export const removeDuplicates = (urls) => {
   const result = new Set()
 
   for (const url of urls) {
-    const domain = getDomain(url)
+    const domain = getHostname(url)
 
     if (domain) {
       result.add(domain)
     }
   }
   return Array.from(result)
+}
+
+export const binaryContains = (array, target) => {
+  if (!array) {
+    return false
+  }
+
+  let left = 0
+  let right = array.length - 1
+
+  while (left <= right) {
+    const mid = left + Math.floor((right - left) / 2)
+
+    if (array[mid] === target) {
+      return true
+    }
+
+    if (array[mid] < target) {
+      left = mid + 1
+    } else {
+      right = mid - 1
+    }
+  }
+  return false
+}
+
+/**
+ * Extract name from icon path.
+ * @param path path string.
+ * @returns {string} name.
+ */
+export const getIconName = (path) => {
+  const pattern = /([^/]+)\.png$/
+  const match = path.match(pattern)
+
+  if (match) {
+    return match[1]
+  }
+  return undefined
+}
+
+export const removePrefix = (str, prefix) => {
+  if (str.startsWith(prefix)) {
+    return str.slice(prefix.length)
+  }
+  return str
 }

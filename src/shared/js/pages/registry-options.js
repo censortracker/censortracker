@@ -1,19 +1,17 @@
-import browser from 'Background/browser-api'
-import ProxyManager from 'Background/proxy'
-import Registry from 'Background/registry'
-import * as server from 'Background/server'
+import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './messaging'
 
 (async () => {
+  const source = 'registry-options'
   const select = document.querySelector('.select')
   const options = document.querySelectorAll('.select-option')
   const selectRegion = document.querySelector('#selectRegion')
   const currentOption = document.querySelector('#select-toggle')
   const useRegistryCheckbox = document.querySelector('#useRegistryCheckbox')
 
-  browser.storage.local.get({
-    useRegistry: false,
-    currentRegionName: '',
-  }).then(({ useRegistry, currentRegionName }) => {
+  sendConfigFetchMsg(
+    'useRegistry',
+    'currentRegionName',
+  ).then(({ useRegistry, currentRegionName }) => {
     if (useRegistry) {
       selectRegion.classList.remove('hidden')
     }
@@ -28,18 +26,11 @@ import * as server from 'Background/server'
 
     if (useRegistry) {
       selectRegion.classList.remove('hidden')
-      await Registry.enableRegistry()
-      await server.synchronize()
+      sendExtensionCallMsg(source, 'enableRegistry')
     } else {
       selectRegion.classList.add('hidden')
-      await Registry.clearRegistry()
-      await Registry.disableRegistry()
-      await ProxyManager.removeProxy()
-      await browser.storage.local.set({ currentRegionName: '' })
+      sendExtensionCallMsg(source, 'disableRegistry')
     }
-
-    await ProxyManager.setProxy()
-    await browser.storage.local.set({ useRegistry })
   }, false)
 
   document.addEventListener('click', (event) => {
@@ -66,18 +57,12 @@ import * as server from 'Background/server'
       currentOption.textContent = countryName
       currentOption.dataset.i18nKey = `country${countryCode}`
 
-      await browser.storage.local.set({
+      sendExtensionCallMsg(source, 'setCountry', {
         currentRegionName: countryName,
         currentRegionCode: countryAutoDetectionEnabled ? '' : countryCode.toUpperCase(),
       })
-
-      ProxyManager.isEnabled().then(async (proxyingEnabled) => {
-        if (proxyingEnabled) {
-          await server.synchronize()
-          await ProxyManager.setProxy()
-          console.warn(`Region changed to ${countryName}`)
-        }
-      })
+      sendTransitionMsg('updateRegistry')
+      console.warn(`Region changed to ${countryName}`)
     })
   }
 })()

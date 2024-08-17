@@ -1,8 +1,8 @@
-import browser from 'Background/browser-api'
-import ProxyManager from 'Background/proxy'
+import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './messaging'
 
 (async () => {
-  const proxyingEnabled = await ProxyManager.isEnabled()
+  const source = 'proxy-options'
+  const { useProxy: proxyingEnabled } = await sendConfigFetchMsg('useProxy')
   const proxyIsDown = document.getElementById('proxyIsDown')
   const proxyServerInput = document.getElementById('proxyServerInput')
   const saveCustomProxyButton = document.getElementById('saveCustomProxyButton')
@@ -18,8 +18,8 @@ import ProxyManager from 'Background/proxy'
   const currentProxyProtocol = document.querySelector('#select-toggle')
   const proxyProtocols = document.querySelectorAll('.select-option')
 
-  ProxyManager.alive().then((alive) => {
-    proxyIsDown.hidden = alive
+  sendConfigFetchMsg('proxyIsAlive').then(({ proxyIsAlive }) => {
+    proxyIsDown.hidden = proxyIsAlive
   })
 
   proxyCustomOptions.hidden = !proxyingEnabled
@@ -28,11 +28,11 @@ import ProxyManager from 'Background/proxy'
     useOwnProxy,
     customProxyProtocol,
     customProxyServerURI,
-  } = await browser.storage.local.get([
+  } = await sendConfigFetchMsg(
     'useOwnProxy',
     'customProxyProtocol',
     'customProxyServerURI',
-  ])
+  )
 
   if (customProxyProtocol) {
     currentProxyProtocol.textContent = customProxyProtocol
@@ -56,13 +56,7 @@ import ProxyManager from 'Background/proxy'
     const proxyProtocol = currentProxyProtocol.textContent.trim()
 
     if (customProxyServer) {
-      await browser.storage.local.set({
-        useOwnProxy: true,
-        customProxyProtocol: proxyProtocol,
-        customProxyServerURI: customProxyServer,
-      })
-
-      await ProxyManager.setProxy()
+      sendExtensionCallMsg(source, 'setCustomProxy', { proxyProtocol, customProxyServer })
       proxyServerInput.classList.remove('invalid-input')
 
       console.log(`Proxy host changed to: ${customProxyServer}`)
@@ -75,30 +69,29 @@ import ProxyManager from 'Background/proxy'
     if (event.target.value === 'default') {
       proxyOptionsInputs.classList.add('hidden')
       proxyServerInput.value = ''
-      await ProxyManager.removeCustomProxy()
-      await ProxyManager.setProxy()
+      sendExtensionCallMsg(source, 'removeCustomProxy')
     } else {
       proxyOptionsInputs.classList.remove('hidden')
     }
   })
 
-  ProxyManager.controlledByThisExtension()
+  sendExtensionCallMsg('controlled', 'controlledByThisExtension')
     .then(async (controlledByThisExtension) => {
       if (controlledByThisExtension) {
         useProxyCheckbox.checked = true
         useProxyCheckbox.disabled = false
 
         if (!proxyingEnabled) {
-          await ProxyManager.enableProxy()
+          sendTransitionMsg('enableProxy')
         }
       }
     })
-  ProxyManager.controlledByOtherExtensions()
+  sendExtensionCallMsg('controlled', 'controlledByOtherExtensions')
     .then(async (controlledByOtherExtensions) => {
       if (controlledByOtherExtensions) {
         useProxyCheckbox.checked = false
         useProxyCheckbox.disabled = true
-        await ProxyManager.disableProxy()
+        sendTransitionMsg('disableProxy')
       }
     })
 
@@ -106,18 +99,16 @@ import ProxyManager from 'Background/proxy'
     if (useProxyCheckbox.checked) {
       proxyCustomOptions.hidden = false
       useProxyCheckbox.checked = true
-      await ProxyManager.enableProxy()
+      sendTransitionMsg('enableProxy')
     } else {
       proxyCustomOptions.hidden = true
       useProxyCheckbox.checked = false
       proxyIsDown.hidden = true
-      await ProxyManager.disableProxy()
+      sendTransitionMsg('disableProxy')
     }
   }, false)
 
-  ProxyManager.isEnabled().then((isEnabled) => {
-    useProxyCheckbox.checked = isEnabled
-  })
+  useProxyCheckbox.checked = proxyingEnabled
 
   document.addEventListener('click', (event) => {
     if (event.target.id === 'select-toggle') {

@@ -1,10 +1,9 @@
-import browser, { getBrowserInfo } from 'Background/browser-api'
-import ProxyManager from 'Background/proxy'
-import * as server from 'Background/server'
-import Settings from 'Background/settings'
 import DOMPurify from 'dompurify'
 
+import { sendExtensionCallMsg, sendTransitionMsg } from './messaging'
+
 (async () => {
+  const source = 'advanced-options'
   const debugInfoJSON = document.getElementById('debugInfoJSON')
   const showDebugInfoBtn = document.getElementById('showDebugInfo')
   const confirmResetBtn = document.getElementById('confirmReset')
@@ -18,6 +17,8 @@ import DOMPurify from 'dompurify'
   const resetSettingsToDefaultBtn = document.getElementById('resetSettingsToDefault')
   const exportSettingsBtn = document.getElementById('exportSettings')
   const importSettingsInput = document.getElementById('importSettingsInput')
+
+  let shouldToggle = false
 
   const togglePopup = (id) => {
     const showPopupClass = 'popup-show'
@@ -37,11 +38,14 @@ import DOMPurify from 'dompurify'
   copyDebugInfoBtn.addEventListener('click', (event) => {
     debugInfoJSON.select()
     document.execCommand('copy')
+    if (shouldToggle) {
+      setTimeout(() => {
+        togglePopup('popupDebugInformation')
+      }, 500)
+      return
+    }
+    shouldToggle = true
     event.target.innerHTML = DOMPurify.sanitize('&check;')
-
-    setTimeout(() => {
-      togglePopup('popupDebugInformation')
-    }, 500)
   })
   closeDebugInfoBtn.addEventListener('click', (event) => {
     togglePopup('popupDebugInformation')
@@ -64,17 +68,7 @@ import DOMPurify from 'dompurify'
 
   updateLocalRegistryBtn.addEventListener('click', async (event) => {
     togglePopup('popupCompletedSuccessfully')
-    ProxyManager.isEnabled().then(async (proxyingEnabled) => {
-      await server.synchronize()
-
-      if (proxyingEnabled) {
-        await ProxyManager.removeBadProxies()
-        await ProxyManager.setProxy()
-        await ProxyManager.ping()
-      } else {
-        console.warn('Registry updated, but proxying is disabled.')
-      }
-    })
+    sendTransitionMsg('updateRegistry')
   })
 
   document.addEventListener('keydown', async (event) => {
@@ -86,63 +80,20 @@ import DOMPurify from 'dompurify'
   })
 
   showDebugInfoBtn.addEventListener('click', async (event) => {
-    const thisExtension = await browser.management.getSelf()
-    const extensionsInfo = await browser.management.getAll()
-    const { version: currentVersion } = browser.runtime.getManifest()
+    const debugInfo = await sendExtensionCallMsg(source, 'getDebugInfo')
 
-    const {
-      localConfig = {},
-      fallbackReason,
-      fallbackProxyInUse = false,
-      fallbackProxyError,
-      proxyLastFetchTs,
-    } = await browser.storage.local.get([
-      'localConfig',
-      'fallbackReason',
-      'fallbackProxyInUse',
-      'fallbackProxyError',
-      'proxyLastFetchTs',
-    ])
-
-    if (extensionsInfo.length > 0) {
-      localConfig.conflictingExtensions = extensionsInfo
-        .filter(({ name }) => name !== thisExtension.name)
-        .filter(({ enabled, permissions = [] }) =>
-          permissions.includes('proxy') && enabled)
-        .map(({ name }) => name.split(' - ')[0])
-    }
-
-    localConfig.version = currentVersion
-
-    if (fallbackProxyInUse) {
-      localConfig.fallbackReason = fallbackReason
-      localConfig.fallbackProxyError = fallbackProxyError
-      localConfig.fallbackProxyInUse = fallbackProxyInUse
-    }
-    localConfig.browser = getBrowserInfo()
-    localConfig.proxyLastFetchTs = proxyLastFetchTs
-    localConfig.badProxies = await ProxyManager.getBadProxies()
-    localConfig.currentProxyURI = await ProxyManager.getProxyingRules()
-    localConfig.proxyControlled = await ProxyManager.controlledByThisExtension()
-    debugInfoJSON.textContent = JSON.stringify(localConfig, null, 2)
+    debugInfoJSON.textContent = JSON.stringify(debugInfo, null, 2)
     togglePopup('popupDebugInformation')
   })
 
   confirmResetBtn.addEventListener('click', async (event) => {
     togglePopup('popupConfirmReset')
     togglePopup('popupCompletedSuccessfully')
-    await server.synchronize()
-    await Settings.enableExtension()
-    await Settings.enableNotifications()
-    await Settings.disableParentalControl()
-    await ProxyManager.removeBadProxies()
-    await ProxyManager.setProxy()
-    await ProxyManager.ping()
-    console.warn('Censor Tracker has been reset to default settings.')
+    sendTransitionMsg('resetExtension')
   })
 
   exportSettingsBtn.addEventListener('click', (event) => {
-    Settings.exportSettings().then((settings) => {
+    sendExtensionCallMsg(source, 'exportSettings').then((settings) => {
       const data = JSON.stringify(settings, null, 2)
       const blob = new Blob([data], { type: 'application/json' })
       const url = URL.createObjectURL(blob)
@@ -169,14 +120,9 @@ import DOMPurify from 'dompurify'
       const contents = e.target.result
       const data = JSON.parse(contents)
 
-      await Settings.importSettings(data)
-
+      await sendTransitionMsg('importSettings', { settings: data })
       // Render new state
       window.location.reload()
-
-      await server.synchronize({ syncRegistry: true })
-      await ProxyManager.setProxy()
-      await ProxyManager.ping()
     })
     fileReader.readAsText(file)
   })

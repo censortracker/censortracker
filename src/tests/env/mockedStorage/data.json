@@ -1,0 +1,47 @@
+{
+  "backendIsIntermittent": false,
+  "botDetection": false,
+  "currentRegionCode": "",
+  "currentRegionName": "",
+  "enableExtension": true,
+  "localConfig": {},
+  "privateBrowserPermissionRequired": false,
+  "showNotifications": true,
+  "unsuppoprtedCountry": false,
+  "updateAvailable": false,
+  "badProxies": [],
+  "currentProxyServer": "",
+  "customProxyProtocol": "",
+  "customProxyServerURI": "",
+  "fallbackProxyError": "",
+  "fallbackProxyInUse": false,
+  "fallbackReason": "",
+  "proxyIsAlive": true,
+  "proxyLastFetchTs": 1722652584322,
+  "proxyPingURI": "",
+  "proxyServerURI": "",
+  "useOwnProxy": false,
+  "useProxy": false,
+  "customDPIDomains": [],
+  "customProxiedDomains": [
+    "example.com"
+  ],
+  "disseminators": [
+    {
+      "cooperationRefused": false,
+      "url": "avito.ru"
+    }
+  ],
+  "domains": [
+    "0-00.lordfilm0.biz",
+    "bbc.co.uk",
+    "bbc.com",
+    "ru.iherb.com"
+  ],
+  "ignoredHosts": [
+    "example.com"
+  ],
+  "notifiedHosts": [],
+  "useRegistry": true,
+  "icon": ""
+}

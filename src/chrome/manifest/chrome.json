@@ -2,6 +2,15 @@
   "background": {
     "service_worker": "background.js"
   },
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "proxy_ruleset",
+        "enabled": true,
+        "path": "DNRRules.json"
+      }
+    ]
+  },
   "host_permissions": [
     "<all_urls>"
   ],
@@ -14,6 +23,8 @@
   "permissions": [
     "alarms",
     "activeTab",
+    "declarativeNetRequest",
+    "declarativeNetRequestFeedback",
     "management",
     "notifications",
     "proxy",

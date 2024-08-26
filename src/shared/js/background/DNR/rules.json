@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "priority": 1,
+    "action": {
+      "type": "modifyHeaders",
+      "requestHeaders": [
+        {
+          "header": "Proxy-Authorization",
+          "operation": "set",
+          "value": "Basic undefined"
+        }
+      ]
+    },
+    "condition": {
+      "urlFilter": "some-unrichable-host.com",
+      "resourceTypes": ["main_frame", "sub_frame"]
+    }
+  }
+]

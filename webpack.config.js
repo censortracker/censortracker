@@ -44,7 +44,6 @@ const webWorkerConfig = {
     extensions: ['.js', '.ts', '.json'],
     alias: {
       '@': resolve('src'),
-      'Background': resolve('src/shared/js/background'),
     },
   },
 
@@ -103,7 +102,6 @@ const webConfig = {
     extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
     alias: {
       '@': resolve('src'),
-      'Background': resolve('src/shared/js/background'),
     },
   },
   module: {
@@ -301,6 +299,11 @@ if (isChromium) {
     inject: true,
     chunks: ['translator'],
     meta: contentSecurityPolicy,
+  }))
+  webConfig.plugins.push(new CopyWebpackPlugin({
+    patterns: [
+      { from: 'src/shared/js/background/DNR/rules.json', to: 'DNRRules.json' }
+    ],
   }))
 }
 

@@ -3,6 +3,7 @@ import configManager from '../config'
 import registry from '../registry'
 import * as handlers from './handlers'
 import { getPacScript } from './pac'
+import { getPremiumPacScript } from './pacPremium'
 
 export const isEnabled = async () => {
   const { useProxy } = await configManager.get('useProxy')
@@ -18,6 +19,29 @@ export const enable = async () => {
 export const disable = async () => {
   console.warn('Proxying disabled.')
   configManager.set({ useProxy: false })
+}
+
+export const monitorPremiumExpiration = async () => {
+  const {
+    usePremiumProxy,
+    premiumExpirationDate,
+  } = await configManager.get(
+    'usePremiumProxy',
+    'premiumExpirationDate',
+  )
+
+  if (!usePremiumProxy) {
+    return false
+  }
+  if (Date.now() >= premiumExpirationDate) {
+    await configManager.set({
+      usePremiumProxy: false,
+      premiumUsername: '',
+      premiumPassword: '',
+    })
+    return true
+  }
+  return false
 }
 
 export const getProxyingRules = async () => {
@@ -74,24 +98,53 @@ export const setProxy = async () => {
   const proxyConfig = {}
   const domains = await registry.getDomainsByLevel()
 
-  if (Object.keys(domains).length === 0) {
-    await removeProxy()
-    return false
-  }
-
   const {
-    proxyServerURI,
-    proxyServerProtocol,
-  } = await getProxyingRules()
+    localConfig: { countryCode },
+    usePremiumProxy,
+    premiumProxyServerURI,
+    ignoredHosts,
+  } = await configManager.get(
+    'localConfig',
+    'usePremiumProxy',
+    'premiumProxyServerURI',
+    'ignoredHosts',
+  )
 
-  const { localConfig: { countryCode } } = await configManager.get('localConfig')
-
-  const pacData = getPacScript({
-    domains,
-    proxyServerURI,
-    proxyServerProtocol,
+  console.log({
     countryCode,
+    usePremiumProxy,
+    premiumProxyServerURI,
+    ignoredHosts,
   })
+
+  let pacData
+
+  console.log('isPremium:', usePremiumProxy)
+  if (usePremiumProxy) {
+    console.log(premiumProxyServerURI, ignoredHosts)
+    pacData = getPremiumPacScript({
+      premiumProxyServerURI,
+      ignoredHosts,
+    })
+    console.log('Configured premium proxy PAC')
+  } else {
+    if (Object.keys(domains).length === 0) {
+      await removeProxy()
+      return false
+    }
+
+    const {
+      proxyServerURI,
+      proxyServerProtocol,
+    } = await getProxyingRules()
+
+    pacData = getPacScript({
+      domains,
+      proxyServerURI,
+      proxyServerProtocol,
+      countryCode,
+    })
+  }
 
   if (browser.isFirefox) {
     const blob = new Blob([pacData], {

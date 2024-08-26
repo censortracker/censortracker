@@ -6,9 +6,12 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
   const proxyIsDown = document.getElementById('proxyIsDown')
   const proxyServerInput = document.getElementById('proxyServerInput')
   const saveCustomProxyButton = document.getElementById('saveCustomProxyButton')
+  const savePremiumProxyButton = document.getElementById('savePremiumProxyButton')
   const useProxyCheckbox = document.getElementById('useProxyCheckbox')
   const proxyCustomOptions = document.getElementById('proxyCustomOptions')
   const proxyOptionsInputs = document.getElementById('proxyOptionsInputs')
+  const proxyPremiumForm = document.getElementById('proxyPremiumForm')
+  const proxyPremiumInput = document.getElementById('proxyPremiumInput')
   const useCustomProxyRadioButton = document.getElementById('useCustomProxy')
   const useDefaultProxyRadioButton = document.getElementById('useDefaultProxy')
   const proxyCustomOptionsRadioGroup = document.getElementById(
@@ -65,13 +68,48 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
     }
   })
 
+  savePremiumProxyButton.addEventListener('click', async (event) => {
+    const premiumProxyData = proxyPremiumInput.value
+
+    // КОСТЫЛЬ
+    console.log('updateDNRRules!', premiumProxyData)
+    if (premiumProxyData) {
+      try {
+        // const decodedBytes = new Uint8Array(
+        //   atob(premiumProxyData)
+        //     .split('')
+        //     .map((char) => char.charCodeAt(0)),
+        // )
+        // const decoder = new TextDecoder()
+        // const decodedJsonString = decoder.decode(decodedBytes)
+        // const decodedData = JSON.parse(decodedJsonString)
+        await sendExtensionCallMsg(source, 'updateDNRRules', {} /* decodedData */)
+        await sendExtensionCallMsg(source, 'setPremiumProxy', {} /* decodedData */)
+        proxyPremiumInput.classList.remove('invalid-input')
+
+        return
+      } catch (error) {
+        console.warn('Incorrect premium server data')
+      }
+    }
+
+    proxyPremiumInput.classList.add('invalid-input')
+  })
+
   proxyCustomOptionsRadioGroup.addEventListener('change', async (event) => {
     if (event.target.value === 'default') {
       proxyOptionsInputs.classList.add('hidden')
+      proxyPremiumForm.classList.add('hidden')
       proxyServerInput.value = ''
       sendExtensionCallMsg(source, 'removeCustomProxy')
-    } else {
+    } else if (event.target.value === 'custom') {
       proxyOptionsInputs.classList.remove('hidden')
+      proxyPremiumForm.classList.add('hidden')
+      proxyPremiumInput.value = ''
+    } else if (event.target.value === 'premium') {
+      proxyOptionsInputs.classList.add('hidden')
+      proxyPremiumForm.classList.remove('hidden')
+      proxyServerInput.value = ''
     }
   })
 

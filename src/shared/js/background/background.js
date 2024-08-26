@@ -71,4 +71,12 @@ if (browser.isFirefox) {
   browser.proxy.onProxyError.addListener(Extension.proxy.handlers.handleProxyError)
 }
 
+// mainfest v2 proxy authorization solution
+
+// browser.webRequest.onAuthRequired.addListener(
+//   Extension.proxy.handlers.HandleAuthRequired,
+//   { urls: ['<all_urls>'] },
+//   ['blocking'],
+// )
+
 browser.runtime.onMessage.addListener(handleMessage)

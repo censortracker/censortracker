@@ -67,3 +67,19 @@ export const handleProxyError = async ({ error }) => {
     }
   }
 }
+
+// mainfest v2 proxy authorization solution
+
+// export const HandleAuthRequired = () => (
+//   new Promise((resolve, reject) => {
+//     configManager.get('premiumUsername', 'premiumPassword')
+//       .then(({ premiumUsername, premiumPassword }) => {
+//         resolve({
+//           authCredentials: {
+//             username: premiumUsername,
+//             password: premiumPassword,
+//           },
+//         })
+//       })
+//   })
+// )

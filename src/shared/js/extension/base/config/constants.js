@@ -39,6 +39,10 @@ export const defaultConfig = {
   useOwnProxy: false,
   useProxy: false,
 
+  // premium proxy
+  usePremiumProxy: false,
+  premiumProxyServerURI: '',
+
   // registry
   customDPIDomains: [],
   customProxiedDomains: [],

@@ -9,6 +9,7 @@ export const handleStartup = async () => {
     { name: TaskType.PING, minutes: 10 },
     { name: TaskType.SET_PROXY, minutes: 15 },
     { name: TaskType.REMOVE_BAD_PROXIES, minutes: 20 },
+    { name: TaskType.CHECK_PREMIUM, minutes: 360 },
   ])
   console.groupEnd()
 }
@@ -24,6 +25,13 @@ export const handleOnAlarm = async ({ name }) => {
     const proxyingEnabled = await proxyManager.isEnabled()
 
     if (proxyingEnabled) {
+      await server.synchronize()
+      await proxyManager.setProxy()
+    }
+  } else if (name === TaskType.CHECK_PREMIUM) {
+    const isExpired = await proxyManager.monitorPremiumExpiration()
+
+    if (isExpired) {
       await server.synchronize()
       await proxyManager.setProxy()
     }

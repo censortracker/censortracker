@@ -9,7 +9,7 @@ export const updateDNRRules = async () => {
       type: 'modifyHeaders',
       requestHeaders: [
         {
-          header: 'Authorization',
+          header: 'Proxy-Authorization:',
           operation: 'set',
           value: `Basic ${btoa(`${usename}:${password}`)}`,
         },

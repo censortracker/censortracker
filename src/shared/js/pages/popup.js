@@ -50,6 +50,8 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
   const openOptionsPage = document.getElementById('openOptionsPage')
   const highlightOptionsIcon = document.getElementById('highlightOptionsIcon')
 
+  const { usePremiumProxy: isPremium } = await sendConfigFetchMsg('usePremiumProxy')
+
   document.addEventListener('click', async (event) => {
     // targetIdPossibleValues = 'disableExtension' | 'enableExtension'
     const targetId = event.target.id
@@ -256,7 +258,7 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
       }
 
       if (extensionEnabled) {
-        statusImage.setAttribute('src', 'images/icons/512x512/normal.png')
+        statusImage.setAttribute('src', `images/icons/512x512/${isPremium ? 'normal-premium' : 'normal'}.png`)
 
         if (browser.isFirefox) {
           browser.extension.isAllowedIncognitoAccess()
@@ -297,7 +299,7 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
 
           restrictionsTitle.textContent = i18nGetMessage('blockedTitle')
           restrictionsDesc.textContent = i18nGetMessage('blockedDesc')
-          statusImage.setAttribute('src', 'images/icons/512x512/blocked.png')
+          statusImage.setAttribute('src', `images/icons/512x512/${isPremium ? 'blocked-premium' : 'ori'}.png`)
         }
 
         if (isDisseminator) {
@@ -311,18 +313,18 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
             oriTitle.textContent = i18nGetMessage('disseminatorTitle')
             oriDesc.textContent = i18nGetMessage('disseminatorDesc')
             oriIcon.setAttribute('src', 'images/popup/status/danger.svg')
-            statusImage.setAttribute('src', 'images/icons/512x512/ori.png')
+            statusImage.setAttribute('src', `images/icons/512x512/${isPremium ? 'ori-premium' : 'ori'}.png`)
             currentDomainHeader.classList.add('title-ori')
           } else {
             oriDesc.textContent = i18nGetMessage('disseminatorCoopRefused')
-            statusImage.setAttribute('src', 'images/icons/512x512/normal.png')
+            statusImage.setAttribute('src', `images/icons/512x512/${isPremium ? 'normal-premium' : 'normal'}.png`)
           }
 
           if (blocked) {
             if (cooperationRefused === false) {
               statusImage.setAttribute(
                 'src',
-                'images/icons/512x512/ori_blocked.png',
+                `images/icons/512x512/${isPremium ? 'ori_blocked-premium' : 'ori_blocked'}.png`,
               )
             }
           }
@@ -334,17 +336,17 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
           restrictionsInfoBlock.classList.add('hidden')
           disseminatorInfoBlock.classList.add('hidden')
           proxyingInfo.classList.add('hidden')
-          statusImage.setAttribute('src', 'images/icons/512x512/tor.png')
+          statusImage.setAttribute('src', `images/icons/512x512/${isPremium ? 'tor-premium' : 'tor'}.png`)
         } else if (isI2PUrl(currentUrl)) {
           i2pNetwork.hidden = false
           toggleSiteActionsButton.hidden = true
           restrictionsInfoBlock.classList.add('hidden')
           disseminatorInfoBlock.classList.add('hidden')
           proxyingInfo.classList.add('hidden')
-          statusImage.setAttribute('src', 'images/icons/512x512/i2p.png')
+          statusImage.setAttribute('src', `images/icons/512x512/${isPremium ? 'i2p-premium' : 'i2p'}.png`)
         }
       } else {
-        statusImage.setAttribute('src', 'images/icons/512x512/disabled.png')
+        statusImage.setAttribute('src', `images/icons/512x512/${isPremium ? 'disabled-premium' : 'disabled'}.png`)
         extensionIsOff.hidden = false
         toggleSiteActionsButton.hidden = true
         mainPageInfoBlocks.forEach((element) => {

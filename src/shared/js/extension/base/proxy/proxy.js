@@ -226,7 +226,7 @@ export const takeControl = async () => {
   const extensions = await browser.management.getAll()
 
   for (const { id, name, permissions } of extensions) {
-    if (permissions.includes('proxy') && name !== self.name) {
+    if (permissions?.includes('proxy') && name !== self?.name) {
       console.warn(`Disabling ${name}...`)
       await browser.management.setEnabled(id, false)
     }

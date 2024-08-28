@@ -8,6 +8,7 @@ export const TaskType = {
   PING: 'ping',
   REMOVE_BAD_PROXIES: 'removeBadProxies',
   SET_PROXY: 'setProxy',
+  CHECK_PREMIUM: 'monitorPremiumExpiration',
 }
 
 export const defaultConfig = {
@@ -41,6 +42,15 @@ export const defaultConfig = {
   customProxyServerURI: '',
   customProxyUsername: '',
   customProxyPassword: '',
+
+  // premium proxy
+  usePremiumProxy: false,
+  premiumProxyServerURI: '',
+  premiumUsername: '',
+  premiumPassword: '',
+  premiumBackendEndpoint: '',
+  premiumIdentificationCode: '',
+  premiumExpirationDate: Date.now(),
 
   // registry
   customDPIDomains: [],

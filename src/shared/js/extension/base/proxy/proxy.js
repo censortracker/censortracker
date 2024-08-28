@@ -3,6 +3,7 @@ import configManager from '../config'
 import registry from '../registry'
 import * as handlers from './handlers'
 import { getPacScript } from './pac'
+import { getPremiumPacScript } from './pacPremium'
 
 export const isEnabled = async () => {
   const { useProxy } = await configManager.get('useProxy')

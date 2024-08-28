@@ -20,6 +20,31 @@ export const disable = async () => {
   configManager.set({ useProxy: false })
 }
 
+export const monitorPremiumExpiration = async () => {
+  const {
+    usePremiumProxy,
+    premiumExpirationDate,
+  } = await configManager.get(
+    'usePremiumProxy',
+    'premiumExpirationDate',
+  )
+
+  if (!usePremiumProxy) {
+    return false
+  }
+  if (Date.now() >= premiumExpirationDate) {
+    await configManager.set({
+      usePremiumProxy: false,
+      premiumProxyServerURI: '',
+      premiumUsername: '',
+      premiumPassword: '',
+      premiumIdentificationCode: '',
+    })
+    return true
+  }
+  return false
+}
+
 export const getProxyingRules = async () => {
   const {
     proxyServerURI,
@@ -74,24 +99,44 @@ export const setProxy = async () => {
   const proxyConfig = {}
   const domains = await registry.getDomainsByLevel()
 
-  if (Object.keys(domains).length === 0) {
-    await removeProxy()
-    return false
-  }
-
   const {
-    proxyServerURI,
-    proxyServerProtocol,
-  } = await getProxyingRules()
+    localConfig: { countryCode },
+    usePremiumProxy,
+    premiumProxyServerURI,
+    ignoredHosts,
+  } = await configManager.get(
+    'localConfig',
+    'usePremiumProxy',
+    'premiumProxyServerURI',
+    'ignoredHosts',
+  )
 
-  const { localConfig: { countryCode } } = await configManager.get('localConfig')
+  let pacData
 
-  const pacData = getPacScript({
-    domains,
-    proxyServerURI,
-    proxyServerProtocol,
-    countryCode,
-  })
+  if (usePremiumProxy) {
+    pacData = getPremiumPacScript({
+      premiumProxyServerURI,
+      ignoredHosts,
+    })
+    console.log('Configured premium proxy PAC')
+  } else {
+    if (Object.keys(domains).length === 0) {
+      await removeProxy()
+      return false
+    }
+
+    const {
+      proxyServerURI,
+      proxyServerProtocol,
+    } = await getProxyingRules()
+
+    pacData = getPacScript({
+      domains,
+      proxyServerURI,
+      proxyServerProtocol,
+      countryCode,
+    })
+  }
 
   if (browser.isFirefox) {
     const blob = new Blob([pacData], {

@@ -48,7 +48,7 @@ export const defaultConfig = {
   premiumProxyServerURI: '',
   premiumUsername: '',
   premiumPassword: '',
-  premiumBackendEndpoint: '',
+  premiumBackendURL: '',
   premiumIdentificationCode: '',
   premiumExpirationDate: Date.now(),
 

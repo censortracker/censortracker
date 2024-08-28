@@ -29,7 +29,7 @@ export const handleProxyOptionsMessage = (
       (async () => {
         try {
           const passedData = JSON.parse(atob(message.payload.configString))
-          const requiredKeys = ['serverURI', 'username', 'password', 'backendEndpoint', 'signature']
+          const requiredKeys = ['serverURI', 'username', 'password', 'backendURL', 'signature']
           const passedKeys = Object.keys(passedData)
 
           if (!requiredKeys.every((key) => passedKeys.includes(key))) {
@@ -41,7 +41,7 @@ export const handleProxyOptionsMessage = (
             serverURI: premiumProxyServerURI,
             username: premiumUsername,
             password: premiumPassword,
-            backendEndpoint: premiumBackendEndpoint,
+            backendURL: premiumBackendURL,
             signature: premiumIdentificationCode,
           } = passedData
 
@@ -53,7 +53,7 @@ export const handleProxyOptionsMessage = (
             premiumProxyServerURI,
             premiumUsername,
             premiumPassword,
-            premiumBackendEndpoint,
+            premiumBackendURL,
             premiumIdentificationCode,
             premiumExpirationDate,
           })

@@ -489,6 +489,9 @@
   "useOwnProxy": {
     "message": "Өзіңіздің проксиіңіз"
   },
+  "usePremiumProxy": {
+    "message": "Премиум прокси"
+  },
   "useProxy": {
     "message": "Проксиді қолдану"
   },

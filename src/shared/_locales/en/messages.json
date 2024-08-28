@@ -489,6 +489,9 @@
   "useOwnProxy": {
     "message": "Use your own proxy"
   },
+  "usePremiumProxy": {
+    "message": "Use premium proxy"
+  },
   "useProxy": {
     "message": "Use proxy"
   },

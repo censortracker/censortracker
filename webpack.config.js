@@ -44,7 +44,6 @@ const webWorkerConfig = {
     extensions: ['.js', '.ts', '.json'],
     alias: {
       '@': resolve('src'),
-      'Background': resolve('src/shared/js/background'),
     },
   },
 
@@ -103,7 +102,6 @@ const webConfig = {
     extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
     alias: {
       '@': resolve('src'),
-      'Background': resolve('src/shared/js/background'),
     },
   },
   module: {

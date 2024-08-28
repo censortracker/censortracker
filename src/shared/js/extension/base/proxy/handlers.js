@@ -18,6 +18,11 @@ export const handleProxyError = async ({ error }) => {
 
   error = error.replace('net::', '')
 
+  // Collateral error for proxy with auth
+  if (error === 'ERR_TUNNEL_CONNECTION_FAILED') {
+    return
+  }
+
   const proxyErrors = [
     // Firefox
     'NS_ERROR_UNKNOWN_PROXY_HOST',
@@ -65,5 +70,49 @@ export const handleProxyError = async ({ error }) => {
         browser.tabs.reload(tab.id)
       })
     }
+  }
+}
+
+export const HandleAuthRequired = async (details, asyncCallback) => {
+  console.log('Proxy authorization event listener fired')
+
+  if (!details.isProxy) {
+    asyncCallback({
+      cancel: true,
+    })
+  } else {
+    const {
+      useOwnProxy,
+      customProxyUsername,
+      customProxyPassword,
+      usePremiumProxy,
+      premiumUsername,
+      premiumPassword,
+    } = await configManager.get(
+      'useOwnProxy',
+      'customProxyUsername',
+      'customProxyPassword',
+      'usePremiumProxy',
+      'premiumUsername',
+      'premiumPassword',
+    )
+
+    let username
+    let password
+
+    if (useOwnProxy) {
+      username = customProxyUsername
+      password = customProxyPassword
+    } else if (usePremiumProxy) {
+      username = premiumUsername
+      password = premiumPassword
+    }
+
+    asyncCallback({
+      authCredentials: {
+        username,
+        password,
+      },
+    })
   }
 }

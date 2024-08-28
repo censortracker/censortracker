@@ -30,9 +30,9 @@ export const getPacScript = (
     }
 
     // Proxy *.onion and *.i2p domains.
-    // if (shExpMatch(host, '*.onion') || shExpMatch(host, '*.i2p')) {
-    //   return '${proxyServerProtocol} ${proxyServerURI};';
-    // }
+    if (shExpMatch(host, '*.onion') || shExpMatch(host, '*.i2p')) {
+      return '${proxyServerProtocol} ${proxyServerURI};';
+    }
   
     let isHostBlocked = false;
     const domainLevel = host.split('.').length;

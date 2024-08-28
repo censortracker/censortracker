@@ -26,8 +26,6 @@ export const defaultConfig = {
   // proxy
   badProxies: [],
   currentProxyServer: '',
-  customProxyProtocol: '',
-  customProxyServerURI: '',
   fallbackProxyError: '',
   fallbackProxyInUse: false,
   fallbackReason: '',
@@ -37,6 +35,12 @@ export const defaultConfig = {
   proxyServerURI: '',
   useOwnProxy: false,
   useProxy: false,
+
+  // custom server
+  customProxyProtocol: '',
+  customProxyServerURI: '',
+  customProxyUsername: '',
+  customProxyPassword: '',
 
   // registry
   customDPIDomains: [],

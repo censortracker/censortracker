@@ -2,6 +2,8 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
 
 (async () => {
   const source = 'proxy-options'
+  const SERVER_REGEX = /^(?:(?<username>[^:]+):(?<password>[^@]+)@)?(?<serverURI>[^:]+(?::\d+)?)$/
+
   const { useProxy: proxyingEnabled } = await sendConfigFetchMsg('useProxy')
   const proxyIsDown = document.getElementById('proxyIsDown')
   const proxyServerInput = document.getElementById('proxyServerInput')
@@ -28,10 +30,14 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
     useOwnProxy,
     customProxyProtocol,
     customProxyServerURI,
+    customProxyUsername,
+    customProxyPassword,
   } = await sendConfigFetchMsg(
     'useOwnProxy',
     'customProxyProtocol',
     'customProxyServerURI',
+    'customProxyUsername',
+    'customProxyPassword',
   )
 
   if (customProxyProtocol) {
@@ -42,21 +48,32 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
     proxyOptionsInputs.hidden = false
     useCustomProxyRadioButton.checked = true
     proxyOptionsInputs.classList.remove('hidden')
+
+    const authPrefix = customProxyUsername && customProxyPassword ? (
+      `${customProxyUsername}:${customProxyPassword}@`
+    ) : ''
+
+    proxyServerInput.value = authPrefix + customProxyServerURI
   } else {
     proxyOptionsInputs.classList.add('hidden')
     useDefaultProxyRadioButton.checked = true
   }
 
-  if (customProxyServerURI) {
-    proxyServerInput.value = customProxyServerURI
-  }
-
   saveCustomProxyButton.addEventListener('click', async (event) => {
     const customProxyServer = proxyServerInput.value
     const proxyProtocol = currentProxyProtocol.textContent.trim()
+    const customProxyServerMatch = customProxyServer.match(SERVER_REGEX)
 
-    if (customProxyServer) {
-      sendExtensionCallMsg(source, 'setCustomProxy', { proxyProtocol, customProxyServer })
+    if (customProxyServerMatch) {
+      const { username, password, serverURI } = customProxyServerMatch.groups
+
+      sendExtensionCallMsg(source, 'setCustomProxy',
+        {
+          proxyProtocol,
+          customProxyServer: serverURI,
+          username,
+          password,
+        })
       proxyServerInput.classList.remove('invalid-input')
 
       console.log(`Proxy host changed to: ${customProxyServer}`)

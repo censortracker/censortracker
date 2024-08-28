@@ -18,6 +18,8 @@ export const handleProxyOptionsMessage = (
         useOwnProxy: true,
         customProxyProtocol: message.payload.proxyProtocol,
         customProxyServerURI: message.payload.customProxyServer,
+        customProxyUsername: message.payload.username,
+        customProxyPassword: message.payload.password,
       }).then(() => {
         Extension.proxy.setProxy()
       })

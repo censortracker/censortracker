@@ -18,6 +18,11 @@ export const handleProxyError = async ({ error }) => {
 
   error = error.replace('net::', '')
 
+  // Collateral error for proxy with auth
+  if (error === 'ERR_TUNNEL_CONNECTION_FAILED') {
+    return
+  }
+
   const proxyErrors = [
     // Firefox
     'NS_ERROR_UNKNOWN_PROXY_HOST',

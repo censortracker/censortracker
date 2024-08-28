@@ -72,3 +72,9 @@ if (browser.isFirefox) {
 }
 
 browser.runtime.onMessage.addListener(handleMessage)
+
+browser.webRequest.onAuthRequired.addListener(
+  Extension.proxy.handlers.HandleAuthRequired,
+  { urls: ['<all_urls>'] },
+  ['asyncBlocking'],
+)

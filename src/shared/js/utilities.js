@@ -3,6 +3,7 @@ import { getDomain, getHostname, getPublicSuffix } from 'tldts'
 import isURL from 'validator/lib/isURL'
 
 import browser from './browser-api'
+import { MILLISECONDS_IN_DAY } from './extension/base/config/constants'
 
 function startsWithExtension (string) {
   return /^(chrome|moz)-extension:/.test(string)
@@ -162,3 +163,7 @@ export const removePrefix = (str, prefix) => {
   }
   return str
 }
+
+export const countDays = (start, end) => (
+  Math.ceil((end - start) / MILLISECONDS_IN_DAY)
+)

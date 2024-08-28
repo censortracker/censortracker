@@ -61,3 +61,5 @@ export const defaultConfig = {
   notifiedHosts: [],
   useRegistry: true,
 }
+
+export const MILLISECONDS_IN_DAY = 86400000

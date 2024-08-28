@@ -29,7 +29,7 @@ export const handleProxyOptionsMessage = (
       (async () => {
         try {
           const passedData = JSON.parse(atob(message.payload.configString))
-          const requiredKeys = ['serverURI', 'username', 'password', 'backendEndpoint', 'signature' ]
+          const requiredKeys = ['serverURI', 'username', 'password', 'backendEndpoint', 'signature']
           const passedKeys = Object.keys(passedData)
 
           if (!requiredKeys.every((key) => passedKeys.includes(key))) {
@@ -45,6 +45,9 @@ export const handleProxyOptionsMessage = (
             signature: premiumIdentificationCode,
           } = passedData
 
+          // TODO: ping backend to get expiration date
+          const premiumExpirationDate = Date.now() + (30 * (24 * 60 * 60 * 1000))
+
           await ConfigManager.set({
             usePremiumProxy: true,
             premiumProxyServerURI,
@@ -52,9 +55,10 @@ export const handleProxyOptionsMessage = (
             premiumPassword,
             premiumBackendEndpoint,
             premiumIdentificationCode,
+            premiumExpirationDate,
           })
           await Extension.proxy.setProxy()
-          sendResponse({ response: 'success' })
+          sendResponse({ res: { premiumIdentificationCode, premiumExpirationDate } })
           return
         } catch {
           sendResponse({ err: 'parse json error' })

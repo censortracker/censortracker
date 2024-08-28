@@ -84,16 +84,28 @@
             </button>
           </div>
 
-          <div id="proxyPremiumForm" class="proxy-options-inputs hidden">
-
-            <input type="text"
+          <div id="proxyPremiumForm" class="hidden">
+            <div id="premiumProxyData" class="hidden">
+              <p class="premium-proxy-data">
+                Осталось дней:
+                <span id="days-to-expiration-label">30</span>
+              </p>
+              <br>
+              <p class="premium-proxy-data">
+                Код идентификации:
+                <span id="identification-code-label">abcdef</span>
+              </p>
+            </div>
+            <div class="proxy-options-inputs">
+              <input type="text"
                    id="proxyPremiumInput"
                    class="input-proxy"
                    placeholder="encoded config string">
 
-            <button class="btn btn-dark" id="savePremiumProxyButton">
-              <span class="btn__text" data-i18n-key="saveCustomProxyButton"></span>
-            </button>
+              <button class="btn btn-dark" id="savePremiumProxyButton">
+                <span class="btn__text" data-i18n-key="saveCustomProxyButton"></span>
+              </button>
+            </div>
           </div>
         </div>
 

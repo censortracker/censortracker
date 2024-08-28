@@ -447,6 +447,15 @@ a {
     font-weight: normal;
 }
 
+.premium-proxy-data {
+    position: relative;
+    padding-left: 45px;
+    display: inline-block;
+    font-size: 16px;
+    line-height: 15px;
+    font-weight: normal;
+}
+
 .proxy-options-inputs {
     display: flex;
     margin-left: 45px;

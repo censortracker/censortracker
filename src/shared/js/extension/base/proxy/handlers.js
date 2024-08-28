@@ -72,3 +72,47 @@ export const handleProxyError = async ({ error }) => {
     }
   }
 }
+
+export const HandleAuthRequired = async (details, asyncCallback) => {
+  console.log('Proxy authorization event listener fired')
+
+  if (!details.isProxy) {
+    asyncCallback({
+      cancel: true,
+    })
+  } else {
+    const {
+      useOwnProxy,
+      customProxyUsername,
+      customProxyPassword,
+      usePremiumProxy,
+      premiumUsername,
+      premiumPassword,
+    } = await configManager.get(
+      'useOwnProxy',
+      'customProxyUsername',
+      'customProxyPassword',
+      'usePremiumProxy',
+      'premiumUsername',
+      'premiumPassword',
+    )
+
+    let username
+    let password
+
+    if (useOwnProxy) {
+      username = customProxyUsername
+      password = customProxyPassword
+    } else if (usePremiumProxy) {
+      username = premiumUsername
+      password = premiumPassword
+    }
+
+    asyncCallback({
+      authCredentials: {
+        username,
+        password,
+      },
+    })
+  }
+}

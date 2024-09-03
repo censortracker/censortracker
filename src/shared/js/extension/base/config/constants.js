@@ -45,6 +45,7 @@ export const defaultConfig = {
 
   // premium proxy
   usePremiumProxy: false,
+  haveActivePremiumConfig: false,
   premiumProxyServerURI: '',
   premiumUsername: '',
   premiumPassword: '',

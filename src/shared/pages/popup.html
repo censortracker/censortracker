@@ -12,6 +12,11 @@
 <div class="container">
   <div class="main-page">
     <p id="extension-id" class="inisible-message"></p>
+
+    <div id="premiumBadge" class="hidden">
+      <span class="premium-badge">Premium</span>
+    </div>
+
     <div class="main-page__image" id="statusImageDiv">
       <img id="statusImage"
            class="image__status"
@@ -171,6 +176,42 @@
       <div class="censor-tracker__column">
         <div class="censor-tracker__btn" id="disableExtension">
           <img class="image__turn-tracker" src="images/icons/512x512/btn_stop.svg" width="11px" height="16px" alt=""/>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="popupPremiumSuggestion" class="premium-suggestion hidden">
+    <div  class="footer unselectable">
+      <div class="censor-tracker">
+        <div>
+          <div class="censor-tracker__title">
+            <span class="censor-tracker__turn premium-suggestion-text" data-i18n-key="popupPremiumSuggestion"></span>
+          </div>
+        </div>
+        <div>
+          <span class="premium-badge">Premium</span>
+        </div>
+      </div>
+      <a href="premium-proxy.html" target="_blank" class="default-btn premiumButton" data-i18n-key="showDetailsButton"></a>
+    </div>
+  </div>
+
+  <div id="popupPremiumSuggestionYoutube" class="premium-suggestion hidden">
+    <div  class="footer unselectable">
+      <div class="censor-tracker">
+        <div class="row">
+          <img class="" src="images/popup/play.svg" alt="play"/>
+          <div class="progress-container">
+            <div id="progressBar" class="progress-bar loading"></div>
+            <div class="progress-bar playing"></div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div id="youtubeToggle" class="youtube-toggle">
+          <span class="premium-suggestion-text" data-i18n-key="speedUpYouTubeSuggestion"></span>
+          <a href="premium-proxy.html" target="_blank" class="default-btn youtube-speedup" data-i18n-key="speedUpYouTubeButton"></a>
         </div>
       </div>
     </div>

@@ -660,6 +660,107 @@ div#grantPrivateBrowsingPermissionsButton {
     font-size: 12px;
 }
 
+.row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.premium-badge {
+    background-color: #aafb1f;
+    padding: 3px;
+    padding-top: 1px;
+    padding-bottom: 1px;
+    border-radius: 10px;
+    font-weight: 300;
+    font-size: 12px;
+    line-height: 20px;
+    color: #2b6204;
+}
+
+.premium-suggestion, .premium-suggestion .footer {
+    background-color: #e6e6e6;
+    overflow: hidden;
+    height: 100%;
+    padding-bottom: 15px;
+}
+
+.premium-suggestion-text {
+    font-weight: 500;
+}
+
+.premiumButton {
+    width: max-content;
+    margin-left: 20px;
+}
+
+#premiumBadge {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+}
+
+.progress-container {
+    position: relative;
+    width: 250px;
+    height: 5px;
+    border-radius: 10px;
+    background-color: #c2c2c2;
+    overflow: hidden;
+}
+
+.progress-bar {
+    position: absolute; 
+    height: 5px;
+    border-radius: 10px;
+}
+
+.progress-bar.loading {
+    width: 5%;
+    background-color: #999999;
+    animation: loadProgress 3s ease-out forwards;
+}
+
+.progress-bar.playing {
+    width: 2%;
+    background-color: red;
+    z-index: 1;
+}
+
+@keyframes loadProgress {
+    0% {
+        width: 5%;
+    }
+    70% {
+        width: 15%;
+    }
+    100% {
+        width: 100%;
+    }
+}
+
+.youtube-toggle {
+    padding-left: 40px;
+    padding-right: 60px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 1.5s ease;
+    background-color: #e6e6e6;
+}
+.youtube-toggle.toggled {
+    max-height: 80px;
+}
+
+.youtube-toggle-text {
+    font-weight: 500;
+}
+
+.default-btn.youtube-speedup {
+    width: fit-content;
+    margin-top: 5px;
+    margin-bottom: 20px;
+}
+
 @media (prefers-color-scheme: dark) {
     :root {
         color-scheme: dark;

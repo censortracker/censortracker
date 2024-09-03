@@ -37,6 +37,7 @@ export const monitorPremiumExpiration = async () => {
   if (Date.now() >= premiumExpirationDate) {
     await configManager.set({
       usePremiumProxy: false,
+      haveActivePremiumConfig: false,
       premiumProxyServerURI: '',
       premiumUsername: '',
       premiumPassword: '',
@@ -106,12 +107,10 @@ export const setProxy = async () => {
 
   const {
     localConfig: { countryCode },
-    usePremiumProxy,
     premiumProxyServerURI,
     ignoredHosts,
   } = await configManager.get(
     'localConfig',
-    'usePremiumProxy',
     'premiumProxyServerURI',
     'ignoredHosts',
   )
@@ -167,7 +166,6 @@ export const setProxy = async () => {
     await enable()
     await grantIncognitoAccess()
     console.warn('PAC has been set successfully!')
-    return true
   } catch (error) {
     console.error(`PAC could not be set: ${error}`)
     await disable()

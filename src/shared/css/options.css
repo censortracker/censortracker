@@ -695,7 +695,7 @@ kbd {
     color: #3B332B;
     font-size: 13px;
     line-height: 17px;
-    margin-left: 400px;
+    margin-right: 10px;
 }
 
 .invalid-input {
@@ -974,6 +974,118 @@ kbd {
     width: calc(100% + 0px);
 }
 
+.premium-badge {
+    background-color: #aafb1f;
+    padding: 3px;
+    padding-top: 1px;
+    padding-bottom: 1px;
+    border-radius: 10px;
+    font-weight: 300;
+    font-size: 12px;
+    line-height: 20px;
+    color: #2b6204;
+}
+
+.main-page__title .premium-badge {
+    font-size: 16px;
+    padding: 5px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.row.opposing {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.separate-line-row {
+    margin-top: 15px;
+    margin-bottom: 38px;
+}
+
+.clickable {
+    cursor: pointer;
+}
+
+.icons-row {
+    gap: 5px
+}
+
+.icon__payment {
+    width: 30px;
+    aspect-ratio: 1 / 1;
+}
+
+.premium-proxy-price {
+    font-size: 26px;
+    font-family: inherit;
+    font-weight: 400;
+}
+
+.description-large {
+    font-size: 18px;
+    font-weight: 300;
+    margin-top: 28px;
+    margin-bottom: 28px;
+}
+
+.redirect-description {
+    font-weight: 400;
+    font-size: 14px;
+    color: #6d675f;
+    margin-top: 15px;
+    margin-right: 70px;
+    cursor: text;
+}
+
+.premium-code-input-title {
+    font-size: 18px;
+}
+
+.premium-proxy-card {
+    padding-bottom: 60px;
+}
+
+.premium-proxy-input {
+    display: flex;
+    margin-top: 15px;
+}
+
+.footer-text {
+    opacity: 0.5;
+    width: 570px;
+    height: 20px;
+    bottom: 93px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.premium-proxy-expiration-date {
+    margin-right: 50px;
+    line-height: 40px;
+}
+
+.premium-proxy-days-left {
+    font-size: 25px;
+    font-weight: 500;
+    line-height: 40px;
+}
+
+.error-message {
+    font-size: 14px;
+    font-weight: 300;
+    color: red;
+    margin-top: 10px;
+}
+
 @media (prefers-color-scheme: dark) {
     :root {
         color-scheme: dark;
@@ -1046,6 +1158,11 @@ kbd {
     }
 
     #version {
+        color: #F4F1F1;
+        opacity: 0.5;
+    }
+
+    .footer-text {
         color: #F4F1F1;
         opacity: 0.5;
     }

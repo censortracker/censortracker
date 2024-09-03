@@ -1,4 +1,3 @@
-import { countDays } from '../utilities'
 import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './messaging'
 
 (async () => {
@@ -9,15 +8,9 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
   const proxyIsDown = document.getElementById('proxyIsDown')
   const proxyServerInput = document.getElementById('proxyServerInput')
   const saveCustomProxyButton = document.getElementById('saveCustomProxyButton')
-  const savePremiumProxyButton = document.getElementById('savePremiumProxyButton')
   const useProxyCheckbox = document.getElementById('useProxyCheckbox')
   const proxyCustomOptions = document.getElementById('proxyCustomOptions')
   const proxyOptionsInputs = document.getElementById('proxyOptionsInputs')
-  const proxyPremiumForm = document.getElementById('proxyPremiumForm')
-  const premiumProxyData = document.getElementById('premiumProxyData')
-  const premiumExpirationDateLabel = document.getElementById('days-to-expiration-label')
-  const premiumIdentificationCodeLabel = document.getElementById('identification-code-label')
-  const proxyPremiumInput = document.getElementById('proxyPremiumInput')
   const useCustomProxyRadioButton = document.getElementById('useCustomProxy')
   const useDefaultProxyRadioButton = document.getElementById('useDefaultProxy')
   const usePremiumProxyRadioButton = document.getElementById('usePremiumProxy')
@@ -41,8 +34,7 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
     customProxyUsername,
     customProxyPassword,
     usePremiumProxy,
-    premiumIdentificationCode,
-    premiumExpirationDate,
+    haveActivePremiumConfig,
   } = await sendConfigFetchMsg(
     'useOwnProxy',
     'customProxyProtocol',
@@ -50,8 +42,7 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
     'customProxyUsername',
     'customProxyPassword',
     'usePremiumProxy',
-    'premiumIdentificationCode',
-    'premiumExpirationDate',
+    'haveActivePremiumConfig',
   )
 
   if (customProxyProtocol) {
@@ -70,10 +61,7 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
     proxyServerInput.value = authPrefix + customProxyServerURI
   } else if (usePremiumProxy) {
     usePremiumProxyRadioButton.checked = true
-    proxyPremiumForm.classList.remove('hidden')
-    premiumProxyData.classList.remove('hidden')
-    premiumIdentificationCodeLabel.textContent = premiumIdentificationCode
-    premiumExpirationDateLabel.textContent = countDays(Date.now(), premiumExpirationDate)
+    proxyOptionsInputs.classList.add('hidden')
   } else {
     proxyOptionsInputs.classList.add('hidden')
     useDefaultProxyRadioButton.checked = true
@@ -105,45 +93,18 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
   proxyCustomOptionsRadioGroup.addEventListener('change', async (event) => {
     if (event.target.value === 'default') {
       proxyOptionsInputs.classList.add('hidden')
-      proxyPremiumForm.classList.add('hidden')
       proxyServerInput.value = ''
       sendExtensionCallMsg(source, 'removeCustomProxy')
     } else if (event.target.value === 'custom') {
       proxyOptionsInputs.classList.remove('hidden')
-      proxyPremiumForm.classList.add('hidden')
-      proxyPremiumInput.value = ''
     } else if (event.target.value === 'premium') {
-      proxyOptionsInputs.classList.add('hidden')
-      proxyPremiumForm.classList.remove('hidden')
-      proxyServerInput.value = ''
-    }
-  })
-
-  savePremiumProxyButton.addEventListener('click', async (event) => {
-    const encodedPremiumData = proxyPremiumInput.value
-
-    premiumProxyData.classList.add('hidden')
-    if (encodedPremiumData) {
-      const { res, err } = await sendExtensionCallMsg(source, 'setPremiumProxy',
-        {
-          configString: encodedPremiumData,
-        },
-      )
-
-      if (err) {
-        console.log(err)
-        proxyPremiumInput.classList.add('invalid-input')
+      if (haveActivePremiumConfig) {
+        sendExtensionCallMsg(source, 'activatePremiumProxy')
+        proxyOptionsInputs.classList.add('hidden')
+        usePremiumProxyRadioButton.checked = true
       } else {
-        premiumProxyData.classList.remove('hidden')
-        const { premiumIdentificationCode: idCode, premiumExpirationDate: expDate } = res
-
-        premiumIdentificationCodeLabel.textContent = idCode
-        premiumExpirationDateLabel.textContent = countDays(Date.now(), expDate)
-
-        proxyPremiumInput.classList.remove('invalid-input')
+        window.location.href = 'premium-proxy.html'
       }
-    } else {
-      proxyPremiumInput.classList.add('invalid-input')
     }
   })
 

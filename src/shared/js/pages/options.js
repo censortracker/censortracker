@@ -7,9 +7,16 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
   window.server = server
 
   const source = 'options'
-  const { useProxy: proxyingEnabled } = await sendConfigFetchMsg('useProxy')
+  const {
+    useProxy: proxyingEnabled,
+    usePremiumProxy,
+  } = await sendConfigFetchMsg(
+    'useProxy',
+    'usePremiumProxy',
+  )
   const version = document.getElementById('version')
   const proxyStatus = document.getElementById('proxyStatus')
+  const premiumProxyStatus = document.getElementById('premiumProxyStatus')
   const showNotificationsCheckbox = document.getElementById(
     'showNotificationsCheckbox',
   )
@@ -74,6 +81,16 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
     }
     proxyStatus.innerText = browser.i18n.getMessage(proxyStatusMessage)
     proxyStatus.hidden = false
+  }
+
+  if (premiumProxyStatus) {
+    let proxyStatusMessage = 'premiumProxyStatusTurnedOff'
+
+    if (usePremiumProxy) {
+      proxyStatusMessage = 'premiumProxyStatusTurnedOn'
+    }
+    premiumProxyStatus.innerText = browser.i18n.getMessage(proxyStatusMessage)
+    premiumProxyStatus.hidden = false
   }
 
   if (browser.isFirefox) {

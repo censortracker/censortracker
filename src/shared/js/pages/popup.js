@@ -17,6 +17,11 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
 
   extensionIdlabel.textContent = browser.runtime.id
 
+  const premiumBadge = document.getElementById('premiumBadge')
+  const popupPremiumSuggestion = document.getElementById('popupPremiumSuggestion')
+  const popupPremiumSuggestionYoutube = document.getElementById('popupPremiumSuggestionYoutube')
+  const youtubeToggle = document.getElementById('youtubeToggle')
+
   const statusImage = document.getElementById('statusImage')
   const disseminatorInfoBlock = document.getElementById('ori')
   const siteActions = document.getElementById('siteActions')
@@ -220,6 +225,20 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
             }
           },
         )
+
+        if (!isPremium && currentHostname === 'www.youtube.com') {
+          popupPremiumSuggestionYoutube.classList.remove('hidden')
+          const progressBar = document.getElementById('progressBar')
+
+          progressBar.addEventListener('animationend', () => {
+            youtubeToggle.classList.remove('hidden')
+            youtubeToggle.classList.add('toggled')
+          })
+        } else if (isPremium) {
+          premiumBadge.classList.remove('hidden')
+        } else {
+          popupPremiumSuggestion.classList.remove('hidden')
+        }
 
         const siteActionRadioButtons = document.querySelectorAll(
           'input[name="site-action-radio"]',

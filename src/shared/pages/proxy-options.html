@@ -43,6 +43,10 @@
 
         <div id="proxyCustomOptions" hidden>
           <div id="proxyCustomOptionsRadioGroup" class="radio-buttons-group">
+            <div class="radio-button" id="premiumProxyRadioButton">
+              <input class="radio-button-input" type="radio" name="proxy-radio" id="usePremiumProxy" value="premium">
+              <label class="radio-button-label" for="usePremiumProxy" data-i18n-key="usePremiumProxy"></label>
+            </div>
             <div class="radio-button">
               <input id="useDefaultProxy" class="radio-button-input" type="radio" name="proxy-radio" value="default"
                      checked>
@@ -51,10 +55,6 @@
             <div class="radio-button">
               <input class="radio-button-input" type="radio" name="proxy-radio" id="useCustomProxy" value="custom">
               <label class="radio-button-label" for="useCustomProxy" data-i18n-key="useOwnProxy"></label>
-            </div>
-            <div class="radio-button">
-              <input class="radio-button-input" type="radio" name="proxy-radio" id="usePremiumProxy" value="premium">
-              <label class="radio-button-label" for="usePremiumProxy" data-i18n-key="usePremiumProxy"></label>
             </div>
           </div>
 
@@ -82,30 +82,6 @@
             <button class="btn btn-dark" id="saveCustomProxyButton">
               <span class="btn__text" data-i18n-key="saveCustomProxyButton"></span>
             </button>
-          </div>
-
-          <div id="proxyPremiumForm" class="hidden">
-            <div id="premiumProxyData" class="hidden">
-              <p class="premium-proxy-data">
-                Осталось дней:
-                <span id="days-to-expiration-label">30</span>
-              </p>
-              <br>
-              <p class="premium-proxy-data">
-                Код идентификации:
-                <span id="identification-code-label">abcdef</span>
-              </p>
-            </div>
-            <div class="proxy-options-inputs">
-              <input type="text"
-                   id="proxyPremiumInput"
-                   class="input-proxy"
-                   placeholder="encoded config string">
-
-              <button class="btn btn-dark" id="savePremiumProxyButton">
-                <span class="btn__text" data-i18n-key="saveCustomProxyButton"></span>
-              </button>
-            </div>
           </div>
         </div>
 

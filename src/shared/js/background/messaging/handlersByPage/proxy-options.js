@@ -17,6 +17,7 @@ export const handleProxyOptionsMessage = (
     case 'setCustomProxy':
       ConfigManager.set({
         useOwnProxy: true,
+        usePremiumProxy: false,
         customProxyProtocol: message.payload.proxyProtocol,
         customProxyServerURI: message.payload.customProxyServer,
         customProxyUsername: message.payload.username,
@@ -33,7 +34,7 @@ export const handleProxyOptionsMessage = (
           const passedKeys = Object.keys(passedData)
 
           if (!requiredKeys.every((key) => passedKeys.includes(key))) {
-            sendResponse({ err: 'invalid data provided' })
+            sendResponse({ err: 'invalidJsonError' })
             return
           }
 
@@ -50,6 +51,7 @@ export const handleProxyOptionsMessage = (
 
           await ConfigManager.set({
             usePremiumProxy: true,
+            haveActivePremiumConfig: true,
             premiumProxyServerURI,
             premiumUsername,
             premiumPassword,
@@ -61,11 +63,24 @@ export const handleProxyOptionsMessage = (
           sendResponse({ res: { premiumIdentificationCode, premiumExpirationDate } })
           return
         } catch {
-          sendResponse({ err: 'parse json error' })
+          sendResponse({ err: 'parseJSONError' })
         }
       })()
       return true
+    case 'activatePremiumProxy':
+      (async () => {
+        await Extension.proxy.removeCustomProxy()
+        const { haveActivePremiumConfig } = await ConfigManager.get('haveActivePremiumConfig')
+
+        if (haveActivePremiumConfig) {
+          await ConfigManager.set({
+            usePremiumProxy: true,
+          })
+        }
+      })()
+      break
     case 'removeCustomProxy':
+      ConfigManager.set({ usePremiumProxy: false })
       Extension.proxy.removeCustomProxy().then(() => {
         Extension.proxy.setProxy()
       })

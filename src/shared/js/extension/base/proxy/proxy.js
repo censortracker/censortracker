@@ -1,6 +1,7 @@
 import browser from '../../../browser-api'
 import configManager from '../config'
 import registry from '../registry'
+import { triggerAuth } from './auth/triggerAuth'
 import * as handlers from './handlers'
 import { getPacScript } from './pac'
 import { getPremiumPacScript } from './pacPremium'
@@ -100,6 +101,9 @@ export const setProxy = async () => {
   const proxyConfig = {}
   const domains = await registry.getDomainsByLevel()
 
+  const customProxyInUse = await usingCustomProxy()
+  const premiumProxyInUse = await usingPremiumProxy()
+
   const {
     localConfig: { countryCode },
     usePremiumProxy,
@@ -114,7 +118,7 @@ export const setProxy = async () => {
 
   let pacData
 
-  if (usePremiumProxy) {
+  if (premiumProxyInUse) {
     pacData = getPremiumPacScript({
       premiumProxyServerURI,
       ignoredHosts,
@@ -170,6 +174,10 @@ export const setProxy = async () => {
     await requestIncognitoAccess()
     return false
   }
+  if (customProxyInUse || premiumProxyInUse) {
+    await triggerAuth()
+  }
+  return true
 }
 
 export const removeProxy = async () => {
@@ -185,8 +193,9 @@ export const alive = async () => {
 
 export const ping = async () => {
   const customProxyInUse = await usingCustomProxy()
+  const premiumProxyInUse = await usingPremiumProxy()
 
-  if (!customProxyInUse) {
+  if (!customProxyInUse && !premiumProxyInUse) {
     const { proxyPingURI } = await configManager.get('proxyPingURI')
 
     fetch(`https://${proxyPingURI}`, {
@@ -208,6 +217,12 @@ export const usingCustomProxy = async () => {
   const { useOwnProxy } = await configManager.get('useOwnProxy')
 
   return useOwnProxy
+}
+
+export const usingPremiumProxy = async () => {
+  const { usePremiumProxy } = await configManager.get('usePremiumProxy')
+
+  return usePremiumProxy
 }
 
 export const controlledByThisExtension = async () => {

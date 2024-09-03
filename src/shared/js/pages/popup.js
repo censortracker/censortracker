@@ -55,7 +55,13 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
   const openOptionsPage = document.getElementById('openOptionsPage')
   const highlightOptionsIcon = document.getElementById('highlightOptionsIcon')
 
-  const { usePremiumProxy: isPremium } = await sendConfigFetchMsg('usePremiumProxy')
+  const {
+    usePremiumProxy: isPremium,
+    localConfig: { countryCode },
+  } = await sendConfigFetchMsg(
+    'usePremiumProxy',
+    'localConfig',
+  )
 
   document.addEventListener('click', async (event) => {
     // targetIdPossibleValues = 'disableExtension' | 'enableExtension'
@@ -226,7 +232,7 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
           },
         )
 
-        if (!isPremium && currentHostname === 'www.youtube.com') {
+        if (!isPremium && currentHostname === 'www.youtube.com' && countryCode === 'RU') {
           popupPremiumSuggestionYoutube.classList.remove('hidden')
           const progressBar = document.getElementById('progressBar')
 

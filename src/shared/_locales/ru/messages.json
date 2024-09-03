@@ -521,5 +521,77 @@
   },
   "importSettingsDesc": {
     "message": "Вы можете импортировать настройки из файла JSON."
+  },
+  "premiumProxyDesc": {
+    "message": "Повышенная скорость подключения"
+  },
+  "premiumProxyDetailedDesc": {
+    "message": "Censor Tracker Pro — это повышенная скорость подключения к заблокированным сайтам. Смотрите Youtube, Дождь и другие видеосервисы без тормозов"
+  },
+  "premiumProxyStatusTurnedOff": {
+    "message": "Не подключено"
+  },
+  "premiumProxyStatusTurnedOn": {
+    "message": "Подключено"
+  },
+  "premiumProxyPrice": {
+    "message": "1049"
+  },
+  "premiumProxyPriceData": {
+    "message": "₽/год"
+  },
+  "buyButtonText": {
+    "message": "Купить"
+  },
+  "redirectToPaymentPage": {
+    "message": "Вы будете перенаправлены на сайт VPNPay для оплаты"
+  },
+  "updatePremiumProxyConfig": {
+    "message": "Обновить код"
+  },
+  "premiumCodeInputTitle": {
+    "message": "У меня уже есть код"
+  },
+  "premiumCodeInputUpdate": {
+    "message": "Введите код"
+  },
+  "premiumCodeInputPlaceholder": {
+    "message": "Код Censor Tracker Pro"
+  },
+  "savePremiumProxyButton": {
+    "message": "Применить"
+  },
+  "feedbackSuggestion": {
+    "message": "Есть вопросы или столкнулись с трудностями?"
+  },
+  "feedbackProposition": {
+    "message": "Напишите нам"
+  },
+  "premiumProxyExpirationDate": {
+    "message": "Censor Tracker Premium действует до"
+  },
+  "premiumProxyDaysLeft": {
+    "message": "Осталось дней:"
+  },
+  "premiumProxyPersonalCode": {
+    "message": "Персональный код:"
+  },
+  "parseJSONError": {
+    "message": "Не удалось извлечь данные из кода конфигурации"
+  },
+  "invalidJsonError": {
+    "message": "В коде конфигурации не представлены необходимые данные"
+  },
+  "popupPremiumSuggestion": {
+    "message": "Заблокированные сайты могут открываться быстрее с Censor Tracker Premium"
+  },
+  "showDetailsButton": {
+    "message": "Подробнее"
+  },
+  "speedUpYouTubeSuggestion": {
+    "message": "Смотрите YouTube как раньше с Censor Tracker Pro"
+  },
+  "speedUpYouTubeButton": {
+    "message": "Ускорить YouTube"
   }
 }

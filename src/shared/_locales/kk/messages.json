@@ -521,5 +521,77 @@
   },
   "importSettingsDesc": {
     "message": "Сіз параметрлерді JSON файлынан импорттай аласыз."
+  },
+  "premiumProxyDesc": {
+    "message": "Қосылу жылдамдығын арттыру"
+  },
+  "premiumProxyDetailedDesc": {
+    "message": "Censor Tracker Pro бұғатталған сайттарға қосылу жылдамдығын арттырады. Таңдаулы бейне қызметтеріңізді үзіліссіз көріңіз"
+  },
+  "premiumProxyStatusTurnedOff": {
+    "message": "Қосылмаған"
+  },
+  "premiumProxyStatusTurnedOn": {
+    "message": "Қосылды"
+  },
+  "premiumProxyPrice": {
+    "message": "1049"
+  },
+  "premiumProxyPriceData": {
+    "message": "₽/год"
+  },
+  "buyButtonText": {
+    "message": "Сатып алу"
+  },
+  "redirectToPaymentPage": {
+    "message": "Төлем үшін VPNPay веб-сайтына қайта бағытталасыз"
+  },
+  "updatePremiumProxyConfig": {
+    "message": "Кодты жаңарту"
+  },
+  "premiumCodeInputTitle": {
+    "message": "Менде код бұрыннан бар"
+  },
+  "premiumCodeInputUpdate": {
+    "message": "Кодты енгізіңіз"
+  },
+  "premiumCodeInputPlaceholder": {
+    "message": "Censor Tracker Pro коды"
+  },
+  "savePremiumProxyButton": {
+    "message": "Қолдану"
+  },
+  "feedbackSuggestion": {
+    "message": "Сұрақтарыңыз немесе қиындықтарға тап болдыңыз ба?"
+  },
+  "feedbackProposition": {
+    "message": "Бізге жазыңыз"
+  },
+  "premiumProxyExpirationDate": {
+    "message": "Censor Tracker Premium осы уақытқа дейін жарамды"
+  },
+  "premiumProxyDaysLeft": {
+    "message": "Қалған күндер:"
+  },
+  "premiumProxyPersonalCode": {
+    "message": "Жеке код:"
+  },
+  "parseJSONError": {
+    "message": "Конфигурация кодынан деректерді шығару мүмкін болмады"
+  },
+  "invalidJsonError": {
+    "message": "Конфигурация коды қажетті деректерді бермейді"
+  },
+  "popupPremiumSuggestion": {
+    "message": "Бұғатталған сайттар Censor Tracker Premium көмегімен жылдамырақ ашылады"
+  },
+  "showDetailsButton": {
+    "message": "Қосымша мәліметтер"
+  },
+  "speedUpYouTubeSuggestion": {
+    "message": "Censor Tracker Pro көмегімен YouTube-ті бұрын-соңды болмағандай көріңіз"
+  },
+  "speedUpYouTubeButton": {
+    "message": "YouTube-ті жылдамдату"
   }
 }

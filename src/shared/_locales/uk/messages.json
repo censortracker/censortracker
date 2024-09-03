@@ -521,5 +521,77 @@
   },
   "importSettingsDesc": {
     "message": "Ви можете імпортувати налаштування з файлу JSON."
+  },
+  "premiumProxyDesc": {
+    "message": "Підвищена швидкість підключення"
+  },
+  "premiumProxyDetailedDesc": {
+    "message": "Censor Tracker Pro – це підвищена швидкість підключення до заблокованих сайтів. Дивіться улюблені відеосервіси без гальм"
+  },
+  "premiumProxyStatusTurnedOff": {
+    "message": "Не підключено"
+  },
+  "premiumProxyStatusTurnedOn": {
+    "message": "Підключено"
+  },
+  "premiumProxyPrice": {
+    "message": "1049"
+  },
+  "premiumProxyPriceData": {
+    "message": "₽/год"
+  },
+  "buyButtonText": {
+    "message": "Придбати"
+  },
+  "redirectToPaymentPage": {
+    "message": "Ви будете перенаправлені на сайт VPNPay для оплати"
+  },
+  "updatePremiumProxyConfig": {
+    "message": "Оновити код"
+  },
+  "premiumCodeInputTitle": {
+    "message": "У мене вже є код"
+  },
+  "premiumCodeInputUpdate": {
+    "message": "Введіть кодд"
+  },
+  "premiumCodeInputPlaceholder": {
+    "message": "Код Censor Tracker Pro"
+  },
+  "savePremiumProxyButton": {
+    "message": "Застосувати"
+  },
+  "feedbackSuggestion": {
+    "message": "Чи є питання чи зіткнулися з труднощами?"
+  },
+  "feedbackProposition": {
+    "message": "Напишіть нам"
+  },
+  "premiumProxyExpirationDate": {
+    "message": "Censor Tracker Premium діє до"
+  },
+  "premiumProxyDaysLeft": {
+    "message": "Залишилось днів:"
+  },
+  "premiumProxyPersonalCode": {
+    "message": "Персональний код:"
+  },
+  "parseJSONError": {
+    "message": "Не вдалося отримати дані з коду конфігурації"
+  },
+  "invalidJsonError": {
+    "message": "У коді конфігурації не представлені необхідні дані"
+  },
+  "popupPremiumSuggestion": {
+    "message": "Заблоковані сайти можуть відкриватися швидше з Censor Tracker Premium"
+  },
+  "showDetailsButton": {
+    "message": "Докладніше"
+  },
+  "speedUpYouTubeSuggestion": {
+    "message": "Дивіться YouTube як раніше з Censor Tracker Pro"
+  },
+  "speedUpYouTubeButton": {
+    "message": "Прискорити YouTube"
   }
 }

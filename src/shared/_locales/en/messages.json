@@ -521,5 +521,77 @@
   },
   "importSettingsDesc": {
     "message": "You can import your settings from a JSON file."
+  },
+  "premiumProxyDesc": {
+    "message": "Increased connection speed"
+  },
+  "premiumProxyDetailedDesc": {
+    "message": "Censor Tracker Pro is an increased connection speed to blocked sites. Watch your favorite video services without any lags"
+  },
+  "premiumProxyStatusTurnedOff": {
+    "message": "Not enabled"
+  },
+  "premiumProxyStatusTurnedOn": {
+    "message": "Enabled"
+  },
+  "premiumProxyPrice": {
+    "message": "1049"
+  },
+  "premiumProxyPriceData": {
+    "message": "₽/год"
+  },
+  "buyButtonText": {
+    "message": "Purchase"
+  },
+  "redirectToPaymentPage": {
+    "message": "You will be redirected to the VPNPay website for payment"
+  },
+  "updatePremiumProxyConfig": {
+    "message": "Update the code"
+  },
+  "premiumCodeInputTitle": {
+    "message": "I already have the code"
+  },
+  "premiumCodeInputUpdate": {
+    "message": "Enter the code"
+  },
+  "premiumCodeInputPlaceholder": {
+    "message": "Censor Tracker Pro Code"
+  },
+  "savePremiumProxyButton": {
+    "message": "Apply"
+  },
+  "feedbackSuggestion": {
+    "message": "Do you have any questions or encountered any difficulties?"
+  },
+  "feedbackProposition": {
+    "message": "Contact us"
+  },
+  "premiumProxyExpirationDate": {
+    "message": "Censor Tracker Premium is valid until"
+  },
+  "premiumProxyDaysLeft": {
+    "message": "Days left:"
+  },
+  "premiumProxyPersonalCode": {
+    "message": "Personal code:"
+  },
+  "parseJSONError": {
+    "message": "Failed to extract data from configuration code"
+  },
+  "invalidJsonError": {
+    "message": "The configuration code does not provide the required data."
+  },
+  "popupPremiumSuggestion": {
+    "message": "Blocked websites can open faster with Censor Tracker Premium"
+  },
+  "showDetailsButton": {
+    "message": "Read more"
+  },
+  "speedUpYouTubeSuggestion": {
+    "message": "Watch YouTube like you used to with Censor Tracker Pro"
+  },
+  "speedUpYouTubeButton": {
+    "message": "Speed ​​up YouTube"
   }
 }

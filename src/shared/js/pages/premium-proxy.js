@@ -35,6 +35,8 @@ import { sendConfigFetchMsg, sendExtensionCallMsg/*, sendTransitionMsg */ } from
     usePremiumProxy ? 'premiumProxyStatusTurnedOn' : 'premiumProxyStatusTurnedOff',
   )
 
+  proxyPremiumInput.placeholder = browser.i18n.getMessage('premiumCodeInputPlaceholder')
+
   if (usePremiumProxy) {
     activePremiumData.classList.remove('hidden')
     updatePremiumProxyConfig.classList.remove('hidden')

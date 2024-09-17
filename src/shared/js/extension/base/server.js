@@ -1,16 +1,7 @@
 import browser from '../../browser-api'
 import { Extension } from '.'
 import ConfigManager from './config'
-import { githubConfigUrl } from './config/constants'
-
-const getConfigAPIEndpoints = () => {
-  return [
-    {
-      endpointName: 'GitHub',
-      endpointUrl: githubConfigUrl,
-    },
-  ]
-}
+import { configAPIEndpoints } from './config/constants'
 
 const FALLBACK_COUNTRY_CODE = 'RU'
 
@@ -38,7 +29,7 @@ const inquireCountryCode = async (geoIPServiceURL) => {
 const fetchConfig = async () => {
   const { currentRegionCode } = await ConfigManager.get('currentRegionCode')
 
-  for (const { endpointName, endpointUrl } of getConfigAPIEndpoints()) {
+  for (const { endpointName, endpointUrl } of configAPIEndpoints) {
     try {
       const response = await fetch(endpointUrl)
 

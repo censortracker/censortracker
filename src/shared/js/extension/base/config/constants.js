@@ -1,6 +1,23 @@
 export const extensionName = 'Censor Tracker'
 
-export const githubConfigUrl = 'https://raw.githubusercontent.com/censortracker/ctconf/main/config.json'
+export const configAPIEndpoints = [
+  {
+    endpointName: 'GitHub',
+    endpointUrl: 'https://raw.githubusercontent.com/censortracker/ctconf/main/config.json',
+  },
+  {
+    endpointName: 'CloudFlareWorker',
+    endpointUrl: 'TBD',
+  },
+  {
+    endpointName: 'CloudFlareStorage',
+    endpointUrl: 'TBD',
+  },
+  {
+    endpointName: 'Google',
+    endpointUrl: 'TBD',
+  },
+]
 
 export const fallbackCountryCode = 'RU'
 

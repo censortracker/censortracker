@@ -85,6 +85,7 @@ const webConfig = {
   devtool: 'inline-nosources-cheap-module-source-map',
   entry: {
     'popup': './src/shared/js/pages/popup.js',
+    'popup-details': './src/shared/js/pages/popup-details/details-page.js',
     'options': './src/shared/js/pages/options.js',
     'advanced-options': './src/shared/js/pages/advanced-options.js',
     'proxy-options': './src/shared/js/pages/proxy-options.js',
@@ -238,6 +239,14 @@ const webConfig = {
       template: `src/shared/pages/controlled.html`,
       inject: true,
       chunks: ['controlled'],
+      meta: contentSecurityPolicy,
+    }),
+    new HTMLWebpackPlugin({
+      title: extensionName,
+      filename: 'popup-details.html',
+      template: `src/shared/pages/popup-details.html`,
+      inject: true,
+      chunks: ['popup-details'],
       meta: contentSecurityPolicy,
     }),
     new HTMLWebpackPlugin({

@@ -132,7 +132,7 @@
     "message": "Является организатором распространения информации"
   },
   "done": {
-    "message": "Готово!"
+    "message": "Готово"
   },
   "doneDescription": {
     "message": "Операция выполнена успешно."
@@ -436,25 +436,28 @@
     "message": "Показывать системные уведомления"
   },
   "siteActionAlwaysDesc": {
-    "message": "Всегда открывать этот сайт через прокси"
+    "message": "Всегда открывается через прокси"
   },
   "siteActionAutoDesc": {
-    "message": "Открывать сайт через прокси, только если сайт окажется недоступен из-за блокировки"
+    "message": "Открывается через прокси, если запрещён"
+  },
+  "recomended": {
+    "message": "Рекомендуем"
   },
   "siteActionItemLabelAlways": {
     "message": "Всегда"
   },
   "siteActionItemLabelAuto": {
-    "message": "Авто"
+    "message": "Если доступ запрещён"
   },
   "siteActionItemLabelNever": {
     "message": "Никогда"
   },
   "siteActionNeverDesc": {
-    "message": "Никогда не открывать этот сайт через прокси (даже если сайт окажется недоступен из-за блокировки)"
+    "message": "Не проксируется"
   },
   "siteActionTitle": {
-    "message": "Когда следует использовать прокси для открытия этого сайта?"
+    "message": "Когда открывать сайт через прокси?"
   },
   "thankYou": {
     "message": "Спасибо!"

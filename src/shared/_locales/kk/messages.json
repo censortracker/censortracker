@@ -132,7 +132,7 @@
     "message": "Ақпаратты таратуды ұйымдастырушы болып табылады"
   },
   "done": {
-    "message": "Дайын!"
+    "message": "Дайын"
   },
   "doneDescription": {
     "message": "Операция сәтті орындалды."
@@ -436,25 +436,28 @@
     "message": "Жүйелік хабарландыруларды көрсету"
   },
   "siteActionAlwaysDesc": {
-    "message": "Әрқашан осы сайтты прокси арқылы ашу"
+    "message": "Әрқашан прокси арқылы ашылады"
   },
   "siteActionAutoDesc": {
-    "message": "Егер сайт бұғаттауға байланысты қол жетімді болмаса, сайтты прокси арқылы ашу"
+    "message": "Өшірілген болса, прокси арқылы ашылады"
+  },
+  "recomended": {
+    "message": "Ұсынылады"
   },
   "siteActionItemLabelAlways": {
     "message": "Әрқашан"
   },
   "siteActionItemLabelAuto": {
-    "message": "Авто"
+    "message": "Қол жеткізуге тыйым салынса"
   },
   "siteActionItemLabelNever": {
     "message": "Ешқашан"
   },
   "siteActionNeverDesc": {
-    "message": "Бұл сайтты ешқашан прокси арқылы ашпау (тіпті бұғаттауға байланысты сайт қол жетімді болмаса да)"
+    "message": "Прокси емес"
   },
   "siteActionTitle": {
-    "message": "Бұл сайтты ашу үшін проксиді қашан пайдалану керек?"
+    "message": "Прокси арқылы қашан ашу керек?"
   },
   "thankYou": {
     "message": "Рақмет!"

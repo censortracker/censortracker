@@ -132,7 +132,7 @@
     "message": "This service may transmit your data to government authorities."
   },
   "done": {
-    "message": "Done!"
+    "message": "Done"
   },
   "doneDescription": {
     "message": "Operation completed successfully."
@@ -436,25 +436,28 @@
     "message": "Show System Notifications"
   },
   "siteActionAlwaysDesc": {
-    "message": "Always open this website through a proxy"
+    "message": "Always open through a proxy"
   },
   "siteActionAutoDesc": {
-    "message": "Open the site through a proxy only if the site is unavailable due to blocking."
+    "message": "Open through a proxy only if blocked"
+  },
+  "recomended": {
+    "message": "Recomended"
   },
   "siteActionItemLabelAlways": {
     "message": "Always"
   },
   "siteActionItemLabelAuto": {
-    "message": "Auto"
+    "message": "If blocked"
   },
   "siteActionItemLabelNever": {
     "message": "Never"
   },
   "siteActionNeverDesc": {
-    "message": "Never open this website through a proxy (even if the site is unavailable due to blocking)"
+    "message": "Never open through a proxy"
   },
   "siteActionTitle": {
-    "message": "How should a proxy be used to for this website?"
+    "message": "How to open through a proxy?"
   },
   "thankYou": {
     "message": "Thank you!"

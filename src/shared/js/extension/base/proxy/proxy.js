@@ -1,4 +1,5 @@
 import browser from '../../../browser-api'
+import { processEncodedConfig } from '../../../utilities'
 import configManager from '../config'
 import registry from '../registry'
 import { triggerAuth } from './auth/triggerAuth'
@@ -199,7 +200,7 @@ export const ping = async () => {
     fetch(`https://${proxyPingURI}`, {
       method: 'POST',
       headers: {
-        'Content-type': 'application/json; charset=UTF-8',
+        'Content-type': 'application/json charset=UTF-8',
       },
       body: JSON.stringify({
         type: 'ping',
@@ -208,6 +209,66 @@ export const ping = async () => {
       // We don't care about the result.
       console.log(`Pinged ${proxyPingURI}!`)
     })
+  }
+}
+
+export const checkPremiumBackend = async (withProxy = true) => {
+  const {
+    premiumBackendURL,
+    premiumIdentificationCode,
+  } = await configManager.get(
+    'premiumBackendURL',
+    'premiumIdentificationCode',
+  )
+
+  try {
+    const res = await fetch(`${premiumBackendURL}/ping`, {
+      method: 'POST',
+      headers: {
+        'Content-type': 'application/json charset=UTF-8',
+      },
+      body: JSON.stringify({
+        signature: premiumIdentificationCode,
+      }),
+    })
+
+    if (!res.ok) {
+      return false
+    }
+    const data = await res.json()
+
+    const { err, configData } = processEncodedConfig(data.configString)
+
+    if (err) {
+      return false
+    }
+
+    const {
+      premiumProxyServerURI,
+      premiumUsername,
+      premiumPassword,
+      premiumExpirationDate,
+    } = configData
+
+    // TODO: ping backend to get expiration date
+    // const premiumExpirationDate = Date.now() + (30 * (24 * 60 * 60 * 1000))
+
+    await configManager.set({
+      usePremiumProxy: true,
+      haveActivePremiumConfig: true,
+      premiumProxyServerURI,
+      premiumUsername,
+      premiumPassword,
+      premiumBackendURL,
+      premiumIdentificationCode,
+      premiumExpirationDate,
+    })
+    await setProxy()
+
+    return configData
+  } catch (error) {
+    console.error(`Error trying to reach ${premiumBackendURL}/ping`, error)
+    return undefined
   }
 }
 

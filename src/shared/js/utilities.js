@@ -167,3 +167,50 @@ export const removePrefix = (str, prefix) => {
 export const countDays = (start, end) => (
   Math.ceil((end - start) / MILLISECONDS_IN_DAY)
 )
+
+export const getDomainFontSize = (currentHostname) => {
+  if (currentHostname?.length >= 22 && currentHostname?.length < 25) {
+    return '17px'
+  }
+  if (currentHostname?.length > 25 && currentHostname?.length < 30) {
+    return '15px'
+  }
+  if (currentHostname?.length >= 30) {
+    return '13px'
+  }
+  return '20px'
+}
+
+export const processEncodedConfig = (encodedString) => {
+  try {
+    const requiredKeys = ['server', 'username', 'password', 'api_endpoint', 'api_key']
+    const passedData = JSON.parse(atob(encodedString))
+    const passedKeys = Object.keys(passedData)
+
+    if (!requiredKeys.every((key) => passedKeys.includes(key))) {
+      return { err: 'invalidJsonError' }
+    }
+
+    const {
+      server: premiumProxyServerURI,
+      username: premiumUsername,
+      password: premiumPassword,
+      api_endpoint: premiumBackendURL,
+      api_key: premiumIdentificationCode,
+      expiration_date: premiumExpirationDate,
+    } = passedData
+
+    return {
+      data: {
+        premiumProxyServerURI,
+        premiumUsername,
+        premiumPassword,
+        premiumBackendURL,
+        premiumIdentificationCode,
+        premiumExpirationDate,
+      },
+    }
+  } catch {
+    return { err: 'parseJSONError' }
+  }
+}

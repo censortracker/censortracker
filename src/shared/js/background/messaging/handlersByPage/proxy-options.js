@@ -1,5 +1,8 @@
 import { Extension } from '../../../extension'
 import ConfigManager from '../../../extension/base/config'
+// eslint-disable-next-line no-unused-vars
+import { checkPremiumBackend } from '../../../extension/base/proxy/proxy'
+import { processEncodedConfig } from '../../../utilities'
 
 export const handleProxyOptionsMessage = (
   message,
@@ -28,43 +31,54 @@ export const handleProxyOptionsMessage = (
       break
     case 'setPremiumProxy':
       (async () => {
-        try {
-          const passedData = JSON.parse(atob(message.payload.configString))
-          const requiredKeys = ['serverURI', 'username', 'password', 'backendURL', 'signature']
-          const passedKeys = Object.keys(passedData)
+        const { err, data } = processEncodedConfig(message.payload.configString)
 
-          if (!requiredKeys.every((key) => passedKeys.includes(key))) {
-            sendResponse({ err: 'invalidJsonError' })
-            return
-          }
-
-          const {
-            serverURI: premiumProxyServerURI,
-            username: premiumUsername,
-            password: premiumPassword,
-            backendURL: premiumBackendURL,
-            signature: premiumIdentificationCode,
-          } = passedData
-
-          // TODO: ping backend to get expiration date
-          const premiumExpirationDate = Date.now() + (30 * (24 * 60 * 60 * 1000))
-
-          await ConfigManager.set({
-            usePremiumProxy: true,
-            haveActivePremiumConfig: true,
-            premiumProxyServerURI,
-            premiumUsername,
-            premiumPassword,
-            premiumBackendURL,
-            premiumIdentificationCode,
-            premiumExpirationDate,
-          })
-          await Extension.proxy.setProxy()
-          sendResponse({ res: { premiumIdentificationCode, premiumExpirationDate } })
+        if (err) {
+          sendResponse({ err })
           return
-        } catch {
-          sendResponse({ err: 'parseJSONError' })
         }
+
+        const {
+          premiumProxyServerURI,
+          premiumUsername,
+          premiumPassword,
+          premiumBackendURL,
+          premiumIdentificationCode,
+        } = data
+
+        await ConfigManager.set({
+          usePremiumProxy: true,
+          haveActivePremiumConfig: true,
+          premiumProxyServerURI,
+          premiumUsername,
+          premiumPassword,
+          premiumBackendURL,
+          premiumIdentificationCode,
+          premiumExpirationDate: Date.now() + (30 * (24 * 60 * 60 * 1000)),
+        })
+        await Extension.proxy.setProxy()
+
+        // const actualConfig = await checkPremiumBackend()
+
+        // if (!actualConfig) {
+        //   await ConfigManager.set({
+        //     premiumBackendUnreachable: true,
+        //   })
+        //   sendResponse({
+        //     res: {
+        //       premiumIdentificationCode,
+        //     },
+        //     err: 'serverInavalidResponse',
+        //   })
+        //   return
+        // }
+
+        sendResponse({
+          res: {
+            premiumIdentificationCode,
+            premiumExpirationDate: Date.now() + (30 * (24 * 60 * 60 * 1000)),
+          },
+        })
       })()
       return true
     case 'activatePremiumProxy':

@@ -690,12 +690,17 @@ kbd {
     font-weight: 500;
 }
 
+.section-title {
+    width: max-content;
+}
+
 .state-title {
     opacity: 0.5;
     color: #3B332B;
     font-size: 13px;
     line-height: 17px;
     margin-right: 10px;
+    width: max-content;
 }
 
 .invalid-input {
@@ -1068,6 +1073,10 @@ kbd {
     font-weight: 500;
 }
 
+.footer-text.premium-personal-code {
+    height: fit-content;
+}
+
 .premium-proxy-expiration-date {
     margin-right: 50px;
     line-height: 40px;
@@ -1148,7 +1157,6 @@ kbd {
         opacity: 0.5;
         font-size: 13px;
         line-height: 17px;
-        margin-left: 400px;
     }
 
     .main-page__link:hover,
@@ -1326,6 +1334,10 @@ kbd {
 
     .invalid-input {
         border: 1px solid #9e5757 !important;
+    }
+
+    .options-page-card input {
+        background-color: #181a1b;
     }
 
     .update_available {

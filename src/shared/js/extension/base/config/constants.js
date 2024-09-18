@@ -1,21 +1,22 @@
 export const extensionName = 'Censor Tracker'
 
+// TODO: Add links to cloud services
 export const configAPIEndpoints = [
   {
     endpointName: 'GitHub',
     endpointUrl: 'https://raw.githubusercontent.com/censortracker/ctconf/main/config.json',
   },
   {
-    endpointName: 'CloudFlareWorker',
-    endpointUrl: 'TBD',
+    endpointName: 'Selectel',
+    endpointUrl: '',
   },
   {
-    endpointName: 'CloudFlareStorage',
-    endpointUrl: 'TBD',
+    endpointName: 'jsDelivr',
+    endpointUrl: 'https://cdn.jsdelivr.net/gh/censortracker/ctconf/config.json',
   },
   {
     endpointName: 'Google',
-    endpointUrl: 'TBD',
+    endpointUrl: '',
   },
 ]
 

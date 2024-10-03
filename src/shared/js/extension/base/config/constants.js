@@ -1,14 +1,25 @@
 export const extensionName = 'Censor Tracker'
 
-// TODO: Add links to cloud services
 export const configAPIEndpoints = [
   {
     endpointName: 'GitHub',
     endpointUrl: 'https://raw.githubusercontent.com/censortracker/ctconf/main/config.json',
   },
   {
-    endpointName: 'Selectel',
-    endpointUrl: '',
+    endpointName: 'SelectelCDN',
+    endpointUrl: 'https://f0a99309-6970-406b-9acf-a38f82c9742d.selcdn.net/config.json',
+  },
+  {
+    endpointName: 'SelectelStorage',
+    endpointUrl: 'https://23ababf0-5f79-4d88-a05b-17ace57cb29a.selstorage.ru/config.json',
+  },
+  {
+    endpointName: 'FastlyCDN',
+    endpointUrl: 'https://censortracker-config.global.ssl.fastly.net/censortracker/ctconf/main/config.json',
+  },
+  {
+    endpointName: 'FastlyCompute',
+    endpointUrl: 'https://censortracker-config.edgecompute.app/',
   },
   {
     endpointName: 'jsDelivr',
@@ -16,7 +27,7 @@ export const configAPIEndpoints = [
   },
   {
     endpointName: 'Google',
-    endpointUrl: '',
+    endpointUrl: 'https://storage.googleapis.com/censortracker/config.json',
   },
 ]
 
@@ -68,6 +79,7 @@ export const defaultConfig = {
   premiumUsername: '',
   premiumPassword: '',
   premiumBackendURL: '',
+  premiumBackendUnreachable: false,
   premiumIdentificationCode: '',
   premiumExpirationDate: Date.now(),
 

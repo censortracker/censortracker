@@ -38,6 +38,9 @@
   "blockedTitle": {
     "message": "Доступ запрещён"
   },
+  "enable": {
+    "message": "Включить"
+  },
   "cancel": {
     "message": "Отмена"
   },
@@ -529,10 +532,16 @@
     "message": "Повышенная скорость подключения"
   },
   "premiumProxyDetailedDesc": {
-    "message": "Censor Tracker Pro — это повышенная скорость подключения к заблокированным сайтам. Смотрите Youtube, Дождь и другие видеосервисы без тормозов"
+    "message": "Censor Tracker Premium — это повышенная скорость подключения к заблокированным сайтам. Смотрите Youtube, Дождь и другие видеосервисы без тормозов"
+  },
+  "premiumBetaDesc": {
+    "message": "В данный момент Censor Tracker Premium находится в стадии беты и доступен для ограниченного количество пользователей."
+  },
+  "premiumProxyStatusNotActivated": {
+    "message": "Не подключено"
   },
   "premiumProxyStatusTurnedOff": {
-    "message": "Не подключено"
+    "message": "Отключено"
   },
   "premiumProxyStatusTurnedOn": {
     "message": "Подключено"
@@ -552,6 +561,9 @@
   "updatePremiumProxyConfig": {
     "message": "Обновить код"
   },
+  "disablePremiumProxy": {
+    "message": "Отключить"
+  },
   "premiumCodeInputTitle": {
     "message": "У меня уже есть код"
   },
@@ -559,7 +571,13 @@
     "message": "Введите код"
   },
   "premiumCodeInputPlaceholder": {
-    "message": "Код Censor Tracker Pro"
+    "message": "Код Censor Tracker Premium"
+  },
+  "premiumProxyExpiredError": {
+    "message": "Ошибка! Срок действия конфига истек"
+  },
+  "disablePremiumProxyDesc": {
+    "message": "Censor Tracker переключится на использование бесплатных прокси, которыми пользуются все пользователи бесплатной версии. Ваш ключ сохранится и включить Premium можно будет в любой момент. <br /><br /> Если вы столкнулись с проблемами при работе сервиса, то напишите нам support@censortrcker.org"
   },
   "savePremiumProxyButton": {
     "message": "Применить"
@@ -592,7 +610,7 @@
     "message": "Подробнее"
   },
   "speedUpYouTubeSuggestion": {
-    "message": "Смотрите YouTube как раньше с Censor Tracker Pro"
+    "message": "Смотрите YouTube как раньше с Censor Tracker Premium"
   },
   "speedUpYouTubeButton": {
     "message": "Ускорить YouTube"

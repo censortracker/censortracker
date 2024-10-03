@@ -38,6 +38,9 @@
   "blockedTitle": {
     "message": "Blocked"
   },
+  "enable": {
+    "message": "Enable"
+  },
   "cancel": {
     "message": "Cancel"
   },
@@ -529,10 +532,16 @@
     "message": "Increased connection speed"
   },
   "premiumProxyDetailedDesc": {
-    "message": "Censor Tracker Pro is an increased connection speed to blocked sites. Watch your favorite video services without any lags"
+    "message": "Censor Tracker Premium is an increased connection speed to blocked sites. Watch your favorite video services without any lags"
+  },
+  "premiumBetaDesc": {
+    "message": "At the moment, Censor Tracker Premium is in beta and is available to a limited number of users."
+  },
+  "premiumProxyStatusNotActivated": {
+    "message": "Not activated"
   },
   "premiumProxyStatusTurnedOff": {
-    "message": "Not enabled"
+    "message": "Disabled"
   },
   "premiumProxyStatusTurnedOn": {
     "message": "Enabled"
@@ -552,6 +561,9 @@
   "updatePremiumProxyConfig": {
     "message": "Update the code"
   },
+  "disablePremiumProxy": {
+    "message": "Disable"
+  },
   "premiumCodeInputTitle": {
     "message": "I already have the code"
   },
@@ -559,7 +571,13 @@
     "message": "Enter the code"
   },
   "premiumCodeInputPlaceholder": {
-    "message": "Censor Tracker Pro Code"
+    "message": "Censor Tracker Premium Code"
+  },
+  "premiumProxyExpiredError": {
+    "message": "Error! The config has expired"
+  },
+  "disablePremiumProxyDesc": {
+    "message": "Are you sure you want to disable Censor Tracker Premium?"
   },
   "savePremiumProxyButton": {
     "message": "Apply"
@@ -592,7 +610,7 @@
     "message": "Read more"
   },
   "speedUpYouTubeSuggestion": {
-    "message": "Watch YouTube like you used to with Censor Tracker Pro"
+    "message": "Watch YouTube like you used to with Censor Tracker Premium"
   },
   "speedUpYouTubeButton": {
     "message": "Speed ​​up YouTube"

@@ -38,6 +38,9 @@
   "blockedTitle": {
     "message": "Қолжетімділікке тыйым салынады"
   },
+  "enable": {
+    "message": "Қосу"
+  },
   "cancel": {
     "message": "Бас тарту"
   },
@@ -529,10 +532,16 @@
     "message": "Қосылу жылдамдығын арттыру"
   },
   "premiumProxyDetailedDesc": {
-    "message": "Censor Tracker Pro бұғатталған сайттарға қосылу жылдамдығын арттырады. Таңдаулы бейне қызметтеріңізді үзіліссіз көріңіз"
+    "message": "Censor Tracker Premium бұғатталған сайттарға қосылу жылдамдығын арттырады. Таңдаулы бейне қызметтеріңізді үзіліссіз көріңіз"
+  },
+  "premiumBetaDesc": {
+    "message": "Қазіргі уақытта Censor Tracker Premium бета нұсқасында және шектеулі пайдаланушылар санына қол жетімді."
+  },
+  "premiumProxyStatusNotActivated": {
+    "message": "Қосылмаған"
   },
   "premiumProxyStatusTurnedOff": {
-    "message": "Қосылмаған"
+    "message": "Өшірілген"
   },
   "premiumProxyStatusTurnedOn": {
     "message": "Қосылды"
@@ -552,6 +561,9 @@
   "updatePremiumProxyConfig": {
     "message": "Кодты жаңарту"
   },
+  "disablePremiumProxy": {
+    "message": "Өшіру"
+  },
   "premiumCodeInputTitle": {
     "message": "Менде код бұрыннан бар"
   },
@@ -559,7 +571,13 @@
     "message": "Кодты енгізіңіз"
   },
   "premiumCodeInputPlaceholder": {
-    "message": "Censor Tracker Pro коды"
+    "message": "Censor Tracker Premium коды"
+  },
+  "premiumProxyExpiredError": {
+    "message": "Қате! Конфигурацияның мерзімі аяқталды"
+  },
+  "disablePremiumProxyDesc": {
+    "message": "Censor Tracker Premium функциясын шынымен өшіргіңіз келе ме?"
   },
   "savePremiumProxyButton": {
     "message": "Қолдану"
@@ -592,7 +610,7 @@
     "message": "Қосымша мәліметтер"
   },
   "speedUpYouTubeSuggestion": {
-    "message": "Censor Tracker Pro көмегімен YouTube-ті бұрын-соңды болмағандай көріңіз"
+    "message": "Censor Tracker Premium көмегімен YouTube-ті бұрын-соңды болмағандай көріңіз"
   },
   "speedUpYouTubeButton": {
     "message": "YouTube-ті жылдамдату"

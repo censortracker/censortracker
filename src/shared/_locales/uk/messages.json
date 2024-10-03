@@ -38,6 +38,9 @@
   "blockedTitle": {
     "message": "Доступ заборонено"
   },
+  "enable": {
+    "message": "Увімкнути"
+  },
   "cancel": {
     "message": "Скасування"
   },
@@ -529,10 +532,16 @@
     "message": "Підвищена швидкість підключення"
   },
   "premiumProxyDetailedDesc": {
-    "message": "Censor Tracker Pro – це підвищена швидкість підключення до заблокованих сайтів. Дивіться улюблені відеосервіси без гальм"
+    "message": "Censor Tracker Premium – це підвищена швидкість підключення до заблокованих сайтів. Дивіться улюблені відеосервіси без гальм"
+  },
+  "premiumBetaDesc": {
+    "message": "На даний момент Censor Tracker Premium знаходиться на стадії бети і доступний для обмеженої кількості користувачів."
+  },
+  "premiumProxyStatusNotActivated": {
+    "message": "Не підключено"
   },
   "premiumProxyStatusTurnedOff": {
-    "message": "Не підключено"
+    "message": "Виключено"
   },
   "premiumProxyStatusTurnedOn": {
     "message": "Підключено"
@@ -552,6 +561,9 @@
   "updatePremiumProxyConfig": {
     "message": "Оновити код"
   },
+  "disablePremiumProxy": {
+    "message": "Вимкнути"
+  },
   "premiumCodeInputTitle": {
     "message": "У мене вже є код"
   },
@@ -559,7 +571,10 @@
     "message": "Введіть кодд"
   },
   "premiumCodeInputPlaceholder": {
-    "message": "Код Censor Tracker Pro"
+    "message": "Код Censor Tracker Premium"
+  },
+  "premiumProxyExpiredError": {
+    "message": "Ви хочете вимкнути Censor Tracker Premium?"
   },
   "savePremiumProxyButton": {
     "message": "Застосувати"
@@ -592,7 +607,7 @@
     "message": "Докладніше"
   },
   "speedUpYouTubeSuggestion": {
-    "message": "Дивіться YouTube як раніше з Censor Tracker Pro"
+    "message": "Дивіться YouTube як раніше з Censor Tracker Premium"
   },
   "speedUpYouTubeButton": {
     "message": "Прискорити YouTube"

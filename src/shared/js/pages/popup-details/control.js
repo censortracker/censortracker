@@ -14,12 +14,13 @@ export const showControllingExtensions = async () => {
     await sendExtensionCallMsg(source, 'controlledByOtherExtensions')
 
   if (proxyControlledByOtherExtensions) {
+    console.log('!!!!!!!!!!!!!!')
     const self = await browser.management.getSelf()
     const installedExtensions = await browser.management.getAll()
 
     const extensionsWithProxyPermissions =
-      installedExtensions.filter(({ name, permissions }) => {
-        return permissions.includes('proxy') && name !== self.name
+      installedExtensions.filter(({ name, permissions, enabled }) => {
+        return permissions.includes('proxy') && name !== self.name && enabled
       })
 
     if (extensionsWithProxyPermissions.length === 1) {

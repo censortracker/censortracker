@@ -108,17 +108,6 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
     }
   })
 
-  sendExtensionCallMsg('controlled', 'controlledByThisExtension')
-    .then(async (controlledByThisExtension) => {
-      if (controlledByThisExtension) {
-        useProxyCheckbox.checked = true
-        useProxyCheckbox.disabled = false
-
-        if (!proxyingEnabled) {
-          sendTransitionMsg('enableProxy')
-        }
-      }
-    })
   sendExtensionCallMsg('controlled', 'controlledByOtherExtensions')
     .then(async (controlledByOtherExtensions) => {
       if (controlledByOtherExtensions) {

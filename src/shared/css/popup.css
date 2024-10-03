@@ -44,12 +44,14 @@ a {
     padding: 10px 0;
     text-align: center;
     position: relative;
+    margin: auto;
+    width: min-content;
 }
 
 .icon__settings {
     position: absolute;
-    top: 0;
-    right: 0;
+    top: 20px;
+    right: 20px;
     width: 16px;
     height: 16px;
     mask: url("../images/settings/cog.svg") no-repeat center / contain;
@@ -59,8 +61,8 @@ a {
 
 .red-dot {
     position: absolute;
-    top: -4px;
-    right: -2px;
+    top: 16px;
+    right: 16px;
     width: 6px;
     height: 6px;
     content: '';
@@ -69,6 +71,11 @@ a {
     border-radius: 6px;
     -webkit-animation: pulsing 0.2s;
     animation: pulsing 0.2s;
+}
+
+#siteStatus .siteStatus, #siteStatus .block__title, #siteStatus .block__text {
+    margin-top: 0;
+    margin-bottom: 0;
 }
 
 @-webkit-keyframes pulsing {
@@ -127,6 +134,10 @@ a {
 .icon__back path {
     fill: #3b332b;
     fill-opacity: 0.7;
+}
+
+.site-actions-icon path {
+    fill: #625c55;
 }
 
 .icon__back:hover {
@@ -770,14 +781,13 @@ div#grantPrivateBrowsingPermissionsButton {
 
 .premium-badge {
     background-color: #aafb1f;
-    padding: 5px;
-    padding-top: 2px;
-    padding-bottom: 2px;
+    padding: 2px 9px;
     border-radius: 10px;
     font-weight: 300;
     font-size: 12px;
     line-height: 20px;
     color: #2b6204;
+    z-index: 999;
 }
 
 .premium-suggestion, .premium-suggestion .footer {
@@ -798,6 +808,7 @@ div#grantPrivateBrowsingPermissionsButton {
 
 .censor-tracker.premium-button {
     padding: 0px 0px 15px 20px;
+    width: 100%;
 }
 
 #premiumBadge {
@@ -847,12 +858,11 @@ div#grantPrivateBrowsingPermissionsButton {
 }
 
 .youtube-toggle {
-    padding-left: 40px;
+    padding-left: 20px;
     padding-right: 60px;
     max-height: 0;
     overflow: hidden;
     transition: max-height 1.5s ease;
-    background-color: #e6e6e6;
 }
 .youtube-toggle.toggled {
     max-height: 90px;
@@ -1058,9 +1068,12 @@ div#grantPrivateBrowsingPermissionsButton {
     }
 
     .footer-btn, .text-extension {
-        color: #f4f1f1
+        color: #f4f1f1;
     }
 
+    .premium-suggestion-text {
+        color: #f4f1f1;
+    }
     .default-btn {
         background: #484c51;
         border-radius: 4px;
@@ -1079,7 +1092,11 @@ div#grantPrivateBrowsingPermissionsButton {
     }
 
     .icon__back path {
-        fill: #f4f1f1
+        fill: #f4f1f1;
+    }
+
+    .site-actions-icon path {
+        fill: #f4f1f1;
     }
 
     #privateBrowsingPermissionsRequiredButton {

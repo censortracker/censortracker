@@ -377,6 +377,10 @@ a {
     height: 37px;
 }
 
+textarea.input-proxy {
+    resize: vertical;
+}
+
 #saveCustomProxyButton {
     margin-left: 10px;
 }
@@ -981,9 +985,7 @@ kbd {
 
 .premium-badge {
     background-color: #aafb1f;
-    padding: 3px;
-    padding-top: 1px;
-    padding-bottom: 1px;
+    padding: 1px 9px;
     border-radius: 10px;
     font-weight: 300;
     font-size: 12px;
@@ -1029,6 +1031,10 @@ kbd {
     aspect-ratio: 1 / 1;
 }
 
+.icon__payment.crypto {
+    width: 20px;
+}
+
 .premium-proxy-price {
     font-size: 26px;
     font-family: inherit;
@@ -1040,6 +1046,10 @@ kbd {
     font-weight: 300;
     margin-top: 28px;
     margin-bottom: 28px;
+}
+
+p.description-large {
+    margin-top: 0px;
 }
 
 .redirect-description {
@@ -1093,6 +1103,34 @@ kbd {
     font-weight: 300;
     color: red;
     margin-top: 10px;
+}
+
+.disable-button {
+    color: #B61414;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.default-gap {
+    gap: 15px;
+}
+
+#disablePremiumProxyDetails {
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 40px;
+    background: #f7eded;
+}
+
+.subtitle-info {
+    line-height: 25px;
+}
+
+.beta-message {
+    color: rgba(145, 145, 145, 0.5);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 15px;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -1242,6 +1280,10 @@ kbd {
         caret-color: #F4F1F1;
     }
 
+    .options-page-card textarea {
+        background: #121212;
+    }
+
     #optionsRegistryIsEmptyWarning {
         border: 1px solid #61666B;
     }
@@ -1342,5 +1384,8 @@ kbd {
 
     .update_available {
         color-scheme: light;
+    }
+    #disablePremiumProxyDetails {
+        background-color: #382e2e;
     }
 }

@@ -15,29 +15,27 @@
     <div class="main-page">
       <p id="extension-id" class="invisible-message"></p>
       
-      <div id="premiumBadge"  class="hidden">
-        <a href="premium-proxy.html"  target="_blank">
-          <div >
-            <span class="premium-badge">Premium</span>
-          </div>
+      <div id="premiumBadge" class="hidden">
+        <a href="premium-proxy.html" target="_blank" class="premium-badge">
+          Premium
         </a>
       </div>
+      <a id="openOptionsPage" class="icon__settings" target="_blank"></a>
+      <span id="highlightOptionsIcon" class="red-dot hidden"></span>
   
       <div class="main-page__image" id="statusImageDiv">
         <img id="statusImage"
              class="image__status"
              src="images/icons/512x512/normal.png"
              width="75px" height="auto" alt="Status"/>
-        <span id="highlightOptionsIcon" class="red-dot hidden"></span>
-        <a id="openOptionsPage" class="icon__settings" target="_blank"></a>
       </div>
       <div class="main-page__info">
   
         <div class="main-page__title title-domain">
           <div class="current-domain title-normal current-domain unselectable" id="currentDomainHeader"></div>
           <div class="row centered btn-about title-disabled rules-toggle-title unselectable icon-show hidden" id="toggleSiteActions">
-            <span  id="siteActionDescription"></span>
-            <svg class="block__btn icon" width="8" height="6" viewBox="0 0 8 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <span id="siteActionDescription"></span>
+            <svg class="block__btn icon site-actions-icon" width="10" height="10" viewBox="0 0 8 6" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M0.546875 1.47339L4 5.5L7.48204 1.47339" stroke="#3B332B" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </div>
@@ -64,7 +62,7 @@
             </div>
           </div>
           <br />
-          <span id="siteActionsDone" class="btn-ok clickable" data-i18n-key="done"></span>
+          <span id="siteActionsDone" class="btn-ok title-disabled clickable" data-i18n-key="done"></span>
         </div>
   
         <div class="network-description" id="torNetwork" hidden>
@@ -158,7 +156,7 @@
                  class="censor-tracker__status status-error" hidden></div>
             <div id="popupProxyDisabled" data-i18n-key="popupProxyDisabled" class="censor-tracker__status" hidden></div>
             &nbsp;
-            <a id="proxyStatusIcon" hidden>
+            <a id="proxyStatusIcon" target="_blank" hidden>
               <img class="icon__proxy__status" src="images/popup/status/info.svg" alt=""/>
           </div>
         </div>
@@ -201,7 +199,7 @@
             </div>
           </div>
         </div>
-        <div>
+        <div class="censor-tracker">
           <div id="youtubeToggle" class="youtube-toggle">
             <span class="premium-suggestion-text" data-i18n-key="speedUpYouTubeSuggestion"></span>
             <a href="premium-proxy.html" target="_blank" class="default-btn youtube-speedup" data-i18n-key="speedUpYouTubeButton"></a>

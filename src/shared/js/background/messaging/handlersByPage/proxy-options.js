@@ -1,6 +1,5 @@
 import { Extension } from '../../../extension'
 import ConfigManager from '../../../extension/base/config'
-// eslint-disable-next-line no-unused-vars
 import { checkPremiumBackend } from '../../../extension/base/proxy/proxy'
 import { processEncodedConfig } from '../../../utilities'
 
@@ -42,41 +41,44 @@ export const handleProxyOptionsMessage = (
           premiumProxyServerURI,
           premiumUsername,
           premiumPassword,
-          premiumBackendURL,
+          premiumActivateURL,
           premiumIdentificationCode,
         } = data
 
         await ConfigManager.set({
-          usePremiumProxy: true,
-          haveActivePremiumConfig: true,
-          premiumProxyServerURI,
-          premiumUsername,
-          premiumPassword,
-          premiumBackendURL,
+          premiumActivateURL,
           premiumIdentificationCode,
-          premiumExpirationDate: Date.now() + (30 * (24 * 60 * 60 * 1000)),
         })
-        await Extension.proxy.setProxy()
 
-        // const actualConfig = await checkPremiumBackend()
+        const actualConfig = await checkPremiumBackend(premiumActivateURL, premiumIdentificationCode)
 
-        // if (!actualConfig) {
-        //   await ConfigManager.set({
-        //     premiumBackendUnreachable: true,
-        //   })
-        //   sendResponse({
-        //     res: {
-        //       premiumIdentificationCode,
-        //     },
-        //     err: 'serverInavalidResponse',
-        //   })
-        //   return
-        // }
+        if (!actualConfig) {
+          await ConfigManager.set({
+            premiumBackendUnreachable: true,
+          })
+          await ConfigManager.set({
+            usePremiumProxy: true,
+            haveActivePremiumConfig: true,
+            premiumProxyServerURI,
+            premiumUsername,
+            premiumPassword,
+            premiumActivateURL,
+          })
+          await Extension.proxy.setProxy()
+
+          sendResponse({
+            res: {
+              premiumIdentificationCode,
+            },
+            err: 'serverInavalidResponse',
+          })
+          return
+        }
 
         sendResponse({
           res: {
             premiumIdentificationCode,
-            premiumExpirationDate: Date.now() + (30 * (24 * 60 * 60 * 1000)),
+            premiumExpirationDate: actualConfig.expirationDate,
           },
         })
       })()
@@ -92,6 +94,27 @@ export const handleProxyOptionsMessage = (
           })
         }
       })()
+      break
+    case 'enablePremiumProxy':
+      (async () => {
+        const isPremiumExpired = await Extension.proxy.monitorPremiumExpiration()
+
+        if (!isPremiumExpired) {
+          await ConfigManager.set({
+            usePremiumProxy: true,
+          })
+        }
+        sendResponse({ hasNotExpired: !isPremiumExpired })
+      })()
+      return true
+    case 'disablePremiumProxy':
+      (async () => {
+        await ConfigManager.set({
+          usePremiumProxy: false,
+        })
+        await Extension.proxy.setProxy()
+      })()
+      console.log('!!!!!!!!!')
       break
     case 'removeCustomProxy':
       ConfigManager.set({ usePremiumProxy: false })

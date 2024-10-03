@@ -170,14 +170,14 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
       const { enableExtension: extensionEnabled } = await sendConfigFetchMsg('enableExtension')
       const currentHostname = extractHostnameFromUrl(currentUrl)
 
-      sendConfigFetchMsg('useProxy', 'proxyIsAlive').then(
-        ({ useProxy: proxyingEnabled, proxyIsAlive }) => {
+      sendConfigFetchMsg('useProxy', 'proxyIsAlive', 'usePremiumProxy').then(
+        ({ useProxy: proxyingEnabled, proxyIsAlive, usePremiumProxy }) => {
           if (proxyingEnabled) {
             if (proxyIsAlive) {
               proxyStatusIcon.hidden = false
               popupProxyStatusOk.hidden = false
               popupProxyStatusError.hidden = true
-              proxyStatusIcon.href = 'popup-details.html?reason=proxy'
+              proxyStatusIcon.href = usePremiumProxy ? 'premium-proxy.html' : 'proxy-options.html'
             } else {
               proxyStatusIcon.hidden = true
               popupProxyStatusOk.hidden = true
@@ -200,7 +200,10 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
 
       if (isValidURL(currentUrl)) {
         currentDomainHeader.innerText = currentHostname
-        toggleSiteActionsButton.classList.remove('hidden')
+        if (extensionEnabled) {
+          toggleSiteActionsButton.classList.remove('hidden')
+        }
+
         siteActionDescription.textContent = i18nGetMessage(
           'siteActionAutoDesc',
         )

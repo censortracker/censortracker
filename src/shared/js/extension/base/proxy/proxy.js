@@ -1,5 +1,4 @@
 import browser from '../../../browser-api'
-import { processEncodedConfig } from '../../../utilities'
 import configManager from '../config'
 import registry from '../registry'
 import { triggerAuth } from './auth/triggerAuth'
@@ -212,24 +211,14 @@ export const ping = async () => {
   }
 }
 
-export const checkPremiumBackend = async (withProxy = true) => {
-  const {
-    premiumBackendURL,
-    premiumIdentificationCode,
-  } = await configManager.get(
-    'premiumBackendURL',
-    'premiumIdentificationCode',
-  )
-
+export const checkPremiumBackend = async (url, apiKey) => {
   try {
-    const res = await fetch(`${premiumBackendURL}/ping`, {
+    const res = await fetch(`${url}`, {
       method: 'POST',
       headers: {
         'Content-type': 'application/json charset=UTF-8',
+        Authorization: `Api-Key ${apiKey}`,
       },
-      body: JSON.stringify({
-        signature: premiumIdentificationCode,
-      }),
     })
 
     if (!res.ok) {
@@ -237,37 +226,20 @@ export const checkPremiumBackend = async (withProxy = true) => {
     }
     const data = await res.json()
 
-    const { err, configData } = processEncodedConfig(data.configString)
-
-    if (err) {
-      return false
-    }
-
-    const {
-      premiumProxyServerURI,
-      premiumUsername,
-      premiumPassword,
-      premiumExpirationDate,
-    } = configData
-
-    // TODO: ping backend to get expiration date
-    // const premiumExpirationDate = Date.now() + (30 * (24 * 60 * 60 * 1000))
-
     await configManager.set({
       usePremiumProxy: true,
       haveActivePremiumConfig: true,
-      premiumProxyServerURI,
-      premiumUsername,
-      premiumPassword,
-      premiumBackendURL,
-      premiumIdentificationCode,
-      premiumExpirationDate,
+      premiumProxyServerURI: `${data.proxyServerHost}:${data.proxyServerPort}`,
+      premiumUsername: data.username,
+      premiumPassword: data.password,
+      premiumBackendURL: data.api_endpoint,
+      premiumExpirationDate: data.expirationDate,
     })
     await setProxy()
 
-    return configData
+    return data
   } catch (error) {
-    console.error(`Error trying to reach ${premiumBackendURL}/ping`, error)
+    console.error(`Error trying to reach ${url}/ping`, error)
     return undefined
   }
 }
@@ -287,7 +259,23 @@ export const usingPremiumProxy = async () => {
 export const controlledByThisExtension = async () => {
   const { levelOfControl } = await browser.proxy.settings.get({})
 
-  return levelOfControl === 'controlled_by_this_extension'
+  console.log(levelOfControl)
+  if (levelOfControl === 'controlled_by_this_extension') {
+    return true
+  }
+  if (levelOfControl === 'controllable_by_this_extension') {
+    const self = await browser.management.getSelf()
+    const installedExtensions = await browser.management.getAll()
+    const extensionsWithProxyPermissions =
+      installedExtensions.filter(({ name, permissions, enabled }) => {
+        return permissions.includes('proxy') && name !== self.name && enabled
+      })
+
+    if (extensionsWithProxyPermissions.length === 0) {
+      return true
+    }
+  }
+  return false
 }
 
 export const controlledByOtherExtensions = async () => {

@@ -242,7 +242,6 @@ const fetchCustomDPIRegistry = async ({ customRegistryUrl } = {}) => {
     const data = await response.json()
 
     console.log(`Fetched: ${customRegistryUrl}`)
-    console.log(data.flatMap((e) => e.domains))
     ConfigManager.set({ customDPIDomains: data.flatMap((e) => e.domains) })
   } catch (error) {
     console.error(`Error on fetching data from: ${customRegistryUrl}`)
@@ -261,7 +260,6 @@ export const synchronize = async ({
   await Extension.proxy.removeProxy()
   const configFromServer = await fetchConfig()
 
-  console.log(configFromServer)
   if (Object.keys(configFromServer).length > 0) {
     const {
       proxyUrl, ignoreUrl, registryUrl, specifics, customRegistryUrl,

@@ -14,7 +14,6 @@ export const showControllingExtensions = async () => {
     await sendExtensionCallMsg(source, 'controlledByOtherExtensions')
 
   if (proxyControlledByOtherExtensions) {
-    console.log('!!!!!!!!!!!!!!')
     const self = await browser.management.getSelf()
     const installedExtensions = await browser.management.getAll()
 

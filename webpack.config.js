@@ -44,7 +44,6 @@ const webWorkerConfig = {
     extensions: ['.js', '.ts', '.json'],
     alias: {
       '@': resolve('src'),
-      'Background': resolve('src/shared/js/background'),
     },
   },
 
@@ -86,13 +85,16 @@ const webConfig = {
   devtool: 'inline-nosources-cheap-module-source-map',
   entry: {
     'popup': './src/shared/js/pages/popup.js',
+    'popup-details': './src/shared/js/pages/popup-details/details-page.js',
     'options': './src/shared/js/pages/options.js',
     'advanced-options': './src/shared/js/pages/advanced-options.js',
     'proxy-options': './src/shared/js/pages/proxy-options.js',
+    'premium-proxy': './src/shared/js/pages/premium-proxy.js',
     'registry-options': './src/shared/js/pages/registry-options.js',
     'rules-editor': './src/shared/js/pages/rules-editor.js',
     'translator': './src/shared/js/pages/translator.js',
     'controlled': './src/shared/js/pages/controlled.js',
+    'offscreen': '/src/shared/js/pages/offscreen.js',
   },
   output: {
     path: resolve(`dist/${BROWSER}/${OUTPUT_SUB_DIR}`),
@@ -103,7 +105,6 @@ const webConfig = {
     extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
     alias: {
       '@': resolve('src'),
-      'Background': resolve('src/shared/js/background'),
     },
   },
   module: {
@@ -240,6 +241,30 @@ const webConfig = {
       chunks: ['controlled'],
       meta: contentSecurityPolicy,
     }),
+    new HTMLWebpackPlugin({
+      title: extensionName,
+      filename: 'popup-details.html',
+      template: `src/shared/pages/popup-details.html`,
+      inject: true,
+      chunks: ['popup-details'],
+      meta: contentSecurityPolicy,
+    }),
+    new HTMLWebpackPlugin({
+      title: extensionName,
+      filename: 'offscreen.html',
+      template: `src/shared/pages/offscreen.html`,
+      inject: true,
+      chunks: ['offscreen'],
+      meta: contentSecurityPolicy,
+    }),
+    new HTMLWebpackPlugin({
+      title: extensionName,
+      filename: 'premium-proxy.html',
+      template: `src/shared/pages/premium-proxy.html`,
+      inject: true,
+      chunks: ['premium-proxy', 'translator'],
+      meta: contentSecurityPolicy,
+    }),
     new MergeJsonWebpackPlugin({
       globOptions: {
         nosort: false,
@@ -301,6 +326,14 @@ if (isChromium) {
     inject: true,
     chunks: ['translator'],
     meta: contentSecurityPolicy,
+  })),
+  webConfig.plugins.push(new CopyWebpackPlugin({
+    patterns: [
+      {
+        from: 'src/shared/js/extension/base/proxy/auth/worker.js',
+        to: 'worker.js',
+      },
+    ],
   }))
 }
 

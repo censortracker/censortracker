@@ -1,7 +1,7 @@
 import browser from '../../../browser-api'
 import configManager from '../config'
 import * as server from '../server'
-import { getBadProxies, ping, requestIncognitoAccess, setProxy, usingCustomProxy } from './proxy'
+import { getBadProxies, ping, requestIncognitoAccess, setProxy, usingCustomProxy, usingPremiumProxy } from './proxy'
 
 export const handleBeforeRequest = async (_details) => {
   await ping()
@@ -10,13 +10,19 @@ export const handleBeforeRequest = async (_details) => {
 
 export const handleProxyError = async ({ error }) => {
   const customProxyInUse = await usingCustomProxy()
+  const premiumProxyInUse = await usingPremiumProxy()
 
   // Custom proxy is used, so we don't need to handle this error
-  if (customProxyInUse) {
+  if (customProxyInUse || premiumProxyInUse) {
     return
   }
 
   error = error.replace('net::', '')
+
+  // Collateral error for proxy with auth
+  if (error === 'ERR_TUNNEL_CONNECTION_FAILED') {
+    return
+  }
 
   const proxyErrors = [
     // Firefox
@@ -65,5 +71,49 @@ export const handleProxyError = async ({ error }) => {
         browser.tabs.reload(tab.id)
       })
     }
+  }
+}
+
+export const HandleAuthRequired = async (details, asyncCallback) => {
+  console.log('Proxy authorization event listener fired')
+
+  if (!details.isProxy) {
+    asyncCallback({
+      cancel: true,
+    })
+  } else {
+    const {
+      useOwnProxy,
+      customProxyUsername,
+      customProxyPassword,
+      usePremiumProxy,
+      premiumUsername,
+      premiumPassword,
+    } = await configManager.get(
+      'useOwnProxy',
+      'customProxyUsername',
+      'customProxyPassword',
+      'usePremiumProxy',
+      'premiumUsername',
+      'premiumPassword',
+    )
+
+    let username
+    let password
+
+    if (useOwnProxy) {
+      username = customProxyUsername
+      password = customProxyPassword
+    } else if (usePremiumProxy) {
+      username = premiumUsername
+      password = premiumPassword
+    }
+
+    asyncCallback({
+      authCredentials: {
+        username,
+        password,
+      },
+    })
   }
 }

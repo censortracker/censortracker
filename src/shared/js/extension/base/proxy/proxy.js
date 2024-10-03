@@ -1,8 +1,10 @@
 import browser from '../../../browser-api'
 import configManager from '../config'
 import registry from '../registry'
+import { triggerAuth } from './auth/triggerAuth'
 import * as handlers from './handlers'
 import { getPacScript } from './pac'
+import { getPremiumPacScript } from './pacPremium'
 
 export const isEnabled = async () => {
   const { useProxy } = await configManager.get('useProxy')
@@ -18,6 +20,32 @@ export const enable = async () => {
 export const disable = async () => {
   console.warn('Proxying disabled.')
   configManager.set({ useProxy: false })
+}
+
+export const monitorPremiumExpiration = async () => {
+  const {
+    usePremiumProxy,
+    premiumExpirationDate,
+  } = await configManager.get(
+    'usePremiumProxy',
+    'premiumExpirationDate',
+  )
+
+  if (!usePremiumProxy) {
+    return false
+  }
+  if (Date.now() >= premiumExpirationDate) {
+    await configManager.set({
+      usePremiumProxy: false,
+      haveActivePremiumConfig: false,
+      premiumProxyServerURI: '',
+      premiumUsername: '',
+      premiumPassword: '',
+      premiumIdentificationCode: '',
+    })
+    return true
+  }
+  return false
 }
 
 export const getProxyingRules = async () => {
@@ -74,24 +102,45 @@ export const setProxy = async () => {
   const proxyConfig = {}
   const domains = await registry.getDomainsByLevel()
 
-  if (Object.keys(domains).length === 0) {
-    await removeProxy()
-    return false
-  }
+  const customProxyInUse = await usingCustomProxy()
+  const premiumProxyInUse = await usingPremiumProxy()
 
   const {
-    proxyServerURI,
-    proxyServerProtocol,
-  } = await getProxyingRules()
+    localConfig: { countryCode },
+    premiumProxyServerURI,
+    ignoredHosts,
+  } = await configManager.get(
+    'localConfig',
+    'premiumProxyServerURI',
+    'ignoredHosts',
+  )
 
-  const { localConfig: { countryCode } } = await configManager.get('localConfig')
+  let pacData
 
-  const pacData = getPacScript({
-    domains,
-    proxyServerURI,
-    proxyServerProtocol,
-    countryCode,
-  })
+  if (premiumProxyInUse) {
+    pacData = getPremiumPacScript({
+      premiumProxyServerURI,
+      ignoredHosts,
+    })
+    console.log('Configured premium proxy PAC')
+  } else {
+    if (Object.keys(domains).length === 0) {
+      await removeProxy()
+      return false
+    }
+
+    const {
+      proxyServerURI,
+      proxyServerProtocol,
+    } = await getProxyingRules()
+
+    pacData = getPacScript({
+      domains,
+      proxyServerURI,
+      proxyServerProtocol,
+      countryCode,
+    })
+  }
 
   if (browser.isFirefox) {
     const blob = new Blob([pacData], {
@@ -117,13 +166,16 @@ export const setProxy = async () => {
     await enable()
     await grantIncognitoAccess()
     console.warn('PAC has been set successfully!')
-    return true
   } catch (error) {
     console.error(`PAC could not be set: ${error}`)
     await disable()
     await requestIncognitoAccess()
     return false
   }
+  if (customProxyInUse || premiumProxyInUse) {
+    await triggerAuth()
+  }
+  return true
 }
 
 export const removeProxy = async () => {
@@ -139,14 +191,15 @@ export const alive = async () => {
 
 export const ping = async () => {
   const customProxyInUse = await usingCustomProxy()
+  const premiumProxyInUse = await usingPremiumProxy()
 
-  if (!customProxyInUse) {
+  if (!customProxyInUse && !premiumProxyInUse) {
     const { proxyPingURI } = await configManager.get('proxyPingURI')
 
     fetch(`https://${proxyPingURI}`, {
       method: 'POST',
       headers: {
-        'Content-type': 'application/json; charset=UTF-8',
+        'Content-type': 'application/json charset=UTF-8',
       },
       body: JSON.stringify({
         type: 'ping',
@@ -158,16 +211,71 @@ export const ping = async () => {
   }
 }
 
+export const checkPremiumBackend = async (url, apiKey) => {
+  try {
+    const res = await fetch(`${url}`, {
+      method: 'POST',
+      headers: {
+        'Content-type': 'application/json charset=UTF-8',
+        Authorization: `Api-Key ${apiKey}`,
+      },
+    })
+
+    if (!res.ok) {
+      return false
+    }
+    const data = await res.json()
+
+    await configManager.set({
+      usePremiumProxy: true,
+      haveActivePremiumConfig: true,
+      premiumProxyServerURI: `${data.proxyServerHost}:${data.proxyServerPort}`,
+      premiumUsername: data.username,
+      premiumPassword: data.password,
+      premiumBackendURL: data.api_endpoint,
+      premiumExpirationDate: data.expirationDate,
+    })
+    await setProxy()
+
+    return data
+  } catch (error) {
+    console.error(`Error trying to reach ${url}/ping`, error)
+    return undefined
+  }
+}
+
 export const usingCustomProxy = async () => {
   const { useOwnProxy } = await configManager.get('useOwnProxy')
 
   return useOwnProxy
 }
 
+export const usingPremiumProxy = async () => {
+  const { usePremiumProxy } = await configManager.get('usePremiumProxy')
+
+  return usePremiumProxy
+}
+
 export const controlledByThisExtension = async () => {
   const { levelOfControl } = await browser.proxy.settings.get({})
 
-  return levelOfControl === 'controlled_by_this_extension'
+  console.log(levelOfControl)
+  if (levelOfControl === 'controlled_by_this_extension') {
+    return true
+  }
+  if (levelOfControl === 'controllable_by_this_extension') {
+    const self = await browser.management.getSelf()
+    const installedExtensions = await browser.management.getAll()
+    const extensionsWithProxyPermissions =
+      installedExtensions.filter(({ name, permissions, enabled }) => {
+        return permissions.includes('proxy') && name !== self.name && enabled
+      })
+
+    if (extensionsWithProxyPermissions.length === 0) {
+      return true
+    }
+  }
+  return false
 }
 
 export const controlledByOtherExtensions = async () => {
@@ -181,7 +289,7 @@ export const takeControl = async () => {
   const extensions = await browser.management.getAll()
 
   for (const { id, name, permissions } of extensions) {
-    if (permissions.includes('proxy') && name !== self.name) {
+    if (permissions?.includes('proxy') && name !== self?.name) {
       console.warn(`Disabling ${name}...`)
       await browser.management.setEnabled(id, false)
     }

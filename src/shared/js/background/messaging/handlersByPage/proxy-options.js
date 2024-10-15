@@ -41,16 +41,16 @@ export const handleProxyOptionsMessage = (
           premiumProxyServerURI,
           premiumUsername,
           premiumPassword,
-          premiumActivateURL,
+          premiumBackendURL,
           premiumIdentificationCode,
         } = data
 
         await ConfigManager.set({
-          premiumActivateURL,
+          premiumBackendURL,
           premiumIdentificationCode,
         })
 
-        const actualConfig = await checkPremiumBackend(premiumActivateURL, premiumIdentificationCode)
+        const actualConfig = await checkPremiumBackend(premiumBackendURL, premiumIdentificationCode)
 
         if (!actualConfig) {
           await ConfigManager.set({
@@ -62,7 +62,7 @@ export const handleProxyOptionsMessage = (
             premiumProxyServerURI,
             premiumUsername,
             premiumPassword,
-            premiumActivateURL,
+            premiumBackendURL,
           })
           await Extension.proxy.setProxy()
 

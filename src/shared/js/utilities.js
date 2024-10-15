@@ -195,7 +195,7 @@ export const processEncodedConfig = (encodedString) => {
       server: premiumProxyServerURI,
       username: premiumUsername,
       password: premiumPassword,
-      api_endpoint: premiumActivateURL,
+      api_endpoint: premiumBackendURL,
       api_key: premiumIdentificationCode,
       expiration_date: premiumExpirationDate,
     } = passedData
@@ -205,7 +205,7 @@ export const processEncodedConfig = (encodedString) => {
         premiumProxyServerURI,
         premiumUsername,
         premiumPassword,
-        premiumActivateURL,
+        premiumBackendURL,
         premiumIdentificationCode,
         premiumExpirationDate,
       },

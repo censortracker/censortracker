@@ -1,3 +1,4 @@
+import ConfigManager from '../config'
 import { TaskType } from '../config/constants'
 import proxyManager from '../proxy'
 import * as server from '../server'
@@ -29,6 +30,21 @@ export const handleOnAlarm = async ({ name }) => {
       await proxyManager.setProxy()
     }
   } else if (name === TaskType.CHECK_PREMIUM) {
+    const {
+      usePremiumProxy,
+      premiumBackendURL,
+      premiumIdentificationCode,
+    } = await ConfigManager.get(
+      'usePremiumProxy',
+      'premiumBackendURL',
+      'premiumIdentificationCode',
+    )
+
+    if (!usePremiumProxy) {
+      return
+    }
+
+    await proxyManager.checkPremiumBackend(premiumBackendURL, premiumIdentificationCode)
     const isExpired = await proxyManager.monitorPremiumExpiration()
 
     if (isExpired) {

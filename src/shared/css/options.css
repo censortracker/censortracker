@@ -378,6 +378,7 @@ a {
 }
 
 textarea.input-proxy {
+    padding: 5px 11px;
     resize: vertical;
 }
 

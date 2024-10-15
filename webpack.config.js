@@ -92,6 +92,7 @@ const webConfig = {
     'rules-editor': './src/shared/js/pages/rules-editor.js',
     'translator': './src/shared/js/pages/translator.js',
     'controlled': './src/shared/js/pages/controlled.js',
+    'offscreen': '/src/shared/js/pages/offscreen.js',
   },
   output: {
     path: resolve(`dist/${BROWSER}/${OUTPUT_SUB_DIR}`),
@@ -238,6 +239,14 @@ const webConfig = {
       chunks: ['controlled'],
       meta: contentSecurityPolicy,
     }),
+    new HTMLWebpackPlugin({
+      title: extensionName,
+      filename: 'offscreen.html',
+      template: `src/shared/pages/offscreen.html`,
+      inject: true,
+      chunks: ['offscreen'],
+      meta: contentSecurityPolicy,
+    }),
     new MergeJsonWebpackPlugin({
       globOptions: {
         nosort: false,
@@ -299,6 +308,14 @@ if (isChromium) {
     inject: true,
     chunks: ['translator'],
     meta: contentSecurityPolicy,
+  })),
+  webConfig.plugins.push(new CopyWebpackPlugin({
+    patterns: [
+      {
+        from: 'src/shared/js/extension/base/proxy/auth/worker.js',
+        to: 'worker.js',
+      },
+    ],
   }))
 }
 

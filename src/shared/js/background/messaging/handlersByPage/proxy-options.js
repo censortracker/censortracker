@@ -78,8 +78,9 @@ export const handleProxyOptionsMessage = (
         sendResponse({
           res: {
             premiumIdentificationCode,
-            premiumExpirationDate: actualConfig.expirationDate,
+            premiumExpirationDate: actualConfig.expirationDate * 1000,
           },
+          err: undefined,
         })
       })()
       return true
@@ -114,7 +115,6 @@ export const handleProxyOptionsMessage = (
         })
         await Extension.proxy.setProxy()
       })()
-      console.log('!!!!!!!!!')
       break
     case 'removeCustomProxy':
       ConfigManager.set({ usePremiumProxy: false })

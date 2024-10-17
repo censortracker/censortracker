@@ -232,14 +232,13 @@ export const checkPremiumBackend = async (url, apiKey) => {
       premiumProxyServerURI: `${data.proxyServerHost}:${data.proxyServerPort}`,
       premiumUsername: data.username,
       premiumPassword: data.password,
-      premiumBackendURL: data.api_endpoint,
-      premiumExpirationDate: data.expirationDate,
+      premiumExpirationDate: data.expirationDate * 1000,
     })
     await setProxy()
 
     return data
   } catch (error) {
-    console.error(`Error trying to reach ${url}/ping`, error)
+    console.error(`Error trying to reach ${url}`, error)
     return undefined
   }
 }
@@ -259,7 +258,6 @@ export const usingPremiumProxy = async () => {
 export const controlledByThisExtension = async () => {
   const { levelOfControl } = await browser.proxy.settings.get({})
 
-  console.log(levelOfControl)
   if (levelOfControl === 'controlled_by_this_extension') {
     return true
   }

@@ -164,9 +164,9 @@ export const removePrefix = (str, prefix) => {
   return str
 }
 
-export const countDays = (start, end) => {
-  return Math.ceil((end - start) / MILLISECONDS_IN_DAY)
-}
+export const countDays = (start, end) => (
+  Math.ceil((end - start) / MILLISECONDS_IN_DAY)
+)
 
 export const getDomainFontSize = (currentHostname) => {
   if (currentHostname?.length >= 22 && currentHostname?.length < 25) {

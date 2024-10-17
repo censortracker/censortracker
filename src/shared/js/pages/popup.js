@@ -198,6 +198,18 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
         },
       )
 
+      if (worksCorrectly && !isPremium && currentHostname === 'www.youtube.com' && countryCode === 'RU') {
+        popupPremiumSuggestionYoutube.classList.remove('hidden')
+        const progressBar = document.getElementById('progressBar')
+
+        progressBar.addEventListener('animationend', () => {
+          youtubeToggle.classList.remove('hidden')
+          youtubeToggle.classList.add('toggled')
+        })
+      } else if (worksCorrectly && !isPremium) {
+        popupPremiumSuggestion.classList.remove('hidden')
+      }
+
       if (isValidURL(currentUrl)) {
         currentDomainHeader.innerText = currentHostname
         if (extensionEnabled) {
@@ -228,17 +240,6 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
             }
           },
         )
-        if (worksCorrectly && !isPremium && currentHostname === 'www.youtube.com' && countryCode === 'RU') {
-          popupPremiumSuggestionYoutube.classList.remove('hidden')
-          const progressBar = document.getElementById('progressBar')
-
-          progressBar.addEventListener('animationend', () => {
-            youtubeToggle.classList.remove('hidden')
-            youtubeToggle.classList.add('toggled')
-          })
-        } else if (worksCorrectly && !isPremium) {
-          popupPremiumSuggestion.classList.remove('hidden')
-        }
 
         const siteActionsRadioGroup = document.getElementById('siteActionsRadioGroup')
 

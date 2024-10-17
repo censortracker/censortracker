@@ -547,10 +547,10 @@
     "message": "Enabled"
   },
   "premiumProxyPrice": {
-    "message": "1049"
+    "message": "10,8"
   },
   "premiumProxyPriceData": {
-    "message": "₽/год"
+    "message": "$/year"
   },
   "buyButtonText": {
     "message": "Purchase"

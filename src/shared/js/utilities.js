@@ -164,9 +164,9 @@ export const removePrefix = (str, prefix) => {
   return str
 }
 
-export const countDays = (start, end) => (
-  Math.ceil((end - start) / MILLISECONDS_IN_DAY)
-)
+export const countDays = (start, end) => {
+  return Math.ceil((end - start) / MILLISECONDS_IN_DAY)
+}
 
 export const getDomainFontSize = (currentHostname) => {
   if (currentHostname?.length >= 22 && currentHostname?.length < 25) {
@@ -182,6 +182,9 @@ export const getDomainFontSize = (currentHostname) => {
 }
 
 export const processEncodedConfig = (encodedString) => {
+  if (!encodedString) {
+    return { err: 'emptyStringError' }
+  }
   try {
     const requiredKeys = ['server', 'username', 'password', 'api_endpoint', 'api_key']
     const passedData = JSON.parse(atob(encodedString))

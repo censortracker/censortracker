@@ -597,6 +597,9 @@
   "premiumProxyPersonalCode": {
     "message": "Персональный код:"
   },
+  "emptyStringError": {
+    "message": "Введите непустое значение"
+  },
   "parseJSONError": {
     "message": "Не удалось извлечь данные из кода конфигурации"
   },

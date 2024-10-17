@@ -597,6 +597,9 @@
   "premiumProxyPersonalCode": {
     "message": "Жеке код:"
   },
+  "emptyStringError": {
+    "message": "Бос емес мәнді енгізіңіз"
+  },
   "parseJSONError": {
     "message": "Конфигурация кодынан деректерді шығару мүмкін болмады"
   },

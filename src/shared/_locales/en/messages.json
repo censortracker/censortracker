@@ -597,6 +597,9 @@
   "premiumProxyPersonalCode": {
     "message": "Personal code:"
   },
+  "emptyStringError": {
+    "message": "Enter a non-blank value"
+  },
   "parseJSONError": {
     "message": "Failed to extract data from configuration code"
   },

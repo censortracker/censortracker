@@ -594,6 +594,9 @@
   "premiumProxyPersonalCode": {
     "message": "Персональний код:"
   },
+  "emptyStringError": {
+    "message": "Введіть неправильне значення"
+  },
   "parseJSONError": {
     "message": "Не вдалося отримати дані з коду конфігурації"
   },

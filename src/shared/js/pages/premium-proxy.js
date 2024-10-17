@@ -25,6 +25,7 @@ import { sendConfigFetchMsg, sendExtensionCallMsg/*, sendTransitionMsg */ } from
   const premiumProxyEnableError = document.getElementById('premiumProxyEnableError')
   const premiumProxyInputError = document.getElementById('premiumProxyInputError')
   const proxyPremiumInput = document.getElementById('proxyPremiumInput')
+  const premiumConfigLoadingCircle = document.getElementById('premiumConfigLoadingCircle')
   const savePremiumProxyButton = document.getElementById('savePremiumProxyButton')
 
   const updatePremiumProxyConfig = document.getElementById('updatePremiumProxyConfig')
@@ -72,40 +73,27 @@ import { sendConfigFetchMsg, sendExtensionCallMsg/*, sendTransitionMsg */ } from
   savePremiumProxyButton.addEventListener('click', async (event) => {
     const encodedPremiumData = proxyPremiumInput.value
 
-    if (encodedPremiumData) {
-      const { res, err } = await sendExtensionCallMsg('proxy-options', 'setPremiumProxy',
-        {
-          configString: encodedPremiumData,
-        },
-      )
+    premiumProxyInputError.classList.add('hidden')
+    premiumProxyInputError.textContent = ''
+    proxyPremiumInput.classList.remove('invalid-input')
+    premiumConfigLoadingCircle.classList.remove('hidden')
 
-      if (err) {
-        proxyPremiumInput.classList.add('invalid-input')
-        premiumProxyInputError.classList.remove('hidden')
-        premiumProxyInputError.textContent = browser.i18n.getMessage(err)
-      } else {
-        premiumProxyInputError.classList.add('hidden')
-        const {
-          premiumIdentificationCode: idCode,
-          premiumExpirationDate: expDate,
-        } = res
+    const { err } = await sendExtensionCallMsg('proxy-options', 'setPremiumProxy',
+      {
+        configString: encodedPremiumData,
+      },
+    )
 
-        activePremiumData.classList.remove('hidden')
-        updatePremiumProxyConfig.classList.remove('hidden')
-        premiumPurchaseData.classList.add('hidden')
-        premiumPurchaseRow.classList.add('hidden')
-        premiumInputCard.classList.add('hidden')
+    premiumConfigLoadingCircle.classList.add('hidden')
 
-        premiumProxyPersonalCode.textContent = idCode
-        premiumProxyExpirationDate.textContent = new Date(expDate).toLocaleDateString('ru-RU')
-        premiumProxyDaysLeft.textContent = countDays(Date.now(), expDate)
-
-        proxyPremiumInput.classList.remove('invalid-input')
-        updatePremiumProxyConfig.classList.remove('hidden')
-        disablePremiumProxy.classList.remove('hidden')
-      }
-    } else {
+    if (err) {
       proxyPremiumInput.classList.add('invalid-input')
+      premiumProxyInputError.classList.remove('hidden')
+      premiumProxyInputError.textContent = browser.i18n.getMessage(err)
+    } else {
+      setTimeout(() => {
+        window.location.reload()
+      }, 1500)
     }
   })
 

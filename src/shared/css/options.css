@@ -1134,6 +1134,26 @@ p.description-large {
     line-height: 15px;
 }
 
+.loading-circle {
+    display: inline-block;
+    margin-left: 3px;
+    border: 2px solid #e0dbdb;
+    border-top: 2px solid rgba(255, 255, 255, 0);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    width: 10px;
+    aspect-ratio: 1 / 1;
+  }
+
+.loading-circle.hidden {
+    display: none;
+}
+
+@keyframes spin {
+0% { transform: rotate(0deg); }
+100% { transform: rotate(360deg); }
+}
+
 @media (prefers-color-scheme: dark) {
     :root {
         color-scheme: dark;

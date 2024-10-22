@@ -59,7 +59,7 @@ export const handleInstalled = async ({ reason }) => {
           },
           body: JSON.stringify({
             browser: getBrowserInfo().name,
-            is_authorized: !!(userInfo?.email),
+            is_authorized: !!(userInfo?.id),
           }),
         }).catch(() => {
           console.log('Sent statistics on authorization')

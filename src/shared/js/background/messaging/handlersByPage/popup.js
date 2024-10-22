@@ -32,7 +32,7 @@ export const handlePopupMessage = (message, _sender, sendResponse) => {
           await Extension.registry.remove(url)
         }
       })()
-      return true
+      break
     case 'getDomains':
       Extension.registry.getDomains().then(
         (domains) => {
@@ -52,5 +52,5 @@ export const handlePopupMessage = (message, _sender, sendResponse) => {
     default:
       console.warn(`unknown request: ${request}`)
   }
-  return true
+  return undefined
 }

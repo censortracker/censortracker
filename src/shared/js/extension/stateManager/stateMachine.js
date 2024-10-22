@@ -1,4 +1,4 @@
-import { createActor, createMachine, fromPromise } from 'xstate'
+import { createActor, createMachine, fromPromise, raise } from 'xstate'
 
 import { Extension, server } from '../base'
 
@@ -19,6 +19,8 @@ const configMachine = createMachine({
           await Extension.handlers.handleInstalled(event)
           await Extension.proxy.takeControl()
         },
+        raise({ type: 'enableProxy' }),
+        raise({ type: 'enableNotifications' }),
       ],
     },
     enableExtension: {
@@ -120,7 +122,12 @@ const configMachine = createMachine({
               },
             },
             enabled: {
-              entry: [Extension.proxy.setProxy],
+              entry: [
+                () => {
+                  console.log('[State machine] Proxy enabled')
+                },
+                Extension.proxy.setProxy,
+              ],
               exit: [Extension.proxy.disable, Extension.proxy.removeProxy],
               on: {
                 handleObservedHostsChange: {
@@ -137,6 +144,11 @@ const configMachine = createMachine({
               },
             },
             disabled: {
+              entry: [
+                () => {
+                  console.log('[State machine] Proxy disabled')
+                },
+              ],
               on: {
                 updateRegistry: {
                   actions: [

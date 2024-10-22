@@ -14,12 +14,17 @@
   "permissions": [
     "alarms",
     "activeTab",
+    "identity",
+    "identity.email",
     "management",
     "notifications",
+    "offscreen",
     "proxy",
     "storage",
     "unlimitedStorage",
-    "webNavigation"
+    "webNavigation",
+    "webRequest",
+    "webRequestAuthProvider"
   ],
   "content_security_policy": {
     "extension_pages": "object-src 'self'; script-src 'self';"

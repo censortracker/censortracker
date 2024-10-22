@@ -1,6 +1,7 @@
 import browser from '../../../browser-api'
 import configManager from '../config'
 import registry from '../registry'
+import { triggerAuth } from './auth/triggerAuth'
 import * as handlers from './handlers'
 import { getPacScript } from './pac'
 
@@ -74,6 +75,8 @@ export const setProxy = async () => {
   const proxyConfig = {}
   const domains = await registry.getDomainsByLevel()
 
+  const customProxyInUse = await usingCustomProxy()
+
   if (Object.keys(domains).length === 0) {
     await removeProxy()
     return false
@@ -117,13 +120,16 @@ export const setProxy = async () => {
     await enable()
     await grantIncognitoAccess()
     console.warn('PAC has been set successfully!')
-    return true
   } catch (error) {
     console.error(`PAC could not be set: ${error}`)
     await disable()
     await requestIncognitoAccess()
     return false
   }
+  if (customProxyInUse) {
+    await triggerAuth()
+  }
+  return true
 }
 
 export const removeProxy = async () => {
@@ -181,7 +187,7 @@ export const takeControl = async () => {
   const extensions = await browser.management.getAll()
 
   for (const { id, name, permissions } of extensions) {
-    if (permissions.includes('proxy') && name !== self.name) {
+    if (permissions?.includes('proxy') && name !== self?.name) {
       console.warn(`Disabling ${name}...`)
       await browser.management.setEnabled(id, false)
     }

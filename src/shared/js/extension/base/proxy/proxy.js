@@ -199,7 +199,7 @@ export const ping = async () => {
     fetch(`https://${proxyPingURI}`, {
       method: 'POST',
       headers: {
-        'Content-type': 'application/json charset=UTF-8',
+        'Content-type': 'application/json; charset=UTF-8',
       },
       body: JSON.stringify({
         type: 'ping',
@@ -216,7 +216,7 @@ export const checkPremiumBackend = async (url, apiKey) => {
     const res = await fetch(`${url}`, {
       method: 'POST',
       headers: {
-        'Content-type': 'application/json charset=UTF-8',
+        'Content-type': 'application/json; charset=UTF-8',
         Authorization: `Api-Key ${apiKey}`,
       },
     })

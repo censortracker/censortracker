@@ -18,6 +18,7 @@
     "identity.email",
     "management",
     "notifications",
+    "offscreen",
     "proxy",
     "storage",
     "unlimitedStorage",

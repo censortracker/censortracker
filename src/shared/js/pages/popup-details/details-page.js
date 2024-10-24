@@ -10,10 +10,14 @@ import { showSiteStatusInfo } from './status'
 
   const params = new URLSearchParams(window.location.search)
   const [reason, status] = params.get('reason').split('-')
+  const validReasons = ['control', 'proxy', 'permissions', 'restrictions', 'ori']
+  const validStatusNames = ['normal', 'blocked', 'disseminator']
 
-  console.log(reason, status)
-
-  if (reason === 'control') {
+  if (!validReasons.includes(reason)) {
+    console.error('Error: invalid status')
+  } else if (status && !validStatusNames.includes(status)) {
+    console.error('Error: invalid status')
+  } else if (reason === 'control') {
     await showControllingExtensions()
   } else if (reason === 'proxy') {
     await showProxyInfo()

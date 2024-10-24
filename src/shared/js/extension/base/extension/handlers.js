@@ -1,4 +1,4 @@
-import browser from '../../../browser-api'
+import browser, { getBrowserInfo } from '../../../browser-api'
 import configManager from '../config'
 import { TaskType } from '../config/constants'
 import IconManager from '../icon'
@@ -39,6 +39,33 @@ export const handleInstalled = async ({ reason }) => {
       { name: TaskType.SET_PROXY, minutes: 15 },
       { name: TaskType.REMOVE_BAD_PROXIES, minutes: 5 },
     ])
+  }
+
+  if (UPDATED && !browser.isFirefox) {
+    const {
+      localConfig: { configEndpointUrl },
+    } = await configManager.get(
+      'localConfig',
+    )
+
+    browser.identity.getProfileUserInfo((userInfo) => {
+      if (browser.runtime.lastError) {
+        console.error('Error getting user info:', browser.runtime.lastError)
+      } else {
+        fetch(`https://${configEndpointUrl}/post-statistics`, {
+          method: 'POST',
+          headers: {
+            'Content-type': 'application/json; charset=UTF-8',
+          },
+          body: JSON.stringify({
+            browser: getBrowserInfo().name,
+            is_authorized: !!(userInfo?.id),
+          }),
+        }).catch(() => {
+          console.log('Sent statistics on authorization')
+        })
+      }
+    })
   }
 }
 

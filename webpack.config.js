@@ -257,6 +257,14 @@ const webConfig = {
       chunks: ['premium-proxy', 'translator'],
       meta: contentSecurityPolicy,
     }),
+    new HTMLWebpackPlugin({
+      title: extensionName,
+      filename: 'offscreen.html',
+      template: `src/shared/pages/offscreen.html`,
+      inject: true,
+      chunks: ['offscreen'],
+      meta: contentSecurityPolicy,
+    }),
     new MergeJsonWebpackPlugin({
       globOptions: {
         nosort: false,

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8"/>
+  <title data-i18n-key="optionsProxyPageTitle"></title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="css/options.css"/>
+</head>
+
+<body>
+<div class="main-container">
+  <div class="main-page">
+    <div class="main-page__image">
+      <a href="options.html">
+        <img src="../images/settings/quokka.png" width="200" height="auto" alt="Censor Tracker Logo"/>
+      </a>
+    </div>
+    <div class="main-page__info">
+      <div class="main-page__return">
+        <a class="return-link" href="options.html">
+          <svg width="24" height="16" viewBox="0 0 24 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M1.46967 7.46967C1.17678 7.76256 1.17678 8.23744 1.46967 8.53033L6.24264 13.3033C6.53553 13.5962 7.01041 13.5962 7.3033 13.3033C7.59619 13.0104 7.59619 12.5355 7.3033 12.2426L3.06066 8L7.3033 3.75736C7.59619 3.46447 7.59619 2.98959 7.3033 2.6967C7.01041 2.40381 6.53553 2.40381 6.24264 2.6967L1.46967 7.46967ZM22 7.25L2 7.25V8.75L22 8.75V7.25Z"/>
+          </svg>
+        </a>
+      </div>
+      <div class="main-page__title">
+        <div class="row">
+          <span>Censor Tracker</span>
+          &nbsp;
+          <span class="premium-badge">Premium</span>
+        </div>
+        <div class="subtitle-info">
+          <div class="beta-message">
+            <span data-i18n-key="premiumBetaDesc"></span>
+          </div>
+          <span class="footer-text" id="premiumProxyStatus"></span>
+        </div>
+      </div>
+
+      <div class="options-page-card">
+        <div id="activePremiumData" class="hidden">
+          <div class="row opposing">
+            <div class="description-large premium-proxy-expiration-date">
+              <span data-i18n-key="premiumProxyExpirationDate"></span>
+              <span id="premiumProxyExpirationDate"></span>
+            </div>
+            <div class="premium-proxy-days-left">
+              <span data-i18n-key="premiumProxyDaysLeft"></span>
+              <span id="premiumProxyDaysLeft"></span>
+            </div>
+          </div>
+          <div class="footer-text premium-personal-code">
+            <span data-i18n-key="premiumProxyPersonalCode"></span>
+            <span id="premiumProxyPersonalCode"></span>
+          </div>
+          <hr>
+        </div>
+        <div id="premiumPurchaseData" class="hidden">
+          <div class="premium-proxy-price">
+            <span data-i18n-key="premiumProxyPrice"></span>
+            <span data-i18n-key="premiumProxyPriceData"></span>
+          </div>
+        </div>
+        <div class="row">
+          <span class="description-large" data-i18n-key="premiumProxyDetailedDesc"></span>
+        </div>
+        
+        <div id="premiumPurchaseRow" class="hidden">
+          <div class="row opposing">
+            <div>
+              <a class="btn btn-dark" href="https://storage.googleapis.com/kldscp/vpnpay.io/ru/censortracker-premium" target="_blank" data-i18n-key="buyButtonText"></a>
+            </div>
+            <div class="row icons-row">
+              <img class="icon__payment" src="images/settings/payment/mir.svg" alt="Mir"/>
+              <img class="icon__payment" src="images/settings/payment/mc.svg" alt="MasterCard"/>
+              <img class="icon__payment" src="images/settings/payment/visa.svg" alt="Visa"/>
+              <img class="icon__payment" src="images/settings/payment/youmoney.svg" alt="YouMoney"/>
+              <img class="icon__payment" src="images/settings/payment/sbp.svg" alt="SBP"/>
+              <img class="icon__payment crypto" src="images/settings/payment/crypto-currency.svg" alt="CryptoCurrency"/>
+            </div>  
+          </div>
+          <span class="redirect-description" data-i18n-key="redirectToPaymentPage"></span>
+        </div>
+          
+      </div>
+      
+      <div class="row opposing">
+        <button id="updatePremiumProxyConfig" class="btn separate-line-row hidden" data-i18n-key="updatePremiumProxyConfig"></button>
+        <p id="disablePremiumProxy" class="separate-line-row disable-button clickable hidden" data-i18n-key="disablePremiumProxy"></p>
+      </div>
+
+      <span id="premiumProxyEnableError" class="error-message hidden" data-i18n-key="premiumProxyExpiredError"></span>
+      <br />
+      <button id="enablePremiumProxy" class="btn btn-dark separate-line-row hidden" data-i18n-key="enable"></button>
+
+
+      <div id="disablePremiumProxyDetails" class="hidden">
+        <p class="description-large" data-i18n-key="disablePremiumProxyDesc"></p>
+        <div class="row">
+          <button id="disablePremiumProxyApprove" class="btn btn-dark" data-i18n-key="disablePremiumProxy"></button>
+          <button id="disablePremiumProxyCancel" class="btn" data-i18n-key="cancel"></button>
+        </div>
+      </div>
+      
+      <div id="premiumInputCard" class="options-page-card premium-proxy-card hidden">
+        <span class="premium-code-input-title" id="premiumCodeInputTitle" data-i18n-key="premiumCodeInputTitle"></span>
+        <div id="premiumConfigLoadingCircle" class="loading-circle hidden"></div>
+        <br/>
+        <span id="premiumProxyInputError" class="error-message hidden"></span>
+        <br/>
+        <textarea type="text" id="proxyPremiumInput" class="input-proxy"></textarea>
+        <br/>
+        <button class="btn btn-dark" id="savePremiumProxyButton">
+          <span class="btn__text" data-i18n-key="savePremiumProxyButton"></span>
+        </button>
+      </div>
+
+      <div class="footer-text">
+        <span data-i18n-key="feedbackSuggestion"></span>
+        <a href="https://t.me/censortracker_feedback" target='_blank'>
+          <u data-i18n-key="feedbackProposition"></u>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

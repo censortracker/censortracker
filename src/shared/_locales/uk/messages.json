@@ -38,6 +38,9 @@
   "blockedTitle": {
     "message": "Доступ заборонено"
   },
+  "enable": {
+    "message": "Увімкнути"
+  },
   "cancel": {
     "message": "Скасування"
   },
@@ -132,7 +135,7 @@
     "message": "Є організатором поширення інформації"
   },
   "done": {
-    "message": "Готово!"
+    "message": "Готово"
   },
   "doneDescription": {
     "message": "Операцію виконано успішно."
@@ -436,25 +439,28 @@
     "message": "Показувати системні сповіщення"
   },
   "siteActionAlwaysDesc": {
-    "message": "Завжди відкривати цей сайт через проксі"
+    "message": "Завжди відкривається через проксі"
   },
   "siteActionAutoDesc": {
-    "message": "Відкривати сайт через проксі, тільки якщо сайт виявиться недоступним через блокування"
+    "message": "Відкривається через проксі, якщо заборонено"
+  },
+  "recomended": {
+    "message": "Рекомендується"
   },
   "siteActionItemLabelAlways": {
     "message": "Завжди"
   },
   "siteActionItemLabelAuto": {
-    "message": "Автоматично"
+    "message": "Якщо доступ заборонено"
   },
   "siteActionItemLabelNever": {
     "message": "Ніколи"
   },
   "siteActionNeverDesc": {
-    "message": "Ніколи не відкривати цей сайт через проксі (навіть якщо сайт виявиться недоступним через блокування)"
+    "message": "Чи не проксується"
   },
   "siteActionTitle": {
-    "message": "Коли слід використовувати проксі для відкриття цього сайту?"
+    "message": "Коли використовувати проксі для відкриття цього сайту?"
   },
   "thankYou": {
     "message": "Дякую!"
@@ -489,6 +495,9 @@
   "useOwnProxy": {
     "message": "Свій проксі"
   },
+  "usePremiumProxy": {
+    "message": "Преміум проксі"
+  },
   "useProxy": {
     "message": "Використовувати проксі"
   },
@@ -518,5 +527,92 @@
   },
   "importSettingsDesc": {
     "message": "Ви можете імпортувати налаштування з файлу JSON."
+  },
+  "premiumProxyDesc": {
+    "message": "Підвищена швидкість підключення"
+  },
+  "premiumProxyDetailedDesc": {
+    "message": "Censor Tracker Premium – це підвищена швидкість підключення до заблокованих сайтів. Дивіться улюблені відеосервіси без гальм"
+  },
+  "premiumBetaDesc": {
+    "message": "На даний момент Censor Tracker Premium знаходиться на стадії бети і доступний для обмеженої кількості користувачів."
+  },
+  "premiumProxyStatusNotActivated": {
+    "message": "Не підключено"
+  },
+  "premiumProxyStatusTurnedOff": {
+    "message": "Виключено"
+  },
+  "premiumProxyStatusTurnedOn": {
+    "message": "Підключено"
+  },
+  "premiumProxyPrice": {
+    "message": "446"
+  },
+  "premiumProxyPriceData": {
+    "message": "₴/рік"
+  },
+  "buyButtonText": {
+    "message": "Придбати"
+  },
+  "redirectToPaymentPage": {
+    "message": "Ви будете перенаправлені на сайт VPNPay для оплати"
+  },
+  "updatePremiumProxyConfig": {
+    "message": "Оновити код"
+  },
+  "disablePremiumProxy": {
+    "message": "Вимкнути"
+  },
+  "premiumCodeInputTitle": {
+    "message": "У мене вже є код"
+  },
+  "premiumCodeInputUpdate": {
+    "message": "Введіть кодд"
+  },
+  "premiumCodeInputPlaceholder": {
+    "message": "Код Censor Tracker Premium"
+  },
+  "premiumProxyExpiredError": {
+    "message": "Ви хочете вимкнути Censor Tracker Premium?"
+  },
+  "savePremiumProxyButton": {
+    "message": "Застосувати"
+  },
+  "feedbackSuggestion": {
+    "message": "Чи є питання чи зіткнулися з труднощами?"
+  },
+  "feedbackProposition": {
+    "message": "Напишіть нам"
+  },
+  "premiumProxyExpirationDate": {
+    "message": "Censor Tracker Premium діє до"
+  },
+  "premiumProxyDaysLeft": {
+    "message": "Залишилось днів:"
+  },
+  "premiumProxyPersonalCode": {
+    "message": "Персональний код:"
+  },
+  "emptyStringError": {
+    "message": "Введіть неправильне значення"
+  },
+  "parseJSONError": {
+    "message": "Не вдалося отримати дані з коду конфігурації"
+  },
+  "invalidJsonError": {
+    "message": "У коді конфігурації не представлені необхідні дані"
+  },
+  "popupPremiumSuggestion": {
+    "message": "Заблоковані сайти можуть відкриватися швидше з Censor Tracker Premium"
+  },
+  "showDetailsButton": {
+    "message": "Докладніше"
+  },
+  "speedUpYouTubeSuggestion": {
+    "message": "Дивіться YouTube як раніше з Censor Tracker Premium"
+  },
+  "speedUpYouTubeButton": {
+    "message": "Прискорити YouTube"
   }
 }

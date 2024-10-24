@@ -1,7 +1,7 @@
 import browser from '../../../browser-api'
 import configManager from '../config'
 import * as server from '../server'
-import { getBadProxies, ping, requestIncognitoAccess, setProxy, usingCustomProxy } from './proxy'
+import { getBadProxies, ping, requestIncognitoAccess, setProxy, usingCustomProxy, usingPremiumProxy } from './proxy'
 
 export const handleBeforeRequest = async (_details) => {
   await ping()
@@ -10,9 +10,10 @@ export const handleBeforeRequest = async (_details) => {
 
 export const handleProxyError = async ({ error }) => {
   const customProxyInUse = await usingCustomProxy()
+  const premiumProxyInUse = await usingPremiumProxy()
 
   // Custom proxy is used, so we don't need to handle this error
-  if (customProxyInUse) {
+  if (customProxyInUse || premiumProxyInUse) {
     return
   }
 

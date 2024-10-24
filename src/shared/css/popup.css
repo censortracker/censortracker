@@ -18,6 +18,20 @@ body {
     overflow-x: hidden;
 }
 
+.body-wrapper::-webkit-scrollbar {
+    display: none;
+}
+  
+.body-wrapper {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.body-wrapper {
+    max-height: 600px;
+    overflow: scroll;
+}
+
 a {
     text-decoration: none;
 }
@@ -30,12 +44,14 @@ a {
     padding: 10px 0;
     text-align: center;
     position: relative;
+    margin: auto;
+    width: min-content;
 }
 
 .icon__settings {
     position: absolute;
-    top: 0;
-    right: 0;
+    top: 20px;
+    right: 20px;
     width: 16px;
     height: 16px;
     mask: url("../images/settings/cog.svg") no-repeat center / contain;
@@ -45,8 +61,8 @@ a {
 
 .red-dot {
     position: absolute;
-    top: -4px;
-    right: -2px;
+    top: 16px;
+    right: 16px;
     width: 6px;
     height: 6px;
     content: '';
@@ -55,6 +71,11 @@ a {
     border-radius: 6px;
     -webkit-animation: pulsing 0.2s;
     animation: pulsing 0.2s;
+}
+
+#siteStatus .siteStatus, #siteStatus .block__title, #siteStatus .block__text {
+    margin-top: 0;
+    margin-bottom: 0;
 }
 
 @-webkit-keyframes pulsing {
@@ -110,13 +131,13 @@ a {
     filter: contrast(300%);
 }
 
-.icon__back {
-    position: absolute;
-}
-
 .icon__back path {
     fill: #3b332b;
     fill-opacity: 0.7;
+}
+
+.site-actions-icon path {
+    fill: #625c55;
 }
 
 .icon__back:hover {
@@ -280,6 +301,10 @@ a {
     margin-right: 20px;
 }
 
+.clickable {
+    cursor: pointer;
+}
+
 .block__text {
     font-size: 14px;
     line-height: 20px;
@@ -291,13 +316,17 @@ a {
     transition: all 1s ease-out;
 }
 
+#statusDetails.block__text {
+    display: block;
+}
+
 .block__footer {
     display: flex;
     padding-top: 10px;
 }
 
 .text-normal {
-    background: rgba(237, 242, 247, 0.6);
+    background-color: rgba(237, 242, 247, 0.6);
 }
 
 .text-warning {
@@ -364,6 +393,10 @@ a {
 
 .btn-text a {
     text-decoration: none;
+    color: inherit;
+}
+
+.btn-text {
     color: inherit;
 }
 
@@ -442,6 +475,7 @@ a {
 
 div#grantPrivateBrowsingPermissionsButton {
     cursor: pointer;
+    display: block;
 }
 
 .censor-tracker__status {
@@ -468,6 +502,78 @@ div#grantPrivateBrowsingPermissionsButton {
     filter: contrast(300%);
 }
 
+.main-page__info.popup-details {
+    position: relative;
+    min-height: 200px;
+}
+
+.main-page__proxy-info {
+    margin-top: 30px;
+}
+
+.icon__proxy__status {
+    width: 15px;
+    aspect-ratio: 1 / 1;
+    cursor: pointer;
+    margin-top: 7px;
+}
+
+.proxy-status-title {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.proxy-status-data {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+}
+
+.btn-dark {
+    background: #3b332b;
+    color: #fff;
+    margin-right: 30px;
+    border: 1px solid transparent;
+    box-shadow: 0 0.598509px 3.52455px rgba(15, 13, 11, 0.079074), 0 1.12694px 6.63642px rgba(15, 13, 11, 0.0655718), 0 2.01027px 11.8382px rgba(15, 13, 11, 0.055);
+}
+
+.btn-dark:hover {
+    background: #4f4740;
+}
+
+.btn-dark:active {
+    background: #352e27;
+    border: 1px solid transparent;
+}
+
+.btn-dark:active > .btn__text {
+    opacity: 1;
+}
+
+.btn-dark:hover > .btn__text {
+    opacity: 0.9;
+}
+
+.btn-dark.btn-disabled:hover {
+    background: #3b332b;
+}
+
+.btn-dark.btn-disabled:hover > .btn__text {
+    opacity: 1;
+}
+
+.back-to-popup-button {
+    position: absolute;
+    bottom: 0px;
+    text-align: center;
+    font-size: 16px;
+    width: 90%;
+    padding: 5px;
+    border-radius: 4px;
+}
+
 .main-page__info .icon__site_settings {
     width: 16px;
     height: 16px;
@@ -475,9 +581,8 @@ div#grantPrivateBrowsingPermissionsButton {
 }
 
 .main-page__title.title-domain {
-    display: flex;
-    flex-direction: row;
     justify-content: center;
+    text-align: center;
     align-items: center;
 }
 
@@ -495,6 +600,10 @@ div#grantPrivateBrowsingPermissionsButton {
     background-color: #3b332b;
 }
 
+.icon-hide svg {
+    transform: rotate(180deg);
+}
+
 .main-page__info .icon__site_settings:hover {
     cursor: pointer;
     filter: contrast(300%);
@@ -504,8 +613,8 @@ div#grantPrivateBrowsingPermissionsButton {
 .main-page-setting {
     background: #F4F7FA;
     border-radius: 5px;
-    margin: 0 0px 30px;
-    padding: 14px;
+    margin: -10px 0px 15px;
+    padding: 10px;
     position: relative;
     font-size: 13px;
     line-height: 19px;
@@ -660,6 +769,198 @@ div#grantPrivateBrowsingPermissionsButton {
     font-size: 12px;
 }
 
+.row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.row.centered {
+    justify-content: center;
+    margin: auto;
+}
+
+.premium-badge {
+    background-color: #aafb1f;
+    padding: 2px 9px;
+    border-radius: 10px;
+    font-weight: 300;
+    font-size: 12px;
+    line-height: 20px;
+    color: #2b6204;
+    z-index: 999;
+}
+
+.premium-suggestion, .premium-suggestion .footer {
+    background-color: #e6e6e6;
+    overflow: hidden;
+    height: 100%;
+    padding-bottom: 0px;
+}
+
+.premium-suggestion-text {
+    font-weight: 500;
+}
+
+.premium-button {
+    width: fit-content;
+    margin-bottom: 0px;
+}
+
+.censor-tracker.premium-button {
+    padding: 0px 0px 15px 20px;
+    width: 100%;
+}
+
+#premiumBadge {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+}
+
+.progress-container {
+    position: relative;
+    width: 250px;
+    height: 5px;
+    border-radius: 10px;
+    background-color: #c2c2c2;
+    overflow: hidden;
+}
+
+.progress-bar {
+    position: absolute; 
+    height: 5px;
+    border-radius: 10px;
+}
+
+.progress-bar.loading {
+    width: 5%;
+    background-color: #999999;
+    animation: loadProgress 3s ease-out forwards;
+}
+
+.progress-bar.playing {
+    width: 2%;
+    background-color: red;
+    z-index: 1;
+}
+
+
+@keyframes loadProgress {
+    0% {
+        width: 5%;
+    }
+    70% {
+        width: 15%;
+    }
+    100% {
+        width: 100%;
+    }
+}
+
+.youtube-toggle {
+    padding-left: 20px;
+    padding-right: 60px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 1.5s ease;
+}
+.youtube-toggle.toggled {
+    max-height: 90px;
+}
+
+.youtube-toggle-text {
+    font-weight: 500;
+}
+
+.default-btn.youtube-speedup {
+    width: fit-content;
+    margin-top: 5px;
+    margin-bottom: 20px;
+}
+
+.btn-what-this-mean {
+    text-decoration: underline;
+}
+
+.rules-toggle-title {
+    font-size: 12.5px;
+    cursor: pointer;
+}
+
+.rules-toggle-title.hidden * {
+    display: none;
+}
+
+.radio-buttons-group {
+    display: flex;
+    margin: 5px 0;
+    flex-direction: column;
+}
+
+.proxy-rules-title {
+    font-weight: 600px;
+    font-size: 15px;
+    margin-bottom: 20px;
+}
+
+.radio-button {
+    margin: 5px 0;
+}
+
+.radio-button input[type=radio] {
+    display: none;
+}
+
+.radio-button input[type=radio] + label::before {
+    content: "";
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border-radius: 15px;
+    position: absolute;
+    left: 0;
+    bottom: -4px;
+    background: #fff;
+    border: 1px solid #3b332b;
+}
+
+.radio-button:hover label::after,
+.radio-button input[type=radio]:checked + label::after {
+    content: "";
+    display: inline-block;
+    position: absolute;
+    left: 6px;
+    bottom: 2px;
+    background: #6c9e2c;
+    width: 10px;
+    height: 10px;
+    border-radius: 5px;
+}
+
+.radio-button label {
+    cursor: pointer;
+    position: relative;
+    padding-left: 45px;
+    display: inline-block;
+    font-size: 16px;
+    line-height: 15px;
+    font-weight: normal;
+}
+
+.radio-button input[type=radio] + label.with-comment::before {
+    bottom: 4px;
+}
+
+.radio-button:hover label.with-comment::after,
+.radio-button input[type=radio]:checked + label.with-comment::after {
+    bottom: 10px;
+}
+
+.radio-button label.with-comment {
+    display: block;
+}
+
 @media (prefers-color-scheme: dark) {
     :root {
         color-scheme: dark;
@@ -721,19 +1022,20 @@ div#grantPrivateBrowsingPermissionsButton {
     }
 
     .btn-ok {
-        border: 1px solid #f4f1f1
+        border: 1px solid #f4f1f1;
     }
 
     .text-warning {
-        background-color: #382e2e
+        background-color: #382e2e;
+        color: #f4f1f1;
     }
 
     .main-page-setting {
-        background-color: #2b323b
+        background-color: #2b323b;
     }
 
     .main-page-setting:after {
-        border-bottom: 10px solid #2b323b
+        border-bottom: 10px solid #2b323b;
     }
 
     .site-actions-group .site-actions-group-item:last-child label {
@@ -750,6 +1052,10 @@ div#grantPrivateBrowsingPermissionsButton {
         color: #fff;
     }
 
+    label {
+        color: #F4F1F1;
+    }
+
     .proxy_info, .site-actions-group {
         color: #f4f1f1 !important
     }
@@ -763,9 +1069,12 @@ div#grantPrivateBrowsingPermissionsButton {
     }
 
     .footer-btn, .text-extension {
-        color: #f4f1f1
+        color: #f4f1f1;
     }
 
+    .premium-suggestion-text {
+        color: #f4f1f1;
+    }
     .default-btn {
         background: #484c51;
         border-radius: 4px;
@@ -776,8 +1085,19 @@ div#grantPrivateBrowsingPermissionsButton {
         background: #61666b
     }
 
+    .btn-dark,
+    .default-btn {
+        background: #484C51;
+        border-radius: 4px;
+        color: #cbccc6;
+    }
+
     .icon__back path {
-        fill: #f4f1f1
+        fill: #f4f1f1;
+    }
+
+    .site-actions-icon path {
+        fill: #f4f1f1;
     }
 
     #privateBrowsingPermissionsRequiredButton {
@@ -799,7 +1119,7 @@ div#grantPrivateBrowsingPermissionsButton {
     }
 }
 
-.inisible-message {
+.invisible-message {
     opacity: 0;
     position: absolute;
     top: 0;

@@ -11,14 +11,12 @@ export const handleControlledMessage = (
       (async () => {
         await Extension.proxy.takeControl()
         await Extension.proxy.setProxy()
-        return true
       })()
       return true
     case 'controlledByThisExtension':
       Extension.proxy.controlledByThisExtension().then(
         (controlledByThisExtension) => {
           sendResponse(controlledByThisExtension)
-          return true
         },
       )
       return true
@@ -26,7 +24,6 @@ export const handleControlledMessage = (
       Extension.proxy.controlledByOtherExtensions().then(
         (controlledByOtherExtensions) => {
           sendResponse(controlledByOtherExtensions)
-          return true
         },
       )
       return true

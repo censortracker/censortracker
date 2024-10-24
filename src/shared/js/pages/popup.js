@@ -1,8 +1,7 @@
-import DOMPurify from 'dompurify'
-
 import browser from '../browser-api'
 import {
   extractHostnameFromUrl,
+  getDomainFontSize,
   i18nGetMessage,
   isI2PUrl,
   isOnionUrl,
@@ -12,25 +11,31 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
 
 (async () => {
   const source = 'popup'
-
+  // eslint-disable-next-line no-unused-vars
+  let worksCorrectly = true
   const extensionIdlabel = document.getElementById('extension-id')
 
   extensionIdlabel.textContent = browser.runtime.id
 
+  const premiumBadge = document.getElementById('premiumBadge')
+  const popupPremiumSuggestion = document.getElementById('popupPremiumSuggestion')
+  const popupPremiumSuggestionYoutube = document.getElementById('popupPremiumSuggestionYoutube')
+  const youtubeToggle = document.getElementById('youtubeToggle')
+
   const statusImage = document.getElementById('statusImage')
   const disseminatorInfoBlock = document.getElementById('ori')
   const siteActions = document.getElementById('siteActions')
-  const proxyingInfo = document.getElementById('proxying-info')
+  const siteActionsDone = document.getElementById('siteActionsDone')
   const restrictionsInfoBlock = document.getElementById('restrictions')
-  const detailsText = document.querySelectorAll('.details-text')
+  const restrictionsWhatThisMeans = document.querySelector('#restrictions .btn-what-this-mean')
+  const oriWhatThisMeans = document.querySelector('#ori .btn-what-this-mean')
   const extensionIsOff = document.getElementById('extensionIsOff')
   const mainPageInfoBlocks = document.querySelectorAll('.main-page-info')
   const popupProxyStatusOk = document.getElementById('popupProxyStatusOk')
   const popupProxyDisabled = document.getElementById('popupProxyDisabled')
   const toggleSiteActionsButton = document.getElementById('toggleSiteActions')
-  const siteActionDescription = document.getElementById(
-    'siteActionDescription',
-  )
+  const proxyStatusIcon = document.getElementById('proxyStatusIcon')
+  const siteActionDescription = document.getElementById('siteActionDescription')
   const popupProxyStatusError = document.getElementById(
     'popupProxyStatusError',
   )
@@ -49,6 +54,14 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
   const i2pNetwork = document.getElementById('i2pNetwork')
   const openOptionsPage = document.getElementById('openOptionsPage')
   const highlightOptionsIcon = document.getElementById('highlightOptionsIcon')
+
+  const {
+    usePremiumProxy: isPremium,
+    localConfig: { countryCode },
+  } = await sendConfigFetchMsg(
+    'usePremiumProxy',
+    'localConfig',
+  )
 
   document.addEventListener('click', async (event) => {
     // targetIdPossibleValues = 'disableExtension' | 'enableExtension'
@@ -90,7 +103,7 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
 
   // Show page with instructions about how to grand incognito access
   privateBrowsingPermissionsRequiredButton.addEventListener('click', () => {
-    window.location.href = 'incognito-required-popup.html'
+    window.location.href = 'popup-details.html?reason=permissions'
   })
 
   const controlledByOtherExtensionsButton = document.getElementById(
@@ -99,68 +112,56 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
 
   // Show page with list of conflicting extensions
   controlledByOtherExtensionsButton.addEventListener('click', () => {
-    window.location.href = 'controlled.html'
+    window.location.href = 'popup-details.html?reason=control'
   })
 
   backendIsIntermittentPopupMessage.addEventListener('click', async () => {
     await browser.runtime.openOptionsPage()
   })
 
-  // Show proxying information
-  sendConfigFetchMsg(
-    'currentRegionName',
-    'proxyServerURI',
-    'customProxyServerURI',
-    'proxyLastFetchTs',
-  ).then(async (
-    {
-      currentRegionName,
-      proxyServerURI,
-      customProxyServerURI,
-      proxyLastFetchTs,
-    },
-  ) => {
-    if (proxyServerURI && proxyLastFetchTs) {
-      const domains = await sendExtensionCallMsg(source, 'getDomains')
-      const proxyServerId = proxyServerURI.split('.', 1)[0]
-      const proxyingDetailsText = document.getElementById('proxyingDetailsText')
-      const regionName = currentRegionName || i18nGetMessage('popupAutoMessage')
-      const popupServerMsg = i18nGetMessage('popupServer')
-      const popupYourRegion = i18nGetMessage('popupYourRegion')
-      const popupTotalBlocked = i18nGetMessage('popupTotalBlocked')
+  if (isPremium) {
+    premiumBadge.classList.remove('hidden')
+  }
 
-      if (customProxyServerURI) {
-        proxyingDetailsText.innerHTML = DOMPurify.sanitize(`<code><b>${popupServerMsg}:</b> — </code>`)
-      } else {
-        proxyingDetailsText.innerHTML = DOMPurify.sanitize(`<code><b>${popupServerMsg}:</b> ${proxyServerId}</code>`)
-      }
-
-      proxyingDetailsText.innerHTML += DOMPurify.sanitize(
-        `<code><b>${popupYourRegion}:</b> ${regionName}</code>
-        <code><b>${popupTotalBlocked}:</b> ${domains.length}</code>`)
-    } else {
-      // proxyingInfo.hidden = true
-    }
+  siteActionsDone.addEventListener('click', async (event) => {
+    siteActions.classList.add('hidden')
+    toggleSiteActionsButton.classList.add('icon-show')
+    toggleSiteActionsButton.classList.remove('icon-hide')
+    disseminatorInfoBlock.classList.remove('hidden')
+    restrictionsInfoBlock.classList.remove('hidden')
+    proxyStatusIcon.classList.remove('hidden')
   })
 
   // Hide all other expandable elements when actions are toggled
   toggleSiteActionsButton.addEventListener('click', async (event) => {
-    if (event.target.classList.contains('icon-show')) {
+    if (event.currentTarget.classList.contains('icon-show')) {
       siteActions.classList.remove('hidden')
-      event.target.classList.remove('icon-show')
-      event.target.classList.add('icon-hide')
+      event.currentTarget.classList.remove('icon-show')
+      event.currentTarget.classList.add('icon-hide')
       disseminatorInfoBlock.classList.add('hidden')
       restrictionsInfoBlock.classList.add('hidden')
-      proxyingInfo.classList.add('hidden')
+      proxyStatusIcon.classList.add('hidden')
     } else {
       siteActions.classList.add('hidden')
-      event.target.classList.add('icon-show')
-      event.target.classList.remove('icon-hide')
+      event.currentTarget.classList.add('icon-show')
+      event.currentTarget.classList.remove('icon-hide')
       disseminatorInfoBlock.classList.remove('hidden')
       restrictionsInfoBlock.classList.remove('hidden')
-      proxyingInfo.classList.remove('hidden')
+      proxyStatusIcon.classList.remove('hidden')
     }
   })
+
+  const { backendIsIntermittent = false } = await sendConfigFetchMsg('backendIsIntermittent')
+
+  backendIsIntermittentPopupMessage.hidden = !backendIsIntermittent
+  worksCorrectly = !backendIsIntermittent
+
+  const controlledByOtherExtensions = await sendExtensionCallMsg('controlled', 'controlledByOtherExtensions')
+
+  if (!browser.isFirefox && controlledByOtherExtensions) {
+    controlledByOtherExtensionsButton.hidden = false
+    worksCorrectly = false
+  }
 
   browser.tabs.query({ active: true, lastFocusedWindow: true })
     .then(async (tabData) => {
@@ -169,13 +170,16 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
       const { enableExtension: extensionEnabled } = await sendConfigFetchMsg('enableExtension')
       const currentHostname = extractHostnameFromUrl(currentUrl)
 
-      sendConfigFetchMsg('useProxy', 'proxyIsAlive').then(
-        ({ useProxy: proxyingEnabled, proxyIsAlive }) => {
+      sendConfigFetchMsg('useProxy', 'proxyIsAlive', 'usePremiumProxy').then(
+        ({ useProxy: proxyingEnabled, proxyIsAlive, usePremiumProxy }) => {
           if (proxyingEnabled) {
             if (proxyIsAlive) {
+              proxyStatusIcon.hidden = false
               popupProxyStatusOk.hidden = false
               popupProxyStatusError.hidden = true
+              proxyStatusIcon.href = usePremiumProxy ? 'premium-proxy.html' : 'proxy-options.html'
             } else {
+              proxyStatusIcon.hidden = true
               popupProxyStatusOk.hidden = true
               popupProxyStatusError.hidden = false
               proxyConnectionIssuesButton.hidden = false
@@ -186,14 +190,20 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
               })
             }
           } else {
+            proxyStatusIcon.hidden = false
             popupProxyDisabled.hidden = false
+            proxyStatusIcon.href = 'proxy-options.html'
+            proxyStatusIcon.setAttribute('target', '_blank')
           }
         },
       )
 
       if (isValidURL(currentUrl)) {
         currentDomainHeader.innerText = currentHostname
-        toggleSiteActionsButton.classList.remove('hidden')
+        if (extensionEnabled) {
+          toggleSiteActionsButton.classList.remove('hidden')
+        }
+
         siteActionDescription.textContent = i18nGetMessage(
           'siteActionAutoDesc',
         )
@@ -205,7 +215,7 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
               siteActionDescription.textContent = i18nGetMessage(
                 'siteActionNeverDesc',
               )
-            } else if (blocked) {
+            } else if (blocked || isPremium) {
               document.querySelector('input[value="always"]').checked = true
               siteActionDescription.textContent = i18nGetMessage(
                 'siteActionAlwaysDesc',
@@ -219,32 +229,28 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
           },
         )
 
-        const siteActionRadioButtons = document.querySelectorAll(
-          'input[name="site-action-radio"]',
-        )
+        const siteActionsRadioGroup = document.getElementById('siteActionsRadioGroup')
 
-        for (const radioButton of siteActionRadioButtons) {
-          radioButton.addEventListener('change', async (event) => {
-            sendExtensionCallMsg(
-              source,
-              'changeIgnoredStatus', {
-                url: currentUrl,
-                newState: event.target.value,
-              })
+        siteActionsRadioGroup.addEventListener('change', async (event) => {
+          sendExtensionCallMsg(
+            source,
+            'changeIgnoredStatus', {
+              url: currentUrl,
+              newState: event.target.value,
+            })
 
-            const actionDescriptions = {
-              always: 'siteActionAlwaysDesc',
-              never: 'siteActionNeverDesc',
-              auto: 'siteActionAutoDesc',
-            }
+          const actionDescriptions = {
+            always: 'siteActionAlwaysDesc',
+            never: 'siteActionNeverDesc',
+            auto: 'siteActionAutoDesc',
+          }
 
-            siteActionDescription.textContent = i18nGetMessage(
-              actionDescriptions[event.target.value],
-            )
+          siteActionDescription.textContent = i18nGetMessage(
+            actionDescriptions[event.target.value],
+          )
 
-            event.target.checked = true
-          })
-        }
+          event.target.checked = true
+        })
       } else {
         const popupNewTabMessage = i18nGetMessage('popupNewTabMessage')
 
@@ -267,19 +273,14 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
                     !allowedIncognitoAccess ||
                     privateBrowsingPermissionsRequired
                   ) {
+                    worksCorrectly = false
                     privateBrowsingPermissionsRequiredButton.hidden = false
                   }
                 })
             })
         }
 
-        if (currentHostname?.length >= 22 && currentHostname?.length < 25) {
-          currentDomainHeader.style.fontSize = '17px'
-        } else if (currentHostname?.length > 25 && currentHostname?.length < 30) {
-          currentDomainHeader.style.fontSize = '15px'
-        } else if (currentHostname?.length >= 30) {
-          currentDomainHeader.style.fontSize = '13px'
-        }
+        currentDomainHeader.style.fontSize = getDomainFontSize(currentHostname)
 
         currentDomainHeader.classList.add('title-normal')
         currentDomainHeader.removeAttribute('hidden')
@@ -291,30 +292,25 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
         if (blocked) {
           const restrictionsIcon = document.querySelector('#restrictions img')
           const restrictionsTitle = document.querySelector('#restrictions-title')
-          const restrictionsDesc = document.querySelector('#restrictions-desc')
 
           restrictionsIcon.setAttribute('src', 'images/popup/status/info.svg')
 
           restrictionsTitle.textContent = i18nGetMessage('blockedTitle')
-          restrictionsDesc.textContent = i18nGetMessage('blockedDesc')
-          statusImage.setAttribute('src', 'images/icons/512x512/blocked.png')
+          statusImage.setAttribute('src', 'images/icons/512x512/ori.png')
+          restrictionsWhatThisMeans.href = 'popup-details.html?reason=restrictions-blocked'
         }
 
         if (isDisseminator) {
           const oriTitle = document.querySelector('#ori-title')
-          const oriDesc = document.querySelector('#ori-desc')
           const oriIcon = document.querySelector('#ori img')
-          const oriDetails = document.querySelector('#ori-details')
 
           if (!cooperationRefused) {
-            oriDetails.classList.add(['text-warning'])
             oriTitle.textContent = i18nGetMessage('disseminatorTitle')
-            oriDesc.textContent = i18nGetMessage('disseminatorDesc')
             oriIcon.setAttribute('src', 'images/popup/status/danger.svg')
             statusImage.setAttribute('src', 'images/icons/512x512/ori.png')
             currentDomainHeader.classList.add('title-ori')
+            oriWhatThisMeans.href = 'popup-details.html?reason=ori-disseminator'
           } else {
-            oriDesc.textContent = i18nGetMessage('disseminatorCoopRefused')
             statusImage.setAttribute('src', 'images/icons/512x512/normal.png')
           }
 
@@ -333,15 +329,27 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
           toggleSiteActionsButton.hidden = true
           restrictionsInfoBlock.classList.add('hidden')
           disseminatorInfoBlock.classList.add('hidden')
-          proxyingInfo.classList.add('hidden')
+          proxyStatusIcon.classList.add('hidden')
           statusImage.setAttribute('src', 'images/icons/512x512/tor.png')
         } else if (isI2PUrl(currentUrl)) {
           i2pNetwork.hidden = false
           toggleSiteActionsButton.hidden = true
           restrictionsInfoBlock.classList.add('hidden')
           disseminatorInfoBlock.classList.add('hidden')
-          proxyingInfo.classList.add('hidden')
+          proxyStatusIcon.classList.add('hidden')
           statusImage.setAttribute('src', 'images/icons/512x512/i2p.png')
+        }
+
+        if (worksCorrectly && !isPremium && currentHostname === 'www.youtube.com' && countryCode === 'RU') {
+          popupPremiumSuggestionYoutube.classList.remove('hidden')
+          const progressBar = document.getElementById('progressBar')
+
+          progressBar.addEventListener('animationend', () => {
+            youtubeToggle.classList.remove('hidden')
+            youtubeToggle.classList.add('toggled')
+          })
+        } else if (worksCorrectly && !isPremium) {
+          popupPremiumSuggestion.classList.remove('hidden')
         }
       } else {
         statusImage.setAttribute('src', 'images/icons/512x512/disabled.png')
@@ -352,51 +360,6 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
         })
       }
     })
-
-  sendConfigFetchMsg('backendIsIntermittent')
-    .then(({ backendIsIntermittent = false }) => {
-      backendIsIntermittentPopupMessage.hidden = !backendIsIntermittent
-    })
-
-  sendExtensionCallMsg('controlled', 'controlledByOtherExtensions').then(
-    (controlledByOtherExtensions) => {
-      if (!browser.isFirefox && controlledByOtherExtensions) {
-        controlledByOtherExtensionsButton.hidden = false
-      }
-    },
-  )
-
-  const hideDetails = () => {
-    detailsText.forEach((element) => {
-      element.style.display = 'none'
-    })
-  }
-
-  const closeDetailsButtons = document.querySelectorAll('.btn-hide-details')
-  const whatThisMeanButtons = document.querySelectorAll('.btn-what-this-mean')
-
-  const showWhatThisMeanButtons = () => {
-    whatThisMeanButtons.forEach((button) => {
-      button.style.display = 'flex'
-    })
-  }
-
-  for (const whatThisMeanButton of whatThisMeanButtons) {
-    whatThisMeanButton.addEventListener('click', () => {
-      hideDetails()
-      showWhatThisMeanButtons()
-
-      whatThisMeanButton.style.display = 'none'
-      whatThisMeanButton.nextElementSibling.style.display = 'block'
-    })
-  }
-
-  for (const closeButton of closeDetailsButtons) {
-    closeButton.addEventListener('click', () => {
-      hideDetails()
-      showWhatThisMeanButtons()
-    })
-  }
 
   const show = () => {
     document.documentElement.style.visibility = 'initial'

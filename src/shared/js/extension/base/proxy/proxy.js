@@ -222,7 +222,8 @@ export const checkPremiumBackend = async (url, apiKey) => {
     })
 
     if (!res.ok) {
-      return false
+      console.error(`Error trying to reach ${url}. Response code ${res.status}:`, res.statusText)
+      return undefined
     }
     const data = await res.json()
 
@@ -265,8 +266,8 @@ export const controlledByThisExtension = async () => {
     const self = await browser.management.getSelf()
     const installedExtensions = await browser.management.getAll()
     const extensionsWithProxyPermissions =
-      installedExtensions.filter(({ name, permissions, enabled }) => {
-        return permissions.includes('proxy') && name !== self.name && enabled
+      installedExtensions?.filter(({ name, permissions, enabled }) => {
+        return permissions?.includes('proxy') && name !== self.name && enabled
       })
 
     if (extensionsWithProxyPermissions.length === 0) {

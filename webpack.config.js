@@ -235,14 +235,6 @@ const webConfig = {
     }),
     new HTMLWebpackPlugin({
       title: extensionName,
-      filename: 'controlled.html',
-      template: `src/shared/pages/controlled.html`,
-      inject: true,
-      chunks: ['controlled'],
-      meta: contentSecurityPolicy,
-    }),
-    new HTMLWebpackPlugin({
-      title: extensionName,
       filename: 'popup-details.html',
       template: `src/shared/pages/popup-details.html`,
       inject: true,

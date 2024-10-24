@@ -103,7 +103,7 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
 
   // Show page with instructions about how to grand incognito access
   privateBrowsingPermissionsRequiredButton.addEventListener('click', () => {
-    window.location.href = 'incognito-required-popup.html'
+    window.location.href = 'popup-details.html?reason=permissions'
   })
 
   const controlledByOtherExtensionsButton = document.getElementById(
@@ -215,7 +215,7 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
               siteActionDescription.textContent = i18nGetMessage(
                 'siteActionNeverDesc',
               )
-            } else if (blocked) {
+            } else if (blocked || isPremium) {
               document.querySelector('input[value="always"]').checked = true
               siteActionDescription.textContent = i18nGetMessage(
                 'siteActionAlwaysDesc',
@@ -273,6 +273,7 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
                     !allowedIncognitoAccess ||
                     privateBrowsingPermissionsRequired
                   ) {
+                    worksCorrectly = false
                     privateBrowsingPermissionsRequiredButton.hidden = false
                   }
                 })

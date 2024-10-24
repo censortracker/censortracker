@@ -286,14 +286,6 @@ if (isFirefox) {
   webConfig.entry.installed = './src/firefox/js/pages/installed.js'
   webConfig.plugins.push(new HTMLWebpackPlugin({
     title: extensionName,
-    filename: 'incognito-required-popup.html',
-    template: 'src/firefox/pages/incognito-required-popup.html',
-    inject: true,
-    chunks: ['translator','incognito_required'],
-    meta: contentSecurityPolicy,
-  }))
-  webConfig.plugins.push(new HTMLWebpackPlugin({
-    title: extensionName,
     filename: 'installed.html',
     template: 'src/firefox/pages/installed.html',
     inject: true,

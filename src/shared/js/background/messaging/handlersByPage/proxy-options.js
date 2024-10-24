@@ -10,6 +10,9 @@ export const handleProxyOptionsMessage = (
   const { request } = message
 
   switch (request) {
+    case 'grantIncognitoAccess':
+      Extension.proxy.grantIncognitoAccess()
+      break
     case 'setProxy':
       Extension.proxy.setProxy().then((proxySet) => {
         sendResponse(proxySet)

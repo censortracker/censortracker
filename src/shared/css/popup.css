@@ -475,6 +475,7 @@ a {
 
 div#grantPrivateBrowsingPermissionsButton {
     cursor: pointer;
+    display: block;
 }
 
 .censor-tracker__status {

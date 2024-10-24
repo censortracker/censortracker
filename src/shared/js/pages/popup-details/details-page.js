@@ -1,6 +1,7 @@
 // eslint-disable-next-line no-unused-vars
 import * as controlled from '../controlled'
 import { showControllingExtensions } from './control'
+import { showPermissionsPopup } from './permissions'
 import { showProxyInfo } from './proxy'
 import { showSiteStatusInfo } from './status'
 
@@ -16,6 +17,8 @@ import { showSiteStatusInfo } from './status'
     await showControllingExtensions()
   } else if (reason === 'proxy') {
     await showProxyInfo()
+  } else if (reason === 'permissions') {
+    await showPermissionsPopup()
   } else {
     await showSiteStatusInfo(reason, status)
   }

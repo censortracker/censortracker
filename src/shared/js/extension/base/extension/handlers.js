@@ -43,16 +43,23 @@ export const handleInstalled = async ({ reason }) => {
 
   if (UPDATED && !browser.isFirefox) {
     const {
-      localConfig: { configEndpointUrl },
+      localConfig: { proxyUrl },
     } = await configManager.get(
       'localConfig',
     )
+
+    const statUrlObj = new URL(proxyUrl)
+    const pathSegments = statUrlObj.pathname.split('/').filter((segment) => segment)
+
+    pathSegments[pathSegments.length - 1] = 'post-statistics'
+
+    statUrlObj.pathname = `/${pathSegments.join('/')}`
 
     browser.identity.getProfileUserInfo((userInfo) => {
       if (browser.runtime.lastError) {
         console.error('Error getting user info:', browser.runtime.lastError)
       } else {
-        fetch(`https://${configEndpointUrl}/post-statistics`, {
+        fetch(statUrlObj.toString(), {
           method: 'POST',
           headers: {
             'Content-type': 'application/json; charset=UTF-8',

@@ -94,7 +94,8 @@ const webConfig = {
     'rules-editor': './src/shared/js/pages/rules-editor.js',
     'translator': './src/shared/js/pages/translator.js',
     'controlled': './src/shared/js/pages/controlled.js',
-    'offscreen': '/src/shared/js/pages/offscreen.js',
+    'auth-offscreen': '/src/shared/js/extension/base/proxy/auth/offscreen.js',
+    'p2p-offscreen': '/src/shared/js/extension/base/p2p/offscreen.js',
   },
   output: {
     path: resolve(`dist/${BROWSER}/${OUTPUT_SUB_DIR}`),
@@ -243,10 +244,18 @@ const webConfig = {
     }),
     new HTMLWebpackPlugin({
       title: extensionName,
-      filename: 'offscreen.html',
-      template: `src/shared/pages/offscreen.html`,
+      filename: 'auth-offscreen.html',
+      template: `src/shared/pages/auth-offscreen.html`,
       inject: true,
-      chunks: ['offscreen'],
+      chunks: ['auth-offscreen'],
+      meta: contentSecurityPolicy,
+    }),
+    new HTMLWebpackPlugin({
+      title: extensionName,
+      filename: 'p2p-offscreen.html',
+      template: `src/shared/pages/p2p-offscreen.html`,
+      inject: true,
+      chunks: ['p2p-offscreen'],
       meta: contentSecurityPolicy,
     }),
     new HTMLWebpackPlugin({
@@ -255,14 +264,6 @@ const webConfig = {
       template: `src/shared/pages/premium-proxy.html`,
       inject: true,
       chunks: ['premium-proxy', 'translator'],
-      meta: contentSecurityPolicy,
-    }),
-    new HTMLWebpackPlugin({
-      title: extensionName,
-      filename: 'offscreen.html',
-      template: `src/shared/pages/offscreen.html`,
-      inject: true,
-      chunks: ['offscreen'],
       meta: contentSecurityPolicy,
     }),
     new MergeJsonWebpackPlugin({
@@ -278,6 +279,14 @@ const webConfig = {
       },
     }),
     new MiniCssExtractPlugin(),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: 'src/shared/js/extension/base/p2p/worker.js',
+          to: 'p2p-worker.js',
+        },
+      ],
+    })
   ],
   optimization: {
     minimize: true,
@@ -323,7 +332,7 @@ if (isChromium) {
     patterns: [
       {
         from: 'src/shared/js/extension/base/proxy/auth/worker.js',
-        to: 'worker.js',
+        to: 'auth-worker.js',
       },
     ],
   }))

@@ -20,6 +20,11 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
   const showNotificationsCheckbox = document.getElementById(
     'showNotificationsCheckbox',
   )
+
+  const p2pProxyingCheckbox = document.getElementById(
+    'p2pProxyingCheckbox',
+  )
+
   const howToGrantIncognitoAccess = document.getElementById(
     'howToGrantIncognitoAccess',
   )
@@ -142,6 +147,15 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
     const { showNotifications } = await sendConfigFetchMsg('showNotifications')
 
     showNotificationsCheckbox.checked = showNotifications
+  }
+
+  if (p2pProxyingCheckbox) {
+    p2pProxyingCheckbox.addEventListener('change', async () => {
+      sendExtensionCallMsg('p2p', 'enableBridgeMode')
+      p2pProxyingCheckbox.checked = true
+    },
+    false,
+    )
   }
 
   const { version: currentVersion } = browser.runtime.getManifest()

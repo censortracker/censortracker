@@ -8,7 +8,7 @@ export const createOffScreenDocument = (() => {
       await creating
     } else {
       creating = browser.offscreen.createDocument({
-        url: 'offscreen.html',
+        url: 'auth-offscreen.html',
         reasons: [browser.offscreen.Reason.WORKERS],
         justification: 'needed to trigger on auth required handler',
       })
@@ -39,7 +39,7 @@ export const triggerAuth = async () => {
     // after the offscreen document is created, send a message to it
     const clientsList = await serviceWorkerSelf.clients.matchAll()
     // eslint-disable-next-line id-length
-    const client = clientsList.find((c) => c.url.endsWith('offscreen.html'))
+    const client = clientsList.find((c) => c.url.endsWith('auth-offscreen.html'))
 
     if (client) {
       client.postMessage('https://example.com/')

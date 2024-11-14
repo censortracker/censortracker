@@ -83,6 +83,9 @@ export const defaultConfig = {
   premiumIdentificationCode: '',
   premiumExpirationDate: Date.now(),
 
+  // p2p
+  bridgeModeEnabled: false,
+
   // registry
   customDPIDomains: [],
   customProxiedDomains: [],

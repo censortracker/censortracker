@@ -2,6 +2,7 @@ import { configService, Extension } from '../../extension'
 import { handleAdvancedOptionsMessage } from './handlersByPage/advanced-options'
 import { handleControlledMessage } from './handlersByPage/controlled'
 import { handleOptionsMessage } from './handlersByPage/options'
+import { handleP2pMessage } from './handlersByPage/p2p'
 import { handlePopupMessage } from './handlersByPage/popup'
 import { handleProxyOptionsMessage } from './handlersByPage/proxy-options'
 import { handleRegistryOptionsMessage } from './handlersByPage/registry-options'
@@ -44,6 +45,8 @@ export const handleMessage = (message, _sender, sendResponse) => {
       return handleRegistryOptionsMessage(message, _sender, sendResponse)
     case 'rules-editor':
       return handleRulesMessage(message, _sender, sendResponse)
+    case 'p2p':
+      return handleP2pMessage(message, _sender, sendResponse)
     default:
       console.warn(`unknown source: ${source}`)
   }

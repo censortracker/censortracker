@@ -3,6 +3,7 @@ import ConfigManager, { constants } from '../config'
 import IconManager from '../icon'
 import Ignore from '../ignore'
 import NotificationsManager from '../notifications'
+import p2pManager from '../p2p'
 import ProxyManager from '../proxy'
 import Registry from '../registry'
 import * as server from '../server'
@@ -71,6 +72,7 @@ export {
   IconManager as icon,
   Ignore as ignoredDomains,
   NotificationsManager as notifications,
+  p2pManager as p2p,
   ProxyManager as proxy,
   Registry as registry,
   Task as taskManager,

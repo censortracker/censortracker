@@ -1,4 +1,4 @@
-const myWorker = new Worker('worker.js')
+const myWorker = new Worker('auth-worker.js')
 
 navigator.serviceWorker.addEventListener('message', (e) => {
   console.log(`offscreen document received message: ${e.data}`)

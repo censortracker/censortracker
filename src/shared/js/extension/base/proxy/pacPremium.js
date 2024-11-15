@@ -13,7 +13,7 @@ export const getPremiumPacScript = (
 ) => {
   return `
   function FindProxyForURL(url, host) {
-    if ([${ignoredHosts}].includes(host)) {
+    if ([${ignoredHosts.map((el) => `'${el}'`)}].includes(host)) {
       return 'DIRECT';
     } else {
       return 'HTTP ${premiumProxyServerURI}; HTTPS ${premiumProxyServerURI};';

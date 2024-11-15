@@ -58,6 +58,7 @@ const fetchConfig = async () => {
         }
 
         // For debugging purposes
+        config.geoIPServiceURL = meta.geoIPServiceURL
         config.configEndpointUrl = endpointUrl
         config.configEndpointSource = endpointName
 

@@ -1,4 +1,5 @@
 import browser from '../../../browser-api'
+import { extractHostnameFromUrl } from '../../../utilities'
 import configManager from '../config'
 import registry from '../registry'
 import { triggerAuth } from './auth/triggerAuth'
@@ -106,7 +107,15 @@ export const setProxy = async () => {
   const premiumProxyInUse = await usingPremiumProxy()
 
   const {
-    localConfig: { countryCode },
+    localConfig: {
+      countryCode,
+      customRegistryUrl,
+      geoIPServiceURL,
+      ignoreUrl,
+      proxyUrl,
+      registryUrl,
+      specifics: { cooperationRefusedORIUrl },
+    },
     premiumProxyServerURI,
     ignoredHosts,
   } = await configManager.get(
@@ -114,6 +123,14 @@ export const setProxy = async () => {
     'premiumProxyServerURI',
     'ignoredHosts',
   )
+  const serviceHosts = [
+    cooperationRefusedORIUrl,
+    customRegistryUrl,
+    geoIPServiceURL,
+    proxyUrl,
+    registryUrl,
+    ignoreUrl,
+  ].filter((el) => !!el).map((el) => extractHostnameFromUrl(el))
 
   let pacData
 
@@ -121,6 +138,7 @@ export const setProxy = async () => {
     pacData = getPremiumPacScript({
       premiumProxyServerURI,
       ignoredHosts,
+      serviceHosts,
     })
     console.log('Configured premium proxy PAC')
   } else {

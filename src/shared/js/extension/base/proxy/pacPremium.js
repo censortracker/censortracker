@@ -9,10 +9,14 @@ export const getPremiumPacScript = (
   {
     premiumProxyServerURI,
     ignoredHosts,
+    serviceHosts,
   },
 ) => {
   return `
   function FindProxyForURL(url, host) {
+    if ([${serviceHosts.map((el) => `'${el}'`)}].includes(host)) {
+      return 'DIRECT';
+    }
     if ([${ignoredHosts.map((el) => `'${el}'`)}].includes(host)) {
       return 'DIRECT';
     } else {

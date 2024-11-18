@@ -38,6 +38,9 @@
   "blockedTitle": {
     "message": "Доступ запрещён"
   },
+  "enable": {
+    "message": "Включить"
+  },
   "cancel": {
     "message": "Отмена"
   },
@@ -132,7 +135,7 @@
     "message": "Является организатором распространения информации"
   },
   "done": {
-    "message": "Готово!"
+    "message": "Готово"
   },
   "doneDescription": {
     "message": "Операция выполнена успешно."
@@ -436,25 +439,28 @@
     "message": "Показывать системные уведомления"
   },
   "siteActionAlwaysDesc": {
-    "message": "Всегда открывать этот сайт через прокси"
+    "message": "Всегда открывается через прокси"
   },
   "siteActionAutoDesc": {
-    "message": "Открывать сайт через прокси, только если сайт окажется недоступен из-за блокировки"
+    "message": "Открывается через прокси, если запрещён"
+  },
+  "recomended": {
+    "message": "Рекомендуем"
   },
   "siteActionItemLabelAlways": {
     "message": "Всегда"
   },
   "siteActionItemLabelAuto": {
-    "message": "Авто"
+    "message": "Если доступ запрещён"
   },
   "siteActionItemLabelNever": {
     "message": "Никогда"
   },
   "siteActionNeverDesc": {
-    "message": "Никогда не открывать этот сайт через прокси (даже если сайт окажется недоступен из-за блокировки)"
+    "message": "Не проксируется"
   },
   "siteActionTitle": {
-    "message": "Когда следует использовать прокси для открытия этого сайта?"
+    "message": "Когда открывать сайт через прокси?"
   },
   "thankYou": {
     "message": "Спасибо!"
@@ -489,6 +495,9 @@
   "useOwnProxy": {
     "message": "Свой прокси"
   },
+  "usePremiumProxy": {
+    "message": "Премиум прокси"
+  },
   "useProxy": {
     "message": "Использовать прокси"
   },
@@ -518,5 +527,95 @@
   },
   "importSettingsDesc": {
     "message": "Вы можете импортировать настройки из файла JSON."
+  },
+  "premiumProxyDesc": {
+    "message": "Повышенная скорость подключения"
+  },
+  "premiumProxyDetailedDesc": {
+    "message": "Censor Tracker Premium — это повышенная скорость подключения к заблокированным сайтам. Смотрите Youtube, Дождь и другие видеосервисы без тормозов"
+  },
+  "premiumBetaDesc": {
+    "message": "В данный момент Censor Tracker Premium находится в стадии беты и доступен для ограниченного количество пользователей."
+  },
+  "premiumProxyStatusNotActivated": {
+    "message": "Не подключено"
+  },
+  "premiumProxyStatusTurnedOff": {
+    "message": "Отключено"
+  },
+  "premiumProxyStatusTurnedOn": {
+    "message": "Подключено"
+  },
+  "premiumProxyPrice": {
+    "message": "1049"
+  },
+  "premiumProxyPriceData": {
+    "message": "₽/год"
+  },
+  "buyButtonText": {
+    "message": "Купить"
+  },
+  "redirectToPaymentPage": {
+    "message": "Вы будете перенаправлены на сайт VPNPay для оплаты"
+  },
+  "updatePremiumProxyConfig": {
+    "message": "Обновить код"
+  },
+  "disablePremiumProxy": {
+    "message": "Отключить"
+  },
+  "premiumCodeInputTitle": {
+    "message": "У меня уже есть код"
+  },
+  "premiumCodeInputUpdate": {
+    "message": "Введите код"
+  },
+  "premiumCodeInputPlaceholder": {
+    "message": "Код Censor Tracker Premium"
+  },
+  "premiumProxyExpiredError": {
+    "message": "Ошибка! Срок действия конфига истек"
+  },
+  "disablePremiumProxyDesc": {
+    "message": "Censor Tracker переключится на использование бесплатных прокси, которыми пользуются все пользователи бесплатной версии. Ваш ключ сохранится и включить Premium можно будет в любой момент. <br /><br /> Если вы столкнулись с проблемами при работе сервиса, то напишите нам support@censortrcker.org"
+  },
+  "savePremiumProxyButton": {
+    "message": "Применить"
+  },
+  "feedbackSuggestion": {
+    "message": "Есть вопросы или столкнулись с трудностями?"
+  },
+  "feedbackProposition": {
+    "message": "Напишите нам"
+  },
+  "premiumProxyExpirationDate": {
+    "message": "Censor Tracker Premium действует до"
+  },
+  "premiumProxyDaysLeft": {
+    "message": "Осталось дней:"
+  },
+  "premiumProxyPersonalCode": {
+    "message": "Персональный код:"
+  },
+  "emptyStringError": {
+    "message": "Введите непустое значение"
+  },
+  "parseJSONError": {
+    "message": "Не удалось извлечь данные из кода конфигурации"
+  },
+  "invalidJsonError": {
+    "message": "В коде конфигурации не представлены необходимые данные"
+  },
+  "popupPremiumSuggestion": {
+    "message": "Заблокированные сайты могут открываться быстрее с Censor Tracker Premium"
+  },
+  "showDetailsButton": {
+    "message": "Подробнее"
+  },
+  "speedUpYouTubeSuggestion": {
+    "message": "Смотрите YouTube как раньше с Censor Tracker Premium"
+  },
+  "speedUpYouTubeButton": {
+    "message": "Ускорить YouTube"
   }
 }

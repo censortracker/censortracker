@@ -85,9 +85,11 @@ const webConfig = {
   devtool: 'inline-nosources-cheap-module-source-map',
   entry: {
     'popup': './src/shared/js/pages/popup.js',
+    'popup-details': './src/shared/js/pages/popup-details/details-page.js',
     'options': './src/shared/js/pages/options.js',
     'advanced-options': './src/shared/js/pages/advanced-options.js',
     'proxy-options': './src/shared/js/pages/proxy-options.js',
+    'premium-proxy': './src/shared/js/pages/premium-proxy.js',
     'registry-options': './src/shared/js/pages/registry-options.js',
     'rules-editor': './src/shared/js/pages/rules-editor.js',
     'translator': './src/shared/js/pages/translator.js',
@@ -233,10 +235,26 @@ const webConfig = {
     }),
     new HTMLWebpackPlugin({
       title: extensionName,
-      filename: 'controlled.html',
-      template: `src/shared/pages/controlled.html`,
+      filename: 'popup-details.html',
+      template: `src/shared/pages/popup-details.html`,
       inject: true,
-      chunks: ['controlled'],
+      chunks: ['popup-details'],
+      meta: contentSecurityPolicy,
+    }),
+    new HTMLWebpackPlugin({
+      title: extensionName,
+      filename: 'offscreen.html',
+      template: `src/shared/pages/offscreen.html`,
+      inject: true,
+      chunks: ['offscreen'],
+      meta: contentSecurityPolicy,
+    }),
+    new HTMLWebpackPlugin({
+      title: extensionName,
+      filename: 'premium-proxy.html',
+      template: `src/shared/pages/premium-proxy.html`,
+      inject: true,
+      chunks: ['premium-proxy', 'translator'],
       meta: contentSecurityPolicy,
     }),
     new HTMLWebpackPlugin({
@@ -274,14 +292,6 @@ if (isFirefox) {
   webConfig.entry.background = `./src/shared/js/background/background.js`
   webConfig.entry.incognito_required = `./src/firefox/js/pages/incognito-required.js`
   webConfig.entry.installed = './src/firefox/js/pages/installed.js'
-  webConfig.plugins.push(new HTMLWebpackPlugin({
-    title: extensionName,
-    filename: 'incognito-required-popup.html',
-    template: 'src/firefox/pages/incognito-required-popup.html',
-    inject: true,
-    chunks: ['translator','incognito_required'],
-    meta: contentSecurityPolicy,
-  }))
   webConfig.plugins.push(new HTMLWebpackPlugin({
     title: extensionName,
     filename: 'installed.html',

@@ -86,10 +86,16 @@ export const HandleAuthRequired = async (details, asyncCallback) => {
       useOwnProxy,
       customProxyUsername,
       customProxyPassword,
+      usePremiumProxy,
+      premiumUsername,
+      premiumPassword,
     } = await configManager.get(
       'useOwnProxy',
       'customProxyUsername',
       'customProxyPassword',
+      'usePremiumProxy',
+      'premiumUsername',
+      'premiumPassword',
     )
 
     let username
@@ -98,6 +104,9 @@ export const HandleAuthRequired = async (details, asyncCallback) => {
     if (useOwnProxy) {
       username = customProxyUsername
       password = customProxyPassword
+    } else if (usePremiumProxy) {
+      username = premiumUsername
+      password = premiumPassword
     }
 
     asyncCallback({

@@ -118,15 +118,18 @@ export const setProxy = async () => {
     },
     premiumProxyServerURI,
     ignoredHosts,
+    premiumBackendURL,
   } = await configManager.get(
     'localConfig',
     'premiumProxyServerURI',
     'ignoredHosts',
+    'premiumBackendURL',
   )
   const serviceHosts = [
     cooperationRefusedORIUrl,
     customRegistryUrl,
     geoIPServiceURL,
+    premiumBackendURL,
     proxyUrl,
     registryUrl,
     ignoreUrl,

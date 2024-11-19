@@ -49,7 +49,7 @@ export const getPacScript = (
         isHostBlocked = true;
         break;
       }
-    } 
+    }
   
     // Return result
     if (isHostBlocked) {

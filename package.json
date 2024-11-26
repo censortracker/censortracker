@@ -25,7 +25,7 @@
   "dependencies": {
     "codemirror": "^5.65.3",
     "dompurify": "^3.1.6",
-    "tldts": "^5.7.93",
+    "tldts": "^6.1.64",
     "validator": "^13.6.0",
     "xstate": "^5.13.0"
   },

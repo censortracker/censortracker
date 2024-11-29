@@ -1410,3 +1410,7 @@ p.description-large {
         background-color: #382e2e;
     }
 }
+
+#proxyPremiumInput {
+  height: 120px;
+}

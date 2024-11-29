@@ -3,9 +3,7 @@ import { extensionName } from '../config/constants'
 
 export const set = async (tabId, filename) => {
   const title = extensionName
-  const path = browser.runtime.getURL(
-    `images/icons/128x128/${filename}.png`,
-  )
+  const path = browser.runtime.getURL(`images/icons/128x128/${filename}.png`)
 
   if (browser.isFirefox) {
     browser.browserAction.setIcon({ tabId, path })

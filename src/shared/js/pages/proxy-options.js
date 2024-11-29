@@ -13,7 +13,6 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
   const proxyOptionsInputs = document.getElementById('proxyOptionsInputs')
   const useCustomProxyRadioButton = document.getElementById('useCustomProxy')
   const useDefaultProxyRadioButton = document.getElementById('useDefaultProxy')
-  const usePremiumProxyRadioButton = document.getElementById('usePremiumProxy')
   const proxyCustomOptionsRadioGroup = document.getElementById(
     'proxyCustomOptionsRadioGroup',
   )
@@ -33,16 +32,12 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
     customProxyServerURI,
     customProxyUsername,
     customProxyPassword,
-    usePremiumProxy,
-    haveActivePremiumConfig,
   } = await sendConfigFetchMsg(
     'useOwnProxy',
     'customProxyProtocol',
     'customProxyServerURI',
     'customProxyUsername',
     'customProxyPassword',
-    'usePremiumProxy',
-    'haveActivePremiumConfig',
   )
 
   if (customProxyProtocol) {
@@ -59,9 +54,6 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
     ) : ''
 
     proxyServerInput.value = authPrefix + customProxyServerURI
-  } else if (usePremiumProxy) {
-    usePremiumProxyRadioButton.checked = true
-    proxyOptionsInputs.classList.add('hidden')
   } else {
     proxyOptionsInputs.classList.add('hidden')
     useDefaultProxyRadioButton.checked = true
@@ -95,19 +87,22 @@ import { sendConfigFetchMsg, sendExtensionCallMsg, sendTransitionMsg } from './m
       proxyOptionsInputs.classList.add('hidden')
       proxyServerInput.value = ''
       sendExtensionCallMsg(source, 'removeCustomProxy')
-    } else if (event.target.value === 'custom') {
+    } else {
       proxyOptionsInputs.classList.remove('hidden')
-    } else if (event.target.value === 'premium') {
-      if (haveActivePremiumConfig) {
-        sendExtensionCallMsg(source, 'activatePremiumProxy')
-        proxyOptionsInputs.classList.add('hidden')
-        usePremiumProxyRadioButton.checked = true
-      } else {
-        window.location.href = 'premium-proxy.html'
-      }
     }
   })
 
+  sendExtensionCallMsg('controlled', 'controlledByThisExtension')
+    .then(async (controlledByThisExtension) => {
+      if (controlledByThisExtension) {
+        useProxyCheckbox.checked = true
+        useProxyCheckbox.disabled = false
+
+        if (!proxyingEnabled) {
+          sendTransitionMsg('enableProxy')
+        }
+      }
+    })
   sendExtensionCallMsg('controlled', 'controlledByOtherExtensions')
     .then(async (controlledByOtherExtensions) => {
       if (controlledByOtherExtensions) {

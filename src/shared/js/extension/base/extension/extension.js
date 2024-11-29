@@ -24,11 +24,6 @@ export const disable = async () => {
 }
 
 export const reset = async () => {
-  await ConfigManager.set({
-    useOwnProxy: false,
-    usePremiumProxy: false,
-    haveActivePremiumConfig: false,
-  })
   await server.synchronize()
   await enable()
   await NotificationsManager.enable()

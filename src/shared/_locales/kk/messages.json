@@ -38,9 +38,6 @@
   "blockedTitle": {
     "message": "Қолжетімділікке тыйым салынады"
   },
-  "enable": {
-    "message": "Қосу"
-  },
   "cancel": {
     "message": "Бас тарту"
   },
@@ -135,7 +132,7 @@
     "message": "Ақпаратты таратуды ұйымдастырушы болып табылады"
   },
   "done": {
-    "message": "Дайын"
+    "message": "Дайын!"
   },
   "doneDescription": {
     "message": "Операция сәтті орындалды."
@@ -439,28 +436,25 @@
     "message": "Жүйелік хабарландыруларды көрсету"
   },
   "siteActionAlwaysDesc": {
-    "message": "Әрқашан прокси арқылы ашылады"
+    "message": "Әрқашан осы сайтты прокси арқылы ашу"
   },
   "siteActionAutoDesc": {
-    "message": "Өшірілген болса, прокси арқылы ашылады"
-  },
-  "recomended": {
-    "message": "Ұсынылады"
+    "message": "Егер сайт бұғаттауға байланысты қол жетімді болмаса, сайтты прокси арқылы ашу"
   },
   "siteActionItemLabelAlways": {
     "message": "Әрқашан"
   },
   "siteActionItemLabelAuto": {
-    "message": "Қол жеткізуге тыйым салынса"
+    "message": "Авто"
   },
   "siteActionItemLabelNever": {
     "message": "Ешқашан"
   },
   "siteActionNeverDesc": {
-    "message": "Прокси емес"
+    "message": "Бұл сайтты ешқашан прокси арқылы ашпау (тіпті бұғаттауға байланысты сайт қол жетімді болмаса да)"
   },
   "siteActionTitle": {
-    "message": "Прокси арқылы қашан ашу керек?"
+    "message": "Бұл сайтты ашу үшін проксиді қашан пайдалану керек?"
   },
   "thankYou": {
     "message": "Рақмет!"
@@ -495,9 +489,6 @@
   "useOwnProxy": {
     "message": "Өзіңіздің проксиіңіз"
   },
-  "usePremiumProxy": {
-    "message": "Премиум прокси"
-  },
   "useProxy": {
     "message": "Проксиді қолдану"
   },
@@ -527,95 +518,5 @@
   },
   "importSettingsDesc": {
     "message": "Сіз параметрлерді JSON файлынан импорттай аласыз."
-  },
-  "premiumProxyDesc": {
-    "message": "Қосылу жылдамдығын арттыру"
-  },
-  "premiumProxyDetailedDesc": {
-    "message": "Censor Tracker Premium бұғатталған сайттарға қосылу жылдамдығын арттырады. Таңдаулы бейне қызметтеріңізді үзіліссіз көріңіз"
-  },
-  "premiumBetaDesc": {
-    "message": "Қазіргі уақытта Censor Tracker Premium бета нұсқасында және шектеулі пайдаланушылар санына қол жетімді."
-  },
-  "premiumProxyStatusNotActivated": {
-    "message": "Қосылмаған"
-  },
-  "premiumProxyStatusTurnedOff": {
-    "message": "Өшірілген"
-  },
-  "premiumProxyStatusTurnedOn": {
-    "message": "Қосылды"
-  },
-  "premiumProxyPrice": {
-    "message": "5282"
-  },
-  "premiumProxyPriceData": {
-    "message": "₸/жыл"
-  },
-  "buyButtonText": {
-    "message": "Сатып алу"
-  },
-  "redirectToPaymentPage": {
-    "message": "Төлем үшін VPNPay веб-сайтына қайта бағытталасыз"
-  },
-  "updatePremiumProxyConfig": {
-    "message": "Кодты жаңарту"
-  },
-  "disablePremiumProxy": {
-    "message": "Өшіру"
-  },
-  "premiumCodeInputTitle": {
-    "message": "Менде код бұрыннан бар"
-  },
-  "premiumCodeInputUpdate": {
-    "message": "Кодты енгізіңіз"
-  },
-  "premiumCodeInputPlaceholder": {
-    "message": "Censor Tracker Premium коды"
-  },
-  "premiumProxyExpiredError": {
-    "message": "Қате! Конфигурацияның мерзімі аяқталды"
-  },
-  "disablePremiumProxyDesc": {
-    "message": "Censor Tracker Premium функциясын шынымен өшіргіңіз келе ме?"
-  },
-  "savePremiumProxyButton": {
-    "message": "Қолдану"
-  },
-  "feedbackSuggestion": {
-    "message": "Сұрақтарыңыз немесе қиындықтарға тап болдыңыз ба?"
-  },
-  "feedbackProposition": {
-    "message": "Бізге жазыңыз"
-  },
-  "premiumProxyExpirationDate": {
-    "message": "Censor Tracker Premium осы уақытқа дейін жарамды"
-  },
-  "premiumProxyDaysLeft": {
-    "message": "Қалған күндер:"
-  },
-  "premiumProxyPersonalCode": {
-    "message": "Жеке код:"
-  },
-  "emptyStringError": {
-    "message": "Бос емес мәнді енгізіңіз"
-  },
-  "parseJSONError": {
-    "message": "Конфигурация кодынан деректерді шығару мүмкін болмады"
-  },
-  "invalidJsonError": {
-    "message": "Конфигурация коды қажетті деректерді бермейді"
-  },
-  "popupPremiumSuggestion": {
-    "message": "Бұғатталған сайттар Censor Tracker Premium көмегімен жылдамырақ ашылады"
-  },
-  "showDetailsButton": {
-    "message": "Қосымша мәліметтер"
-  },
-  "speedUpYouTubeSuggestion": {
-    "message": "Censor Tracker Premium көмегімен YouTube-ті бұрын-соңды болмағандай көріңіз"
-  },
-  "speedUpYouTubeButton": {
-    "message": "YouTube-ті жылдамдату"
   }
 }

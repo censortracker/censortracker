@@ -9,206 +9,173 @@
 </head>
 
 <body>
-<div class="body-wrapper">
-
-  <div class="container">
-    <div class="main-page">
-      <p id="extension-id" class="invisible-message"></p>
-      
-      <div id="premiumBadge" class="hidden">
-        <a href="premium-proxy.html" target="_blank" class="premium-badge">
-          Premium
-        </a>
-      </div>
-      <a id="openOptionsPage" class="icon__settings" target="_blank"></a>
+<div class="container">
+  <div class="main-page">
+    <p id="extension-id" class="inisible-message"></p>
+    <div class="main-page__image" id="statusImageDiv">
+      <img id="statusImage"
+           class="image__status"
+           src="images/icons/512x512/normal.png"
+           width="75px" height="auto" alt="Status"/>
       <span id="highlightOptionsIcon" class="red-dot hidden"></span>
-  
-      <div class="main-page__image" id="statusImageDiv">
-        <img id="statusImage"
-             class="image__status"
-             src="images/icons/512x512/normal.png"
-             width="75px" height="auto" alt="Status"/>
-      </div>
-      <div class="main-page__info">
-  
-        <div class="main-page__title title-domain">
-          <div class="current-domain title-normal current-domain unselectable" id="currentDomainHeader"></div>
-          <div class="row centered btn-about title-disabled rules-toggle-title unselectable icon-show hidden" id="toggleSiteActions">
-            <span id="siteActionDescription"></span>
-            <svg class="block__btn icon site-actions-icon" width="10" height="10" viewBox="0 0 8 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M0.546875 1.47339L4 5.5L7.48204 1.47339" stroke="#3B332B" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
-        </div>
-  
-        <div class="main-page__block main-page-setting hidden unselectable" id="siteActions">
+      <a id="openOptionsPage" class="icon__settings" target="_blank"></a>
+    </div>
+    <div class="main-page__info">
 
-          <div class="block__title proxy-rules-title" data-i18n-key="siteActionTitle"></div>
-          <div id="siteActionsRadioGroup" class="radio-buttons-group">
-            <div class="radio-button" id="premiumProxyRadioButton">
-              <input id="siteActionAuto" class="radio-button-input" type="radio" name="proxy-radio" value="auto">
-              <label for="siteActionAuto" class="radio-button-label with-comment">
-                <span data-i18n-key="siteActionItemLabelAuto"></span>
-                <span class="btn-about title-disabled rules-toggle-title unselectable" data-i18n-key="recomended"></span>
-              </label>
-            </div>
-            <div class="radio-button">
-              <input id="siteActionProxy" class="radio-button-input" type="radio" name="proxy-radio" value="always">
-              <label for="siteActionProxy" class="radio-button-label" data-i18n-key="siteActionItemLabelAlways"></label>
-            </div>
-            <div class="radio-button">
-              <input id="siteActionIgnore" class="radio-button-input" type="radio" name="proxy-radio" value="never">
-              <label for="siteActionIgnore" class="radio-button-label" data-i18n-key="siteActionItemLabelNever"></label>
-            </div>
-          </div>
-          <br />
-          <span id="siteActionsDone" class="btn-ok title-disabled clickable" data-i18n-key="done"></span>
-        </div>
-  
-        <div class="network-description" id="torNetwork" hidden>
-          <div class="network__title" data-i18n-key="torNetworkTitle"></div>
-          <div class="network__about" data-i18n-key="overlayNetworkDesc"></div>
-        </div>
-  
-        <div class="network-description" id="i2pNetwork" hidden>
-          <div class="network__title" data-i18n-key="i2pNetworkTitle"></div>
-          <div class="network__about" data-i18n-key="overlayNetworkDesc"></div>
-        </div>
-  
-        <div class="main-page__block main-page-info unselectable" id="ori">
-          <div class="block__title">
-            <span id="ori-title" data-i18n-key="notDisseminatorTitle"></span>
-            <img class="icon__status" src="images/popup/status/ok.svg" width="24px" height="24px" alt="Status"/>
-          </div>
-          <a href="popup-details.html?reason=ori-normal" class="block__btn btn-about title-disabled btn-what-this-mean">
-            <span data-i18n-key="whatThisMean"></span>
-          </a>
-        </div>
-  
-        <div class="main-page__block main-page-info unselectable" id="restrictions">
-          <div class="block__title">
-            <span id="restrictions-title" data-i18n-key="notBlockedTitle"></span>
-            <img class="icon__status" src="images/popup/status/ok.svg" width="24px" height="24px" alt="Status"/>
-          </div>
-          <a href="popup-details.html?reason=restrictions-normal" class="block__btn btn-about title-disabled btn-what-this-mean">
-            <span data-i18n-key="whatThisMean"></span>
-          </a>
-        </div>
-  
-        <div class="main-page__block main-page-info hidden" id="proxying-info">
-          <div class="block__title">
-            <span class="unselectable" data-i18n-key="popupProxyInfoTitle"></span>
-            <img class="icon__status proxying-info-icon unselectable"
-                 data-render-var="statusIcon"
-                 src="images/popup/status/question.svg" width="24px"
-                 height="24px" alt=""/>
-          </div>
-          <div class="block__btn btn-about unselectable btn-what-this-mean">
-            <span data-i18n-key="popupProxyInfoShowDetails"></span>
-            <svg class="block__btn icon" width="8" height="6" viewBox="0 0 8 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M0.546875 1.47339L4 5.5L7.48204 1.47339" stroke="#3B332B" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
-        </div>
-  
-        <div class="main-page__info unselectable" id="extensionIsOff" hidden>
-          <div class="main-page__title title-disabled" data-i18n-key="extensionDisabledTitle"></div>
-          <div class="main-page__block">
-            <div class="block__title text-about block-disabled">
-              <span data-i18n-key="turnOnExtensionToCheckWebsite"></span>
-            </div>
-            <div class="censor-tracker__btn btn-on" id="enableExtension">
-              <img class="image__turn-tracker image__turn-tracker-on"
-                   src="images/icons/512x512/btn_power.svg" width="36px"
-                   height="36px" alt=""/>
-            </div>
-          </div>
-        </div>
-  
+      <div class="main-page__title title-domain">
+        <div class="current-domain title-normal current-domain unselectable" id="currentDomainHeader"></div>
+        <span class="icon__site_settings icon-show hidden" id="toggleSiteActions"></span>
       </div>
-    </div>
-  
-    <div class="footer-btn" id="backendIsIntermittentPopupMessage" hidden>
-      <div data-i18n-key="backendIsIntermittentPopupMessage"></div>
-    </div>
-  
-    <div class="footer-btn" id="proxyConnectionIssuesButton" hidden>
-      <div data-i18n-key="proxyConnectionIssuesMessage"></div>
-    </div>
-  
-    <div class="footer-btn" id="controlledByOtherExtensionsButton" hidden>
-      <div data-i18n-key="controlledByOtherExtensionsMessage"></div>
-    </div>
-  
-    <div id="privateBrowsingPermissionsRequiredButton" hidden>
-      <div data-i18n-key="privateBrowsingPermissionsRequiredMessage"></div>
-    </div>
-  
-    <div class="footer unselectable" id="footerExtensionIsOn" hidden>
-      <div class="censor-tracker">
-        <div class="censor-tracker__column">
-          <div class="censor-tracker__title">
-            <b>Censor Tracker</b> <span class="censor-tracker__turn" data-i18n-key="extensionEnabledTitle"></span>
+
+      <div class="main-page__block main-page-setting hidden unselectable" id="siteActions">
+        <div class="block__title" data-i18n-key="siteActionTitle"></div>
+
+        <div class="site-actions-group">
+          <div class="site-actions-group-item">
+            <input id="siteActionAuto" type="radio" name="site-action-radio" value="auto">
+            <label for="siteActionAuto" data-i18n-key="siteActionItemLabelAuto"></label>
           </div>
-          <div class="row">
-            <div id="popupProxyStatusOk" data-i18n-key="popupProxyStatusOk" class="censor-tracker__status" hidden></div>
-            <div id="popupProxyStatusError" data-i18n-key="popupProxyStatusError"
-                 class="censor-tracker__status status-error" hidden></div>
-            <div id="popupProxyDisabled" data-i18n-key="popupProxyDisabled" class="censor-tracker__status" hidden></div>
-            &nbsp;
-            <a id="proxyStatusIcon" target="_blank" hidden>
-              <img class="icon__proxy__status" src="images/popup/status/info.svg" alt=""/>
+          <div class="site-actions-group-item">
+            <input id="siteActionProxy" type="radio" name="site-action-radio" value="always">
+            <label for="siteActionProxy" data-i18n-key="siteActionItemLabelAlways"></label>
+          </div>
+          <div class="site-actions-group-item">
+            <input id="siteActionIgnore" type="radio" name="site-action-radio" value="never">
+            <label for="siteActionIgnore" data-i18n-key="siteActionItemLabelNever"></label>
           </div>
         </div>
-        <div class="censor-tracker__column">
-          <div class="censor-tracker__btn" id="disableExtension">
-            <img class="image__turn-tracker" src="images/icons/512x512/btn_stop.svg" width="11px" height="16px" alt=""/>
+        <div class="proxy_info" id="siteActionDescription"></div>
+      </div>
+
+      <div class="network-description" id="torNetwork" hidden>
+        <div class="network__title" data-i18n-key="torNetworkTitle"></div>
+        <div class="network__about" data-i18n-key="overlayNetworkDesc"></div>
+      </div>
+
+      <div class="network-description" id="i2pNetwork" hidden>
+        <div class="network__title" data-i18n-key="i2pNetworkTitle"></div>
+        <div class="network__about" data-i18n-key="overlayNetworkDesc"></div>
+      </div>
+
+      <div class="main-page__block main-page-info unselectable" id="ori">
+        <div class="block__title">
+          <span id="ori-title" data-i18n-key="notDisseminatorTitle"></span>
+          <img class="icon__status" src="images/popup/status/ok.svg" width="24px" height="24px" alt="Status"/>
+        </div>
+        <div class="block__btn btn-about btn-what-this-mean">
+          <span data-i18n-key="whatThisMean"></span>
+          <svg class="block__btn icon" width="8" height="6" viewBox="0 0 8 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0.546875 1.47339L4 5.5L7.48204 1.47339" stroke="#3B332B" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div id="ori-details" class="block__text text-normal details-text">
+          <span id="ori-desc" data-i18n-key="notDisseminatorDesc"></span>
+          <div class="block__footer">
+            <span class="block__btn btn-ok btn-hide-details" data-i18n-key="okayButton"></span>
+            <span class="block__btn btn-text">
+              <a href="https://reestr.rublacklist.net/distributors/" target="_blank" data-i18n-key="readMoreButton"></a>
+            </span>
           </div>
         </div>
       </div>
-    </div>
-  
-    <div id="popupPremiumSuggestion" class="premium-suggestion hidden">
-      <div  class="footer unselectable">
-        <div class="censor-tracker">
-          <div>
-            <div class="censor-tracker__title">
-              <span class="censor-tracker__turn premium-suggestion-text" data-i18n-key="popupPremiumSuggestion"></span>
-            </div>
-          </div>
-          <a href="premium-proxy.html" target="_blank">
-            <div>
-              <span class="premium-badge">Premium</span>
-            </div>
-          </a>
+
+      <div class="main-page__block main-page-info unselectable" id="restrictions">
+        <div class="block__title">
+          <span id="restrictions-title" data-i18n-key="notBlockedTitle"></span>
+          <img class="icon__status" src="images/popup/status/ok.svg" width="24px" height="24px" alt="Status"/>
         </div>
-        <div class="censor-tracker premium-button">
-          <a href="premium-proxy.html" target="_blank" class="default-btn premium-button" data-i18n-key="showDetailsButton"></a>
+        <div class="block__btn btn-about btn-what-this-mean">
+          <span data-i18n-key="whatThisMean"></span>
+          <svg class="block__btn icon" width="8" height="6" viewBox="0 0 8 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0.546875 1.47339L4 5.5L7.48204 1.47339" stroke="#3B332B" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
         </div>
-      </div>
-    </div>
-  
-    <div id="popupPremiumSuggestionYoutube" class="premium-suggestion hidden">
-      <div  class="footer unselectable">
-        <div class="censor-tracker">
-          <div class="row">
-            <img class="" src="images/popup/play.svg" alt="play"/>
-            <div class="progress-container">
-              <div id="progressBar" class="progress-bar loading"></div>
-              <div class="progress-bar playing"></div>
-            </div>
-          </div>
-        </div>
-        <div class="censor-tracker">
-          <div id="youtubeToggle" class="youtube-toggle">
-            <span class="premium-suggestion-text" data-i18n-key="speedUpYouTubeSuggestion"></span>
-            <a href="premium-proxy.html" target="_blank" class="default-btn youtube-speedup" data-i18n-key="speedUpYouTubeButton"></a>
+        <div class="block__text text-normal details-text">
+          <span id="restrictions-desc" data-i18n-key="notBlockedDesc" ></span>
+          <div class="block__footer">
+            <span class="block__btn btn-ok btn-hide-details" data-i18n-key="okayButton"></span>
+            <span class="block__btn btn-text">
+              <a href="https://reestr.rublacklist.net/" target="_blank" data-i18n-key="readMoreButton"></a>
+            </span>
           </div>
         </div>
       </div>
+
+      <div class="main-page__block main-page-info" id="proxying-info">
+        <div class="block__title">
+          <span class="unselectable" data-i18n-key="popupProxyInfoTitle"></span>
+          <img class="icon__status proxying-info-icon unselectable"
+               data-render-var="statusIcon"
+               src="images/popup/status/question.svg" width="24px"
+               height="24px" alt=""/>
+        </div>
+        <div class="block__btn btn-about unselectable btn-what-this-mean">
+          <span data-i18n-key="popupProxyInfoShowDetails"></span>
+          <svg class="block__btn icon" width="8" height="6" viewBox="0 0 8 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0.546875 1.47339L4 5.5L7.48204 1.47339" stroke="#3B332B" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="block__text text-normal details-text proxying-details">
+          <div id="proxyingDetailsText">
+          </div>
+          <div class="block__footer">
+            <span class="block__btn btn-ok btn-hide-details" data-i18n-key="okayButton"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="main-page__info unselectable" id="extensionIsOff" hidden>
+        <div class="main-page__title title-disabled" data-i18n-key="extensionDisabledTitle"></div>
+        <div class="main-page__block">
+          <div class="block__title text-about block-disabled">
+            <span data-i18n-key="turnOnExtensionToCheckWebsite"></span>
+          </div>
+          <div class="censor-tracker__btn btn-on" id="enableExtension">
+            <img class="image__turn-tracker image__turn-tracker-on"
+                 src="images/icons/512x512/btn_power.svg" width="36px"
+                 height="36px" alt=""/>
+          </div>
+        </div>
+      </div>
+
     </div>
-  
   </div>
+
+  <div class="footer-btn" id="backendIsIntermittentPopupMessage" hidden>
+    <div data-i18n-key="backendIsIntermittentPopupMessage"></div>
+  </div>
+
+  <div class="footer-btn" id="proxyConnectionIssuesButton" hidden>
+    <div data-i18n-key="proxyConnectionIssuesMessage"></div>
+  </div>
+
+  <div class="footer-btn" id="controlledByOtherExtensionsButton" hidden>
+    <div data-i18n-key="controlledByOtherExtensionsMessage"></div>
+  </div>
+
+  <div id="privateBrowsingPermissionsRequiredButton" hidden>
+    <div data-i18n-key="privateBrowsingPermissionsRequiredMessage"></div>
+  </div>
+
+  <div class="footer unselectable" id="footerExtensionIsOn" hidden>
+    <div class="censor-tracker">
+      <div class="censor-tracker__column">
+        <div class="censor-tracker__title">
+          <b>Censor Tracker</b> <span class="censor-tracker__turn" data-i18n-key="extensionEnabledTitle"></span>
+        </div>
+        <div id="popupProxyStatusOk" data-i18n-key="popupProxyStatusOk" class="censor-tracker__status" hidden></div>
+        <div id="popupProxyStatusError" data-i18n-key="popupProxyStatusError"
+             class="censor-tracker__status status-error" hidden></div>
+        <div id="popupProxyDisabled" data-i18n-key="popupProxyDisabled" class="censor-tracker__status" hidden></div>
+      </div>
+      <div class="censor-tracker__column">
+        <div class="censor-tracker__btn" id="disableExtension">
+          <img class="image__turn-tracker" src="images/icons/512x512/btn_stop.svg" width="11px" height="16px" alt=""/>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
 </body>
 </html>

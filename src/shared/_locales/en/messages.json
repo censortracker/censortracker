@@ -38,9 +38,6 @@
   "blockedTitle": {
     "message": "Blocked"
   },
-  "enable": {
-    "message": "Enable"
-  },
   "cancel": {
     "message": "Cancel"
   },
@@ -135,7 +132,7 @@
     "message": "This service may transmit your data to government authorities."
   },
   "done": {
-    "message": "Done"
+    "message": "Done!"
   },
   "doneDescription": {
     "message": "Operation completed successfully."
@@ -439,28 +436,25 @@
     "message": "Show System Notifications"
   },
   "siteActionAlwaysDesc": {
-    "message": "Always open through a proxy"
+    "message": "Always open this website through a proxy"
   },
   "siteActionAutoDesc": {
-    "message": "Open through a proxy only if blocked"
-  },
-  "recomended": {
-    "message": "Recomended"
+    "message": "Open the site through a proxy only if the site is unavailable due to blocking."
   },
   "siteActionItemLabelAlways": {
     "message": "Always"
   },
   "siteActionItemLabelAuto": {
-    "message": "If blocked"
+    "message": "Auto"
   },
   "siteActionItemLabelNever": {
     "message": "Never"
   },
   "siteActionNeverDesc": {
-    "message": "Never open through a proxy"
+    "message": "Never open this website through a proxy (even if the site is unavailable due to blocking)"
   },
   "siteActionTitle": {
-    "message": "How to open through a proxy?"
+    "message": "How should a proxy be used to for this website?"
   },
   "thankYou": {
     "message": "Thank you!"
@@ -495,9 +489,6 @@
   "useOwnProxy": {
     "message": "Use your own proxy"
   },
-  "usePremiumProxy": {
-    "message": "Use premium proxy"
-  },
   "useProxy": {
     "message": "Use proxy"
   },
@@ -527,95 +518,5 @@
   },
   "importSettingsDesc": {
     "message": "You can import your settings from a JSON file."
-  },
-  "premiumProxyDesc": {
-    "message": "Increased connection speed"
-  },
-  "premiumProxyDetailedDesc": {
-    "message": "Censor Tracker Premium is an increased connection speed to blocked sites. Watch your favorite video services without any lags"
-  },
-  "premiumBetaDesc": {
-    "message": "At the moment, Censor Tracker Premium is in beta and is available to a limited number of users."
-  },
-  "premiumProxyStatusNotActivated": {
-    "message": "Not activated"
-  },
-  "premiumProxyStatusTurnedOff": {
-    "message": "Disabled"
-  },
-  "premiumProxyStatusTurnedOn": {
-    "message": "Enabled"
-  },
-  "premiumProxyPrice": {
-    "message": "10,8"
-  },
-  "premiumProxyPriceData": {
-    "message": "$/year"
-  },
-  "buyButtonText": {
-    "message": "Purchase"
-  },
-  "redirectToPaymentPage": {
-    "message": "You will be redirected to the VPNPay website for payment"
-  },
-  "updatePremiumProxyConfig": {
-    "message": "Update the code"
-  },
-  "disablePremiumProxy": {
-    "message": "Disable"
-  },
-  "premiumCodeInputTitle": {
-    "message": "I already have the code"
-  },
-  "premiumCodeInputUpdate": {
-    "message": "Enter the code"
-  },
-  "premiumCodeInputPlaceholder": {
-    "message": "Censor Tracker Premium Code"
-  },
-  "premiumProxyExpiredError": {
-    "message": "Error! The config has expired"
-  },
-  "disablePremiumProxyDesc": {
-    "message": "Are you sure you want to disable Censor Tracker Premium?"
-  },
-  "savePremiumProxyButton": {
-    "message": "Apply"
-  },
-  "feedbackSuggestion": {
-    "message": "Do you have any questions or encountered any difficulties?"
-  },
-  "feedbackProposition": {
-    "message": "Contact us"
-  },
-  "premiumProxyExpirationDate": {
-    "message": "Censor Tracker Premium is valid until"
-  },
-  "premiumProxyDaysLeft": {
-    "message": "Days left:"
-  },
-  "premiumProxyPersonalCode": {
-    "message": "Personal code:"
-  },
-  "emptyStringError": {
-    "message": "Enter a non-blank value"
-  },
-  "parseJSONError": {
-    "message": "Failed to extract data from configuration code"
-  },
-  "invalidJsonError": {
-    "message": "The configuration code does not provide the required data."
-  },
-  "popupPremiumSuggestion": {
-    "message": "Blocked websites can open faster with Censor Tracker Premium"
-  },
-  "showDetailsButton": {
-    "message": "Read more"
-  },
-  "speedUpYouTubeSuggestion": {
-    "message": "Watch YouTube like you used to with Censor Tracker Premium"
-  },
-  "speedUpYouTubeButton": {
-    "message": "Speed ​​up YouTube"
   }
 }

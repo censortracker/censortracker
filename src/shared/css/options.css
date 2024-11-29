@@ -377,11 +377,6 @@ a {
     height: 37px;
 }
 
-textarea.input-proxy {
-    padding: 5px 11px;
-    resize: vertical;
-}
-
 #saveCustomProxyButton {
     margin-left: 10px;
 }
@@ -444,15 +439,6 @@ textarea.input-proxy {
 
 .radio-button label {
     cursor: pointer;
-    position: relative;
-    padding-left: 45px;
-    display: inline-block;
-    font-size: 16px;
-    line-height: 15px;
-    font-weight: normal;
-}
-
-.premium-proxy-data {
     position: relative;
     padding-left: 45px;
     display: inline-block;
@@ -695,17 +681,12 @@ kbd {
     font-weight: 500;
 }
 
-.section-title {
-    width: max-content;
-}
-
 .state-title {
     opacity: 0.5;
     color: #3B332B;
     font-size: 13px;
     line-height: 17px;
-    margin-right: 10px;
-    width: max-content;
+    margin-left: 400px;
 }
 
 .invalid-input {
@@ -984,176 +965,6 @@ kbd {
     width: calc(100% + 0px);
 }
 
-.premium-badge {
-    background-color: #aafb1f;
-    padding: 1px 9px;
-    border-radius: 10px;
-    font-weight: 300;
-    font-size: 12px;
-    line-height: 20px;
-    color: #2b6204;
-}
-
-.main-page__title .premium-badge {
-    font-size: 16px;
-    padding: 5px;
-    padding-top: 2px;
-    padding-bottom: 2px;
-}
-
-.row {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-}
-
-.row.opposing {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.separate-line-row {
-    margin-top: 15px;
-    margin-bottom: 38px;
-}
-
-.clickable {
-    cursor: pointer;
-}
-
-.icons-row {
-    gap: 5px
-}
-
-.icon__payment {
-    width: 30px;
-    aspect-ratio: 1 / 1;
-}
-
-.icon__payment.crypto {
-    width: 20px;
-}
-
-.premium-proxy-price {
-    font-size: 26px;
-    font-family: inherit;
-    font-weight: 400;
-}
-
-.description-large {
-    font-size: 18px;
-    font-weight: 300;
-    margin-top: 28px;
-    margin-bottom: 28px;
-}
-
-p.description-large {
-    margin-top: 0px;
-}
-
-.redirect-description {
-    font-weight: 400;
-    font-size: 14px;
-    color: #6d675f;
-    margin-top: 15px;
-    margin-right: 70px;
-    cursor: text;
-}
-
-.premium-code-input-title {
-    font-size: 18px;
-}
-
-.premium-proxy-card {
-    padding-bottom: 60px;
-}
-
-.premium-proxy-input {
-    display: flex;
-    margin-top: 15px;
-}
-
-.footer-text {
-    opacity: 0.5;
-    width: 570px;
-    height: 20px;
-    bottom: 93px;
-    font-size: 13px;
-    font-weight: 500;
-}
-
-.footer-text.premium-personal-code {
-    height: fit-content;
-}
-
-.premium-proxy-expiration-date {
-    margin-right: 50px;
-    line-height: 40px;
-}
-
-.premium-proxy-days-left {
-    font-size: 25px;
-    font-weight: 500;
-    line-height: 40px;
-}
-
-.error-message {
-    font-size: 14px;
-    font-weight: 300;
-    color: red;
-    margin-top: 10px;
-}
-
-.disable-button {
-    color: #B61414;
-    font-size: 16px;
-    font-weight: 700;
-}
-
-.default-gap {
-    gap: 15px;
-}
-
-#disablePremiumProxyDetails {
-    border-radius: 10px;
-    padding: 10px;
-    margin-bottom: 40px;
-    background: #f7eded;
-}
-
-.subtitle-info {
-    line-height: 25px;
-}
-
-.beta-message {
-    color: rgba(145, 145, 145, 0.5);
-    font-size: 12px;
-    font-weight: 500;
-    line-height: 15px;
-}
-
-.loading-circle {
-    display: inline-block;
-    margin-left: 3px;
-    border: 2px solid #e0dbdb;
-    border-top: 2px solid rgba(255, 255, 255, 0);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    width: 10px;
-    aspect-ratio: 1 / 1;
-  }
-
-.loading-circle.hidden {
-    display: none;
-}
-
-@keyframes spin {
-0% { transform: rotate(0deg); }
-100% { transform: rotate(360deg); }
-}
-
 @media (prefers-color-scheme: dark) {
     :root {
         color-scheme: dark;
@@ -1216,6 +1027,7 @@ p.description-large {
         opacity: 0.5;
         font-size: 13px;
         line-height: 17px;
+        margin-left: 400px;
     }
 
     .main-page__link:hover,
@@ -1225,11 +1037,6 @@ p.description-large {
     }
 
     #version {
-        color: #F4F1F1;
-        opacity: 0.5;
-    }
-
-    .footer-text {
         color: #F4F1F1;
         opacity: 0.5;
     }
@@ -1299,10 +1106,6 @@ p.description-large {
         background: #242728;
         color: #F4F1F1;
         caret-color: #F4F1F1;
-    }
-
-    .options-page-card textarea {
-        background: #121212;
     }
 
     #optionsRegistryIsEmptyWarning {
@@ -1399,15 +1202,8 @@ p.description-large {
         border: 1px solid #9e5757 !important;
     }
 
-    .options-page-card input {
-        background-color: #181a1b;
-    }
-
     .update_available {
         color-scheme: light;
-    }
-    #disablePremiumProxyDetails {
-        background-color: #382e2e;
     }
 }
 

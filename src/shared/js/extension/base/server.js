@@ -1,16 +1,7 @@
 import browser from '../../browser-api'
 import { Extension } from '.'
 import ConfigManager from './config'
-import { githubConfigUrl } from './config/constants'
-
-const getConfigAPIEndpoints = () => {
-  return [
-    {
-      endpointName: 'GitHub',
-      endpointUrl: githubConfigUrl,
-    },
-  ]
-}
+import { configAPIEndpoints } from './config/constants'
 
 const FALLBACK_COUNTRY_CODE = 'RU'
 
@@ -38,7 +29,7 @@ const inquireCountryCode = async (geoIPServiceURL) => {
 const fetchConfig = async () => {
   const { currentRegionCode } = await ConfigManager.get('currentRegionCode')
 
-  for (const { endpointName, endpointUrl } of getConfigAPIEndpoints()) {
+  for (const { endpointName, endpointUrl } of configAPIEndpoints) {
     try {
       const response = await fetch(endpointUrl)
 
@@ -67,6 +58,7 @@ const fetchConfig = async () => {
         }
 
         // For debugging purposes
+        config.geoIPServiceURL = meta.geoIPServiceURL
         config.configEndpointUrl = endpointUrl
         config.configEndpointSource = endpointName
 
@@ -251,7 +243,6 @@ const fetchCustomDPIRegistry = async ({ customRegistryUrl } = {}) => {
     const data = await response.json()
 
     console.log(`Fetched: ${customRegistryUrl}`)
-    console.log(data.flatMap((e) => e.domains))
     ConfigManager.set({ customDPIDomains: data.flatMap((e) => e.domains) })
   } catch (error) {
     console.error(`Error on fetching data from: ${customRegistryUrl}`)
@@ -270,7 +261,6 @@ export const synchronize = async ({
   await Extension.proxy.removeProxy()
   const configFromServer = await fetchConfig()
 
-  console.log(configFromServer)
   if (Object.keys(configFromServer).length > 0) {
     const {
       proxyUrl, ignoreUrl, registryUrl, specifics, customRegistryUrl,

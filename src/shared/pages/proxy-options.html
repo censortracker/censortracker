@@ -80,26 +80,109 @@
             <div class="radio-button">
               <input class="radio-button-input" type="radio" name="proxy-radio" id="useLocalProxy" value="local">
               <label class="radio-button-label" for="useLocalProxy" data-i18n-key="useLocalProxy"></label>
+              <button class="btn btn-dark btn__addLocalProxy" id="addLocalProxyButton">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <path d="M4.16406 10.0001H15.8307M9.9974 4.16675V15.8334" stroke="white" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span class="btn__text" data-i18n-key="addLocalProxyButton">Добавить</span>
+              </button>
             </div>
 
-            <div id="localProxyOptions" class="hidden">
-              <div id="localProxyClientNotFound" class="local-proxy-disclaimer">
-                <div class="disclaimer__text" data-i18n-key="localProxyNotFound"></div>
-                <button class="btn btn-light" id="downloadProxyAppButton" data-i18n-key="downloadAppButton"></button>
+            <div class="block_custom-local-proxy" id="localProxyOptions">
+              <div class="censortracker-not-found__wrapper">
+                <div>
+                  <b>Приложение CensorTracker Proxy не найдено на устройстве</b>
+                </div>
+                <div>Скачайте и запустите приложение CensorTracker Proxy. Оно будет работать в фоне и поддерживать
+                  работу локального прокси
+                </div>
+                <button class="btn btn__censortracker-not-found">
+                  <span class="btn__text">Скачать</span>
+                </button>
+              </div>
+              <div class="add-proxy__wrapper">
+                <div class="add-proxy__inner">
+                  <div><b>Добавьте прокси для подключения</b></div>
+                  <div>Рекомендуем RKS VPN в качестве локального прокси</div>
+                </div>
+                <div class="rks-vpn__wrapper">
+                  <img class="rks-vpn__logo" src="../images/settings/rks_logo.svg" width="166" height="auto"
+                       alt="RKS VPN logo"/>
+                  <div class="rks-vpn__title">Устойчивый к блокировкам VPN</div>
+                  <div class="rks-vpn__text">Работает как в CensorTracker, так и в других приложениях, в том числе
+                    на телефоне и ТВ
+                  </div>
+                  <a class="btn btn-dark btn__rks-vpn" href="https://vpnpay.io/ru/rks/" target="_blank">
+                    <span class="btn__text">Подробнее об RKS VPN</span>
+                  </a>
+                </div>
               </div>
 
-              <div id="localProxyForm">
-                <div id="localProxyConfigBlock">
-                  <label for="localProxyConfig" data-i18n-key="localProxyConfigValueTitle"></label>
-                  <div id="localProxyConfigValueDescr" data-i18n-key="localProxyConfigValueDescr"></div>
-                  <textarea id="localProxyConfig" rows="3" class="input-proxy"></textarea>
+              <div class="proxy-list__wrapper">
+
+                <div class="proxy-list__block">
+                  <div class="radio-button proxy-list__block-item">
+                    <input class="radio-button-input" type="radio" name="local-proxy" id="Shadowsocks5"
+                           value="Shadowsocks5"/>
+                    <label class="radio-button-label" for="Shadowsocks5">[PL] Shadowsocks - TCP</label>
+                    <div class="proxy-list__block-item__btn" onclick="toggleMenu(event, this)">
+                      <img src="./../images/settings/more_icon.svg"/>
+                    </div>
+                  </div>
                 </div>
 
-                <div id="invalidLocalProxyConfig" class="hidden" data-i18n-key="invalidLocalProxyConfig"></div>
+                <div class="proxy-list__block-item__menu" id="proxy-list__block-item__menu">
+                  <ul>
+                    <li>Удалить</li>
+                  </ul>
+                </div>
 
-                <button class="btn btn-dark" id="applyLocalProxyButton">
-                  <span class="btn__text" data-i18n-key="applyLocalProxyButton"></span>
-                </button>
+                <div class="proxy-list__block__popup proxy-list__block__popup-add-proxy"
+                     id="proxy-list__block__popup-add-proxy">
+                  <div class="popup-add-proxy__btn-close" onclick="closePopup(event)"><img
+                    src="../images/settings/close_icon.svg" width="44" height="44" alt=""/></div>
+                  <div class="popup-add-proxy__inner">
+                    <div class="popup-add-proxy__title">Добавление прокси</div>
+                    <div>Код подключения</div>
+                    <textarea></textarea>
+                    <div class="popup-add-proxy__text">Рекомендуем <img src="../images/settings/rks_logo.svg" width="86"
+                                                                        height="auto" alt="RKS VPN logo"/> в качестве
+                      локального прокси. <a href="https://vpnpay.io/ru/rks/" target="_blank">Подробнее</a></div>
+                    <div class="popup-add-proxy__btns">
+                      <button class="btn btn-dark"><span class="btn__text">Добавить</span></button>
+                      <button class="btn" onclick="closePopup(event)"><span class="btn__text">Отмена</span></button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="proxy-list__block__popup proxy-list__block__popup-delete-proxy"
+                     id="proxy-list__block__popup-delete-proxy">
+                  <div class="popup-add-proxy__btn-close" onclick="closePopup(event)"><img
+                    src="../images/settings/close_icon.svg" width="44" height="44" alt=""/></div>
+                  <div class="popup-add-proxy__inner">
+                    <div class="popup-add-proxy__title">Удалить прокси [PL] Shadowsocks - TCP?</div>
+                    <div class="popup-add-proxy__btns">
+                      <button class="btn btn-dark"><span class="btn__text">Да, удалить</span></button>
+                      <button class="btn" onclick="closePopup(event)"><span class="btn__text">Не удалять</span></button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="proxy-list__block__popup proxy-list__block__popup-rename-proxy"
+                     id="proxy-list__block__popup-rename-proxy">
+                  <div class="popup-add-proxy__btn-close" onclick="closePopup(event)"><img
+                    src="../images/settings/close_icon.svg" width="44" height="44" alt=""/></div>
+                  <div class="popup-add-proxy__inner">
+                    <div class="popup-add-proxy__title">Переименование [PL] Shadowsocks - TCP</div>
+                    <input type="text" class="input-proxy popup-add-proxy__input"/>
+                    <div class="popup-add-proxy__input-error">Пример ошибки. Название не может быть пустым</div>
+                    <div class="popup-add-proxy__btns">
+                      <button class="btn btn-dark"><span class="btn__text">Сохранить</span></button>
+                      <button class="btn" onclick="closePopup(event)"><span class="btn__text">Отмена</span></button>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

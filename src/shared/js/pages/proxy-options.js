@@ -1,5 +1,4 @@
 import browser from 'Background/browser-api'
-import LocalProxyClient from 'Background/localproxy'
 import ProxyManager from 'Background/proxy'
 
 (async () => {
@@ -13,18 +12,12 @@ import ProxyManager from 'Background/proxy'
   const useCustomProxyRadioButton = document.getElementById('useCustomProxy')
   const useDefaultProxyRadioButton = document.getElementById('useDefaultProxy')
   const useLocalProxyRadioButton = document.getElementById('useLocalProxy')
-  const localProxyOptions = document.getElementById('localProxyOptions')
-  const proxyCustomOptionsRadioGroup = document.getElementById(
-    'proxyCustomOptionsRadioGroup',
-  )
-  const localProxyClientNotFound = document.getElementById('localProxyClientNotFound')
+  const proxyCustomOptionsRadioGroup = document.getElementById('proxyCustomOptionsRadioGroup')
   const selectProxyProtocol = document.querySelector('.select')
   const currentProxyProtocol = document.querySelector('#select-toggle')
   const proxyProtocols = document.querySelectorAll('.select-option')
-  const localProxyConfigTextarea = document.getElementById('localProxyConfig')
-  const localProxyForm = document.getElementById('localProxyForm')
-  const applyLocalProxyButton = document.getElementById('applyLocalProxyButton')
-  const invalidLocalProxyConfig = document.getElementById('invalidLocalProxyConfig')
+  const localProxyOptions = document.getElementById('localProxyOptions')
+  const addLocalProxyButton = document.getElementById('addLocalProxyButton')
 
   ProxyManager.alive().then((alive) => {
     proxyIsDown.hidden = alive
@@ -37,13 +30,11 @@ import ProxyManager from 'Background/proxy'
     useLocalProxy,
     customProxyProtocol,
     customProxyServerURI,
-    localProxyConfig,
   } = await browser.storage.local.get([
     'useOwnProxy',
     'useLocalProxy',
     'customProxyProtocol',
     'customProxyServerURI',
-    'localProxyConfig',
   ])
 
   if (customProxyProtocol) {
@@ -52,8 +43,6 @@ import ProxyManager from 'Background/proxy'
 
   if (useLocalProxy) {
     useLocalProxyRadioButton.checked = true
-    localProxyConfigTextarea.value = localProxyConfig
-    localProxyOptions.classList.remove('hidden')
   } else if (useOwnProxy) {
     proxyOptionsInputs.hidden = false
     useCustomProxyRadioButton.checked = true
@@ -66,37 +55,6 @@ import ProxyManager from 'Background/proxy'
   if (customProxyServerURI) {
     proxyServerInput.value = customProxyServerURI
   }
-
-  applyLocalProxyButton.addEventListener('click', async (event) => {
-    const config = localProxyConfigTextarea.value
-
-    if (LocalProxyClient.validateConfig(config)) {
-      localProxyConfigTextarea.classList.remove('invalid-input')
-      invalidLocalProxyConfig.classList.add('hidden')
-      const configSet = await LocalProxyClient.setConfig([config])
-
-      if (configSet) {
-        const xrayProxyPort = await LocalProxyClient.startProxy()
-
-        if (xrayProxyPort) {
-          const localProxyURI = `127.0.0.1:${xrayProxyPort}`
-
-          await browser.storage.local.set({
-            useLocalProxy: true,
-            localProxyConfig: config,
-            localProxyURI,
-          })
-          await ProxyManager.setProxy()
-          console.warn(`Proxy started successfully on port: ${xrayProxyPort}`)
-        }
-      } else {
-        console.error('Failed to set local proxy configuration.')
-      }
-    } else {
-      localProxyConfigTextarea.classList.add('invalid-input')
-      invalidLocalProxyConfig.classList.remove('hidden')
-    }
-  })
 
   saveCustomProxyButton.addEventListener('click', async (event) => {
     const customProxyServer = proxyServerInput.value
@@ -123,26 +81,16 @@ import ProxyManager from 'Background/proxy'
 
     if (value === 'default') {
       proxyOptionsInputs.classList.add('hidden')
-      localProxyOptions.classList.add('hidden')
       proxyServerInput.value = ''
       await ProxyManager.removeCustomProxy()
       await ProxyManager.removeLocalProxy()
       await ProxyManager.setProxy()
     } else if (value === 'custom') {
-      localProxyOptions.classList.add('hidden')
       proxyOptionsInputs.classList.remove('hidden')
     } else if (value === 'local') {
       proxyOptionsInputs.classList.add('hidden')
-      localProxyOptions.classList.remove('hidden')
-      LocalProxyClient.ping().then(async (data) => {
-        if (data.status === 'success') {
-          localProxyForm.hidden = false
-          localProxyClientNotFound.hidden = true
-        } else {
-          localProxyForm.hidden = true
-          localProxyClientNotFound.hidden = false
-        }
-      })
+      localProxyOptions.style.display = 'block'
+      addLocalProxyButton.style.display = 'inline-flex'
     }
   })
 

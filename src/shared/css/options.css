@@ -1309,6 +1309,10 @@ kbd {
     color: #F4F1F1;
   }
 
+  .proxy-list__block__popup {
+    background: #181a1b !important;
+  }
+
   .block_custom-local-proxy .censortracker-not-found__wrapper {
     border: 1px solid #f7eded;
     background-color: transparent;

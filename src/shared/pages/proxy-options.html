@@ -126,8 +126,8 @@
                     <input class="radio-button-input" type="radio" name="local-proxy" id="Shadowsocks5"
                            value="Shadowsocks5"/>
                     <label class="radio-button-label" for="Shadowsocks5">[PL] Shadowsocks - TCP</label>
-                    <div class="proxy-list__block-item__btn" onclick="toggleMenu(event, this)">
-                      <img src="./../images/settings/more_icon.svg"/>
+                    <div class="proxy-list__block-item__btn">
+                      <img src="../images/settings/more_icon.svg"/>
                     </div>
                   </div>
                 </div>
@@ -138,51 +138,26 @@
                   </ul>
                 </div>
 
-                <div class="proxy-list__block__popup proxy-list__block__popup-add-proxy"
-                     id="proxy-list__block__popup-add-proxy">
-                  <div class="popup-add-proxy__btn-close" onclick="closePopup(event)"><img
-                    src="../images/settings/close_icon.svg" width="44" height="44" alt=""/></div>
+                <div class="proxy-list__block__popup proxy-list__block__popup-add-proxy" id="addLocalProxyPopup">
+                  <div class="popup-add-proxy__btn-close" id="closeLocalProxyPopup">
+                    <img src="../images/settings/close_icon.svg" width="44" height="44" alt=""/></div>
                   <div class="popup-add-proxy__inner">
                     <div class="popup-add-proxy__title">Добавление прокси</div>
                     <div>Код подключения</div>
-                    <textarea></textarea>
-                    <div class="popup-add-proxy__text">Рекомендуем <img src="../images/settings/rks_logo.svg" width="86"
-                                                                        height="auto" alt="RKS VPN logo"/> в качестве
-                      локального прокси. <a href="https://vpnpay.io/ru/rks/" target="_blank">Подробнее</a></div>
+                    <textarea placeholder="vless://..."></textarea>
+                    <div class="popup-add-proxy__text">
+                      Рекомендуем <a href="https://vpnpay.io/ru/rks/" target="_blank">RKS VPN</a> в качестве локального
+                      прокси.
+                    </div>
                     <div class="popup-add-proxy__btns">
-                      <button class="btn btn-dark"><span class="btn__text">Добавить</span></button>
-                      <button class="btn" onclick="closePopup(event)"><span class="btn__text">Отмена</span></button>
+                      <button class="btn btn-dark" id="addLocalProxyConfigButton">
+                        <span class="btn__text">Добавить</span>
+                      </button>
+                      <button class="btn" id="goBackLocalProxy"><span class="btn__text">Отмена</span></button>
                     </div>
                   </div>
                 </div>
 
-                <div class="proxy-list__block__popup proxy-list__block__popup-delete-proxy"
-                     id="proxy-list__block__popup-delete-proxy">
-                  <div class="popup-add-proxy__btn-close" onclick="closePopup(event)"><img
-                    src="../images/settings/close_icon.svg" width="44" height="44" alt=""/></div>
-                  <div class="popup-add-proxy__inner">
-                    <div class="popup-add-proxy__title">Удалить прокси [PL] Shadowsocks - TCP?</div>
-                    <div class="popup-add-proxy__btns">
-                      <button class="btn btn-dark"><span class="btn__text">Да, удалить</span></button>
-                      <button class="btn" onclick="closePopup(event)"><span class="btn__text">Не удалять</span></button>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="proxy-list__block__popup proxy-list__block__popup-rename-proxy"
-                     id="proxy-list__block__popup-rename-proxy">
-                  <div class="popup-add-proxy__btn-close" onclick="closePopup(event)"><img
-                    src="../images/settings/close_icon.svg" width="44" height="44" alt=""/></div>
-                  <div class="popup-add-proxy__inner">
-                    <div class="popup-add-proxy__title">Переименование [PL] Shadowsocks - TCP</div>
-                    <input type="text" class="input-proxy popup-add-proxy__input"/>
-                    <div class="popup-add-proxy__input-error">Пример ошибки. Название не может быть пустым</div>
-                    <div class="popup-add-proxy__btns">
-                      <button class="btn btn-dark"><span class="btn__text">Сохранить</span></button>
-                      <button class="btn" onclick="closePopup(event)"><span class="btn__text">Отмена</span></button>
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
           </div>

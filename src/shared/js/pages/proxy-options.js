@@ -18,6 +18,35 @@ import ProxyManager from 'Background/proxy'
   const proxyProtocols = document.querySelectorAll('.select-option')
   const localProxyOptions = document.getElementById('localProxyOptions')
   const addLocalProxyButton = document.getElementById('addLocalProxyButton')
+  const addLocalProxyPopup = document.getElementById('addLocalProxyPopup')
+  const closeLocalProxyPopup = document.getElementById('closeLocalProxyPopup')
+  const goBackLocalProxy = document.getElementById('goBackLocalProxy')
+  const addLocalProxyConfigButton = document.getElementById('addLocalProxyConfigButton')
+
+  const hideLocalProxyPopup = () => {
+    addLocalProxyPopup.style.display = 'none'
+  }
+
+  const showLocalProxyPopup = () => {
+    addLocalProxyPopup.style.display = 'block'
+  }
+
+  addLocalProxyButton.addEventListener('click', async () => {
+    showLocalProxyPopup()
+  })
+
+  closeLocalProxyPopup.addEventListener('click', async () => {
+    hideLocalProxyPopup()
+  })
+
+  goBackLocalProxy.addEventListener('click', async () => {
+    hideLocalProxyPopup()
+  })
+
+  addLocalProxyConfigButton.addEventListener('click', async () => {
+    console.log('Config added...')
+    hideLocalProxyPopup()
+  })
 
   ProxyManager.alive().then((alive) => {
     proxyIsDown.hidden = alive
@@ -82,11 +111,15 @@ import ProxyManager from 'Background/proxy'
     if (value === 'default') {
       proxyOptionsInputs.classList.add('hidden')
       proxyServerInput.value = ''
+      localProxyOptions.style.display = 'none'
+      addLocalProxyButton.style.display = 'none'
       await ProxyManager.removeCustomProxy()
       await ProxyManager.removeLocalProxy()
       await ProxyManager.setProxy()
     } else if (value === 'custom') {
       proxyOptionsInputs.classList.remove('hidden')
+      localProxyOptions.style.display = 'none'
+      addLocalProxyButton.style.display = 'none'
     } else if (value === 'local') {
       proxyOptionsInputs.classList.add('hidden')
       localProxyOptions.style.display = 'block'

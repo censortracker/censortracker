@@ -121,47 +121,28 @@
                 </div>
               </div>
 
-              <div class="proxy-list__wrapper">
-                <div id="localProxyRadioList">
-                  <div class="proxy-list__block">
-                    <div class="radio-button proxy-list__block-item">
-                      <input class="radio-button-input" type="radio" name="local-proxy" id="Shadowsocks5"
-                             value="Shadowsocks5"/>
-                      <label class="radio-button-label" for="Shadowsocks5">[PL] Shadowsocks - TCP</label>
-                      <div class="proxy-list__block-item__btn">
-                        <img src="../images/settings/more_icon.svg"/>
-                      </div>
-                    </div>
+              <div class="proxy-list__wrapper" id="localProxyRadioList"></div>
+
+              <div class="proxy-list__block__popup proxy-list__block__popup-add-proxy" id="addLocalProxyPopup">
+                <div class="popup-add-proxy__btn-close" id="closeLocalProxyPopup">
+                  <img src="../images/settings/close_icon.svg" width="44" height="44" alt=""/></div>
+                <div class="popup-add-proxy__inner">
+                  <div class="popup-add-proxy__title">Добавление прокси</div>
+                  <div>Код подключения</div>
+                  <textarea id="localProxyTextarea" placeholder="vless://..."></textarea>
+                  <div class="popup-add-proxy__text">
+                    Рекомендуем <a href="https://vpnpay.io/ru/rks/" target="_blank">RKS VPN</a> в качестве локального
+                    прокси.
+                  </div>
+                  <div class="popup-add-proxy__btns">
+                    <button class="btn btn-dark" id="applyLocalProxyConfigButton">
+                      <span class="btn__text">Добавить</span>
+                    </button>
+                    <button class="btn" id="goBackLocalProxy"><span class="btn__text">Отмена</span></button>
                   </div>
                 </div>
-
-                <div class="proxy-list__block-item__menu" id="proxy-list__block-item__menu">
-                  <ul>
-                    <li>Удалить</li>
-                  </ul>
-                </div>
-
-                <div class="proxy-list__block__popup proxy-list__block__popup-add-proxy" id="addLocalProxyPopup">
-                  <div class="popup-add-proxy__btn-close" id="closeLocalProxyPopup">
-                    <img src="../images/settings/close_icon.svg" width="44" height="44" alt=""/></div>
-                  <div class="popup-add-proxy__inner">
-                    <div class="popup-add-proxy__title">Добавление прокси</div>
-                    <div>Код подключения</div>
-                    <textarea id="localProxyTextarea" placeholder="vless://..."></textarea>
-                    <div class="popup-add-proxy__text">
-                      Рекомендуем <a href="https://vpnpay.io/ru/rks/" target="_blank">RKS VPN</a> в качестве локального
-                      прокси.
-                    </div>
-                    <div class="popup-add-proxy__btns">
-                      <button class="btn btn-dark" id="applyLocalProxyConfigButton">
-                        <span class="btn__text">Добавить</span>
-                      </button>
-                      <button class="btn" id="goBackLocalProxy"><span class="btn__text">Отмена</span></button>
-                    </div>
-                  </div>
-                </div>
-
               </div>
+
             </div>
           </div>
         </div>

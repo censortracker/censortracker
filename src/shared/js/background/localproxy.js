@@ -61,9 +61,9 @@ class ProxyClient {
   async getConfig (uuids = '') {
     return this.handleRequest(
       'GET',
-      `/config?uuid=${encodeURIComponent(uuids)}`,
+      `/configs?uuid=${encodeURIComponent(uuids)}`,
       null,
-      (data) => data || {},
+      (data) => data,
     )
   }
 
@@ -75,7 +75,7 @@ class ProxyClient {
   async setConfig (configs) {
     return this.handleRequest(
       'POST',
-      '/config',
+      '/configs',
       configs,
       (data) => data.status === 'success',
     )
@@ -89,7 +89,7 @@ class ProxyClient {
   async updateConfig (configs) {
     return this.handleRequest(
       'PUT',
-      '/config',
+      '/configs',
       configs,
       (data) => data.status === 'success',
     )
@@ -103,7 +103,7 @@ class ProxyClient {
   async deleteConfig (uuid) {
     return this.handleRequest(
       'DELETE',
-      `/config/${encodeURIComponent(uuid)}`,
+      `/configs/${encodeURIComponent(uuid)}`,
       null,
       (data) => data.status === 'success',
     )
@@ -117,7 +117,7 @@ class ProxyClient {
   async activateConfig (uuid) {
     return this.handleRequest(
       'PUT',
-      `/config/activate/${encodeURIComponent(uuid)}`,
+      `/configs/activate?uuid=${uuid}`,
       null,
       (data) => data.status === 'success',
     )
@@ -130,7 +130,7 @@ class ProxyClient {
   async getActiveConfig () {
     return this.handleRequest(
       'GET',
-      '/config/active',
+      '/configs/active',
       null,
       (data) => data.config || null,
     )
@@ -145,7 +145,7 @@ class ProxyClient {
       'POST',
       '/up',
       null,
-      (data) => data.xray_port || null,
+      (data) => data,
     )
   }
 

@@ -35,30 +35,6 @@ import ProxyManager from 'Background/proxy'
     }
   })
 
-  ProxyClient.getConfig().then((data) => {
-    if (data && Object.entries(data.configs).length > 0) {
-      rksVPNBanner.classList.add('hidden')
-      const proxyBlock = document.createElement('div')
-
-      for (const [id, config] of Object.entries(data.configs)) {
-        const protocol = config.protocol
-
-        proxyBlock.className = 'proxy-list__block'
-        proxyBlock.innerHTML = `
-        <div class="radio-button proxy-list__block-item">
-          <input class="radio-button-input" type="radio" name="local-proxy" id="${id}" value="${id}"/>
-          <label class="radio-button-label" for="${id}">${protocol}</label>
-          <div class="proxy-list__block-item__btn">
-            <img src="../images/settings/more_icon.svg"/>
-          </div>
-        </div>`
-        localProxyRadioList.append(proxyBlock)
-      }
-    } else {
-      rksVPNBanner.classList.remove('hidden')
-    }
-  })
-
   const hideLocalProxyPopup = () => {
     addLocalProxyPopup.style.display = 'none'
   }
@@ -80,7 +56,15 @@ import ProxyManager from 'Background/proxy'
   })
 
   applyLocalProxyConfigButton.addEventListener('click', async () => {
-    console.log('Config added...')
+    const localProxyTextarea = document.getElementById('localProxyTextarea')
+    const value = localProxyTextarea.value.trim()
+
+    console.log(`Adding config: ${value}`)
+    ProxyClient.setConfig({ configs: [value] })
+      .then((data) => {
+        console.log(data)
+      })
+
     hideLocalProxyPopup()
   })
 
@@ -106,8 +90,47 @@ import ProxyManager from 'Background/proxy'
     currentProxyProtocol.textContent = customProxyProtocol
   }
 
+  localProxyRadioList.addEventListener('change', (event) => {
+    const configId = event.target.value.trim()
+
+    ProxyClient.activateConfig(configId)
+      .then((data) => {
+        console.log(`Selected config: ${configId} -> ${data}`)
+      })
+  })
+
   if (useLocalProxy) {
+    ProxyClient.startProxy().then((data) => {
+      console.log(`Starting proxy: ${data}`)
+    })
+
+    ProxyClient.getConfig().then((data) => {
+      console.log('Getting local proxy config...:', data)
+      if (data && Object.entries(data.configs).length > 0) {
+        rksVPNBanner.classList.add('hidden')
+
+        for (const [id, config] of Object.entries(data.configs)) {
+          const proxyBlock = document.createElement('div')
+
+          proxyBlock.className = 'proxy-list__block'
+          proxyBlock.innerHTML = `
+            <div class="radio-button proxy-list__block-item">
+              <input class="radio-button-input" type="radio" name="local-proxy" id="${id}" value="${id}"/>
+              <label class="radio-button-label" for="${id}">${config.protocol}</label>
+              <div class="proxy-list__block-item__btn" data-id="${id}">
+                <img src="../images/settings/close_icon.svg" width="24"/>
+              </div>
+            </div>`
+          localProxyRadioList.append(proxyBlock)
+        }
+      } else {
+        rksVPNBanner.classList.remove('hidden')
+      }
+    })
+
     useLocalProxyRadioButton.checked = true
+    addLocalProxyButton.style.display = 'inline-flex'
+    localProxyOptions.style.display = 'block'
   } else if (useOwnProxy) {
     proxyOptionsInputs.hidden = false
     useCustomProxyRadioButton.checked = true
@@ -160,6 +183,9 @@ import ProxyManager from 'Background/proxy'
       proxyOptionsInputs.classList.add('hidden')
       localProxyOptions.style.display = 'block'
       addLocalProxyButton.style.display = 'inline-flex'
+      await browser.storage.local.set({
+        useLocalProxy: true,
+      })
     }
   })
 

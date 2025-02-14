@@ -90,7 +90,8 @@
             </div>
 
             <div class="block_custom-local-proxy" id="localProxyOptions">
-              <div class="censortracker-not-found__wrapper">
+
+              <div class="censortracker-not-found__wrapper hidden" id="localProxyClientNotFound">
                 <div>
                   <b>Приложение CensorTracker Proxy не найдено на устройстве</b>
                 </div>
@@ -101,7 +102,8 @@
                   <span class="btn__text">Скачать</span>
                 </button>
               </div>
-              <div class="add-proxy__wrapper">
+
+              <div class="add-proxy__wrapper hidden" id="rksVPNBanner">
                 <div class="add-proxy__inner">
                   <div><b>Добавьте прокси для подключения</b></div>
                   <div>Рекомендуем RKS VPN в качестве локального прокси</div>
@@ -110,8 +112,8 @@
                   <img class="rks-vpn__logo" src="../images/settings/rks_logo.svg" width="166" height="auto"
                        alt="RKS VPN logo"/>
                   <div class="rks-vpn__title">Устойчивый к блокировкам VPN</div>
-                  <div class="rks-vpn__text">Работает как в CensorTracker, так и в других приложениях, в том числе
-                    на телефоне и ТВ
+                  <div class="rks-vpn__text">
+                    Работает как в CensorTracker, так и в других приложениях, в том числе на телефоне и ТВ
                   </div>
                   <a class="btn btn-dark btn__rks-vpn" href="https://vpnpay.io/ru/rks/" target="_blank">
                     <span class="btn__text">Подробнее об RKS VPN</span>
@@ -120,14 +122,15 @@
               </div>
 
               <div class="proxy-list__wrapper">
-
-                <div class="proxy-list__block">
-                  <div class="radio-button proxy-list__block-item">
-                    <input class="radio-button-input" type="radio" name="local-proxy" id="Shadowsocks5"
-                           value="Shadowsocks5"/>
-                    <label class="radio-button-label" for="Shadowsocks5">[PL] Shadowsocks - TCP</label>
-                    <div class="proxy-list__block-item__btn">
-                      <img src="../images/settings/more_icon.svg"/>
+                <div id="localProxyRadioList">
+                  <div class="proxy-list__block">
+                    <div class="radio-button proxy-list__block-item">
+                      <input class="radio-button-input" type="radio" name="local-proxy" id="Shadowsocks5"
+                             value="Shadowsocks5"/>
+                      <label class="radio-button-label" for="Shadowsocks5">[PL] Shadowsocks - TCP</label>
+                      <div class="proxy-list__block-item__btn">
+                        <img src="../images/settings/more_icon.svg"/>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -144,13 +147,13 @@
                   <div class="popup-add-proxy__inner">
                     <div class="popup-add-proxy__title">Добавление прокси</div>
                     <div>Код подключения</div>
-                    <textarea placeholder="vless://..."></textarea>
+                    <textarea id="localProxyTextarea" placeholder="vless://..."></textarea>
                     <div class="popup-add-proxy__text">
                       Рекомендуем <a href="https://vpnpay.io/ru/rks/" target="_blank">RKS VPN</a> в качестве локального
                       прокси.
                     </div>
                     <div class="popup-add-proxy__btns">
-                      <button class="btn btn-dark" id="addLocalProxyConfigButton">
+                      <button class="btn btn-dark" id="applyLocalProxyConfigButton">
                         <span class="btn__text">Добавить</span>
                       </button>
                       <button class="btn" id="goBackLocalProxy"><span class="btn__text">Отмена</span></button>

@@ -1,4 +1,5 @@
 import browser from 'Background/browser-api'
+import ProxyClient from 'Background/localproxy'
 import ProxyManager from 'Background/proxy'
 
 (async () => {
@@ -21,7 +22,42 @@ import ProxyManager from 'Background/proxy'
   const addLocalProxyPopup = document.getElementById('addLocalProxyPopup')
   const closeLocalProxyPopup = document.getElementById('closeLocalProxyPopup')
   const goBackLocalProxy = document.getElementById('goBackLocalProxy')
-  const addLocalProxyConfigButton = document.getElementById('addLocalProxyConfigButton')
+  const applyLocalProxyConfigButton = document.getElementById('applyLocalProxyConfigButton')
+  const localProxyClientNotFound = document.getElementById('localProxyClientNotFound')
+  const rksVPNBanner = document.getElementById('rksVPNBanner')
+  const localProxyRadioList = document.getElementById('localProxyRadioList')
+
+  ProxyClient.ping().then((data) => {
+    if (data && data.xray_state === 'running') {
+      localProxyClientNotFound.classList.add('hidden')
+    } else {
+      localProxyClientNotFound.classList.remove('hidden')
+    }
+  })
+
+  ProxyClient.getConfig().then((data) => {
+    if (data && Object.entries(data.configs).length > 0) {
+      rksVPNBanner.classList.add('hidden')
+      const proxyBlock = document.createElement('div')
+
+      for (const [id, config] of Object.entries(data.configs)) {
+        const protocol = config.protocol
+
+        proxyBlock.className = 'proxy-list__block'
+        proxyBlock.innerHTML = `
+        <div class="radio-button proxy-list__block-item">
+          <input class="radio-button-input" type="radio" name="local-proxy" id="${id}" value="${id}"/>
+          <label class="radio-button-label" for="${id}">${protocol}</label>
+          <div class="proxy-list__block-item__btn">
+            <img src="../images/settings/more_icon.svg"/>
+          </div>
+        </div>`
+        localProxyRadioList.append(proxyBlock)
+      }
+    } else {
+      rksVPNBanner.classList.remove('hidden')
+    }
+  })
 
   const hideLocalProxyPopup = () => {
     addLocalProxyPopup.style.display = 'none'
@@ -43,7 +79,7 @@ import ProxyManager from 'Background/proxy'
     hideLocalProxyPopup()
   })
 
-  addLocalProxyConfigButton.addEventListener('click', async () => {
+  applyLocalProxyConfigButton.addEventListener('click', async () => {
     console.log('Config added...')
     hideLocalProxyPopup()
   })

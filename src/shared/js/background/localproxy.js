@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:8080/api/v1'
+const API_URL = 'http://localhost:49490/api/v1'
 
 /**
  * ProxyClient handles API communication with the proxy server.
@@ -63,7 +63,7 @@ class ProxyClient {
       'GET',
       `/config?uuid=${encodeURIComponent(uuids)}`,
       null,
-      (data) => data.config || [],
+      (data) => data || {},
     )
   }
 
@@ -159,10 +159,12 @@ class ProxyClient {
 
   /**
    * Checks if the proxy server is running.
-   * @returns {Promise<boolean>} - True if running, otherwise false.
+   * @returns {Promise<Object>} - True if running, otherwise false.
    */
   async ping () {
-    return this.handleRequest('GET', '/ping', null, (data) => Boolean(data))
+    return this.handleRequest('GET', '/ping', null, (data) => {
+      return data
+    })
   }
 
   /**

@@ -26,14 +26,7 @@ import ProxyManager from 'Background/proxy'
   const localProxyClientNotFound = document.getElementById('localProxyClientNotFound')
   const rksVPNBanner = document.getElementById('rksVPNBanner')
   const localProxyRadioList = document.getElementById('localProxyRadioList')
-
-  ProxyClient.ping().then((data) => {
-    if (data && data.xray_state === 'running') {
-      localProxyClientNotFound.classList.add('hidden')
-    } else {
-      localProxyClientNotFound.classList.remove('hidden')
-    }
-  })
+  const deleteLocalConfigButtons = document.querySelectorAll('.deleteLocalConfig')
 
   const hideLocalProxyPopup = () => {
     addLocalProxyPopup.style.display = 'none'
@@ -55,17 +48,81 @@ import ProxyManager from 'Background/proxy'
     hideLocalProxyPopup()
   })
 
+  Array.from(deleteLocalConfigButtons).forEach((button) => {
+    button.addEventListener('click', async (event) => {
+      const id = event.target.dataset.id
+
+      await ProxyClient.deleteConfig(id)
+    })
+  })
+
+  // Starting local proxy and saving port.
+  ProxyClient.startProxy().then(async ({ status, xray_port: localProxyPort }) => {
+    console.log(`Starting proxy: ${status}`)
+
+    if (status === 'success') {
+      console.log(`Saving local proxy port port: ${localProxyPort}`)
+      await browser.storage.local.set({ localProxyPort })
+      // addLocalProxyButton.style.display = 'inline-flex'
+      // localProxyOptions.style.display = 'block'
+      // localProxyClientNotFound.classList.add('hidden')
+    } else {
+      localProxyClientNotFound.classList.remove('hidden')
+    }
+  })
+
+  ProxyClient.getConfig().then(({ configs }) => {
+    console.log('Getting local proxy config...')
+
+    if (!configs) {
+      rksVPNBanner.classList.remove('hidden')
+      return
+    }
+
+    rksVPNBanner.classList.add('hidden')
+
+    for (const [id, { name }] of Object.entries(configs)) {
+      const proxyBlock = document.createElement('div')
+
+      console.warn(id)
+
+      proxyBlock.className = 'proxy-list__block'
+      proxyBlock.innerHTML = `
+            <div class="radio-button proxy-list__block-item">
+              <input class="radio-button-input" type="radio" name="local-proxy" id="${id}" value="${id}"/>
+              <label class="radio-button-label" for="${id}">${name}</label>
+              <div class="proxy-list__block-item__btn deleteLocalConfig" data-id="${id}">
+                <img src="../images/settings/close_icon.svg" width="24"/>
+              </div>
+            </div>`
+      localProxyRadioList.append(proxyBlock)
+    }
+  })
+
+  // Applying newly added local proxy config.
   applyLocalProxyConfigButton.addEventListener('click', async () => {
-    const localProxyTextarea = document.getElementById('localProxyTextarea')
-    const value = localProxyTextarea.value.trim()
+    const textarea = document.getElementById('localProxyTextarea')
+    const value = textarea.value.trim()
 
-    console.log(`Adding config: ${value}`)
-    ProxyClient.setConfig({ configs: [value] })
-      .then((data) => {
-        console.log(data)
-      })
+    const { status } = await ProxyClient.setConfig({ configs: [value] })
 
-    hideLocalProxyPopup()
+    if (status === 'success') {
+      console.log('Config set')
+      hideLocalProxyPopup()
+    }
+  })
+
+  // Switching between local proxy configs.
+  localProxyRadioList.addEventListener('change', async (event) => {
+    const configId = event.target.value.trim()
+    const data = await ProxyClient.activateConfig(configId)
+
+    console.log(`Selected config: ${configId} -> ${data}`)
+
+    await browser.storage.local.set({
+      useLocalProxy: true,
+      activeProxyConfigId: configId,
+    })
   })
 
   ProxyManager.alive().then((alive) => {
@@ -90,44 +147,7 @@ import ProxyManager from 'Background/proxy'
     currentProxyProtocol.textContent = customProxyProtocol
   }
 
-  localProxyRadioList.addEventListener('change', (event) => {
-    const configId = event.target.value.trim()
-
-    ProxyClient.activateConfig(configId)
-      .then((data) => {
-        console.log(`Selected config: ${configId} -> ${data}`)
-      })
-  })
-
   if (useLocalProxy) {
-    ProxyClient.startProxy().then((data) => {
-      console.log(`Starting proxy: ${data}`)
-    })
-
-    ProxyClient.getConfig().then((data) => {
-      console.log('Getting local proxy config...:', data)
-      if (data && Object.entries(data.configs).length > 0) {
-        rksVPNBanner.classList.add('hidden')
-
-        for (const [id, config] of Object.entries(data.configs)) {
-          const proxyBlock = document.createElement('div')
-
-          proxyBlock.className = 'proxy-list__block'
-          proxyBlock.innerHTML = `
-            <div class="radio-button proxy-list__block-item">
-              <input class="radio-button-input" type="radio" name="local-proxy" id="${id}" value="${id}"/>
-              <label class="radio-button-label" for="${id}">${config.protocol}</label>
-              <div class="proxy-list__block-item__btn" data-id="${id}">
-                <img src="../images/settings/close_icon.svg" width="24"/>
-              </div>
-            </div>`
-          localProxyRadioList.append(proxyBlock)
-        }
-      } else {
-        rksVPNBanner.classList.remove('hidden')
-      }
-    })
-
     useLocalProxyRadioButton.checked = true
     addLocalProxyButton.style.display = 'inline-flex'
     localProxyOptions.style.display = 'block'
@@ -183,8 +203,10 @@ import ProxyManager from 'Background/proxy'
       proxyOptionsInputs.classList.add('hidden')
       localProxyOptions.style.display = 'block'
       addLocalProxyButton.style.display = 'inline-flex'
+      const { localProxyPort } = await browser.storage.local.get('localProxyPort')
+
       await browser.storage.local.set({
-        useLocalProxy: true,
+        localProxyURI: `127.0.0.1:${localProxyPort}`,
       })
     }
   })
@@ -200,6 +222,7 @@ import ProxyManager from 'Background/proxy'
         }
       }
     })
+
   ProxyManager.controlledByOtherExtensions()
     .then(async (controlledByOtherExtensions) => {
       if (controlledByOtherExtensions) {

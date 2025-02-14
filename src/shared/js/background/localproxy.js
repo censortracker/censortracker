@@ -45,10 +45,12 @@ class ProxyClient {
    */
   async handleRequest (method, endpoint, body = null, successCallback = null) {
     try {
+      console.log(`${method} ${endpoint}`)
       const data = await this.request(method, endpoint, body)
 
       return successCallback ? successCallback(data) : data
     } catch {
+      console.error(`${method} ${endpoint}`)
       return null
     }
   }
@@ -103,9 +105,9 @@ class ProxyClient {
   async deleteConfig (uuid) {
     return this.handleRequest(
       'DELETE',
-      `/configs/${encodeURIComponent(uuid)}`,
+      `/configs?uuid=${encodeURIComponent(uuid)}`,
       null,
-      (data) => data.status === 'success',
+      (data) => data,
     )
   }
 
@@ -149,12 +151,8 @@ class ProxyClient {
     )
   }
 
-  /**
-   * Stops the proxy server.
-   * @returns {Promise<boolean>} - True if successful.
-   */
   async stopProxy () {
-    return this.handleRequest('POST', '/down', null, () => true)
+    return this.handleRequest('POST', '/down', null, (data) => data)
   }
 
   /**

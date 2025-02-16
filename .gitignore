@@ -120,3 +120,4 @@ key.pem
 dist.crx
 dist/
 releases/
+mock/

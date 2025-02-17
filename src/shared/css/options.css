@@ -1299,6 +1299,10 @@ kbd {
   width: calc(100% + 0px);
 }
 
+.close-icon {
+  color: black;
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     color-scheme: dark;
@@ -1307,6 +1311,17 @@ kbd {
   .options-body, body {
     background-color: #181A1B;
     color: #F4F1F1;
+  }
+
+  .block_custom-local-proxy .proxy-list__wrapper .proxy-list__block .proxy-list__block-item__btn:hover,
+  .block_custom-local-proxy .proxy-list__wrapper .proxy-list__block .proxy-list__block-item__btn.active {
+    background-color: transparent !important;
+    opacity: 1;
+  }
+
+
+  .close-icon {
+    color: white;
   }
 
   .proxy-list__block__popup {

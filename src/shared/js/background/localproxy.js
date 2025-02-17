@@ -79,21 +79,7 @@ class ProxyClient {
       'POST',
       '/configs',
       configs,
-      (data) => data.status === 'success',
-    )
-  }
-
-  /**
-   * Updates existing proxy configurations.
-   * @param {Object[]} configs - Array of updated configurations.
-   * @returns {Promise<boolean>} - True if successful, otherwise false.
-   */
-  async updateConfig (configs) {
-    return this.handleRequest(
-      'PUT',
-      '/configs',
-      configs,
-      (data) => data.status === 'success',
+      (data) => data,
     )
   }
 

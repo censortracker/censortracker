@@ -3,13 +3,7 @@ import Ignore from 'Background/ignore'
 import ProxyManager from 'Background/proxy'
 import Registry from 'Background/registry'
 import Settings from 'Background/settings'
-import {
-  extractHostnameFromUrl,
-  i18nGetMessage,
-  isI2PUrl,
-  isOnionUrl,
-  isValidURL,
-} from 'Background/utilities';
+import { extractHostnameFromUrl, i18nGetMessage, isI2PUrl, isOnionUrl, isValidURL } from 'Background/utilities';
 
 (async () => {
   const statusImage = document.getElementById('statusImage')
@@ -109,14 +103,21 @@ import {
     'proxyServerURI',
     'customProxyServerURI',
     'proxyLastFetchTs',
+    'localProxyURI',
   ]).then(async (
     {
       currentRegionName,
       proxyServerURI,
       customProxyServerURI,
       proxyLastFetchTs,
+      localProxyURI,
     },
   ) => {
+    if (localProxyURI) {
+      proxyingInfo.hidden = true
+      return
+    }
+
     if (proxyServerURI && proxyLastFetchTs) {
       const domains = await Registry.getDomains()
       const proxyServerId = proxyServerURI.split('.', 1)[0]

@@ -90,13 +90,9 @@ import ProxyManager from 'Background/proxy'
         await browser.storage.local.set({
           localProxyPort: respData.xray_port,
         })
-        // addLocalProxyButton.style.display = 'inline-flex'
-        // localProxyOptions.style.display = 'block'
-        // localProxyClientNotFound.classList.add('hidden')
       }
     }).catch(() => {
       console.error('Local proxy client not found...')
-      localProxyClientNotFound.classList.remove('hidden')
       addLocalProxyButton.style.display = 'none'
     })
 
@@ -185,14 +181,21 @@ import ProxyManager from 'Background/proxy'
   proxyCustomOptions.hidden = !proxyingEnabled
 
   const checkLocalProxyServer = async () => {
+    console.log('Checking local proxy server...')
     const data = await ProxyClient.ping()
+    const { localProxyPort } = await browser.storage.local.get('localProxyPort')
 
     if (data && data.status === 'success') {
+      console.log('Local proxy server is running.')
       addLocalProxyButton.style.display = 'inline-flex'
       localProxyOptions.style.display = 'block'
+      await browser.storage.local.set({
+        localProxyURI: `127.0.0.1:${localProxyPort}`,
+      })
+      await ProxyManager.setProxy()
     } else {
       addLocalProxyButton.style.display = 'none'
-      localProxyOptions.style.display = 'none'
+      localProxyOptions.style.display = 'block'
       localProxyClientNotFound.classList.remove('hidden')
     }
   }

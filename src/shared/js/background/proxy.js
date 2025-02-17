@@ -19,7 +19,7 @@ class ProxyManager {
 
     // When Censor Tracker Proxy Server is used
     if (localProxyURI) {
-      console.log('Using local proxy server...')
+      console.log(`Using local proxy server: ${localProxyURI}`)
       return {
         proxyServerProtocol: 'SOCKS5',
         proxyServerURI: localProxyURI,

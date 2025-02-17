@@ -27,6 +27,7 @@ import ProxyManager from 'Background/proxy'
   const rksVPNBanner = document.getElementById('rksVPNBanner')
   const localProxyRadioList = document.getElementById('localProxyRadioList')
   const invalidLocalProxyConfig = document.getElementById('invalidLocalProxyConfig')
+  const localProxyTextarea = document.getElementById('localProxyTextarea')
 
   const hideLocalProxyPopup = () => {
     addLocalProxyPopup.style.display = 'none'
@@ -34,6 +35,7 @@ import ProxyManager from 'Background/proxy'
 
   const showLocalProxyPopup = () => {
     addLocalProxyPopup.style.display = 'block'
+    localProxyTextarea.value = ''
   }
 
   addLocalProxyButton.addEventListener('click', () => {
@@ -57,10 +59,9 @@ import ProxyManager from 'Background/proxy'
     }
 
     const id = deleteButton.dataset.id
+    const data = await ProxyClient.deleteConfig(id)
 
     console.log(`Deleting proxy config: ${id}`)
-
-    const data = await ProxyClient.deleteConfig(id)
 
     if (data && data.status === 'success') {
       console.warn(`Config ${id} has been deleted`)
@@ -80,7 +81,6 @@ import ProxyManager from 'Background/proxy'
       console.log(`Starting proxy: ${respData}`)
 
       if (!respData) {
-        localProxyClientNotFound.classList.remove('hidden')
         addLocalProxyButton.style.display = 'none'
         return
       }
@@ -95,6 +95,7 @@ import ProxyManager from 'Background/proxy'
         // localProxyClientNotFound.classList.add('hidden')
       }
     }).catch(() => {
+      console.error('Local proxy client not found...')
       localProxyClientNotFound.classList.remove('hidden')
       addLocalProxyButton.style.display = 'none'
     })
@@ -107,9 +108,9 @@ import ProxyManager from 'Background/proxy'
         return
       }
 
-      const configs = data.configs
+      const configs = data.configs || {}
 
-      if (!configs) {
+      if (Object.keys(configs).length === 0) {
         rksVPNBanner.classList.remove('hidden')
         return
       }
@@ -146,8 +147,7 @@ import ProxyManager from 'Background/proxy'
 
   // Applying newly added local proxy config.
   applyLocalProxyConfigButton.addEventListener('click', async () => {
-    const textarea = document.getElementById('localProxyTextarea')
-    const value = textarea.value.trim()
+    const value = localProxyTextarea.value.trim()
 
     if (!ProxyClient.validateConfig(value)) {
       invalidLocalProxyConfig.classList.remove('hidden')
@@ -184,6 +184,19 @@ import ProxyManager from 'Background/proxy'
 
   proxyCustomOptions.hidden = !proxyingEnabled
 
+  const checkLocalProxyServer = async () => {
+    const data = await ProxyClient.ping()
+
+    if (data && data.status === 'success') {
+      addLocalProxyButton.style.display = 'inline-flex'
+      localProxyOptions.style.display = 'block'
+    } else {
+      addLocalProxyButton.style.display = 'none'
+      localProxyOptions.style.display = 'none'
+      localProxyClientNotFound.classList.remove('hidden')
+    }
+  }
+
   const {
     useOwnProxy,
     useLocalProxy,
@@ -202,15 +215,7 @@ import ProxyManager from 'Background/proxy'
 
   if (useLocalProxy) {
     useLocalProxyRadioButton.checked = true
-    addLocalProxyButton.style.display = 'inline-flex'
-    localProxyOptions.style.display = 'block'
-    const response = await ProxyClient.ping()
-
-    if (response && response.status === 'success') {
-      localProxyClientNotFound.classList.add('hidden')
-    } else {
-      localProxyClientNotFound.classList.remove('hidden')
-    }
+    await checkLocalProxyServer()
   } else if (useOwnProxy) {
     proxyOptionsInputs.hidden = false
     useCustomProxyRadioButton.checked = true
@@ -261,6 +266,7 @@ import ProxyManager from 'Background/proxy'
       addLocalProxyButton.style.display = 'none'
     } else if (value === 'local') {
       proxyOptionsInputs.classList.add('hidden')
+      await checkLocalProxyServer()
       // localProxyOptions.style.display = 'block'
       // addLocalProxyButton.style.display = 'inline-flex'
       // const { localProxyPort } = await browser.storage.local.get('localProxyPort')

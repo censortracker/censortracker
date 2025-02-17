@@ -58,7 +58,7 @@ class ProxyClient {
   /**
    * Retrieves proxy configuration(s).
    * @param {string} [uuids=''] - Comma-separated UUIDs of configurations.
-   * @returns {Promise<Object[]>} - List of configurations.
+   * @returns {Promise<Object>} - List of configurations.
    */
   async getConfig (uuids = '') {
     return this.handleRequest(

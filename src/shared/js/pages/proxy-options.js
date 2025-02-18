@@ -97,7 +97,7 @@ import ProxyManager from 'Background/proxy'
     })
 
   const renderProxyListOptions = () => {
-    ProxyClient.getConfig().then((data) => {
+    ProxyClient.getConfig().then(async (data) => {
       console.log('Getting local proxy config...')
 
       if (!data) {
@@ -117,16 +117,24 @@ import ProxyManager from 'Background/proxy'
 
       rksVPNBanner.classList.add('hidden')
 
-      for (const [id, { name }] of Object.entries(configs)) {
+      for (const [id, { name, isActive }] of Object.entries(configs)) {
         const proxyBlock = document.createElement('div')
 
         console.log(`Rendering: ${id} -> ${name}`)
+
+        if (isActive) {
+          await browser.storage.local.set({
+            useLocalProxy: true,
+            activeProxyConfigName: name,
+          })
+        }
 
         proxyBlock.className = 'proxy-list__block'
         proxyBlock.id = `proxyblock-${id}`
         proxyBlock.innerHTML = `
        <div class="radio-button proxy-list__block-item">
-        <input class="radio-button-input" type="radio" name="local-proxy" id="${id}" value="${id}"/>
+        <input class="radio-button-input" type="radio" name="local-proxy" id="${id}" value="${id}"
+          ${isActive ? 'checked' : ''} />
         <label class="radio-button-label" for="${id}">${name}</label>
         <div class="proxy-list__block-item__btn deleteLocalConfig" data-id="${id}">
           <svg class="close-icon" width="24" height="24" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg">
@@ -181,22 +189,20 @@ import ProxyManager from 'Background/proxy'
   proxyCustomOptions.hidden = !proxyingEnabled
 
   const checkLocalProxyServer = async () => {
-    console.log('Checking local proxy server...')
     const data = await ProxyClient.ping()
     const { localProxyPort } = await browser.storage.local.get('localProxyPort')
 
     if (data && data.status === 'success') {
-      console.log('Local proxy server is running.')
       addLocalProxyButton.style.display = 'inline-flex'
       localProxyOptions.style.display = 'block'
-      await browser.storage.local.set({
-        localProxyURI: `127.0.0.1:${localProxyPort}`,
-      })
+      await browser.storage.local.set({ localProxyURI: `127.0.0.1:${localProxyPort}` })
       await ProxyManager.setProxy()
+      console.warn('Local proxy server is running.')
     } else {
       addLocalProxyButton.style.display = 'none'
       localProxyOptions.style.display = 'block'
       localProxyClientNotFound.classList.remove('hidden')
+      console.warn('Local proxy server is not running...')
     }
   }
 
@@ -270,13 +276,6 @@ import ProxyManager from 'Background/proxy'
     } else if (value === 'local') {
       proxyOptionsInputs.classList.add('hidden')
       await checkLocalProxyServer()
-      // localProxyOptions.style.display = 'block'
-      // addLocalProxyButton.style.display = 'inline-flex'
-      // const { localProxyPort } = await browser.storage.local.get('localProxyPort')
-      //
-      // await browser.storage.local.set({
-      //   localProxyURI: `127.0.0.1:${localProxyPort}`,
-      // })
     }
   })
 

@@ -38,6 +38,7 @@ import { extractHostnameFromUrl, i18nGetMessage, isI2PUrl, isOnionUrl, isValidUR
   const i2pNetwork = document.getElementById('i2pNetwork')
   const openOptionsPage = document.getElementById('openOptionsPage')
   const highlightOptionsIcon = document.getElementById('highlightOptionsIcon')
+  const popupLocalProxyName = document.getElementById('popupLocalProxyName')
 
   document.addEventListener('click', async (event) => {
     const targetId = event.target.id
@@ -104,6 +105,7 @@ import { extractHostnameFromUrl, i18nGetMessage, isI2PUrl, isOnionUrl, isValidUR
     'customProxyServerURI',
     'proxyLastFetchTs',
     'localProxyURI',
+    'activeProxyConfigName',
   ]).then(async (
     {
       currentRegionName,
@@ -111,10 +113,15 @@ import { extractHostnameFromUrl, i18nGetMessage, isI2PUrl, isOnionUrl, isValidUR
       customProxyServerURI,
       proxyLastFetchTs,
       localProxyURI,
+      activeProxyConfigName,
     },
   ) => {
     if (localProxyURI) {
       proxyingInfo.hidden = true
+      popupProxyStatusOk.hidden = true
+      popupProxyStatusError.hidden = true
+      popupLocalProxyName.textContent = activeProxyConfigName
+      popupLocalProxyName.hidden = false
       return
     }
 
@@ -167,7 +174,13 @@ import { extractHostnameFromUrl, i18nGetMessage, isI2PUrl, isOnionUrl, isValidUR
       const extensionEnabled = await Settings.extensionEnabled()
       const currentHostname = extractHostnameFromUrl(currentUrl)
 
+      const { useLocalProxy } = await browser.storage.local.get(['useLocalProxy'])
+
       ProxyManager.alive().then((alive) => {
+        if (useLocalProxy) {
+          return
+        }
+
         if (proxyingEnabled) {
           if (alive) {
             popupProxyStatusOk.hidden = false

@@ -1,11 +1,13 @@
 {
   "name": "censortracker",
-  "version": "18.0.0",
+  "version": "20.0.0",
   "description": "|",
   "author": "Censor Tracker",
   "license": "MIT",
   "main": "dist/index.js",
   "scripts": {
+    "cpvm": "cp -r dist/ /Volumes/Share/",
+    "build:win": "npm run build:chrome:prod && npm run build:firefox:prod && npm run cpvm",
     "build:chrome": "NODE_ENV=development BROWSER=chrome webpack --progress --config webpack.config.js",
     "build:firefox": "NODE_ENV=development BROWSER=firefox webpack --progress --config webpack.config.js",
     "build:chrome:prod": "NODE_ENV=production BROWSER=chrome webpack --progress --config webpack.config.js",

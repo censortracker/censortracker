@@ -1,4 +1,5 @@
 const API_URL = 'http://localhost:49490/api/v1'
+const LOCAL_PROXY_PORT = 10808
 
 /**
  * ProxyClient handles API communication with the proxy server.
@@ -168,8 +169,8 @@ class ProxyClient {
     return true
   }
 
-  getFallbackProxyPort () {
-    return 10808
+  getProxyPort () {
+    return LOCAL_PROXY_PORT
   }
 }
 

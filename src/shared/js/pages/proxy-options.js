@@ -91,14 +91,7 @@ import ProxyManager from 'Background/proxy'
     }
 
     if (data.status === 'success') {
-      let localProxyPort = ProxyClient.getFallbackProxyPort()
-
-      if (Object.hasOwn(data, 'xray_port')) {
-        localProxyPort = data.xray_port
-      }
-
-      console.log(`Saving local proxy port port: ${localProxyPort}`)
-      await browser.storage.local.set({ localProxyPort })
+      console.log('Local proxy server has been started')
     }
   }).catch(() => {
     console.error('Local proxy client not found...')
@@ -216,7 +209,7 @@ import ProxyManager from 'Background/proxy'
 
   const checkLocalProxyServer = async () => {
     const data = await ProxyClient.ping()
-    const { localProxyPort } = await browser.storage.local.get('localProxyPort')
+    const localProxyPort = ProxyClient.getProxyPort()
 
     if (
       data &&
@@ -225,7 +218,9 @@ import ProxyManager from 'Background/proxy'
     ) {
       addLocalProxyButton.style.display = 'inline-flex'
       localProxyOptions.style.display = 'block'
-      await browser.storage.local.set({ localProxyURI: `127.0.0.1:${localProxyPort}` })
+      await browser.storage.local.set({
+        localProxyURI: `127.0.0.1:${localProxyPort}`,
+      })
       await ProxyManager.setProxy()
       console.warn('Local proxy server is running.')
     } else {

@@ -28,6 +28,7 @@ import ProxyManager from 'Background/proxy'
   const localProxyRadioList = document.getElementById('localProxyRadioList')
   const invalidLocalProxyConfig = document.getElementById('invalidLocalProxyConfig')
   const localProxyTextarea = document.getElementById('localProxyTextarea')
+  const downloadLocalProxyButton = document.getElementById('downloadLocalProxyButton')
 
   const hideLocalProxyPopup = () => {
     addLocalProxyPopup.style.display = 'none'
@@ -48,6 +49,10 @@ import ProxyManager from 'Background/proxy'
 
   goBackLocalProxy.addEventListener('click', () => {
     hideLocalProxyPopup()
+  })
+
+  downloadLocalProxyButton.addEventListener('click', () => {
+    window.open('https://github.com/censortracker/proxy/releases', '_blank')
   })
 
   // Handle deleting local proxy configs.
@@ -76,25 +81,28 @@ import ProxyManager from 'Background/proxy'
   })
 
   // Starting local proxy and saving port.
-  ProxyClient.startProxy()
-    .then(async (respData) => {
-      console.log(`Starting proxy: ${respData}`)
+  ProxyClient.startProxy().then(async (data) => {
+    console.log(`Starting proxy: ${data}`)
 
-      if (!respData) {
-        addLocalProxyButton.style.display = 'none'
-        return
-      }
-
-      if (respData.status === 'success') {
-        console.log(`Saving local proxy port port: ${respData.xray_port}`)
-        await browser.storage.local.set({
-          localProxyPort: respData.xray_port,
-        })
-      }
-    }).catch(() => {
-      console.error('Local proxy client not found...')
+    if (!data) {
       addLocalProxyButton.style.display = 'none'
-    })
+      return
+    }
+
+    if (data.status === 'success') {
+      let localProxyPort = ProxyClient.getFallbackProxyPort()
+
+      if (Object.hasOwn(data, 'xray_port')) {
+        localProxyPort = data.xray_port
+      }
+
+      console.log(`Saving local proxy port port: ${localProxyPort}`)
+      await browser.storage.local.set({ localProxyPort })
+    }
+  }).catch(() => {
+    console.error('Local proxy client not found...')
+    addLocalProxyButton.style.display = 'none'
+  })
 
   const renderProxyListOptions = () => {
     ProxyClient.getConfig().then(async (data) => {
@@ -129,8 +137,8 @@ import ProxyManager from 'Background/proxy'
           })
         }
 
-        proxyBlock.className = 'proxy-list__block'
         proxyBlock.id = `proxyblock-${id}`
+        proxyBlock.className = 'proxy-list__block'
         proxyBlock.innerHTML = `
        <div class="radio-button proxy-list__block-item">
         <input class="radio-button-input" type="radio" name="local-proxy" id="${id}" value="${id}"
@@ -153,20 +161,34 @@ import ProxyManager from 'Background/proxy'
   applyLocalProxyConfigButton.addEventListener('click', async () => {
     const value = localProxyTextarea.value.trim()
 
-    if (!ProxyClient.validateConfig(value)) {
-      invalidLocalProxyConfig.classList.remove('hidden')
-      return
-    }
+    let data
 
-    const data = await ProxyClient.setConfig({ configs: [value] })
+    if (value.startsWith('http')) {
+      const response = await fetch(value)
+      const responseText = await response.text()
+
+      try {
+        const textConfigs = window.atob(responseText)
+        const configs = textConfigs.split('\n').filter((config) => config.trim())
+
+        data = await ProxyClient.setConfig({ configs })
+      } catch (error) {
+        console.error(`Failed to fetch proxy config: ${error}`)
+        invalidLocalProxyConfig.classList.remove('hidden')
+        return
+      }
+    } else if (ProxyClient.validateConfig(value)) {
+      data = await ProxyClient.setConfig({ configs: [value] })
+    }
 
     if (data && data.status === 'success') {
       renderProxyListOptions()
       hideLocalProxyPopup()
       console.log('New proxy config has been added')
-    } else {
-      invalidLocalProxyConfig.classList.remove('hidden')
+      return
     }
+
+    invalidLocalProxyConfig.classList.remove('hidden')
   })
 
   // Switching between local proxy configs.
@@ -192,7 +214,11 @@ import ProxyManager from 'Background/proxy'
     const data = await ProxyClient.ping()
     const { localProxyPort } = await browser.storage.local.get('localProxyPort')
 
-    if (data && data.status === 'success') {
+    if (
+      data &&
+      data.status === 'success' &&
+      data.xray_state === 'running'
+    ) {
       addLocalProxyButton.style.display = 'inline-flex'
       localProxyOptions.style.display = 'block'
       await browser.storage.local.set({ localProxyURI: `127.0.0.1:${localProxyPort}` })

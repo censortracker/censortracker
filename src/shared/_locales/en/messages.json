@@ -539,5 +539,38 @@
   },
   "youCanCloseThisWindow": {
     "message": "You can close this window"
+  },
+  "addLocalProxyButton": {
+    "message": "Add"
+  },
+  "localProxyNotFoundTitle": {
+    "message": "Censor Tracker Proxy application not found"
+  },
+  "localProxyNotFoundDesc": {
+    "message": "Download or launch the Censor Tracker Proxy application. It will run in the background and support the local proxy."
+  },
+  "rksVPNBannerTitle": {
+    "message": "Add a proxy for connection"
+  },
+  "rksVPNBannerDesc": {
+    "message": "We recommend RKS VPN as a local proxy"
+  },
+  "rksVPNBannerDesc2": {
+    "message": "Resistant to censorship"
+  },
+  "rksVPNBannerDesc3": {
+    "message": "Works in Censor Tracker as well as in other applications, including on mobile devices"
+  },
+  "rksVPNBannerLinkTitle": {
+    "message": "Learn more about RKS VPN"
+  },
+  "localProxyPopupTitle": {
+    "message": "Adding a proxy"
+  },
+  "localProxyPopupCode": {
+    "message": "Connection code"
+  },
+  "localProxyPopupText": {
+    "message": "We recommend <a href=\"https://vpnpay.io/ru/rks/\" target=\"_blank\">RKS VPN</a> as a local proxy."
   }
 }

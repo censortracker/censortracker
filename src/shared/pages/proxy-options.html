@@ -85,62 +85,55 @@
                   <path d="M4.16406 10.0001H15.8307M9.9974 4.16675V15.8334" stroke="white" stroke-width="2"
                         stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
-                <span class="btn__text" data-i18n-key="addLocalProxyButton">Добавить</span>
+                <span class="btn__text" data-i18n-key="addLocalProxyButton"></span>
               </button>
             </div>
 
             <div class="block_custom-local-proxy" id="localProxyOptions">
 
               <div class="censortracker-not-found__wrapper hidden" id="localProxyClientNotFound">
-                <div>
-                  <b>Приложение Censor Tracker Proxy Server не найдено на устройстве</b>
-                </div>
-                <div>Скачайте или запустите приложение Censor Tracker Proxy Server. Оно будет работать в фоне и
-                  поддерживать работу локального прокси.
-                </div>
-                <button class="btn btn__censortracker-not-found">
-                  <span class="btn__text">Скачать</span>
+                <div><b data-i18n-key="localProxyNotFoundTitle"></b></div>
+                <div data-i18n-key="localProxyNotFoundDesc"></div>
+                <button class="btn btn__censortracker-not-found" id="downloadLocalProxyButton">
+                  <span class="btn__text" data-i18n-key="downloadAppButton"></span>
                 </button>
               </div>
 
               <div class="add-proxy__wrapper hidden" id="rksVPNBanner">
                 <div class="add-proxy__inner">
-                  <div><b>Добавьте прокси для подключения</b></div>
-                  <div>Рекомендуем RKS VPN в качестве локального прокси</div>
+                  <div>
+                    <b data-i18n-key="rksVPNBannerTitle"></b>
+                  </div>
+                  <div data-i18n-key="rksVPNBannerDesc"></div>
                 </div>
                 <div class="rks-vpn__wrapper">
                   <img class="rks-vpn__logo" src="../images/settings/rks_logo.svg" width="166" height="auto"
-                       alt="RKS VPN logo"/>
-                  <div class="rks-vpn__title">Устойчивый к блокировкам VPN</div>
-                  <div class="rks-vpn__text">
-                    Работает как в CensorTracker, так и в других приложениях, в том числе на телефоне и ТВ
-                  </div>
+                       alt="RKS VPN"/>
+                  <div class="rks-vpn__title" data-i18n-key="rksVPNBannerDesc2"></div>
+                  <div class="rks-vpn__text" data-i18n-key="rksVPNBannerDesc3"></div>
                   <a class="btn btn-dark btn__rks-vpn" href="https://vpnpay.io/ru/rks/" target="_blank">
-                    <span class="btn__text">Подробнее об RKS VPN</span>
+                    <span class="btn__text" data-i18n-key="rksVPNBannerLinkTitle"></span>
                   </a>
                 </div>
               </div>
 
               <div class="proxy-list__wrapper" id="localProxyRadioList"></div>
-
               <div class="proxy-list__block__popup proxy-list__block__popup-add-proxy" id="addLocalProxyPopup">
                 <div class="popup-add-proxy__btn-close" id="closeLocalProxyPopup">
                   <img src="../images/settings/close_icon.svg" width="44" height="44" alt=""/></div>
                 <div class="popup-add-proxy__inner">
-                  <div class="popup-add-proxy__title">Добавление прокси</div>
-                  <div>Код подключения</div>
+                  <div class="popup-add-proxy__title" data-i18n-key="localProxyPopupTitle"></div>
+                  <div data-i18n-key="localProxyPopupCode"></div>
                   <textarea id="localProxyTextarea" placeholder="vless://..."></textarea>
-                  <div class="hidden" id="invalidLocalProxyConfig" data-i18n-key="invalidLocalProxyConfig">
-                  </div>
-                  <div class="popup-add-proxy__text">
-                    Рекомендуем <a href="https://vpnpay.io/ru/rks/" target="_blank">RKS VPN</a> в качестве локального
-                    прокси.
-                  </div>
+                  <div class="hidden" id="invalidLocalProxyConfig" data-i18n-key="invalidLocalProxyConfig"></div>
+                  <div class="popup-add-proxy__text" data-i18n-key="localProxyPopupText"></div>
                   <div class="popup-add-proxy__btns">
                     <button class="btn btn-dark" id="applyLocalProxyConfigButton">
-                      <span class="btn__text">Добавить</span>
+                      <span class="btn__text" data-i18n-key="addLocalProxyButton"></span>
                     </button>
-                    <button class="btn" id="goBackLocalProxy"><span class="btn__text">Отмена</span></button>
+                    <button class="btn" id="goBackLocalProxy">
+                      <span class="btn__text" data-i18n-key="cancel"></span>
+                    </button>
                   </div>
                 </div>
               </div>

@@ -539,5 +539,38 @@
   },
   "youCanCloseThisWindow": {
     "message": "Можно закрыть это окно"
+  },
+  "addLocalProxyButton": {
+    "message": "Добавить"
+  },
+  "localProxyNotFoundTitle": {
+    "message": "Приложение Censor Tracker Proxy не найдено"
+  },
+  "localProxyNotFoundDesc": {
+    "message": "Скачайте или запустите приложение Censor Tracker Proxy. Оно будет работать в фоне и поддерживать работу локального прокси."
+  },
+  "rksVPNBannerTitle": {
+    "message": "Добавьте прокси для подключения"
+  },
+  "rksVPNBannerDesc": {
+    "message": "Рекомендуем RKS VPN в качестве локального прокси"
+  },
+  "rksVPNBannerDesc2": {
+    "message": "Устойчивый к блокировкам VPN"
+  },
+  "rksVPNBannerDesc3": {
+    "message": "Работает как в Censor Tracker, так и в других приложениях, в том числе на телефоне"
+  },
+  "rksVPNBannerLinkTitle": {
+    "message": "Подробнее об RKS VPN"
+  },
+  "localProxyPopupTitle": {
+    "message": "Добавление прокси"
+  },
+  "localProxyPopupCode": {
+    "message": "Код подключения"
+  },
+  "localProxyPopupText": {
+    "message": "Рекомендуем <a href=\"https://vpnpay.io/ru/rks/\" target=\"_blank\">RKS VPN</a> в качестве локального прокси."
   }
 }

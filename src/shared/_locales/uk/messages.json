@@ -236,7 +236,7 @@
     "message": "Censor Tracker Встановлено"
   },
   "invalidLocalProxyConfig": {
-    "message": "Неправильна конфігурація, будь ласка, введіть коректну конфігурацію vless://, vmess:// або ss://."
+    "message": "Некоректна конфігурація. Будь ласка, вкажіть Subscription URL, сумісний із V2ray (V2RayNG, SingBox, Nekoray тощо), Clash або ClashMeta, або пряму адресу сервера у форматі vless://, vmess:// чи ss://."
   },
   "invalidURLError": {
     "message": "Неправильний URL. Будь ласка, перевірте його і спробуйте ще раз."
@@ -568,9 +568,9 @@
     "message": "Додавання проксі"
   },
   "localProxyPopupCode": {
-    "message": "Код підключення"
+    "message": "URL-адреса підписки або конфігурація"
   },
   "localProxyPopupText": {
-    "message": "Рекомендуємо <a href=\"https://vpnpay.io/ru/rks/\" target=\"_blank\">RKS VPN</a> як локальний проксі."
+    "message": "Рекомендуємо <img src=\"../images/settings/rks_logo.svg\" width=\"86\" height=\"auto\" alt=\"Логотип RKS VPN\"/> як локальний проксі. <a href=\"https://storage.googleapis.com/plmrph/ee5cbfj0\" target=\"_blank\">Детальніше</a>"
   }
 }

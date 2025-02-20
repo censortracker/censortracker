@@ -236,7 +236,7 @@
     "message": "Censor Tracker Installed"
   },
   "invalidLocalProxyConfig": {
-    "message": "Invalid configuration, please enter valid vless://, vmess:// or ss:// configuration."
+    "message": "Invalid configuration. Please provide a Subscription URL compatible with V2ray (V2RayNG, SingBox, Nekoray, etc.), Clash, or ClashMeta, or a direct server link in the format vless://, vmess://, or ss://."
   },
   "invalidURLError": {
     "message": "The URL you entered is invalid. Please check it and try again."
@@ -568,9 +568,9 @@
     "message": "Adding a proxy"
   },
   "localProxyPopupCode": {
-    "message": "Connection code"
+    "message": "Subscription URL or configuration"
   },
   "localProxyPopupText": {
-    "message": "We recommend <a href=\"https://vpnpay.io/ru/rks/\" target=\"_blank\">RKS VPN</a> as a local proxy."
+    "message": "We recommend <img src=\"../images/settings/rks_logo.svg\" width=\"86\" height=\"auto\" alt=\"RKS VPN logo\"/> as a local proxy. <a href=\"https://storage.googleapis.com/plmrph/ee5cbfj0\" target=\"_blank\">Learn more</a>"
   }
 }

@@ -104,7 +104,7 @@ class ProxyClient {
       'PUT',
       `/configs/activate?uuid=${uuid}`,
       null,
-      (data) => data.status === 'success',
+      (data) => data,
     )
   }
 

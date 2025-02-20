@@ -35,6 +35,7 @@ import ProxyManager from 'Background/proxy'
   }
 
   const showLocalProxyPopup = () => {
+    invalidLocalProxyConfig.classList.add('hidden')
     addLocalProxyPopup.style.display = 'block'
     localProxyTextarea.value = ''
   }
@@ -194,14 +195,17 @@ import ProxyManager from 'Background/proxy'
   // Switching between local proxy configs.
   localProxyRadioList.addEventListener('change', async (event) => {
     const configId = event.target.value.trim()
-    const data = await ProxyClient.activateConfig(configId)
+    const { status, message } = await ProxyClient.activateConfig(configId)
 
-    console.log(`Selected config: ${configId} -> ${data}`)
-
-    await browser.storage.local.set({
-      useLocalProxy: true,
-      activeProxyConfigId: configId,
-    })
+    if (status === 'success') {
+      console.log(`Config ${configId} has been activated`)
+      await browser.storage.local.set({
+        useLocalProxy: true,
+        activeProxyConfigId: configId,
+      })
+    } else {
+      console.error(status, message)
+    }
   })
 
   ProxyManager.alive().then((alive) => {

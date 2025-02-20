@@ -945,7 +945,7 @@ a {
   border: 1px solid #c4c2bf;
   border-radius: 4px;
   padding: 5px 15px;
-  width: 640px;
+  /*width: 640px;*/
   height: 150px;
 }
 
@@ -1308,6 +1308,11 @@ kbd {
     color-scheme: dark;
   }
 
+  #invalidLocalProxyConfig {
+    color: #ff6b6b;
+    background-color: rgba(255, 107, 107, 0.15);
+  }
+
   .options-body, body {
     background-color: #181A1B;
     color: #F4F1F1;
@@ -1659,8 +1664,11 @@ kbd {
 }
 
 #invalidLocalProxyConfig {
+  color: #d32f2f;
+  background-color: rgba(211, 47, 47, 0.1);
   font-size: 14px;
-  font-weight: 400;
+  font-weight: 600;
+  padding: 8px 12px;
+  border-radius: 4px;
   margin-bottom: 15px;
-  color: #ff5555;
 }

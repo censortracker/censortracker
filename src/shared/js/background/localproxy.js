@@ -1,30 +1,34 @@
-const API_URL = 'http://localhost:49490/api/v1'
-const LOCAL_PROXY_PORT = 10808
+import axios from 'axios'
+import browser from 'Background/browser-api'
 
 /**
  * ProxyClient handles API communication with the proxy server.
  */
 class ProxyClient {
   /**
-   * Sends an HTTP request to the API.
+   * Sends an HTTP request to the API using axios.
    * @param {string} method - HTTP method (GET, POST, etc.).
    * @param {string} endpoint - API endpoint path.
    * @param {Object|null} [body=null] - Request payload.
+   * @param {number} [timeout=2500] - Request timeout in milliseconds.
    * @returns {Promise<Object>} - Parsed JSON response.
    */
-  async request (method, endpoint, body = null) {
-    const url = `${API_URL}${endpoint}`
+  async request (method, endpoint, body = null, timeout = 3500) {
+    const url = `http://localhost:49490/api/v1${endpoint}`
     const options = {
       method,
-      headers: { 'Content-Type': 'application/json' },
-      ...(body && { body: JSON.stringify(body) }),
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      timeout,
+      ...(body && { data: body }),
     }
 
     try {
-      const response = await fetch(url, options)
-      const data = await response.json()
+      const response = await axios(options)
 
-      return data
+      return response.data
     } catch (error) {
       console.error(
         `[ProxyClient] Request failed: ${method} ${url} - ${error.message}`,
@@ -39,114 +43,150 @@ class ProxyClient {
    * @param {string} endpoint - API endpoint.
    * @param {Object|null} [body=null] - Request payload.
    * @param {Function|null} [successCallback=null] - Callback executed on success.
+   * @param {number} [timeout=2500] - Request timeout in milliseconds.
    * @returns {Promise<Object|null>} - API response or null on failure.
    */
-  async handleRequest (method, endpoint, body = null, successCallback = null) {
+  async handleRequest (
+    method,
+    endpoint,
+    body = null,
+    successCallback = null,
+    timeout = 3500,
+  ) {
     try {
       console.log(`${method} ${endpoint}`)
-      const data = await this.request(method, endpoint, body)
+      const data = await this.request(method, endpoint, body, timeout)
 
       return successCallback ? successCallback(data) : data
     } catch {
-      console.error(`${method} ${endpoint}`)
-      return null
+      console.error(`[ProxyClient]: ${method} ${endpoint}`)
+      return successCallback({})
     }
   }
 
   /**
    * Retrieves proxy configuration(s).
    * @param {string} [uuids=''] - Comma-separated UUIDs of configurations.
+   * @param {number} [timeout=2500] - Request timeout in milliseconds.
    * @returns {Promise<Object>} - List of configurations.
    */
-  async getConfig (uuids = '') {
+  async getConfig (uuids = '', timeout = 2500) {
     return this.handleRequest(
       'GET',
       `/configs?uuid=${encodeURIComponent(uuids)}`,
       null,
       (data) => data,
+      timeout,
     )
   }
 
   /**
    * Adds a new proxy configuration.
    * @param {Object[]} configs - Array of configuration objects.
+   * @param {number} [timeout=2500] - Request timeout in milliseconds.
    * @returns {Promise<boolean>} - True if successful, otherwise false.
    */
-  async setConfig (configs) {
+  async setConfig (configs, timeout = 5000) {
     return this.handleRequest(
       'POST',
       '/configs',
       configs,
       (data) => data,
+      timeout,
     )
   }
 
   /**
    * Deletes a proxy configuration by UUID.
    * @param {string} uuid - UUID of the configuration to delete.
+   * @param {number} [timeout=3000] - Request timeout in milliseconds.
    * @returns {Promise<boolean>} - True if successful, otherwise false.
    */
-  async deleteConfig (uuid) {
+  async deleteConfig (uuid, timeout = 3000) {
     return this.handleRequest(
       'DELETE',
       `/configs?uuid=${uuid}`,
       null,
       (data) => data,
+      timeout,
     )
   }
 
   /**
    * Activates a proxy configuration by UUID.
    * @param {string} uuid - UUID of the configuration to activate.
+   * @param {number} [timeout=5000] - Request timeout in milliseconds.
    * @returns {Promise<boolean>} - True if successful, otherwise false.
    */
-  async activateConfig (uuid) {
+  async activateConfig (uuid, timeout = 5000) {
     return this.handleRequest(
       'PUT',
       `/configs/activate?uuid=${uuid}`,
       null,
       (data) => data,
+      timeout,
     )
   }
 
   /**
    * Retrieves the active proxy configuration.
+   * @param {number} [timeout=2500] - Request timeout in milliseconds.
    * @returns {Promise<Object|null>} - Active configuration or null if not found.
    */
-  async getActiveConfig () {
+  async getActiveConfig (timeout = 2500) {
     return this.handleRequest(
       'GET',
       '/configs/active',
       null,
-      (data) => data.config || null,
+      (data) => data,
+      timeout,
     )
   }
 
   /**
    * Starts the proxy server.
+   * @param {number} [timeout=3000] - Request timeout in milliseconds.
    * @returns {Promise<number|null>} - Proxy server port if successful, otherwise null.
    */
-  async startProxy () {
+  async startProxy (timeout = 3000) {
+    console.log('Starting local proxy...')
     return this.handleRequest(
       'POST',
       '/up',
       null,
       (data) => data,
+      timeout,
     )
   }
 
-  async stopProxy () {
-    return this.handleRequest('POST', '/down', null, (data) => data)
+  /**
+   * Stops the proxy server.
+   * @param {number} [timeout=3000] - Request timeout in milliseconds.
+   * @returns {Promise<Object>} - Response from the API.
+   */
+  async stopProxy (timeout = 3000) {
+    return this.handleRequest(
+      'POST',
+      '/down',
+      null,
+      (data) => data,
+      timeout,
+    )
   }
 
   /**
    * Checks if the proxy server is running.
-   * @returns {Promise<Object>} - True if running, otherwise false.
+   * @param {number} [timeout=1500] - Request timeout in milliseconds.
+   * @returns {Promise<Object>} - API response.
    */
-  async ping () {
-    return this.handleRequest('GET', '/ping', null, (data) => {
-      return data
-    })
+  async ping (timeout = 1500) {
+    return this.handleRequest(
+      'GET',
+      '/ping',
+      null,
+      (data) => data,
+      timeout,
+    )
   }
 
   /**
@@ -169,8 +209,10 @@ class ProxyClient {
     return true
   }
 
-  getProxyPort () {
-    return LOCAL_PROXY_PORT
+  async setLocalProxyURI () {
+    const localProxyURI = '127.0.0.1:10808'
+
+    await browser.storage.local.set({ localProxyURI })
   }
 }
 

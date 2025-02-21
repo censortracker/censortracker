@@ -1308,6 +1308,10 @@ kbd {
     color-scheme: dark;
   }
 
+  .dots-spinner div {
+    background: white !important;
+  }
+
   #invalidLocalProxyConfig {
     color: #ff6b6b;
     background-color: rgba(255, 107, 107, 0.15);
@@ -1671,4 +1675,39 @@ kbd {
   padding: 8px 12px;
   border-radius: 4px;
   margin-bottom: 15px;
+}
+
+.dots-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.dots-spinner div {
+  width: 10px;
+  height: 10px;
+  margin: 4px;
+  background: black; /* Default for light mode */
+  border-radius: 50%;
+  animation: bounce 0.6s infinite alternate;
+}
+
+/* Second and third dot delay */
+.dots-spinner div:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.dots-spinner div:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes bounce {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(1.5);
+    opacity: 0.3;
+  }
 }

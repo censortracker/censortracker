@@ -5,6 +5,7 @@ import ProxyManager from 'Background/proxy'
 (async () => {
   const proxyingEnabled = await ProxyManager.isEnabled()
   const proxyIsDown = document.getElementById('proxyIsDown')
+  const rksVPNBanner = document.getElementById('rksVPNBanner')
   const proxyServerInput = document.getElementById('proxyServerInput')
   const saveCustomProxyButton = document.getElementById('saveCustomProxyButton')
   const useProxyCheckbox = document.getElementById('useProxyCheckbox')
@@ -24,7 +25,6 @@ import ProxyManager from 'Background/proxy'
   const goBackLocalProxy = document.getElementById('goBackLocalProxy')
   const applyLocalProxyConfigButton = document.getElementById('applyLocalProxyConfigButton')
   const localProxyClientNotFound = document.getElementById('localProxyClientNotFound')
-  const rksVPNBanner = document.getElementById('rksVPNBanner')
   const changeLocalProxyRadio = document.getElementById('changeLocalProxyRadio')
   const invalidLocalProxyConfig = document.getElementById('invalidLocalProxyConfig')
   const localProxyTextarea = document.getElementById('localProxyTextarea')
@@ -58,7 +58,7 @@ import ProxyManager from 'Background/proxy'
 
   // Handle deleting local proxy configs.
   changeLocalProxyRadio.addEventListener('click', async (event) => {
-    const deleteButton = event.target.closest('.delete-local-config')
+    const deleteButton = event.target.closest('.delete-config')
 
     if (!deleteButton) {
       return
@@ -72,25 +72,25 @@ import ProxyManager from 'Background/proxy'
     }
 
     try {
-      const data = await ProxyClient.deleteConfig(configId)
+      const { status, message } = await ProxyClient.deleteConfig(configId)
 
-      if (data && data.status === 'success') {
+      if (status === 'success') {
         console.warn(`Config ${configId} has been deleted`)
 
         if (proxyBlock) {
           proxyBlock.remove()
         }
       } else {
-        console.error(`Failed to delete config: ${configId}: ${data.message}`)
+        console.error(`Failed to delete config: ${configId}: ${message}`)
         if (proxyBlock) {
           proxyBlock.classList.remove('hidden')
         }
       }
     } catch (error) {
-      console.error(`Error deleting config: ${configId}`, error)
       // Restore the block on error.
       if (proxyBlock) {
         proxyBlock.classList.remove('hidden')
+        console.error(`Error deleting config: ${configId}`, error)
       }
     }
   })
@@ -153,7 +153,7 @@ import ProxyManager from 'Background/proxy'
         <input class="radio-button-input" type="radio" name="local-proxy" id="${id}" value="${id}"
           ${isActive ? 'checked' : ''} data-config-name="${name}"/>
         <label class="radio-button-label" for="${id}">${name}</label>
-        <div class="proxy-list__block-item__btn delete-local-config" data-id="${id}">
+        <div class="proxy-list__block-item__btn delete-config" data-id="${id}">
           <svg class="close-icon" width="24" height="24" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg">
             <path d="M10 10L34 34M34 10L10 34" stroke="currentColor" stroke-opacity="0.8" stroke-width="2"/>
           </svg>

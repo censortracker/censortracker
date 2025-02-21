@@ -4,7 +4,7 @@ import ProxyManager from 'Background/proxy'
 
 (async () => {
   const proxyingEnabled = await ProxyManager.isEnabled()
-  const spinner = document.getElementById('spinner')
+  const loading = document.getElementById('loading')
   const proxyIsDown = document.getElementById('proxyIsDown')
   const rksVPNBanner = document.getElementById('rksVPNBanner')
   const proxyServerInput = document.getElementById('proxyServerInput')
@@ -32,11 +32,11 @@ import ProxyManager from 'Background/proxy'
   const downloadLocalProxyButton = document.getElementById('downloadLocalProxyButton')
 
   const showSpinner = () => {
-    spinner.style.display = 'flex'
+    loading.style.display = 'flex'
   }
 
   const hideSpinner = () => {
-    spinner.style.display = 'none'
+    loading.style.display = 'none'
   }
 
   async function withSpinner (task) {

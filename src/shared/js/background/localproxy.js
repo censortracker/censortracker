@@ -89,7 +89,7 @@ class ProxyClient {
   async deleteConfig (uuid) {
     return this.handleRequest(
       'DELETE',
-      `/configs?uuid=${encodeURIComponent(uuid)}`,
+      `/configs?uuid=${uuid}`,
       null,
       (data) => data,
     )

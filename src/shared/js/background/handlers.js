@@ -83,7 +83,8 @@ export const handleIgnoredHostsChange = async (
   if ('newValue' in ignoredHosts) {
     ProxyManager.isEnabled().then((enabled) => {
       if (enabled) {
-        ProxyManager.setProxy().then((proxySet) => {})
+        ProxyManager.setProxy().then((proxySet) => {
+        })
       }
     })
   }
@@ -177,9 +178,9 @@ export const handleInstalled = async ({ reason }) => {
   const UPDATED = reason === browser.runtime.OnInstalledReason.UPDATE
   const INSTALLED = reason === browser.runtime.OnInstalledReason.INSTALL
 
-  if (INSTALLED) {
-    await Settings.showInstalledPage()
-  }
+  // if (INSTALLED) {
+  //   await Settings.showInstalledPage()
+  // }
 
   if (UPDATED || INSTALLED) {
     await Registry.enableRegistry()

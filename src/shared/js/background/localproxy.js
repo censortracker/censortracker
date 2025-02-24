@@ -148,7 +148,7 @@ class ProxyClient {
    * @param {number} [timeout=3000] - Request timeout in milliseconds.
    * @returns {Promise<number|null>} - Proxy server port if successful, otherwise null.
    */
-  async startProxy (timeout = 3000) {
+  async start (timeout = 3000) {
     console.log('Starting local proxy...')
     return this.handleRequest(
       'POST',
@@ -164,7 +164,7 @@ class ProxyClient {
    * @param {number} [timeout=3000] - Request timeout in milliseconds.
    * @returns {Promise<Object>} - Response from the API.
    */
-  async stopProxy (timeout = 3000) {
+  async stop (timeout = 3000) {
     return this.handleRequest(
       'POST',
       '/down',

@@ -132,8 +132,6 @@ import ProxyManager from 'Background/proxy'
 
   const renderLocalProxyRadioButtons = async (configs) => {
     for (const [id, { name, isActive }] of Object.entries(configs)) {
-      console.log(`Rendering: ${id} -> ${name}`)
-
       const div = document.createElement('div')
 
       if (isActive) {
@@ -141,8 +139,6 @@ import ProxyManager from 'Background/proxy'
           useLocalProxy: true,
           activeProxyConfigName: name,
         })
-        await ProxyClient.setLocalProxyURI()
-        await ProxyManager.setProxy()
       }
 
       div.id = `proxyconf-${id}`
@@ -158,12 +154,15 @@ import ProxyManager from 'Background/proxy'
           </svg>
         </div>
        </div>`
+      console.log(`Rendering: ${id} -> ${name}`)
       changeLocalProxyRadio.append(div)
     }
+    await ProxyClient.setLocalProxyURI()
+    await ProxyManager.setProxy()
   }
 
-  const showLocalProxyOptions = async () => {
-    const { configs = {} } = await ProxyClient.getConfig('', 8000)
+  const showLocalProxyConfigs = async () => {
+    const { configs = {} } = await ProxyClient.getConfig('', 3500)
 
     if (Object.keys(configs).length === 0) {
       await ProxyManager.removeLocalProxy()
@@ -176,8 +175,15 @@ import ProxyManager from 'Background/proxy'
       changeLocalProxyRadio.innerHTML = ''
     }
 
-    rksVPNBanner.classList.add('hidden')
-    await renderLocalProxyRadioButtons(configs)
+    const { status, message } = await ProxyClient.start(1500)
+
+    if (status === 'success') {
+      rksVPNBanner.classList.add('hidden')
+      await renderLocalProxyRadioButtons(configs)
+    } else {
+      rksVPNBanner.classList.remove('hidden')
+      console.error(message)
+    }
   }
 
   // Applying newly added local proxy config.
@@ -210,7 +216,7 @@ import ProxyManager from 'Background/proxy'
     }
 
     if (data && data.status === 'success') {
-      await showLocalProxyOptions()
+      await showLocalProxyConfigs()
       closeLocalProxyPopup()
       console.log('New proxy config has been added')
       return
@@ -225,7 +231,7 @@ import ProxyManager from 'Background/proxy'
     const activeProxyConfigName = event.target.dataset.configName.trim()
 
     const { status, message } = await ProxyClient.activateConfig(
-      activeProxyConfigId, 7000,
+      activeProxyConfigId, 3000,
     )
 
     if (status === 'success') {
@@ -269,7 +275,7 @@ import ProxyManager from 'Background/proxy'
 
     await withSpinner(async () => {
       await showLocalProxySettings()
-      await showLocalProxyOptions()
+      await showLocalProxyConfigs()
     })
   } else if (useOwnProxy) {
     proxyOptionsInputs.hidden = false
@@ -323,7 +329,7 @@ import ProxyManager from 'Background/proxy'
       proxyOptionsInputs.classList.add('hidden')
       await withSpinner(async () => {
         await showLocalProxySettings()
-        await showLocalProxyOptions()
+        await showLocalProxyConfigs()
       })
     }
   })

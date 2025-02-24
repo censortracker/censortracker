@@ -109,44 +109,24 @@ import ProxyManager from 'Background/proxy'
     }
   })
 
-  const showLocalProxySettingsManager = async () => {
+  const showLocalProxySettings = async () => {
     const pingData = await ProxyClient.ping(500)
 
-    // Seems like the local proxy client is not running at all
     if (Object.keys(pingData).length === 0) {
       addLocalProxyButton.style.display = 'none'
       localProxyOptions.style.display = 'block'
       localProxyClientNotFound.classList.remove('hidden')
-      return
-    }
-
-    let { xray_running: xrayRunning } = pingData
-
-    if (!xrayRunning) {
-      const { status: startStatus } = await ProxyClient.startProxy(2000)
-
-      if (startStatus === 'success') {
-        xrayRunning = true
-
-        const data = await ProxyClient.getActiveConfig(3000)
-
-        if (data && data.error) {
-          // We don't have any active config,
-          // so we should suggest the user to buy one.
-          rksVPNBanner.classList.remove('hidden')
-          return
-        }
-      } else {
-        addLocalProxyButton.style.display = 'none'
-      }
-    }
-
-    if (xrayRunning) {
+    } else {
       localProxyOptions.style.display = 'block'
       addLocalProxyButton.style.display = 'inline-flex'
-    } else {
-      await ProxyManager.removeLocalProxy()
-      await ProxyManager.setProxy()
+
+      const data = await ProxyClient.getActiveConfig(1500)
+
+      if (data && data.error) {
+        // We don't have any active config,
+        // so we should suggest the user to buy one.
+        rksVPNBanner.classList.remove('hidden')
+      }
     }
   }
 
@@ -288,7 +268,7 @@ import ProxyManager from 'Background/proxy'
     useLocalProxyRadioButton.checked = true
 
     await withSpinner(async () => {
-      await showLocalProxySettingsManager()
+      await showLocalProxySettings()
       await showLocalProxyOptions()
     })
   } else if (useOwnProxy) {
@@ -342,7 +322,7 @@ import ProxyManager from 'Background/proxy'
     } else if (value === 'local') {
       proxyOptionsInputs.classList.add('hidden')
       await withSpinner(async () => {
-        await showLocalProxySettingsManager()
+        await showLocalProxySettings()
         await showLocalProxyOptions()
       })
     }

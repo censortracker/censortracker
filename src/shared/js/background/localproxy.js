@@ -209,6 +209,34 @@ class ProxyClient {
     return true
   }
 
+  /**
+   * Parses the Xray configuration from a URL.
+   * @param url - Subscription URL.
+   * @returns {Promise<string[]|*[]>}
+   */
+  async parseConfig (url) {
+    if (!url) {
+      return []
+    }
+
+    if (url.startsWith('https://')) {
+      try {
+        const response = await fetch(url)
+        const responseText = await response.text()
+        const textConfigs = window.atob(responseText)
+
+        return textConfigs
+          .split('\n')
+          .filter((config) => config.trim())
+      } catch (error) {
+        return []
+      }
+    } else if (this.validateConfig(url)) {
+      return [url]
+    }
+    return []
+  }
+
   async setLocalProxyURI () {
     const localProxyURI = '127.0.0.1:10808'
 

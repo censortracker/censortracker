@@ -1,6 +1,7 @@
 import browser from 'Background/browser-api'
 import ProxyClient from 'Background/localproxy'
 import ProxyManager from 'Background/proxy'
+import * as server from 'Background/server'
 
 (async () => {
   const proxyingEnabled = await ProxyManager.isEnabled()
@@ -30,23 +31,6 @@ import ProxyManager from 'Background/proxy'
   const invalidLocalProxyConfig = document.getElementById('invalidLocalProxyConfig')
   const localProxyTextarea = document.getElementById('localProxyTextarea')
   const downloadLocalProxyButton = document.getElementById('downloadLocalProxyButton')
-
-  const showSpinner = () => {
-    loading.style.display = 'flex'
-  }
-
-  const hideSpinner = () => {
-    loading.style.display = 'none'
-  }
-
-  async function withSpinner (task) {
-    try {
-      showSpinner()
-      await task()
-    } finally {
-      hideSpinner()
-    }
-  }
 
   const closeLocalProxyPopup = () => {
     addLocalProxyPopup.style.display = 'none'
@@ -86,13 +70,20 @@ import ProxyManager from 'Background/proxy'
     }
 
     try {
-      const { status, message } = await ProxyClient.deleteConfig(configId, 5000)
+      const { status, message } = await ProxyClient.deleteConfig(configId, 1500)
 
       if (status === 'success') {
         console.warn(`Config ${configId} has been deleted`)
 
         if (proxyBlock) {
           proxyBlock.remove()
+          const remainingConfigs = changeLocalProxyRadio.querySelectorAll('.delete-config')
+
+          if (remainingConfigs.length === 0) {
+            rksVPNBanner.classList.remove('hidden')
+            await ProxyManager.removeLocalProxy()
+            await ProxyManager.setProxy()
+          }
         }
       } else {
         console.error(`Failed to delete config: ${configId}: ${message}`)
@@ -101,7 +92,6 @@ import ProxyManager from 'Background/proxy'
         }
       }
     } catch (error) {
-      // Restore the block on error.
       if (proxyBlock) {
         proxyBlock.classList.remove('hidden')
         console.error(`Error deleting config: ${configId}`, error)
@@ -109,28 +99,24 @@ import ProxyManager from 'Background/proxy'
     }
   })
 
-  const showLocalProxySettings = async () => {
-    const pingData = await ProxyClient.ping(500)
+  const showLocalProxyConfigs = async () => {
+    const { configs = {} } = await ProxyClient.getConfig('', 2000)
 
-    if (Object.keys(pingData).length === 0) {
-      addLocalProxyButton.style.display = 'none'
-      localProxyOptions.style.display = 'block'
-      localProxyClientNotFound.classList.remove('hidden')
-    } else {
-      localProxyOptions.style.display = 'block'
-      addLocalProxyButton.style.display = 'inline-flex'
-
-      const data = await ProxyClient.getActiveConfig(1500)
-
-      if (data && data.error) {
-        // We don't have any active config,
-        // so we should suggest the user to buy one.
+    if (Object.keys(configs).length === 0) {
+      if (await ProxyManager.isEnabled()) {
+        await ProxyManager.removeLocalProxy()
+        await ProxyManager.setProxy()
         rksVPNBanner.classList.remove('hidden')
+        return
       }
     }
-  }
 
-  const renderLocalProxyRadioButtons = async (configs) => {
+    if (changeLocalProxyRadio.innerHTML) {
+      changeLocalProxyRadio.innerHTML = ''
+    }
+
+    loading.style.display = 'flex'
+
     for (const [id, { name, isActive }] of Object.entries(configs)) {
       const div = document.createElement('div')
 
@@ -140,7 +126,6 @@ import ProxyManager from 'Background/proxy'
           activeProxyConfigName: name,
         })
       }
-
       div.id = `proxyconf-${id}`
       div.className = 'proxy-list__block'
       div.innerHTML = `
@@ -154,75 +139,62 @@ import ProxyManager from 'Background/proxy'
           </svg>
         </div>
        </div>`
-      console.log(`Rendering: ${id} -> ${name}`)
       changeLocalProxyRadio.append(div)
     }
-    await ProxyClient.setLocalProxyURI()
-    await ProxyManager.setProxy()
+    loading.style.display = 'none'
+
+    if (await ProxyManager.isEnabled()) {
+      await ProxyClient.setLocalProxyURI()
+      await ProxyManager.setProxy()
+    }
   }
 
-  const showLocalProxyConfigs = async () => {
-    const { configs = {} } = await ProxyClient.getConfig('', 3500)
+  const showLocalProxySettings = async () => {
+    const pingData = await ProxyClient.ping(400)
 
-    if (Object.keys(configs).length === 0) {
-      await ProxyManager.removeLocalProxy()
-      await ProxyManager.setProxy()
-      rksVPNBanner.classList.remove('hidden')
-      return
-    }
-
-    if (changeLocalProxyRadio.innerHTML) {
-      changeLocalProxyRadio.innerHTML = ''
-    }
-
-    const { status, message } = await ProxyClient.start(1500)
-
-    if (status === 'success') {
-      rksVPNBanner.classList.add('hidden')
-      await renderLocalProxyRadioButtons(configs)
+    if (Object.keys(pingData).length === 0) {
+      addLocalProxyButton.style.display = 'none'
+      localProxyOptions.style.display = 'block'
+      localProxyClientNotFound.classList.remove('hidden')
     } else {
-      rksVPNBanner.classList.remove('hidden')
-      console.error(message)
+      localProxyOptions.style.display = 'block'
+      addLocalProxyButton.style.display = 'inline-flex'
+
+      if (!pingData.xray_running) {
+        const { status, message } = await ProxyClient.start(1500)
+
+        if (status === 'success') {
+          console.log(message)
+        } else {
+          console.error(message)
+        }
+      } else if (pingData && pingData.config_count === 0) {
+        rksVPNBanner.classList.remove('hidden')
+      }
     }
   }
 
   // Applying newly added local proxy config.
   addLocalProxyConfigButton.addEventListener('click', async () => {
     const value = localProxyTextarea.value.trim()
+    const configs = await ProxyClient.parseConfig(value)
 
-    let data
+    if (configs.length > 0) {
+      const data = await ProxyClient.setConfig({ configs })
 
-    if (value.startsWith('https://')) {
-      const response = await fetch(value)
-      const responseText = await response.text()
-
-      try {
-        const textConfigs = window.atob(responseText)
-        const configs = textConfigs.split('\n').filter((config) => config.trim())
-
-        data = await ProxyClient.setConfig({ configs })
-      } catch (error) {
-        console.error(`Failed to fetch proxy config: ${error}`)
-        invalidLocalProxyConfig.classList.remove('hidden')
-
-        setTimeout(() => {
-          invalidLocalProxyConfig.classList.add('hidden')
-        }, 5000)
-
+      if (data && data.status === 'success') {
+        rksVPNBanner.classList.add('hidden')
+        await showLocalProxyConfigs()
+        closeLocalProxyPopup()
         return
       }
-    } else if (ProxyClient.validateConfig(value)) {
-      data = await ProxyClient.setConfig({ configs: [value] })
-    }
-
-    if (data && data.status === 'success') {
-      await showLocalProxyConfigs()
-      closeLocalProxyPopup()
-      console.log('New proxy config has been added')
-      return
+      console.error(data.message)
     }
 
     invalidLocalProxyConfig.classList.remove('hidden')
+    setTimeout(() => {
+      invalidLocalProxyConfig.classList.add('hidden')
+    }, 7000)
   })
 
   // Switching between local proxy configs.
@@ -272,11 +244,8 @@ import ProxyManager from 'Background/proxy'
 
   if (useLocalProxy) {
     useLocalProxyRadioButton.checked = true
-
-    await withSpinner(async () => {
-      await showLocalProxySettings()
-      await showLocalProxyConfigs()
-    })
+    await showLocalProxySettings()
+    await showLocalProxyConfigs()
   } else if (useOwnProxy) {
     proxyOptionsInputs.hidden = false
     useCustomProxyRadioButton.checked = true
@@ -318,6 +287,10 @@ import ProxyManager from 'Background/proxy'
       proxyServerInput.value = ''
       localProxyOptions.style.display = 'none'
       addLocalProxyButton.style.display = 'none'
+      await server.synchronize({
+        syncRegistry: true,
+        syncProxy: true,
+      })
       await ProxyManager.removeCustomProxy()
       await ProxyManager.removeLocalProxy()
       await ProxyManager.setProxy()
@@ -327,10 +300,8 @@ import ProxyManager from 'Background/proxy'
       addLocalProxyButton.style.display = 'none'
     } else if (value === 'local') {
       proxyOptionsInputs.classList.add('hidden')
-      await withSpinner(async () => {
-        await showLocalProxySettings()
-        await showLocalProxyConfigs()
-      })
+      await showLocalProxySettings()
+      await showLocalProxyConfigs()
     }
   })
 

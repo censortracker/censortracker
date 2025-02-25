@@ -70,7 +70,7 @@ import * as server from 'Background/server'
     }
 
     try {
-      const { status, message } = await ProxyClient.deleteConfig(configId, 1500)
+      const { status, message } = await ProxyClient.deleteConfig(configId, 250)
 
       if (status === 'success') {
         console.warn(`Config ${configId} has been deleted`)
@@ -99,14 +99,13 @@ import * as server from 'Background/server'
     }
   })
 
-  const showLocalProxyConfigs = async () => {
-    const { configs = {} } = await ProxyClient.getConfig('', 2000)
+  const renderLocalProxyConfigs = async () => {
+    const { configs = {} } = await ProxyClient.getConfig('', 500)
 
     if (Object.keys(configs).length === 0) {
       if (await ProxyManager.isEnabled()) {
         await ProxyManager.removeLocalProxy()
         await ProxyManager.setProxy()
-        rksVPNBanner.classList.remove('hidden')
         return
       }
     }
@@ -150,7 +149,7 @@ import * as server from 'Background/server'
   }
 
   const showLocalProxySettings = async () => {
-    const pingData = await ProxyClient.ping(400)
+    const pingData = await ProxyClient.ping(500)
 
     if (Object.keys(pingData).length === 0) {
       addLocalProxyButton.style.display = 'none'
@@ -161,7 +160,7 @@ import * as server from 'Background/server'
       addLocalProxyButton.style.display = 'inline-flex'
 
       if (!pingData.xray_running) {
-        const { status, message } = await ProxyClient.start(1500)
+        const { status, message } = await ProxyClient.start(1000)
 
         if (status === 'success') {
           console.log(message)
@@ -184,7 +183,7 @@ import * as server from 'Background/server'
 
       if (data && data.status === 'success') {
         rksVPNBanner.classList.add('hidden')
-        await showLocalProxyConfigs()
+        await renderLocalProxyConfigs()
         closeLocalProxyPopup()
         return
       }
@@ -203,7 +202,7 @@ import * as server from 'Background/server'
     const activeProxyConfigName = event.target.dataset.configName.trim()
 
     const { status, message } = await ProxyClient.activateConfig(
-      activeProxyConfigId, 3000,
+      activeProxyConfigId, 500,
     )
 
     if (status === 'success') {
@@ -245,7 +244,7 @@ import * as server from 'Background/server'
   if (useLocalProxy) {
     useLocalProxyRadioButton.checked = true
     await showLocalProxySettings()
-    await showLocalProxyConfigs()
+    await renderLocalProxyConfigs()
   } else if (useOwnProxy) {
     proxyOptionsInputs.hidden = false
     useCustomProxyRadioButton.checked = true
@@ -301,7 +300,7 @@ import * as server from 'Background/server'
     } else if (value === 'local') {
       proxyOptionsInputs.classList.add('hidden')
       await showLocalProxySettings()
-      await showLocalProxyConfigs()
+      await renderLocalProxyConfigs()
     }
   })
 

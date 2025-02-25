@@ -100,7 +100,7 @@ import * as server from 'Background/server'
   })
 
   const renderLocalProxyConfigs = async () => {
-    const { configs = {} } = await ProxyClient.getConfig('', 500)
+    const { configs = {} } = await ProxyClient.getConfig('', 350)
 
     if (Object.keys(configs).length === 0) {
       if (await ProxyManager.isEnabled()) {
@@ -167,7 +167,9 @@ import * as server from 'Background/server'
         } else {
           console.error(message)
         }
-      } else if (pingData && pingData.config_count === 0) {
+      }
+
+      if (pingData && pingData.config_count === 0) {
         rksVPNBanner.classList.remove('hidden')
       }
     }

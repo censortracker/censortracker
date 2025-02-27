@@ -24,15 +24,14 @@
 Features
 ========
 
-Censor Tracker provides a lot of useful features, here are the most important:
+Censor Tracker offers a range of useful features, including:
 
-- Configurable proxy
-- Country-specific proxying
-- Custom proxy and ignore lists
-- Censorship-resistant itself
-- Warns about websites that transfer data to third parties
-- Supports  `Vless`, `Vmess` and `Shadowsocks` proxies ([Censor Tracker Proxy](https://github.com/censortracker/proxy)
-  is
+- Configurable proxy settings
+- Country-specific proxy routing
+- Customizable proxy and exclusion lists
+- Built-in resistance to censorship
+- Warnings for websites that share user data with third parties
+- Support  `Vless`, `Vmess` and `Shadowsocks` proxies ([Censor Tracker Proxy](https://github.com/censortracker/proxy) is
   required)
 
 Permissions
@@ -40,16 +39,16 @@ Permissions
 
 Censor Tracker requires the following permissions:
 
-- `alarms` to support periodic tasks, such as database synchronization
-- `activeTab` to detect IDO websites
-- `management` to be able to detect permission conflicts (e.g. with other extensions)
-- `notifications` to show notifications
-- `proxy` to configure and use Censor Tracker proxy servers
-- `storage` to save preferences
-- `unlimitedStorage` to save the database of blocked websites (there are a lot of them)
-- `webNavigation` for handling requests
-- `http://*/*` and `https://*/*` to proxy any website, retrieve the list of proxy servers, and detect the user's
-  country (required for country-specific proxying)
+- `alarms` — Enables periodic tasks such as database synchronization and re-requesting the list of proxy servers.
+- `activeTab` — Detects IDO websites (primarily relevant for Russian users).
+- `management` — Identifies permission conflicts (e.g., with other extensions).
+- `notifications` — Displays notifications.
+- `proxy` — Configures and utilizes Censor Tracker proxy servers.
+- `storage` — Saves user preferences.
+- `unlimitedStorage` — Stores the database of blocked websites (due to its large size).
+- `webNavigation` — Manages and monitors web requests.
+- `http://*/*` and `https://*/*` — Allows website proxying, retrieval of proxy server lists, and user country
+  detection (required for country-specific proxying).
 
 Requirements
 ============

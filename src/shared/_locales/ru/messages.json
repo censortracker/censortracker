@@ -1,4 +1,7 @@
 {
+  "addLocalProxyButton": {
+    "message": "Добавить"
+  },
   "advancedOptionsDesc": {
     "message": "Вы можете вручную обновить локальную базу данных заблокированных веб-сайтов, обновить конфигурацию Censor Tracker и управлять другими расширенными параметрами."
   },
@@ -250,6 +253,21 @@
   "localProxyNotFound": {
     "message": "Приложение Censor Tracker Proxy не найдено на устройстве. Скачайте и запустите приложение Censor Tracker Proxy. Оно будет работать в фоновом режиме и поддерживать работу локального прокси."
   },
+  "localProxyNotFoundDesc": {
+    "message": "Скачайте или запустите приложение Censor Tracker Proxy. Оно будет работать в фоне и поддерживать работу локального прокси."
+  },
+  "localProxyNotFoundTitle": {
+    "message": "Приложение Censor Tracker Proxy не найдено"
+  },
+  "localProxyPopupCode": {
+    "message": "URL Подписки или конфигурация"
+  },
+  "localProxyPopupText": {
+    "message": "Рекомендуем <img src=\"../images/settings/rks_logo.svg\" width=\"86\" height=\"auto\" alt=\"RKS VPN logo\"/> в качестве локального прокси. <a href=\"https://storage.googleapis.com/plmrph/ee5cbfj0\" target=\"_blank\">Подробнее</a>"
+  },
+  "localProxyPopupTitle": {
+    "message": "Добавление прокси"
+  },
   "localRegistryUpdated": {
     "message": "Локальная база данных заблокированных сайтов обновлена!"
   },
@@ -444,6 +462,21 @@
   "resetToDefaultTitle": {
     "message": "Сбросить все настройки"
   },
+  "rksVPNBannerDesc": {
+    "message": "Рекомендуем RKS VPN в качестве локального прокси"
+  },
+  "rksVPNBannerDesc2": {
+    "message": "Устойчивый к блокировкам VPN"
+  },
+  "rksVPNBannerDesc3": {
+    "message": "Работает как в Censor Tracker, так и в других приложениях, в том числе на телефоне"
+  },
+  "rksVPNBannerLinkTitle": {
+    "message": "Подробнее об RKS VPN"
+  },
+  "rksVPNBannerTitle": {
+    "message": "Добавьте прокси для подключения"
+  },
   "saveChanges": {
     "message": "Сохранить изменения"
   },
@@ -539,38 +572,5 @@
   },
   "youCanCloseThisWindow": {
     "message": "Можно закрыть это окно"
-  },
-  "addLocalProxyButton": {
-    "message": "Добавить"
-  },
-  "localProxyNotFoundTitle": {
-    "message": "Приложение Censor Tracker Proxy не найдено"
-  },
-  "localProxyNotFoundDesc": {
-    "message": "Скачайте или запустите приложение Censor Tracker Proxy. Оно будет работать в фоне и поддерживать работу локального прокси."
-  },
-  "rksVPNBannerTitle": {
-    "message": "Добавьте прокси для подключения"
-  },
-  "rksVPNBannerDesc": {
-    "message": "Рекомендуем RKS VPN в качестве локального прокси"
-  },
-  "rksVPNBannerDesc2": {
-    "message": "Устойчивый к блокировкам VPN"
-  },
-  "rksVPNBannerDesc3": {
-    "message": "Работает как в Censor Tracker, так и в других приложениях, в том числе на телефоне"
-  },
-  "rksVPNBannerLinkTitle": {
-    "message": "Подробнее об RKS VPN"
-  },
-  "localProxyPopupTitle": {
-    "message": "Добавление прокси"
-  },
-  "localProxyPopupCode": {
-    "message": "URL Подписки или конфигурация"
-  },
-  "localProxyPopupText": {
-    "message": "Рекомендуем <img src=\"../images/settings/rks_logo.svg\" width=\"86\" height=\"auto\" alt=\"RKS VPN logo\"/> в качестве локального прокси. <a href=\"https://storage.googleapis.com/plmrph/ee5cbfj0\" target=\"_blank\">Подробнее</a>"
   }
 }

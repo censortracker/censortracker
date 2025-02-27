@@ -1,4 +1,7 @@
 {
+  "addLocalProxyButton": {
+    "message": "Add"
+  },
   "advancedOptionsDesc": {
     "message": "You can manually update the local database of blocked websites, update the config of Censor Tracker and manage other advanced options."
   },
@@ -250,6 +253,21 @@
   "localProxyNotFound": {
     "message": "The Censor Tracker Proxy application is not found on your device. Download and run the Censor Tracker Proxy application. It will run in the background and keep the local proxy running."
   },
+  "localProxyNotFoundDesc": {
+    "message": "Download or launch the Censor Tracker Proxy application. It will run in the background and support the local proxy."
+  },
+  "localProxyNotFoundTitle": {
+    "message": "Censor Tracker Proxy application not found"
+  },
+  "localProxyPopupCode": {
+    "message": "Subscription URL or configuration"
+  },
+  "localProxyPopupText": {
+    "message": "We recommend <img src=\"../images/settings/rks_logo.svg\" width=\"86\" height=\"auto\" alt=\"RKS VPN logo\"/> as a local proxy. <a href=\"https://storage.googleapis.com/plmrph/ee5cbfj0\" target=\"_blank\">Learn more</a>"
+  },
+  "localProxyPopupTitle": {
+    "message": "Adding a proxy"
+  },
   "localRegistryUpdated": {
     "message": "Local database updated!"
   },
@@ -444,6 +462,21 @@
   "resetToDefaultTitle": {
     "message": "Reset to default"
   },
+  "rksVPNBannerDesc": {
+    "message": "We recommend RKS VPN as a local proxy"
+  },
+  "rksVPNBannerDesc2": {
+    "message": "Resistant to censorship"
+  },
+  "rksVPNBannerDesc3": {
+    "message": "Works in Censor Tracker as well as in other applications, including on mobile devices"
+  },
+  "rksVPNBannerLinkTitle": {
+    "message": "Learn more about RKS VPN"
+  },
+  "rksVPNBannerTitle": {
+    "message": "Add a proxy for connection"
+  },
   "saveChanges": {
     "message": "Save changes"
   },
@@ -539,38 +572,5 @@
   },
   "youCanCloseThisWindow": {
     "message": "You can close this window"
-  },
-  "addLocalProxyButton": {
-    "message": "Add"
-  },
-  "localProxyNotFoundTitle": {
-    "message": "Censor Tracker Proxy application not found"
-  },
-  "localProxyNotFoundDesc": {
-    "message": "Download or launch the Censor Tracker Proxy application. It will run in the background and support the local proxy."
-  },
-  "rksVPNBannerTitle": {
-    "message": "Add a proxy for connection"
-  },
-  "rksVPNBannerDesc": {
-    "message": "We recommend RKS VPN as a local proxy"
-  },
-  "rksVPNBannerDesc2": {
-    "message": "Resistant to censorship"
-  },
-  "rksVPNBannerDesc3": {
-    "message": "Works in Censor Tracker as well as in other applications, including on mobile devices"
-  },
-  "rksVPNBannerLinkTitle": {
-    "message": "Learn more about RKS VPN"
-  },
-  "localProxyPopupTitle": {
-    "message": "Adding a proxy"
-  },
-  "localProxyPopupCode": {
-    "message": "Subscription URL or configuration"
-  },
-  "localProxyPopupText": {
-    "message": "We recommend <img src=\"../images/settings/rks_logo.svg\" width=\"86\" height=\"auto\" alt=\"RKS VPN logo\"/> as a local proxy. <a href=\"https://storage.googleapis.com/plmrph/ee5cbfj0\" target=\"_blank\">Learn more</a>"
   }
 }

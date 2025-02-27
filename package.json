@@ -20,8 +20,8 @@
     "lint": "eslint --ext=.js ./src/",
     "stylelint": "stylelint ./src/",
     "lint:fix": "eslint --fix --ext=.js ./src/",
-    "locales:fmt": "node scripts/orderLocaleMessages.js",
-    "locales:check": "node scripts/checkLocaleStructureMatch.js",
+    "locales:fmt": "node tasks/fixLocales.js",
+    "locales:check": "node tasks/lintLocales.js",
     "mockserver": "node mock/mock-server.js"
   },
   "dependencies": {

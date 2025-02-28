@@ -32,6 +32,16 @@ import * as server from 'Background/server'
   const localProxyTextarea = document.getElementById('localProxyTextarea')
   const downloadLocalProxyButton = document.getElementById('downloadLocalProxyButton')
 
+  ProxyManager.isEnabled().then((isEnabled) => {
+    useProxyCheckbox.checked = isEnabled
+  })
+
+  ProxyManager.alive().then((alive) => {
+    proxyIsDown.hidden = alive
+  })
+
+  proxyCustomOptions.hidden = !proxyingEnabled
+
   const closeLocalProxyPopup = () => {
     addLocalProxyPopup.style.display = 'none'
   }
@@ -221,12 +231,6 @@ import * as server from 'Background/server'
     }
   })
 
-  ProxyManager.alive().then((alive) => {
-    proxyIsDown.hidden = alive
-  })
-
-  proxyCustomOptions.hidden = !proxyingEnabled
-
   const {
     useOwnProxy,
     useLocalProxy,
@@ -339,10 +343,6 @@ import * as server from 'Background/server'
       await ProxyManager.disableProxy()
     }
   }, false)
-
-  ProxyManager.isEnabled().then((isEnabled) => {
-    useProxyCheckbox.checked = isEnabled
-  })
 
   document.addEventListener('click', (event) => {
     if (event.target.id === 'select-toggle') {

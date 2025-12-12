@@ -114,8 +114,16 @@ import * as server from 'Background/server'
     }
 
     proxyOptionsInputs.classList.add('hidden')
-    const { proxyPort } = await ProxyClient.ping(1500)
 
+    // Immediately check for a running local proxy client
+    let { proxyPort } = await ProxyClient.ping(1500)
+
+    // If not found, try to start it
+    if (!proxyPort) {
+      proxyPort = await ProxyClient.start(3500)
+    }
+
+    // If still not found, show appropriate warning
     if (!proxyPort) {
       localProxyOptions.style.display = 'block'
       localProxyClientNotFound.classList.remove('hidden')

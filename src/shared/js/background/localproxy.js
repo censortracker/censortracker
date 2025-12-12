@@ -67,47 +67,59 @@ class ProxyClient {
   /**
    * Starts the proxy server.
    * @param {number} [timeout=3000] - Request timeout in milliseconds.
-   * @returns {Promise<number|null>} - Proxy server port if successful, otherwise null.
+   * @returns {Promise<number|null>} - Proxy port or null on failure.
    */
   async start (timeout = 3000) {
     console.log('Starting local proxy...')
-    return this.handleRequest(
+    const { status, proxyPort } = this.handleRequest(
       'POST',
       '/up',
       null,
       (data) => data,
       timeout,
     )
+
+    if (status === 'ok') {
+      return proxyPort
+    }
+    return null
   }
 
   /**
    * Stops the proxy server.
    * @param {number} [timeout=3000] - Request timeout in milliseconds.
-   * @returns {Promise<Object>} - Response from the API.
+   * @returns {Promise<boolean>} - Response from the API.
    */
   async stop (timeout = 3000) {
-    return this.handleRequest(
+    const { status } = this.handleRequest(
       'POST',
       '/down',
       null,
       (data) => data,
       timeout,
     )
+
+    return status === 'ok'
   }
 
   /**
    * Checks if the proxy server is running.
    * @param {number} [timeout=1500] - Request timeout in milliseconds.
-   * @returns {Promise<Object>} - API response.
+   * @returns {Promise<number|null>} - Proxy port or null if not running.
    */
   async ping (timeout = 1500) {
-    return this.handleRequest(
+    const { status, proxyPort } = this.handleRequest(
       'GET',
       '/ping',
       null,
       (data) => data,
       timeout,
     )
+
+    if (status === 'ok') {
+      return proxyPort
+    }
+    return null
   }
 
   async setLocalProxyURI (port) {

@@ -124,6 +124,7 @@ import * as server from 'Background/server'
 
     await ProxyClient.setLocalProxyURI(proxyPort)
     await ProxyManager.setProxy()
+    await browser.storage.local.set({ useLocalProxy: true })
   }
 
   ProxyManager.controlledByThisExtension()

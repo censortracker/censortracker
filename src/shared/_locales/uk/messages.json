@@ -238,9 +238,6 @@
   "installedPageTitle": {
     "message": "Censor Tracker Встановлено"
   },
-  "invalidLocalProxyConfig": {
-    "message": "Некоректна конфігурація. Будь ласка, вкажіть Subscription URL, сумісний із V2ray (V2RayNG, SingBox, Nekoray тощо), Clash або ClashMeta, або пряму адресу сервера у форматі vless://, vmess:// чи ss://."
-  },
   "invalidURLError": {
     "message": "Неправильний URL. Будь ласка, перевірте його і спробуйте ще раз."
   },
@@ -254,19 +251,10 @@
     "message": "Додаток Censor Tracker Proxy не знайдено на пристрої. Скачайте та запустіть додаток Censor Tracker Proxy. Він працюватиме у фоновому режимі та підтримуватиме роботу локального проксі."
   },
   "localProxyNotFoundDesc": {
-    "message": "Завантажте або запустіть додаток Censor Tracker Proxy. Він працюватиме у фоновому режимі та підтримуватиме локальний проксі."
+    "message": "Запустіть застосунок AmneziaVPN у режимі локального проксі. Він працюватиме у фоновому режимі та забезпечуватиме стабільну роботу проксі. Якщо у вас немає застосунку, завантажте його за кнопкою нижче."
   },
   "localProxyNotFoundTitle": {
-    "message": "Додаток Censor Tracker Proxy не знайдено"
-  },
-  "localProxyPopupCode": {
-    "message": "URL-адреса підписки або конфігурація"
-  },
-  "localProxyPopupText": {
-    "message": "Рекомендуємо <img src=\"../images/settings/rks_logo.svg\" width=\"86\" height=\"auto\" alt=\"Логотип RKS VPN\"/> як локальний проксі. <a href=\"https://storage.googleapis.com/plmrph/ee5cbfj0\" target=\"_blank\">Детальніше</a>"
-  },
-  "localProxyPopupTitle": {
-    "message": "Додавання проксі"
+    "message": "AmneziaVPN в режимі локального проксі не запущений"
   },
   "localRegistryUpdated": {
     "message": "Локальну базу даних заблокованих сайтів оновлено!"
@@ -462,21 +450,6 @@
   "resetToDefaultTitle": {
     "message": "Скинути всі налаштування"
   },
-  "rksVPNBannerDesc": {
-    "message": "Рекомендуємо RKS VPN як локальний проксі"
-  },
-  "rksVPNBannerDesc2": {
-    "message": "Стійкий до блокувань VPN"
-  },
-  "rksVPNBannerDesc3": {
-    "message": "Працює як у Censor Tracker, так і в інших додатках, зокрема на телефоні"
-  },
-  "rksVPNBannerLinkTitle": {
-    "message": "Детальніше про RKS VPN"
-  },
-  "rksVPNBannerTitle": {
-    "message": "Додайте проксі для підключення"
-  },
   "saveChanges": {
     "message": "Зберегти зміни"
   },
@@ -550,7 +523,7 @@
     "message": "Проксі Censor Tracker"
   },
   "useLocalProxy": {
-    "message": "Використовувати локальний проксі"
+    "message": "Використовувати Amnezia Proxy"
   },
   "useOwnProxy": {
     "message": "Свій проксі"

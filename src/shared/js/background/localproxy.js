@@ -65,85 +65,6 @@ class ProxyClient {
   }
 
   /**
-   * Retrieves proxy configuration(s).
-   * @param {string} [uuids=''] - Comma-separated UUIDs of configurations.
-   * @param {number} [timeout=2500] - Request timeout in milliseconds.
-   * @returns {Promise<Object>} - List of configurations.
-   */
-  async getConfig (uuids = '', timeout = 2500) {
-    return this.handleRequest(
-      'GET',
-      `/configs?uuid=${encodeURIComponent(uuids)}`,
-      null,
-      (data) => data,
-      timeout,
-    )
-  }
-
-  /**
-   * Adds a new proxy configuration.
-   * @param {Object[]} configs - Array of configuration objects.
-   * @param {number} [timeout=2500] - Request timeout in milliseconds.
-   * @returns {Promise<boolean>} - True if successful, otherwise false.
-   */
-  async setConfig (configs, timeout = 5000) {
-    return this.handleRequest(
-      'POST',
-      '/configs',
-      configs,
-      (data) => data,
-      timeout,
-    )
-  }
-
-  /**
-   * Deletes a proxy configuration by UUID.
-   * @param {string} uuid - UUID of the configuration to delete.
-   * @param {number} [timeout=3000] - Request timeout in milliseconds.
-   * @returns {Promise<boolean>} - True if successful, otherwise false.
-   */
-  async deleteConfig (uuid, timeout = 3000) {
-    return this.handleRequest(
-      'DELETE',
-      `/configs?uuid=${uuid}`,
-      null,
-      (data) => data,
-      timeout,
-    )
-  }
-
-  /**
-   * Activates a proxy configuration by UUID.
-   * @param {string} uuid - UUID of the configuration to activate.
-   * @param {number} [timeout=5000] - Request timeout in milliseconds.
-   * @returns {Promise<boolean>} - True if successful, otherwise false.
-   */
-  async activateConfig (uuid, timeout = 5000) {
-    return this.handleRequest(
-      'PUT',
-      `/configs/activate?uuid=${uuid}`,
-      null,
-      (data) => data,
-      timeout,
-    )
-  }
-
-  /**
-   * Retrieves the active proxy configuration.
-   * @param {number} [timeout=2500] - Request timeout in milliseconds.
-   * @returns {Promise<Object|null>} - Active configuration or null if not found.
-   */
-  async getActiveConfig (timeout = 2500) {
-    return this.handleRequest(
-      'GET',
-      '/configs/active',
-      null,
-      (data) => data,
-      timeout,
-    )
-  }
-
-  /**
    * Starts the proxy server.
    * @param {number} [timeout=3000] - Request timeout in milliseconds.
    * @returns {Promise<number|null>} - Proxy server port if successful, otherwise null.
@@ -189,56 +110,14 @@ class ProxyClient {
     )
   }
 
-  /**
-   * Validates a proxy configuration URI.
-   * @param {string} configUri - Proxy configuration URI.
-   * @returns {boolean} - True if valid, otherwise false.
-   */
-  validateConfig (configUri) {
-    if (!/^(vmess|vless|ss):\/\//.test(configUri)) {
-      return false
-    }
-    if (configUri.startsWith('vmess://')) {
-      try {
-        window.atob(configUri.split('://')[1])
-        return true
-      } catch {
-        return false
-      }
-    }
-    return true
-  }
+  async setLocalProxyURI (port) {
+    let defaultPort = '10808'
 
-  /**
-   * Parses the Xray configuration from a URL.
-   * @param url - Subscription URL.
-   * @returns {Promise<string[]|*[]>}
-   */
-  async parseConfig (url) {
-    if (!url) {
-      return []
+    if (port && port !== defaultPort) {
+      defaultPort = port
     }
 
-    if (url.startsWith('https://')) {
-      try {
-        const response = await fetch(url)
-        const responseText = await response.text()
-        const textConfigs = window.atob(responseText)
-
-        return textConfigs
-          .split('\n')
-          .filter((config) => config.trim())
-      } catch (error) {
-        return []
-      }
-    } else if (this.validateConfig(url)) {
-      return [url]
-    }
-    return []
-  }
-
-  async setLocalProxyURI () {
-    const localProxyURI = '127.0.0.1:10808'
+    const localProxyURI = `127.0.0.1:${defaultPort}`
 
     await browser.storage.local.set({ localProxyURI })
   }

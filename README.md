@@ -31,8 +31,7 @@ Censor Tracker offers a range of useful features, including:
 - Customizable proxy and exclusion lists
 - Built-in resistance to censorship
 - Warnings for websites that share user data with third parties
-- Support  `Vless`, `Vmess` and `Shadowsocks` proxies ([Censor Tracker Proxy](https://github.com/censortracker/proxy) is
-  required)
+- Support `Vless` ([AmneziaVPN](https://amnezia.org/downloads) is required)
 
 Permissions
 ===========

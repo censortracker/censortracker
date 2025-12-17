@@ -98,6 +98,7 @@ import * as server from 'Background/server'
       await ProxyManager.removeCustomProxy()
       await ProxyManager.removeLocalProxy()
       await ProxyManager.setProxy()
+      await ProxyClient.stop()
     } else if (value === 'custom') {
       proxyOptionsInputs.classList.remove('hidden')
       localProxyOptions.style.display = 'none'
@@ -120,7 +121,7 @@ import * as server from 'Background/server'
 
     // If not found, try to start it
     if (!proxyPort) {
-      proxyPort = await ProxyClient.start(3500)
+      proxyPort = await ProxyClient.start(3000)
     }
 
     // If still not found, show appropriate warning

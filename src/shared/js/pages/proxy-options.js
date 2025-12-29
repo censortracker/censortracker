@@ -158,12 +158,12 @@ import { Notyf } from 'notyf'
     proxyOptionsInputs.classList.add('hidden')
 
     // Immediately check for a running local proxy client
-    let proxyPort = await ProxyClient.ping(1500)
+    let proxyPort = await ProxyClient.ping(2500)
 
     // If not found, try to start it
     if (!proxyPort) {
       console.log('Trying to start AmneziaVPN in local proxy mode...')
-      proxyPort = await ProxyClient.start(2500)
+      proxyPort = await ProxyClient.start(3000)
     }
 
     // If still not found, show appropriate warning
@@ -176,6 +176,7 @@ import { Notyf } from 'notyf'
     await ProxyClient.setLocalProxyURI(proxyPort)
     await ProxyManager.setProxy()
     await browser.storage.local.set({ useLocalProxy: true })
+    notyf.success(i18nGetMessage('successLocalProxySet'))
   }
 
   ProxyManager.controlledByThisExtension()

@@ -570,5 +570,8 @@
   },
   "successDefaultProxySet": {
     "message": "Используется стандартный прокси CensorTracker!"
+  },
+  "successLocalProxySet": {
+    "message": "Соединение успешно установлено! Используется локальный прокси Amnezia Premium."
   }
 }

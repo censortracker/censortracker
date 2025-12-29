@@ -567,5 +567,8 @@
         "content": "$2"
       }
     }
+  },
+  "successDefaultProxySet": {
+    "message": "Используется стандартный прокси CensorTracker!"
   }
 }

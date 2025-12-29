@@ -9,10 +9,10 @@ import { Notyf } from 'notyf'
 
 (async () => {
   const notyf = new Notyf({
-    duration: 3000,
+    duration: 2500,
     position: {
-      x: 'right',
-      y: 'top',
+      x: 'center',
+      y: 'bottom',
     },
     dismissible: true,
     ripple: false,
@@ -139,6 +139,7 @@ import { Notyf } from 'notyf'
       await ProxyManager.removeLocalProxy()
       await ProxyManager.setProxy()
       await ProxyClient.stop()
+      notyf.success(i18nGetMessage('successDefaultProxySet'))
     } else if (value === 'custom') {
       proxyOptionsInputs.classList.remove('hidden')
       localProxyOptions.style.display = 'none'

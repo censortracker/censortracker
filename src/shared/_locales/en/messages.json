@@ -567,5 +567,8 @@
         "content": "$2"
       }
     }
+  },
+  "successDefaultProxySet": {
+    "message": "Switched to CensorTracker's default proxy successfully!"
   }
 }

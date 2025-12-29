@@ -146,6 +146,9 @@
   "moreAboutLocalProxy": {
     "message": "Детальніше про Amnezia Premium VPN"
   },
+  "whereToFindAddressAndPort": {
+    "message": "Де знайти адресу і порт"
+  },
   "emptyFileError": {
     "message": "Файл порожній або пошкоджений. Будь ласка, перевірте його та спробуйте ще раз."
   },

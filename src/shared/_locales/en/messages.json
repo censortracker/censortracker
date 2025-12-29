@@ -146,6 +146,9 @@
   "moreAboutLocalProxy": {
     "message": "Learn more about Amnezia Premium VPN"
   },
+  "whereToFindAddressAndPort": {
+    "message": "Where to find address and port"
+  },
   "emptyFileError": {
     "message": "The file is empty or damaged. Please check it and try again."
   },

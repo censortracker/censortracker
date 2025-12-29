@@ -690,15 +690,34 @@ a {
 
 .block_custom-local-proxy .censortracker-not-found__wrapper {
   background-color: #f7eded;
-  padding: 20px 30px;
+  padding: 20px 30px 20px 20px;
   border-radius: 4px;
-  margin-left: 35px;
-  margin-bottom: 30px;
-  margin-top: 15px;
+  margin-left: 15px;
   font-size: 14px;
   font-weight: 400;
 }
 
+.block_custom-local-proxy .local-proxy-links-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+  gap: 10px;
+  margin-left: 19px;
+  margin-top: 15px;
+}
+
+.block_custom-local-proxy .local-proxy-link {
+  color: #5173d3;
+  font-size: 14px;
+  font-weight: normal !important;
+  text-decoration: none;
+  line-height: 20px;
+}
+
+.block_custom-local-proxy .local-proxy-link:hover {
+  text-decoration: underline;
+}
 
 .block_custom-local-proxy .btn__censortracker-not-found {
   margin-top: 15px;
@@ -1338,8 +1357,15 @@ kbd {
   }
 
   .block_custom-local-proxy .censortracker-not-found__wrapper {
-    border: 1px solid #f7eded;
-    background-color: transparent;
+    background-color: #242728;
+  }
+
+  .block_custom-local-proxy .local-proxy-link {
+    color: #8ba3d7;
+  }
+
+  .block_custom-local-proxy .local-proxy-link:hover {
+    color: #a3b8e3;
   }
 
   .block_custom-local-proxy .btn__censortracker-not-found {
@@ -1596,7 +1622,7 @@ kbd {
 }
 
 #localProxyOptions {
-  padding: 20px;
+  padding: 2px 20px 18px 20px;
 }
 
 #localProxyOptions p {

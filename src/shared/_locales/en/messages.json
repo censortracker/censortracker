@@ -251,10 +251,7 @@
     "message": "The Censor Tracker Proxy application is not found on your device. Download and run the Censor Tracker Proxy application. It will run in the background and keep the local proxy running."
   },
   "localProxyNotFoundDesc": {
-    "message": "Launch the AmneziaVPN application in local proxy mode. It will run in the background and ensure stable proxy operation. If you don’t have the application, download it using the button below."
-  },
-  "localProxyNotFoundTitle": {
-    "message": "AmneziaVPN in local proxy mode is not running"
+    "message": "Couldn’t connect to the Amnezia Premium local proxy. Open AmneziaVPN and turn on «Local system proxy»"
   },
   "localRegistryUpdated": {
     "message": "Local database updated!"
@@ -299,7 +296,7 @@
     "message": "Proxying List"
   },
   "optionsProxyDesc": {
-    "message": "If a website is blocked, Censor Tracker will bypass restrictions to give you access to it. Disable this setting if you use another service to bypass censorship (for example, a VPN) to increase connection speed."
+    "message": "If a website is blocked, CensorTracker can open it through a proxy. Choose a proxy source below. For better speed, you can use your own proxy or the Amnezia Premium local proxy."
   },
   "optionsProxyPageTitle": {
     "message": "Proxy Settings"
@@ -523,7 +520,7 @@
     "message": "Censor Tracker's Proxies"
   },
   "useLocalProxy": {
-    "message": "Use Amnezia Proxy"
+    "message": "Amnezia Premium local proxy"
   },
   "useOwnProxy": {
     "message": "Use your own proxy"

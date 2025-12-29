@@ -57,6 +57,8 @@ class ProxyClient {
       console.log(`${method} ${endpoint}`)
       const data = await this.request(method, endpoint, body, timeout)
 
+      console.log(`${method} ${endpoint}: ${JSON.stringify(data)}`)
+
       return successCallback ? successCallback(data) : data
     } catch {
       console.error(`[ProxyClient]: ${method} ${endpoint}`)
@@ -71,7 +73,7 @@ class ProxyClient {
    */
   async start (timeout = 3000) {
     console.log('Starting local proxy...')
-    const { status, proxyPort } = this.handleRequest(
+    const { status, proxyPort } = await this.handleRequest(
       'POST',
       '/up',
       null,
@@ -91,7 +93,7 @@ class ProxyClient {
    * @returns {Promise<boolean>} - Response from the API.
    */
   async stop (timeout = 3000) {
-    const { status } = this.handleRequest(
+    const { status } = await this.handleRequest(
       'POST',
       '/down',
       null,
@@ -108,7 +110,7 @@ class ProxyClient {
    * @returns {Promise<number|null>} - Proxy port or null if not running.
    */
   async ping (timeout = 1500) {
-    const { status, proxyPort } = this.handleRequest(
+    const { status, proxyPort } = await this.handleRequest(
       'GET',
       '/ping',
       null,

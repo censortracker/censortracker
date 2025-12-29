@@ -72,7 +72,9 @@ export const extractHostnameFromUrl = (url) => {
 }
 
 export const i18nGetMessage = (key, props = {}) => {
-  return browser.i18n.getMessage(key)
+  const substitutions = Object.values(props)
+
+  return browser.i18n.getMessage(key, substitutions)
 }
 
 /**

@@ -542,5 +542,30 @@
   },
   "youCanCloseThisWindow": {
     "message": "Можно закрыть это окно"
+  },
+  "errorProxyAddressEmpty": {
+    "message": "Пожалуйста, введите корректный адрес прокси-сервера"
+  },
+  "errorProxyPortMissing": {
+    "message": "Адрес прокси должен включать номер порта (например, hostname:8080)"
+  },
+  "errorProxyPortInvalid": {
+    "message": "Недопустимый номер порта: $PORT$. Порт должен быть в диапазоне от 1 до 65535",
+    "placeholders": {
+      "port": {
+        "content": "$1"
+      }
+    }
+  },
+  "successProxySaved": {
+    "message": "Настройки прокси успешно сохранены! Используется $PROTOCOL$ прокси на $SERVER$",
+    "placeholders": {
+      "protocol": {
+        "content": "$1"
+      },
+      "server": {
+        "content": "$2"
+      }
+    }
   }
 }

@@ -542,5 +542,30 @@
   },
   "youCanCloseThisWindow": {
     "message": "You can close this window"
+  },
+  "errorProxyAddressEmpty": {
+    "message": "Please enter a valid proxy server address"
+  },
+  "errorProxyPortMissing": {
+    "message": "Proxy address must include a port number (e.g., hostname:8080)"
+  },
+  "errorProxyPortInvalid": {
+    "message": "Invalid port number: $PORT$. Port must be between 1 and 65535",
+    "placeholders": {
+      "port": {
+        "content": "$1"
+      }
+    }
+  },
+  "successProxySaved": {
+    "message": "Proxy settings saved successfully! Using $PROTOCOL$ proxy at $SERVER$",
+    "placeholders": {
+      "protocol": {
+        "content": "$1"
+      },
+      "server": {
+        "content": "$2"
+      }
+    }
   }
 }

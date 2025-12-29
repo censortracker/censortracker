@@ -27,6 +27,7 @@
   "dependencies": {
     "axios": "^1.7.9",
     "codemirror": "^5.65.3",
+    "notyf": "^3.10.0",
     "tldts": "^5.7.93",
     "validator": "^13.6.0"
   },

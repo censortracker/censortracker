@@ -1,9 +1,23 @@
+import 'notyf/notyf.min.css'
+
 import browser from 'Background/browser-api'
 import ProxyClient from 'Background/localproxy'
 import ProxyManager from 'Background/proxy'
 import * as server from 'Background/server'
+import { i18nGetMessage } from 'Background/utilities'
+import { Notyf } from 'notyf'
 
 (async () => {
+  const notyf = new Notyf({
+    duration: 3000,
+    position: {
+      x: 'right',
+      y: 'top',
+    },
+    dismissible: true,
+    ripple: false,
+  })
+
   const proxyingEnabled = await ProxyManager.isEnabled()
   const proxyIsDown = document.getElementById('proxyIsDown')
   const proxyServerInput = document.getElementById('proxyServerInput')
@@ -71,20 +85,46 @@ import * as server from 'Background/server'
     const customProxyServer = proxyServerInput.value
     const proxyProtocol = currentProxyProtocol.textContent.trim()
 
-    if (customProxyServer) {
-      await browser.storage.local.set({
-        useOwnProxy: true,
-        customProxyProtocol: proxyProtocol,
-        customProxyServerURI: customProxyServer,
-      })
-
-      await ProxyManager.setProxy()
-      proxyServerInput.classList.remove('invalid-input')
-
-      console.log(`Proxy host changed to: ${customProxyServer}`)
-    } else {
+    if (!customProxyServer) {
       proxyServerInput.classList.add('invalid-input')
+      notyf.error(i18nGetMessage('errorProxyAddressEmpty'))
+      return
     }
+
+    // Validate port number
+    // Format: hostname:port
+    const parts = customProxyServer.split(':')
+    const portString = parts[parts.length - 1]
+
+    if (!portString || parts.length < 2) {
+      proxyServerInput.classList.add('invalid-input')
+      notyf.error(i18nGetMessage('errorProxyPortMissing'))
+      return
+    }
+
+    const port = parseInt(portString, 10)
+
+    if (isNaN(port) || port < 1 || port > 65535) {
+      proxyServerInput.classList.add('invalid-input')
+      notyf.error(i18nGetMessage('errorProxyPortInvalid', { port: portString }))
+      return
+    }
+
+    await browser.storage.local.set({
+      useOwnProxy: true,
+      customProxyProtocol: proxyProtocol,
+      customProxyServerURI: customProxyServer,
+    })
+
+    await ProxyManager.setProxy()
+    proxyServerInput.classList.remove('invalid-input')
+
+    notyf.success(i18nGetMessage('successProxySaved', {
+      protocol: proxyProtocol,
+      server: customProxyServer,
+    }))
+
+    console.log(`Proxy host changed to: ${customProxyServer}`)
   })
 
   proxyCustomOptionsRadioGroup.addEventListener('change', async (event) => {

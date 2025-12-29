@@ -76,6 +76,14 @@ import { Notyf } from 'notyf'
 
   if (useLocalProxy) {
     useLocalProxyRadioButton.checked = true
+
+    const proxyPort = await ProxyClient.ping(2500)
+
+    if (!proxyPort) {
+      localProxyOptions.style.display = 'block'
+      localProxyClientNotFound.classList.remove('hidden')
+      localProxyLinksContainer.classList.remove('hidden')
+    }
   } else if (useOwnProxy) {
     proxyOptionsInputs.hidden = false
     useCustomProxyRadioButton.checked = true

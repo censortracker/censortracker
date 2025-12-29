@@ -572,6 +572,6 @@
     "message": "Успешно переключено на стандартный прокси!"
   },
   "successLocalProxySet": {
-    "message": "Connection successfully established! Using Amnezia Premium local proxy."
+    "message": "Connected! Using Amnezia Premium local proxy."
   }
 }

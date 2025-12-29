@@ -117,11 +117,12 @@ import * as server from 'Background/server'
     proxyOptionsInputs.classList.add('hidden')
 
     // Immediately check for a running local proxy client
-    let { proxyPort } = await ProxyClient.ping(1500)
+    let proxyPort = await ProxyClient.ping(1500)
 
     // If not found, try to start it
     if (!proxyPort) {
-      proxyPort = await ProxyClient.start(3000)
+      console.log('Trying to start AmneziaVPN in local proxy mode...')
+      proxyPort = await ProxyClient.start(2500)
     }
 
     // If still not found, show appropriate warning

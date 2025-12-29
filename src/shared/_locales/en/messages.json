@@ -143,8 +143,8 @@
   "doneDescription": {
     "message": "Operation completed successfully."
   },
-  "downloadAppButton": {
-    "message": "Download"
+  "moreAboutLocalProxy": {
+    "message": "Learn more about Amnezia Premium VPN"
   },
   "emptyFileError": {
     "message": "The file is empty or damaged. Please check it and try again."
@@ -569,7 +569,7 @@
     }
   },
   "successDefaultProxySet": {
-    "message": "Успешно переключено на стандартный прокси!"
+    "message": "Successfully switched to default proxy!"
   },
   "successLocalProxySet": {
     "message": "Connected! Using Amnezia Premium local proxy."

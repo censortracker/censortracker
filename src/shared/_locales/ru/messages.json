@@ -143,8 +143,8 @@
   "doneDescription": {
     "message": "Операция выполнена успешно."
   },
-  "downloadAppButton": {
-    "message": "Скачать"
+  "moreAboutLocalProxy": {
+    "message": "Подробнее об Amnezia Premium VPN"
   },
   "emptyFileError": {
     "message": "Файл пустой или повреждён. Пожалуйста, проверьте его и попробуйте ещё раз."

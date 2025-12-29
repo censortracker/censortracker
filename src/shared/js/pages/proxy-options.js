@@ -47,7 +47,7 @@ import { Notyf } from 'notyf'
   proxyCustomOptions.hidden = !proxyingEnabled
 
   downloadLocalProxyButton.addEventListener('click', () => {
-    window.open('https://amnezia.org/downloads', '_blank')
+    window.open('https://storage.googleapis.com/amnezia/docs?m-path=/documentation/instructions/local-proxy ', '_blank')
   })
 
   const {

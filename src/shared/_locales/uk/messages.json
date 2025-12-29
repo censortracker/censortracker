@@ -149,6 +149,12 @@
   "whereToFindAddressAndPort": {
     "message": "Де знайти адресу і порт"
   },
+  "moreAboutAmneziaPremium": {
+    "message": "https://amnezia.org/premium"
+  },
+  "whereToFindAddressLink": {
+    "message": "https://docs.amnezia.org/documentation/instructions/local-proxy/"
+  },
   "emptyFileError": {
     "message": "Файл порожній або пошкоджений. Будь ласка, перевірте його та спробуйте ще раз."
   },

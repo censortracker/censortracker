@@ -149,6 +149,12 @@
   "whereToFindAddressAndPort": {
     "message": "Где найти адрес и порт"
   },
+  "moreAboutAmneziaPremium": {
+    "message": "https://storage.googleapis.com/amnezia/amnezia.org?m-path=premium"
+  },
+  "whereToFindAddressLink": {
+    "message": "https://storage.googleapis.com/amnezia/docs?m-path=/documentation/instructions/local-proxy"
+  },
   "emptyFileError": {
     "message": "Файл пустой или повреждён. Пожалуйста, проверьте его и попробуйте ещё раз."
   },

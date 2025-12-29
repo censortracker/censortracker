@@ -33,7 +33,7 @@ import { Notyf } from 'notyf'
   const currentProxyProtocol = document.querySelector('#select-toggle')
   const proxyProtocols = document.querySelectorAll('.select-option')
   const localProxyOptions = document.getElementById('localProxyOptions')
-  const moreAboutLocalProxyLink = document.getElementById('moreAboutLocalProxyLink')
+  const moreAboutAmneziaPremiumLink = document.getElementById('moreAboutAmneziaPremiumLink')
   const whereToFindAddressLink = document.getElementById('whereToFindAddressLink')
   const localProxyClientNotFound = document.getElementById('localProxyClientNotFound')
   const localProxyLinksContainer = document.getElementById('localProxyLinksContainer')
@@ -48,14 +48,14 @@ import { Notyf } from 'notyf'
 
   proxyCustomOptions.hidden = !proxyingEnabled
 
-  moreAboutLocalProxyLink.addEventListener('click', (e) => {
+  moreAboutAmneziaPremiumLink.addEventListener('click', (e) => {
     e.preventDefault()
-    window.open('https://storage.googleapis.com/amnezia/docs?m-path=/documentation/instructions/local-proxy ', '_blank')
+    window.open(i18nGetMessage('moreAboutAmneziaPremium'), '_blank')
   })
 
   whereToFindAddressLink.addEventListener('click', (e) => {
     e.preventDefault()
-    window.open('https://storage.googleapis.com/amnezia/docs?m-path=/documentation/instructions/local-proxy ', '_blank')
+    window.open(i18nGetMessage('whereToFindAddressLink'), '_blank')
   })
 
   const {

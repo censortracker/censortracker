@@ -1719,7 +1719,7 @@ kbd {
 }
 
 .notyf__toast {
-  border-radius: 8px;
+  border-radius: 6px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
   padding: 16px 20px;
   max-width: 400px;
@@ -1733,7 +1733,7 @@ kbd {
 }
 
 .notyf__message {
-  font-size: 14px;
+  font-size: 13px;
   line-height: 1.4;
   font-weight: 500;
 }
@@ -1780,7 +1780,7 @@ kbd {
   border: none;
   cursor: pointer;
   color: #F4F1F1;
-  font-size: 18px;
+  font-size: 16px;
   padding: 0;
   width: 20px;
   height: 20px;

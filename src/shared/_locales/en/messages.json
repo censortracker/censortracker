@@ -569,7 +569,7 @@
     }
   },
   "successDefaultProxySet": {
-    "message": "Switched to CensorTracker's default proxy successfully!"
+    "message": "Успешно переключено на стандартный прокси!"
   },
   "successLocalProxySet": {
     "message": "Connection successfully established! Using Amnezia Premium local proxy."

@@ -8,8 +8,7 @@
  <b>Censor Tracker</b> is a powerful <strong>censorship circumvention</strong> browser extension.<br>
 </p>
 
-<p align="center">In addition, it enables the use of custom proxies and supports <strong>Vless</strong>,
-<strong>Vmess</strong>, and <strong>Shadowsocks</strong> in the browser via an external client called <a href="https://github.com/censortracker/proxy">Censor Tracker Proxy</a>.</p>
+<p align="center">In addition, it enables the use of custom proxies and supports <strong>VLESS</strong> in the browser via <a href="https://amnezia.org/downloads">AmneziaVPN</a>.</p>
 
 <p align="center">
   <a href="https://chrome.google.com/webstore/detail/censor-tracker/gaidoampbkcknofoejhnhbhbhhifgdop" target="_blank">
@@ -24,14 +23,14 @@
 Features
 ========
 
-Censor Tracker offers a range of useful features, including:
+Censor Tracker offers a range of powerful features, including:
 
 - Configurable proxy settings
 - Country-specific proxy routing
 - Customizable proxy and exclusion lists
-- Built-in resistance to censorship
+- Built-in censorship resistance
 - Warnings for websites that share user data with third parties
-- Support `Vless` ([AmneziaVPN](https://amnezia.org/downloads) is required)
+- VLESS support (requires [AmneziaVPN](https://amnezia.org/downloads))
 
 Permissions
 ===========

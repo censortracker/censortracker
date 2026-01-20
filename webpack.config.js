@@ -29,6 +29,9 @@ const contentSecurityPolicy = {
 }
 
 const webWorkerConfig = {
+  experiments: {
+    topLevelAwait: true,
+  },
   mode: NODE_ENV,
   target: isFirefox ? 'webworker' : 'web',
   entry: {
@@ -80,6 +83,9 @@ const webWorkerConfig = {
 }
 
 const webConfig = {
+  experiments: {
+    topLevelAwait: true,
+  },
   mode: NODE_ENV,
   // Also see: https://webpack.js.org/configuration/devtool/#devtool
   target: 'web',

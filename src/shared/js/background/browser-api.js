@@ -22,15 +22,19 @@ export const getBrowserInfo = () => {
 
 /**
  * Returns the browser's API object.
- * @returns {*}
+ * @returns {Promise<*>}
  */
-const getBrowser = () => {
+const getBrowser = async () => {
   if (typeof browser !== 'undefined' && browser.runtime?.getBrowserInfo) {
-    browser.isFirefox = true
-    return browser
+    const { name } = await browser.runtime.getBrowserInfo()
+
+    if (name === 'Firefox') {
+      browser.isFirefox = true
+      return browser
+    }
   }
   chrome.isFirefox = false
   return chrome
 }
 
-export default getBrowser()
+export default await getBrowser()

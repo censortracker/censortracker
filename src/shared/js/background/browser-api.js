@@ -25,7 +25,10 @@ export const getBrowserInfo = () => {
  * @returns {*}
  */
 const getBrowser = () => {
-  if (typeof browser !== 'undefined') {
+  if (
+    typeof browser !== 'undefined' &&
+    typeof browser.runtime?.getBrowserInfo === 'function'
+  ) {
     browser.isFirefox = true
     return browser
   }

@@ -7,6 +7,7 @@
   "main": "dist/index.js",
   "scripts": {
     "cpvm": "cp -r dist/ /Volumes/Share/",
+    "build": "npm run build:chrome:prod && npm run build:firefox:prod",
     "build:win": "npm run build:chrome:prod && npm run build:firefox:prod && npm run cpvm",
     "build:chrome": "NODE_ENV=development BROWSER=chrome webpack --progress --config webpack.config.js",
     "build:firefox": "NODE_ENV=development BROWSER=firefox webpack --progress --config webpack.config.js",

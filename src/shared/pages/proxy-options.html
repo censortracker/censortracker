@@ -28,8 +28,8 @@
       <div class="main-page__title page-main-title" data-i18n-key="proxySettings"></div>
 
       <div id="proxyIsDown" class="proxy__disclaimer" hidden>
-        <div data-i18n-key="proxyOptionsStatusTitle" class="disclaimer__title"></div>
-        <div data-i18n-key="proxyOptionsStatusDesc" class="disclaimer__text"></div>
+        <div id="proxyStatusTitle" data-i18n-key="proxyOptionsStatusTitle" class="disclaimer__title"></div>
+        <div id="proxyStatusDesc" data-i18n-key="proxyOptionsStatusDesc" class="disclaimer__text"></div>
       </div>
 
       <div class="checkbox__group">
@@ -58,10 +58,10 @@
                   HTTPS
                 </button>
                 <div class="select-dropdown">
-                  <ul class="select-options">
+                  <ul class="select-options" id="proxy-protocol-list">
                     <li class="select-option" data-value="SOCKS4">SOCKS4</li>
                     <li class="select-option" data-value="SOCKS5">SOCKS5</li>
-                    <li class="select-option" data-value="HTTP">HTTP</li>
+                    <li class="select-option" data-value="PROXY">HTTP</li>
                     <li class="select-option" data-value="HTTPS">HTTPS</li>
                   </ul>
                 </div>

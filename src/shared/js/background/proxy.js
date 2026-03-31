@@ -47,7 +47,9 @@ class ProxyManager {
         await browser.extension.isAllowedIncognitoAccess()
 
       if (!isAllowedIncognitoAccess) {
-        await browser.browserAction.setBadgeText({ text: '✕' })
+        const actionApi = chrome.action || chrome.browserAction
+
+        await actionApi.setBadgeText({ text: '✕' })
         await browser.storage.local.set({
           privateBrowsingPermissionsRequired: true,
         })

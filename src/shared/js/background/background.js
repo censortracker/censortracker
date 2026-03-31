@@ -51,16 +51,7 @@ if (browser.isFirefox) {
   )
 } else {
   // Chrome-specific handlers
-  browser.webNavigation.onBeforeNavigate.addListener(
-    handleBeforeRequest, {
-      urls: [
-        'http://*/*',
-        'https://*/*',
-      ],
-      types: [
-        'main_frame',
-      ],
-    },
-  )
+  browser.webNavigation.onBeforeNavigate.addListener(handleBeforeRequest)
+
   browser.proxy.onProxyError.addListener(handleProxyError)
 }

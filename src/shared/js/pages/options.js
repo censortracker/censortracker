@@ -106,6 +106,7 @@ import * as server from 'Background/server'
 
       if (grantPrivateBrowsingPermissionsButton) {
         grantPrivateBrowsingPermissionsButton.addEventListener('click', async () => {
+          await ProxyManager.enableProxy()
           const proxySet = await ProxyManager.setProxy()
 
           if (proxySet === true) {

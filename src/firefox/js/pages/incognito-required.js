@@ -36,6 +36,7 @@ import ProxyManager from 'Background/proxy'
 
   if (grantPrivateBrowsingPermissionsButton) {
     grantPrivateBrowsingPermissionsButton.addEventListener('click', async () => {
+      await ProxyManager.enableProxy()
       const proxySet = await ProxyManager.setProxy()
 
       if (proxySet) {

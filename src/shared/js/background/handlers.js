@@ -137,7 +137,9 @@ export const handleStorageChanged = async (
         enableExtensionNewValue === true &&
         enableExtensionOldValue === false
       ) {
-        await ProxyManager.setProxy()
+        if (await ProxyManager.isEnabled()) {
+          await ProxyManager.setProxy()
+        }
       }
 
       if (

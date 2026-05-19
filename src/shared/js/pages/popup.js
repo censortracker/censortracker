@@ -261,7 +261,9 @@ import { extractHostnameFromUrl, i18nGetMessage, isI2PUrl, isOnionUrl, isValidUR
               )
             }
 
-            await ProxyManager.setProxy()
+            if (await ProxyManager.isEnabled()) {
+              await ProxyManager.setProxy()
+            }
 
             event.target.checked = true
           })

@@ -38,7 +38,9 @@ import * as server from 'Background/server'
       await browser.storage.local.set({ currentRegionName: '' })
     }
 
-    await ProxyManager.setProxy()
+    if (await ProxyManager.isEnabled()) {
+      await ProxyManager.setProxy()
+    }
     await browser.storage.local.set({ useRegistry })
   }, false)
 

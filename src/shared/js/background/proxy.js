@@ -108,7 +108,7 @@ class ProxyManager {
 
     try {
       await browser.proxy.settings.set(config)
-      await this.enableProxy()
+      await browser.storage.local.set({ proxyIsAlive: true })
       await this.grantIncognitoAccess()
       console.warn('PAC has been set successfully!')
       return true

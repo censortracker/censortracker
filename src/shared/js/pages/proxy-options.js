@@ -2,6 +2,7 @@ import browser from 'Background/browser-api'
 import ProxyClient from 'Background/localproxy'
 import ProxyManager from 'Background/proxy'
 import * as server from 'Background/server'
+import { parseProxyString } from 'Background/utilities'
 
 (async () => {
   const proxyingEnabled = await ProxyManager.isEnabled()
@@ -265,20 +266,29 @@ import * as server from 'Background/server'
   }
 
   saveCustomProxyButton.addEventListener('click', async (event) => {
-    const customProxyServer = proxyServerInput.value
-    const proxyProtocol = currentProxyProtocol.textContent.trim()
+    const rawValue = proxyServerInput.value.trim()
+    const selectedProtocol = currentProxyProtocol.textContent.trim()
 
-    if (customProxyServer) {
+    // Accept any common format: "host:port", "socks5://user:pass@host:port",
+    // "https://host:port", etc. A scheme in the string overrides the picker.
+    const parsed = parseProxyString(rawValue, selectedProtocol)
+
+    if (parsed) {
+      // Reflect the resolved protocol back into the selector.
+      currentProxyProtocol.textContent = parsed.protocol
+      currentProxyProtocol.value = parsed.protocol
+
       await browser.storage.local.set({
         useOwnProxy: true,
-        customProxyProtocol: proxyProtocol,
-        customProxyServerURI: customProxyServer,
+        customProxyProtocol: parsed.protocol,
+        customProxyServerURI: parsed.uri,
       })
 
       await ProxyManager.setProxy()
+      proxyServerInput.value = parsed.uri
       proxyServerInput.classList.remove('invalid-input')
 
-      console.log(`Proxy host changed to: ${customProxyServer}`)
+      console.log(`Proxy host changed to: ${parsed.protocol} ${parsed.uri}`)
     } else {
       proxyServerInput.classList.add('invalid-input')
     }

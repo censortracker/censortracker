@@ -2,6 +2,7 @@ import { getPacScript } from 'Background/pac'
 
 import browser from './browser-api'
 import registry from './registry'
+import { fetchWithTimeout } from './utilities'
 
 class ProxyManager {
   async getProxyingRules () {
@@ -121,8 +122,12 @@ class ProxyManager {
   }
 
   async removeProxy () {
-    await browser.proxy.settings.clear({})
-    console.warn('Proxy settings removed.')
+    try {
+      await browser.proxy.settings.clear({})
+      console.warn('Proxy settings removed.')
+    } catch (error) {
+      console.error(`Failed to clear proxy settings: ${error}`)
+    }
   }
 
   async alive () {
@@ -138,8 +143,15 @@ class ProxyManager {
     if (!usingCustomProxy) {
       const { proxyPingURI } = await browser.storage.local.get('proxyPingURI')
 
-      fetch(`https://${proxyPingURI}`, {
+      if (!proxyPingURI) {
+        return
+      }
+
+      // Bounded by a timeout so a dead proxy can never keep the request
+      // (and any task awaiting it) hanging indefinitely.
+      fetchWithTimeout(`https://${proxyPingURI}`, {
         method: 'POST',
+        timeout: 5000,
         headers: {
           'Content-type': 'application/json; charset=UTF-8',
         },
@@ -147,7 +159,7 @@ class ProxyManager {
           type: 'ping',
         }),
       }).catch(() => {
-        // We don't care about the result.
+        // We don't care about the result of the warm-up ping.
         console.log(`Pinged ${proxyPingURI}!`)
       })
     }
@@ -179,15 +191,25 @@ class ProxyManager {
   }
 
   async controlledByOtherExtensions () {
-    const { levelOfControl } = await browser.proxy.settings.get({})
+    try {
+      const { levelOfControl } = await browser.proxy.settings.get({})
 
-    return levelOfControl === 'controlled_by_other_extensions'
+      return levelOfControl === 'controlled_by_other_extensions'
+    } catch (error) {
+      console.error(`Failed to read proxy level of control: ${error}`)
+      return false
+    }
   }
 
   async controlledByThisExtension () {
-    const { levelOfControl } = await browser.proxy.settings.get({})
+    try {
+      const { levelOfControl } = await browser.proxy.settings.get({})
 
-    return levelOfControl === 'controlled_by_this_extension'
+      return levelOfControl === 'controlled_by_this_extension'
+    } catch (error) {
+      console.error(`Failed to read proxy level of control: ${error}`)
+      return false
+    }
   }
 
   async takeControl () {

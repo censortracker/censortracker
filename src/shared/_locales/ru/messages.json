@@ -122,6 +122,24 @@
   "countryUZ": {
     "message": "Узбекистан"
   },
+  "customRegistryDesc": {
+    "message": "Если стандартный реестр недоступен, укажите свой URL со списком заблокированных доменов (JSON-массив или текстовый список)."
+  },
+  "customRegistryInvalid": {
+    "message": "Не удалось загрузить список. Проверьте URL и формат."
+  },
+  "customRegistrySaveButton": {
+    "message": "Сохранить и обновить"
+  },
+  "customRegistrySaved": {
+    "message": "Список обновлён из альтернативного источника."
+  },
+  "customRegistryTitle": {
+    "message": "Альтернативный источник списка блокировок"
+  },
+  "customRegistryToggle": {
+    "message": "Использовать альтернативный источник"
+  },
   "debugInfoTitle": {
     "message": "Отладочная информация"
   },
@@ -455,6 +473,24 @@
   },
   "registryTypeLightweight": {
     "message": "Разблокировать всё, кроме небезопасных сайтов (100 000+ доменов)"
+  },
+  "relatedDomainsDesc": {
+    "message": "Некоторые сайты загружают ресурсы с нескольких доменов. Просканируйте страницу и отметьте те, что нужно проксировать."
+  },
+  "relatedDomainsEmpty": {
+    "message": "Дополнительных доменов не найдено."
+  },
+  "relatedDomainsFindButton": {
+    "message": "Просканировать страницу"
+  },
+  "relatedDomainsSearching": {
+    "message": "Сканирование страницы…"
+  },
+  "relatedDomainsSelectAll": {
+    "message": "Добавить все"
+  },
+  "relatedDomainsTitle": {
+    "message": "Связанные домены"
   },
   "resetToDefaultDesc": {
     "message": "Сбросить настройки к значениям по умолчанию и пересобрать PAC-файл для вашего текущего региона. Если у вас есть проблемы с доступом к заблокированным сайтам, то эта опция — ваш выбор."

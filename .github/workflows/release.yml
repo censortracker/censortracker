@@ -1,0 +1,97 @@
+name: Release
+
+# Builds signed-ready ZIP packages of the extension for every supported
+# browser engine and attaches them to a GitHub Release.
+#
+# Triggers:
+#   * pushing a tag like `v20.1.0`  -> builds + publishes a release
+#   * manual run (workflow_dispatch) -> builds + uploads artifacts only
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      release_name:
+        description: 'Optional release name (manual runs only)'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build (${{ matrix.browser }})
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chrome, firefox]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci || npm install
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build extension
+        run: npm run build:${{ matrix.browser }}:prod
+
+      - name: Package extension
+        run: npm run release:${{ matrix.browser }}
+
+      - name: Normalize artifact names
+        run: |
+          mkdir -p artifacts
+          VERSION=$(node -p "require('./package.json').version")
+          for f in releases/${{ matrix.browser }}/*.zip; do
+            [ -e "$f" ] || continue
+            cp "$f" "artifacts/censortracker-${{ matrix.browser }}-v${VERSION}.zip"
+          done
+          ls -la artifacts
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: censortracker-${{ matrix.browser }}
+          path: artifacts/*.zip
+          if-no-files-found: error
+
+  release:
+    name: Publish GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    # Only publish a release when the run was triggered by a version tag.
+    if: startsWith(github.ref, 'refs/tags/v')
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist-artifacts
+
+      - name: Collect packages
+        run: |
+          mkdir -p release-assets
+          find dist-artifacts -name '*.zip' -exec cp {} release-assets/ \;
+          ls -la release-assets
+
+      - name: Create / update GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ github.ref_name }}
+          generate_release_notes: true
+          files: release-assets/*.zip

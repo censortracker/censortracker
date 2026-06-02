@@ -46,6 +46,27 @@
       </div>
 
       <div class="option">
+        <div data-i18n-key="customRegistryTitle" class="option__link"></div>
+        <div data-i18n-key="customRegistryDesc" class="main-page__about"></div>
+
+        <div class="main-page__turn">
+          <label for="useCustomRegistryCheckbox" class="toggle-text"
+                 data-i18n-key="customRegistryToggle"></label>
+          <input id="useCustomRegistryCheckbox" type="checkbox" class="toggle-button">
+        </div>
+
+        <input type="text"
+               id="customRegistryUrlInput"
+               class="input-proxy"
+               placeholder="https://example.com/blocklist.json">
+
+        <button class="btn btn-dark" id="saveCustomRegistryButton">
+          <span class="btn__text" data-i18n-key="customRegistrySaveButton"></span>
+        </button>
+        <div class="hidden" id="customRegistryStatus"></div>
+      </div>
+
+      <div class="option">
         <div data-i18n-key="resetToDefaultTitle" id="resetSettingsToDefault" class="option__link"></div>
         <div data-i18n-key="resetToDefaultDesc" class="main-page__about"></div>
       </div>

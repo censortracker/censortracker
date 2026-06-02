@@ -1,25 +1,30 @@
 name: Build
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   build:
-    name: Test on node ${{ matrix.node_version }} and ${{ matrix.os }}
+    name: Lint & build on Node ${{ matrix.node-version }}
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        node-version: [15.4]
+        node-version: [20]
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
-    - run: npm install -g node-pre-gyp
-    - run: npm install
-    - run: npm run lint
-    - run: npm run locales:check
-      env:
-        CI: true
-        PROJECT_NAME: censortracker
+      - uses: actions/checkout@v4
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      - run: npm ci || npm install
+      - run: npm run lint
+      - run: npm run locales:check
+        env:
+          CI: true
+          PROJECT_NAME: censortracker
+      - name: Build (Chrome)
+        run: npm run build:chrome:prod
+      - name: Build (Firefox)
+        run: npm run build:firefox:prod

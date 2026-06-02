@@ -1,9 +1,10 @@
 import browser from 'Background/browser-api'
+import { collectRelatedDomains } from 'Background/domain-helper'
 import Ignore from 'Background/ignore'
 import ProxyManager from 'Background/proxy'
 import Registry from 'Background/registry'
 import Settings from 'Background/settings'
-import { extractHostnameFromUrl, i18nGetMessage, isI2PUrl, isOnionUrl, isValidURL } from 'Background/utilities';
+import { extractHostnameFromUrl, i18nGetMessage, isI2PUrl, isOnionUrl, isValidURL, withTimeout } from 'Background/utilities';
 
 (async () => {
   const statusImage = document.getElementById('statusImage')
@@ -39,6 +40,16 @@ import { extractHostnameFromUrl, i18nGetMessage, isI2PUrl, isOnionUrl, isValidUR
   const openOptionsPage = document.getElementById('openOptionsPage')
   const highlightOptionsIcon = document.getElementById('highlightOptionsIcon')
   const popupLocalProxyName = document.getElementById('popupLocalProxyName')
+  const relatedDomainsHelper = document.getElementById('relatedDomainsHelper')
+  const relatedDomainsList = document.getElementById('relatedDomainsList')
+  const relatedDomainsStatus = document.getElementById('relatedDomainsStatus')
+  const findRelatedDomainsButton = document.getElementById('findRelatedDomainsButton')
+  const relatedDomainsSelectAll = document.getElementById('relatedDomainsSelectAll')
+
+  // Ensure the popup always becomes visible, even if something below throws.
+  const show = () => {
+    document.documentElement.style.visibility = 'initial'
+  }
 
   document.addEventListener('click', async (event) => {
     const targetId = event.target.id
@@ -168,15 +179,131 @@ import { extractHostnameFromUrl, i18nGetMessage, isI2PUrl, isOnionUrl, isValidUR
     }
   })
 
+  /**
+   * Wires up the per-site "related domains" helper for the given tab.
+   * On demand it scans the active page for every domain it talks to and
+   * renders a checklist; ticking a box adds that domain to the proxy list
+   * (and unticking removes it), re-applying the proxy immediately.
+   * @param {number} tabId - Active tab id.
+   */
+  const setupRelatedDomainsHelper = (tabId) => {
+    if (!relatedDomainsHelper || !findRelatedDomainsButton) {
+      return
+    }
+
+    const renderStatus = (key) => {
+      relatedDomainsStatus.textContent = i18nGetMessage(key)
+      relatedDomainsStatus.hidden = false
+    }
+
+    const renderDomains = async (domains) => {
+      relatedDomainsList.innerHTML = ''
+
+      if (domains.length === 0) {
+        renderStatus('relatedDomainsEmpty')
+        relatedDomainsSelectAll.classList.add('hidden')
+        return
+      }
+
+      const proxiedFlags = await Promise.all(
+        domains.map((domain) => Registry.contains(domain)),
+      )
+
+      relatedDomainsStatus.hidden = true
+
+      domains.forEach((domain, index) => {
+        const id = `related-domain-${index}`
+        const item = document.createElement('label')
+
+        item.className = 'related-domains__item'
+        item.setAttribute('for', id)
+
+        const checkbox = document.createElement('input')
+
+        checkbox.type = 'checkbox'
+        checkbox.id = id
+        checkbox.value = domain
+        checkbox.checked = proxiedFlags[index]
+
+        const text = document.createElement('span')
+
+        text.textContent = domain
+
+        checkbox.addEventListener('change', async (event) => {
+          checkbox.disabled = true
+          try {
+            if (event.target.checked) {
+              await Registry.add(domain)
+            } else {
+              await Registry.remove(domain)
+            }
+            await ProxyManager.setProxy()
+          } catch (error) {
+            console.error(`[DomainHelper] Failed to update ${domain}: ${error}`)
+          } finally {
+            checkbox.disabled = false
+          }
+        })
+
+        item.append(checkbox, text)
+        relatedDomainsList.append(item)
+      })
+
+      relatedDomainsSelectAll.classList.remove('hidden')
+    }
+
+    findRelatedDomainsButton.addEventListener('click', async () => {
+      findRelatedDomainsButton.disabled = true
+      renderStatus('relatedDomainsSearching')
+      try {
+        const domains = await collectRelatedDomains(tabId)
+
+        await renderDomains(domains)
+      } catch (error) {
+        console.error(`[DomainHelper] ${error}`)
+        renderStatus('relatedDomainsEmpty')
+      } finally {
+        findRelatedDomainsButton.disabled = false
+      }
+    })
+
+    relatedDomainsSelectAll.addEventListener('click', async () => {
+      const checkboxes = relatedDomainsList.querySelectorAll(
+        'input[type="checkbox"]',
+      )
+      const unchecked = Array.from(checkboxes).filter((box) => !box.checked)
+
+      for (const checkbox of unchecked) {
+        checkbox.checked = true
+        await Registry.add(checkbox.value)
+      }
+
+      if (unchecked.length > 0) {
+        await ProxyManager.setProxy()
+      }
+    })
+  }
+
   browser.tabs.query({ active: true, lastFocusedWindow: true })
-    .then(async ([{ url: currentUrl, id: tabId }]) => {
+    .then(async (tabs) => {
+      // Edge/Chrome can momentarily return an empty array (e.g. on a
+      // devtools window or right after startup). Bail out gracefully
+      // instead of throwing on array destructuring.
+      if (!tabs || tabs.length === 0 || !tabs[0]) {
+        currentDomainHeader.innerText = i18nGetMessage('popupNewTabMessage')
+        return
+      }
+
+      const { url: currentUrl, id: tabId } = tabs[0]
       const proxyingEnabled = await ProxyManager.isEnabled()
       const extensionEnabled = await Settings.extensionEnabled()
       const currentHostname = extractHostnameFromUrl(currentUrl)
 
       const { useLocalProxy } = await browser.storage.local.get(['useLocalProxy'])
 
-      ProxyManager.alive().then((alive) => {
+      // Guard the liveness check with a timeout so a hung backend can never
+      // freeze the popup; treat "unknown" as alive to avoid false alarms.
+      withTimeout(ProxyManager.alive(), 2000, true).then((alive) => {
         if (useLocalProxy) {
           return
         }
@@ -206,6 +333,11 @@ import { extractHostnameFromUrl, i18nGetMessage, isI2PUrl, isOnionUrl, isValidUR
         siteActionDescription.textContent = i18nGetMessage(
           'siteActionAutoDesc',
         )
+
+        // Wire up the "related domains" helper for the current tab. It lets the
+        // user add, with a single click on a checkbox, every extra domain a
+        // page needs to load (CDNs, APIs, ...) — not just the main one.
+        setupRelatedDomainsHelper(tabId)
 
         Ignore.contains(currentUrl).then((ignored) => {
           if (ignored) {
@@ -376,6 +508,16 @@ import { extractHostnameFromUrl, i18nGetMessage, isI2PUrl, isOnionUrl, isValidUR
         })
       }
     })
+    .catch((error) => {
+      // Never leave the popup blank: log the failure and fall back to a
+      // minimal but visible state (this is what used to "kill" the GUI when
+      // the proxy/backend was unreachable).
+      console.error(`[Popup] Initialization failed: ${error}`)
+      currentDomainHeader.innerText = '—'
+    })
+    .finally(() => {
+      show()
+    })
 
   browser.storage.local.get('backendIsIntermittent')
     .then(({ backendIsIntermittent = false }) => {
@@ -422,9 +564,7 @@ import { extractHostnameFromUrl, i18nGetMessage, isI2PUrl, isOnionUrl, isValidUR
     })
   }
 
-  const show = () => {
-    document.documentElement.style.visibility = 'initial'
-  }
-
-  setTimeout(show, 150)
+  // Safety net: reveal the popup shortly after load even if the async
+  // initialization above never settles for some reason.
+  setTimeout(show, 300)
 })()

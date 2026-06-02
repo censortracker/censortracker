@@ -1,3 +1,21 @@
+# 20.1.0
+
+- Fixed Firefox/Chromium runtime detection so the extension works on Chrome,
+  Edge, Opera, Yandex, Brave, Vivaldi, Firefox and Safari (Chromium 148+ also
+  exposes a `browser` namespace, which previously broke detection)
+- Hardened the popup so it no longer goes blank when a proxy/backend dies, and
+  added timeouts to all background network requests
+- Custom proxy field now accepts any common format (e.g.
+  `socks5://user:pass@host:port`) and auto-detects the protocol
+- Added a one-click "related domains" helper: scan the active page and add the
+  extra domains it needs to the proxy list via checkboxes
+- Added support for an alternative blocklist source (custom registry URL,
+  JSON or plain-text formats) for when the default registry is unavailable
+- Added a GitHub Actions workflow that builds and releases packages for all
+  supported browsers
+- Fixed the `browser.storag.local` typo that silently broke ignore-list sync
+
+
 # 15.0.0
 
 - Added support for importing proxy lists from a file or URL

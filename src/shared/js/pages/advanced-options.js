@@ -17,6 +17,10 @@ import Settings from 'Background/settings'
   const resetSettingsToDefaultBtn = document.getElementById('resetSettingsToDefault')
   const exportSettingsBtn = document.getElementById('exportSettings')
   const importSettingsInput = document.getElementById('importSettingsInput')
+  const useCustomRegistryCheckbox = document.getElementById('useCustomRegistryCheckbox')
+  const customRegistryUrlInput = document.getElementById('customRegistryUrlInput')
+  const saveCustomRegistryButton = document.getElementById('saveCustomRegistryButton')
+  const customRegistryStatus = document.getElementById('customRegistryStatus')
 
   const togglePopup = (id) => {
     const showPopupClass = 'popup-show'
@@ -60,6 +64,61 @@ import Settings from 'Background/settings'
   completedConfirmBtn.addEventListener('click', (event) => {
     togglePopup('popupCompletedSuccessfully')
   })
+
+  // --- Custom (alternative) registry source ----------------------------------
+  if (useCustomRegistryCheckbox && customRegistryUrlInput && saveCustomRegistryButton) {
+    browser.storage.local.get({
+      useCustomRegistry: false,
+      customRegistryUrl: '',
+    }).then(({ useCustomRegistry, customRegistryUrl }) => {
+      useCustomRegistryCheckbox.checked = useCustomRegistry
+      customRegistryUrlInput.value = customRegistryUrl
+    })
+
+    const flashRegistryStatus = (key, isError = false) => {
+      customRegistryStatus.textContent = browser.i18n.getMessage(key)
+      customRegistryStatus.classList.remove('hidden')
+      customRegistryStatus.style.color = isError ? '#c0392b' : ''
+      setTimeout(() => {
+        customRegistryStatus.classList.add('hidden')
+      }, 6000)
+    }
+
+    useCustomRegistryCheckbox.addEventListener('change', async () => {
+      await browser.storage.local.set({
+        useCustomRegistry: useCustomRegistryCheckbox.checked,
+      })
+    })
+
+    saveCustomRegistryButton.addEventListener('click', async () => {
+      const url = customRegistryUrlInput.value.trim()
+
+      if (useCustomRegistryCheckbox.checked && !/^https?:\/\//i.test(url)) {
+        flashRegistryStatus('customRegistryInvalid', true)
+        return
+      }
+
+      await browser.storage.local.set({
+        customRegistryUrl: url,
+        useCustomRegistry: useCustomRegistryCheckbox.checked,
+      })
+
+      saveCustomRegistryButton.disabled = true
+      try {
+        await server.synchronize({ syncProxy: false, syncIgnore: false })
+
+        if (await ProxyManager.isEnabled()) {
+          await ProxyManager.setProxy()
+        }
+        flashRegistryStatus('customRegistrySaved')
+      } catch (error) {
+        console.error(`[CustomRegistry] ${error}`)
+        flashRegistryStatus('customRegistryInvalid', true)
+      } finally {
+        saveCustomRegistryButton.disabled = false
+      }
+    })
+  }
 
   updateLocalRegistryBtn.addEventListener('click', async (event) => {
     togglePopup('popupCompletedSuccessfully')
@@ -133,7 +192,6 @@ import Settings from 'Background/settings'
     await server.synchronize()
     await Settings.enableExtension()
     await Settings.enableNotifications()
-    await Settings.disableParentalControl()
     await ProxyManager.removeBadProxies()
     await ProxyManager.setProxy()
     await ProxyManager.ping()

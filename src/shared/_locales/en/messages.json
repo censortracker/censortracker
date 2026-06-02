@@ -122,6 +122,24 @@
   "countryUZ": {
     "message": "Uzbekistan"
   },
+  "customRegistryDesc": {
+    "message": "If the default registry is unavailable, specify your own URL with the list of blocked domains (JSON array or a plain-text list)."
+  },
+  "customRegistryInvalid": {
+    "message": "Could not load the list. Check the URL and format."
+  },
+  "customRegistrySaveButton": {
+    "message": "Save and update"
+  },
+  "customRegistrySaved": {
+    "message": "Blocklist updated from the alternative source."
+  },
+  "customRegistryTitle": {
+    "message": "Alternative blocklist source"
+  },
+  "customRegistryToggle": {
+    "message": "Use alternative source"
+  },
   "debugInfoTitle": {
     "message": "Debug Info"
   },
@@ -455,6 +473,24 @@
   },
   "registryTypeLightweight": {
     "message": "Use lightweight registry of blocked domains (100k+ domains)"
+  },
+  "relatedDomainsDesc": {
+    "message": "Some sites load resources from several domains. Scan this page and tick the ones to route through the proxy."
+  },
+  "relatedDomainsEmpty": {
+    "message": "No additional domains found."
+  },
+  "relatedDomainsFindButton": {
+    "message": "Scan this page"
+  },
+  "relatedDomainsSearching": {
+    "message": "Scanning the page…"
+  },
+  "relatedDomainsSelectAll": {
+    "message": "Add all"
+  },
+  "relatedDomainsTitle": {
+    "message": "Related domains"
   },
   "resetToDefaultDesc": {
     "message": "Reset all settings to default and generate PAC file for your current region. Use this option if there are availability problems with blocked websites."

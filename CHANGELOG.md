@@ -7,6 +7,9 @@
   added timeouts to all background network requests
 - Custom proxy field now accepts any common format (e.g.
   `socks5://user:pass@host:port`) and auto-detects the protocol
+- Manage multiple custom proxies: save several, name them, pick the active one
+  from a list and delete entries; the previously hidden built-in proxy can be
+  imported into the editable list and overridden
 - Added a one-click "related domains" helper: scan the active page and add the
   extra domains it needs to the proxy list via checkboxes
 - Added support for an alternative blocklist source (custom registry URL,

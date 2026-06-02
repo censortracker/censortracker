@@ -2,7 +2,7 @@ import browser from 'Background/browser-api'
 import ProxyClient from 'Background/localproxy'
 import ProxyManager from 'Background/proxy'
 import * as server from 'Background/server'
-import { parseProxyString } from 'Background/utilities'
+import { i18nGetMessage, parseProxyString } from 'Background/utilities'
 
 (async () => {
   const proxyingEnabled = await ProxyManager.isEnabled()
@@ -32,6 +32,14 @@ import { parseProxyString } from 'Background/utilities'
   const invalidLocalProxyConfig = document.getElementById('invalidLocalProxyConfig')
   const localProxyTextarea = document.getElementById('localProxyTextarea')
   const downloadLocalProxyButton = document.getElementById('downloadLocalProxyButton')
+  const proxyNameInput = document.getElementById('proxyNameInput')
+  const customProxyList = document.getElementById('customProxyList')
+  const importBuiltinProxyButton = document.getElementById('importBuiltinProxyButton')
+  const invalidCustomProxy = document.getElementById('invalidCustomProxy')
+
+  if (proxyNameInput) {
+    proxyNameInput.placeholder = i18nGetMessage('customProxyNamePlaceholder')
+  }
 
   ProxyManager.isEnabled().then((isEnabled) => {
     useProxyCheckbox.checked = isEnabled
@@ -232,16 +240,74 @@ import { parseProxyString } from 'Background/utilities'
     }
   })
 
+  // Render the list of saved custom proxies as a selectable radio group.
+  const renderCustomProxies = async () => {
+    if (!customProxyList) {
+      return
+    }
+
+    const proxies = await ProxyManager.getCustomProxies()
+    const activeId = await ProxyManager.getActiveCustomProxyId()
+
+    customProxyList.innerHTML = ''
+
+    for (const { id, name, protocol, uri } of proxies) {
+      const div = document.createElement('div')
+
+      div.id = `customproxy-${id}`
+      div.className = 'proxy-list__block'
+      div.innerHTML = `
+       <div class="radio-button proxy-list__block-item">
+        <input class="radio-button-input" type="radio" name="custom-proxy" id="cp-${id}" value="${id}"
+          ${id === activeId ? 'checked' : ''}/>
+        <label class="radio-button-label" for="cp-${id}">
+          ${name} <code>(${protocol} ${uri})</code>
+        </label>
+        <div class="proxy-list__block-item__btn delete-custom-proxy" data-id="${id}">
+          <svg class="close-icon" width="24" height="24" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10 10L34 34M34 10L10 34" stroke="currentColor" stroke-opacity="0.8" stroke-width="2"/>
+          </svg>
+        </div>
+       </div>`
+      customProxyList.append(div)
+    }
+  }
+
+  // Select an active proxy from the list.
+  customProxyList.addEventListener('change', async (event) => {
+    if (event.target.name !== 'custom-proxy') {
+      return
+    }
+
+    const activated = await ProxyManager.setActiveCustomProxy(event.target.value)
+
+    if (activated) {
+      await ProxyManager.setProxy()
+      console.log(`Active custom proxy changed to ${event.target.value}`)
+    }
+  })
+
+  // Delete a proxy from the list.
+  customProxyList.addEventListener('click', async (event) => {
+    const deleteButton = event.target.closest('.delete-custom-proxy')
+
+    if (!deleteButton) {
+      return
+    }
+
+    await ProxyManager.deleteCustomProxy(deleteButton.dataset.id)
+    await ProxyManager.setProxy()
+    await renderCustomProxies()
+  })
+
   const {
     useOwnProxy,
     useLocalProxy,
     customProxyProtocol,
-    customProxyServerURI,
   } = await browser.storage.local.get([
     'useOwnProxy',
     'useLocalProxy',
     'customProxyProtocol',
-    'customProxyServerURI',
   ])
 
   if (customProxyProtocol) {
@@ -256,15 +322,21 @@ import { parseProxyString } from 'Background/utilities'
     proxyOptionsInputs.hidden = false
     useCustomProxyRadioButton.checked = true
     proxyOptionsInputs.classList.remove('hidden')
+    await renderCustomProxies()
   } else {
     proxyOptionsInputs.classList.add('hidden')
     useDefaultProxyRadioButton.checked = true
   }
 
-  if (customProxyServerURI) {
-    proxyServerInput.value = customProxyServerURI
+  const flashInvalidCustomProxy = () => {
+    proxyServerInput.classList.add('invalid-input')
+    if (invalidCustomProxy) {
+      invalidCustomProxy.classList.remove('hidden')
+      setTimeout(() => invalidCustomProxy.classList.add('hidden'), 6000)
+    }
   }
 
+  // Add the entered proxy to the saved list and make it active.
   saveCustomProxyButton.addEventListener('click', async (event) => {
     const rawValue = proxyServerInput.value.trim()
     const selectedProtocol = currentProxyProtocol.textContent.trim()
@@ -273,26 +345,49 @@ import { parseProxyString } from 'Background/utilities'
     // "https://host:port", etc. A scheme in the string overrides the picker.
     const parsed = parseProxyString(rawValue, selectedProtocol)
 
-    if (parsed) {
-      // Reflect the resolved protocol back into the selector.
-      currentProxyProtocol.textContent = parsed.protocol
-      currentProxyProtocol.value = parsed.protocol
+    if (!parsed) {
+      flashInvalidCustomProxy()
+      return
+    }
 
-      await browser.storage.local.set({
-        useOwnProxy: true,
-        customProxyProtocol: parsed.protocol,
-        customProxyServerURI: parsed.uri,
+    await ProxyManager.addCustomProxy({
+      name: proxyNameInput ? proxyNameInput.value.trim() : '',
+      protocol: parsed.protocol,
+      uri: parsed.uri,
+    })
+
+    await ProxyManager.setProxy()
+    await renderCustomProxies()
+
+    proxyServerInput.value = ''
+    if (proxyNameInput) {
+      proxyNameInput.value = ''
+    }
+    proxyServerInput.classList.remove('invalid-input')
+    console.log(`Custom proxy added: ${parsed.protocol} ${parsed.uri}`)
+  })
+
+  // Import the hidden built-in (backend-provided) proxy into the editable list
+  // so it can be selected and overridden.
+  if (importBuiltinProxyButton) {
+    importBuiltinProxyButton.addEventListener('click', async () => {
+      const builtin = await ProxyManager.getBuiltinProxy()
+
+      if (!builtin) {
+        flashInvalidCustomProxy()
+        return
+      }
+
+      await ProxyManager.addCustomProxy({
+        name: i18nGetMessage('builtinProxyName'),
+        protocol: builtin.protocol,
+        uri: builtin.uri,
       })
 
       await ProxyManager.setProxy()
-      proxyServerInput.value = parsed.uri
-      proxyServerInput.classList.remove('invalid-input')
-
-      console.log(`Proxy host changed to: ${parsed.protocol} ${parsed.uri}`)
-    } else {
-      proxyServerInput.classList.add('invalid-input')
-    }
-  })
+      await renderCustomProxies()
+    })
+  }
 
   proxyCustomOptionsRadioGroup.addEventListener('change', async (event) => {
     const value = event.target.value
@@ -313,6 +408,15 @@ import { parseProxyString } from 'Background/utilities'
       proxyOptionsInputs.classList.remove('hidden')
       localProxyOptions.style.display = 'none'
       addLocalProxyButton.style.display = 'none'
+      await renderCustomProxies()
+
+      // If the user already has saved proxies, re-activate the selected one.
+      const activeId = await ProxyManager.getActiveCustomProxyId()
+
+      if (activeId) {
+        await ProxyManager.setActiveCustomProxy(activeId)
+        await ProxyManager.setProxy()
+      }
     } else if (value === 'local') {
       proxyOptionsInputs.classList.add('hidden')
       await showLocalProxySettings()

@@ -1,4 +1,7 @@
 {
+  "addCustomProxyButton": {
+    "message": "Add to list"
+  },
   "addLocalProxyButton": {
     "message": "Add"
   },
@@ -43,6 +46,9 @@
   },
   "blockedTitle": {
     "message": "Blocked"
+  },
+  "builtinProxyName": {
+    "message": "Built-in (imported)"
   },
   "cancel": {
     "message": "Cancel"
@@ -121,6 +127,9 @@
   },
   "countryUZ": {
     "message": "Uzbekistan"
+  },
+  "customProxyNamePlaceholder": {
+    "message": "Name (optional)"
   },
   "customRegistryDesc": {
     "message": "If the default registry is unavailable, specify your own URL with the list of blocked domains (JSON array or a plain-text list)."
@@ -221,6 +230,9 @@
   "ignoredSitesTitle": {
     "message": "Ignored Websites"
   },
+  "importBuiltinProxyButton": {
+    "message": "Import built-in proxy"
+  },
   "importSettingsDesc": {
     "message": "You can import your settings from a JSON file."
   },
@@ -255,6 +267,9 @@
   },
   "installedPageTitle": {
     "message": "Censor Tracker Installed"
+  },
+  "invalidCustomProxy": {
+    "message": "Invalid proxy. Use protocol://host:port."
   },
   "invalidLocalProxyConfig": {
     "message": "Invalid configuration. Please provide a Subscription URL compatible with V2ray (V2RayNG, SingBox, Nekoray, etc.), Clash, or ClashMeta, or a direct server link in the format vless://, vmess://, or ss://."

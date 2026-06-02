@@ -61,11 +61,20 @@ Vivaldi and other Chromium browsers, as well as Firefox and Safari**.
   ignored-hosts sync, plus a crash when the configured country wasn't present
   in the remote config.
 
-### Use any proxy, easily
+### Use any proxy, easily — now with a managed list
 
-The custom-proxy field now accepts almost any common format and auto-detects
-the protocol, e.g. `socks5://user:pass@1.2.3.4:1080`, `https://proxy:8443` or a
+The custom-proxy field accepts almost any common format and auto-detects the
+protocol, e.g. `socks5://user:pass@1.2.3.4:1080`, `https://proxy:8443` or a
 plain `1.2.3.4:1080`.
+
+You are no longer limited to a single hidden proxy: you can **save several
+proxies, name them, switch the active one from a list and delete the ones you
+don't need**. The previously hidden built-in (backend-provided) proxy can be
+imported into this editable list with one click and then overridden.
+
+<p align="center">
+  <img width="520" alt="Custom proxy list manager" src="docs/media/custom-proxy-list.png">
+</p>
 
 ### One-click helper for adding related domains
 

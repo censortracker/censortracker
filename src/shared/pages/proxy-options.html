@@ -42,6 +42,11 @@
         </div>
 
         <div id="proxyCustomOptions" hidden>
+          <div class="current-proxy-address" id="currentProxyAddress" hidden>
+            <span class="current-proxy-address__label" data-i18n-key="currentProxyLabel"></span>
+            <code class="current-proxy-address__value" id="currentProxyAddressValue"></code>
+          </div>
+
           <div id="proxyCustomOptionsRadioGroup" class="radio-buttons-group">
             <div class="radio-button">
               <input id="useDefaultProxy" class="radio-button-input" type="radio" name="proxy-radio" value="default"
@@ -53,42 +58,50 @@
               <label class="radio-button-label" for="useCustomProxy" data-i18n-key="useOwnProxy"></label>
             </div>
             <div id="proxyOptionsInputs" class="proxy-options-inputs hidden">
-              <!-- Saved proxies: pick the active one or delete entries. -->
-              <div class="proxy-list__wrapper" id="customProxyList"></div>
+              <!-- Unified list: built-in (backend) + user proxies. Pick the
+                   active one, edit or delete entries. -->
+              <div class="custom-proxy-list" id="customProxyList"></div>
 
-              <div class="select" id="selectProxyProtocol">
-                <button type="button" class="select-toggle" id="select-toggle">
-                  HTTPS
-                </button>
-                <div class="select-dropdown">
-                  <ul class="select-options">
-                    <li class="select-option" data-value="SOCKS4">SOCKS4</li>
-                    <li class="select-option" data-value="SOCKS5">SOCKS5</li>
-                    <li class="select-option" data-value="HTTP">HTTP</li>
-                    <li class="select-option" data-value="HTTPS">HTTPS</li>
-                  </ul>
+              <div class="custom-proxy-form">
+                <div class="custom-proxy-form__title" id="customProxyFormTitle"
+                     data-i18n-key="addCustomProxyTitle"></div>
+
+                <div class="select" id="selectProxyProtocol">
+                  <button type="button" class="select-toggle" id="select-toggle">
+                    HTTPS
+                  </button>
+                  <div class="select-dropdown">
+                    <ul class="select-options">
+                      <li class="select-option" data-value="SOCKS4">SOCKS4</li>
+                      <li class="select-option" data-value="SOCKS5">SOCKS5</li>
+                      <li class="select-option" data-value="HTTP">HTTP</li>
+                      <li class="select-option" data-value="HTTPS">HTTPS</li>
+                    </ul>
+                  </div>
                 </div>
+
+                <input type="text"
+                       id="proxyNameInput"
+                       class="input-proxy"
+                       placeholder="Name (optional)">
+
+                <input type="text"
+                       id="proxyServerInput"
+                       class="input-proxy"
+                       placeholder="socks5://[username:password@]hostname:port">
+
+                <div class="custom-proxy-form__actions">
+                  <button class="btn btn-dark" id="saveCustomProxyButton">
+                    <span class="btn__text" data-i18n-key="addCustomProxyButton"></span>
+                  </button>
+                  <button class="btn hidden" id="cancelEditProxyButton">
+                    <span class="btn__text" data-i18n-key="cancel"></span>
+                  </button>
+                </div>
+
+                <div class="hidden invalid-proxy-msg" id="invalidCustomProxy"
+                     data-i18n-key="invalidCustomProxy"></div>
               </div>
-
-              <input type="text"
-                     id="proxyNameInput"
-                     class="input-proxy"
-                     placeholder="Name (optional)">
-
-              <input type="text"
-                     id="proxyServerInput"
-                     class="input-proxy"
-                     placeholder="socks5://[username:password@]hostname:port">
-
-              <button class="btn btn-dark" id="saveCustomProxyButton">
-                <span class="btn__text" data-i18n-key="addCustomProxyButton"></span>
-              </button>
-
-              <button class="btn" id="importBuiltinProxyButton">
-                <span class="btn__text" data-i18n-key="importBuiltinProxyButton"></span>
-              </button>
-
-              <div class="hidden" id="invalidCustomProxy" data-i18n-key="invalidCustomProxy"></div>
             </div>
 
             <div class="radio-button">

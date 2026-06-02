@@ -2,6 +2,9 @@
   "addCustomProxyButton": {
     "message": "Add to list"
   },
+  "addCustomProxyTitle": {
+    "message": "Add a proxy"
+  },
   "addLocalProxyButton": {
     "message": "Add"
   },
@@ -46,6 +49,9 @@
   },
   "blockedTitle": {
     "message": "Blocked"
+  },
+  "builtinProxyBadge": {
+    "message": "built-in"
   },
   "builtinProxyName": {
     "message": "Built-in (imported)"
@@ -128,6 +134,9 @@
   "countryUZ": {
     "message": "Uzbekistan"
   },
+  "currentProxyLabel": {
+    "message": "Current proxy:"
+  },
   "customProxyNamePlaceholder": {
     "message": "Name (optional)"
   },
@@ -152,6 +161,9 @@
   "debugInfoTitle": {
     "message": "Debug Info"
   },
+  "deleteProxyButton": {
+    "message": "Delete"
+  },
   "disableAll": {
     "message": "Disable all"
   },
@@ -172,6 +184,15 @@
   },
   "downloadAppButton": {
     "message": "Download"
+  },
+  "editBuiltinProxyButton": {
+    "message": "Edit a copy"
+  },
+  "editCustomProxyTitle": {
+    "message": "Edit proxy"
+  },
+  "editProxyButton": {
+    "message": "Edit"
   },
   "emptyFileError": {
     "message": "The file is empty or damaged. Please check it and try again."
@@ -533,6 +554,9 @@
   },
   "saveCustomProxyButton": {
     "message": "Save"
+  },
+  "saveProxyButton": {
+    "message": "Save changes"
   },
   "shareFeedback": {
     "message": "Got issues or suggestions? Let us know!"

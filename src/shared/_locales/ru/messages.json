@@ -2,6 +2,9 @@
   "addCustomProxyButton": {
     "message": "Добавить в список"
   },
+  "addCustomProxyTitle": {
+    "message": "Добавить прокси"
+  },
   "addLocalProxyButton": {
     "message": "Добавить"
   },
@@ -46,6 +49,9 @@
   },
   "blockedTitle": {
     "message": "Доступ запрещён"
+  },
+  "builtinProxyBadge": {
+    "message": "встроенный"
   },
   "builtinProxyName": {
     "message": "Встроенная (импорт)"
@@ -128,6 +134,9 @@
   "countryUZ": {
     "message": "Узбекистан"
   },
+  "currentProxyLabel": {
+    "message": "Текущий прокси:"
+  },
   "customProxyNamePlaceholder": {
     "message": "Название (необязательно)"
   },
@@ -152,6 +161,9 @@
   "debugInfoTitle": {
     "message": "Отладочная информация"
   },
+  "deleteProxyButton": {
+    "message": "Удалить"
+  },
   "disableAll": {
     "message": "Отключить все"
   },
@@ -172,6 +184,15 @@
   },
   "downloadAppButton": {
     "message": "Скачать"
+  },
+  "editBuiltinProxyButton": {
+    "message": "Изменить копию"
+  },
+  "editCustomProxyTitle": {
+    "message": "Изменить прокси"
+  },
+  "editProxyButton": {
+    "message": "Изменить"
   },
   "emptyFileError": {
     "message": "Файл пустой или повреждён. Пожалуйста, проверьте его и попробуйте ещё раз."
@@ -532,6 +553,9 @@
     "message": "Сохранить изменения"
   },
   "saveCustomProxyButton": {
+    "message": "Сохранить"
+  },
+  "saveProxyButton": {
     "message": "Сохранить"
   },
   "shareFeedback": {

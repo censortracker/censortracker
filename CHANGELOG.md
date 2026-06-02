@@ -1,3 +1,13 @@
+# 20.2.0
+
+- Reworked the proxy settings into a single unified list of the built-in
+  (backend) proxy and user proxies, fixing the broken/cramped layout on Edge
+- The address of the currently-used proxy (and of every list entry) is now
+  visible
+- Proxies can be added, renamed, edited, deleted and switched from the list;
+  the built-in proxy can be edited into an overridable copy
+
+
 # 20.1.0
 
 - Fixed Firefox/Chromium runtime detection so the extension works on Chrome,

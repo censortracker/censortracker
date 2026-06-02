@@ -227,11 +227,140 @@ class ProxyManager {
   async removeCustomProxy () {
     await browser.storage.local.set({
       useOwnProxy: false,
+      activeCustomProxyId: '',
     })
     await browser.storage.local.remove([
       'customProxyProtocol',
       'customProxyServerURI',
     ])
+  }
+
+  generateProxyId () {
+    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+      return crypto.randomUUID()
+    }
+    return `p-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
+  }
+
+  /**
+   * Returns the list of user-defined proxy servers. Transparently migrates a
+   * legacy single custom proxy into the list on first read.
+   * @returns {Promise<Array<{id: string, name: string, protocol: string,
+   *   uri: string}>>}
+   */
+  async getCustomProxies () {
+    const {
+      customProxies,
+      customProxyServerURI,
+      customProxyProtocol,
+    } = await browser.storage.local.get({
+      customProxies: [],
+      customProxyServerURI: '',
+      customProxyProtocol: '',
+    })
+
+    if (customProxies.length === 0 && customProxyServerURI) {
+      const migrated = [{
+        id: this.generateProxyId(),
+        name: customProxyServerURI,
+        protocol: customProxyProtocol || 'HTTPS',
+        uri: customProxyServerURI,
+      }]
+
+      await browser.storage.local.set({
+        customProxies: migrated,
+        activeCustomProxyId: migrated[0].id,
+      })
+      return migrated
+    }
+    return customProxies
+  }
+
+  /**
+   * Adds a new proxy to the list and makes it the active one.
+   * @returns {Promise<{id: string, name: string, protocol: string,
+   *   uri: string}>}
+   */
+  async addCustomProxy ({ name, protocol, uri }) {
+    const customProxies = await this.getCustomProxies()
+    const proxy = {
+      id: this.generateProxyId(),
+      name: (name && name.trim()) || uri,
+      protocol,
+      uri,
+    }
+
+    customProxies.push(proxy)
+    await browser.storage.local.set({ customProxies })
+    await this.setActiveCustomProxy(proxy.id)
+    return proxy
+  }
+
+  /**
+   * Removes a proxy from the list. If it was the active one, falls back to the
+   * first remaining proxy (or disables custom proxying if the list is empty).
+   * @returns {Promise<Array>} The updated list.
+   */
+  async deleteCustomProxy (id) {
+    const customProxies = await this.getCustomProxies()
+    const filtered = customProxies.filter((proxy) => proxy.id !== id)
+    const { activeCustomProxyId } =
+      await browser.storage.local.get({ activeCustomProxyId: '' })
+
+    await browser.storage.local.set({ customProxies: filtered })
+
+    if (activeCustomProxyId === id) {
+      if (filtered.length > 0) {
+        await this.setActiveCustomProxy(filtered[0].id)
+      } else {
+        await this.removeCustomProxy()
+      }
+    }
+    return filtered
+  }
+
+  /**
+   * Marks the given proxy as active and mirrors it into the storage keys
+   * consumed by {@link getProxyingRules}, so the PAC keeps working unchanged.
+   * @returns {Promise<boolean>}
+   */
+  async setActiveCustomProxy (id) {
+    const customProxies = await this.getCustomProxies()
+    const proxy = customProxies.find((item) => item.id === id)
+
+    if (!proxy) {
+      return false
+    }
+
+    await browser.storage.local.set({
+      useOwnProxy: true,
+      activeCustomProxyId: id,
+      customProxyProtocol: proxy.protocol,
+      customProxyServerURI: proxy.uri,
+    })
+    return true
+  }
+
+  async getActiveCustomProxyId () {
+    const { activeCustomProxyId } =
+      await browser.storage.local.get({ activeCustomProxyId: '' })
+
+    return activeCustomProxyId
+  }
+
+  /**
+   * Returns the currently-active built-in (backend-provided) proxy so it can be
+   * imported into the editable list and overridden by the user.
+   * @returns {Promise<{protocol: string, uri: string}|null>}
+   */
+  async getBuiltinProxy () {
+    const { proxyServerURI } =
+      await browser.storage.local.get({ proxyServerURI: '' })
+
+    if (!proxyServerURI) {
+      return null
+    }
+    return { protocol: 'HTTPS', uri: proxyServerURI }
   }
 
   async removeLocalProxy () {

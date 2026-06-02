@@ -1,4 +1,7 @@
 {
+  "addCustomProxyButton": {
+    "message": "Добавить в список"
+  },
   "addLocalProxyButton": {
     "message": "Добавить"
   },
@@ -43,6 +46,9 @@
   },
   "blockedTitle": {
     "message": "Доступ запрещён"
+  },
+  "builtinProxyName": {
+    "message": "Встроенная (импорт)"
   },
   "cancel": {
     "message": "Отмена"
@@ -121,6 +127,9 @@
   },
   "countryUZ": {
     "message": "Узбекистан"
+  },
+  "customProxyNamePlaceholder": {
+    "message": "Название (необязательно)"
   },
   "customRegistryDesc": {
     "message": "Если стандартный реестр недоступен, укажите свой URL со списком заблокированных доменов (JSON-массив или текстовый список)."
@@ -221,6 +230,9 @@
   "ignoredSitesTitle": {
     "message": "Игнорируемые сайты"
   },
+  "importBuiltinProxyButton": {
+    "message": "Импортировать встроенную"
+  },
   "importSettingsDesc": {
     "message": "Вы можете импортировать настройки из файла JSON."
   },
@@ -255,6 +267,9 @@
   },
   "installedPageTitle": {
     "message": "Censor Tracker Установлен"
+  },
+  "invalidCustomProxy": {
+    "message": "Неверный прокси. Формат: протокол://хост:порт."
   },
   "invalidLocalProxyConfig": {
     "message": "Некорректная конфигурация. Пожалуйста, укажите Subscription URL, совместимый с V2ray (V2RayNG, SingBox, Nekoray и др.), Clash или ClashMeta, либо ссылку на конкретный сервер в формате vless://, vmess:// или ss://."

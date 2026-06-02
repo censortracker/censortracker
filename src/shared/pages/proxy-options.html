@@ -53,6 +53,9 @@
               <label class="radio-button-label" for="useCustomProxy" data-i18n-key="useOwnProxy"></label>
             </div>
             <div id="proxyOptionsInputs" class="proxy-options-inputs hidden">
+              <!-- Saved proxies: pick the active one or delete entries. -->
+              <div class="proxy-list__wrapper" id="customProxyList"></div>
+
               <div class="select" id="selectProxyProtocol">
                 <button type="button" class="select-toggle" id="select-toggle">
                   HTTPS
@@ -68,13 +71,24 @@
               </div>
 
               <input type="text"
+                     id="proxyNameInput"
+                     class="input-proxy"
+                     placeholder="Name (optional)">
+
+              <input type="text"
                      id="proxyServerInput"
                      class="input-proxy"
-                     placeholder="[username:password@]hostname:port">
+                     placeholder="socks5://[username:password@]hostname:port">
 
               <button class="btn btn-dark" id="saveCustomProxyButton">
-                <span class="btn__text" data-i18n-key="saveCustomProxyButton"></span>
+                <span class="btn__text" data-i18n-key="addCustomProxyButton"></span>
               </button>
+
+              <button class="btn" id="importBuiltinProxyButton">
+                <span class="btn__text" data-i18n-key="importBuiltinProxyButton"></span>
+              </button>
+
+              <div class="hidden" id="invalidCustomProxy" data-i18n-key="invalidCustomProxy"></div>
             </div>
 
             <div class="radio-button">

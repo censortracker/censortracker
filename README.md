@@ -67,10 +67,12 @@ The custom-proxy field accepts almost any common format and auto-detects the
 protocol, e.g. `socks5://user:pass@1.2.3.4:1080`, `https://proxy:8443` or a
 plain `1.2.3.4:1080`.
 
-You are no longer limited to a single hidden proxy: you can **save several
-proxies, name them, switch the active one from a list and delete the ones you
-don't need**. The previously hidden built-in (backend-provided) proxy can be
-imported into this editable list with one click and then overridden.
+You are no longer limited to a single hidden proxy. The proxy settings now show
+a **single unified list of both the built-in (backend-provided) proxy and your
+own ones**, with the address of each entry visible — including the address of
+the proxy currently in use. You can **add, rename, edit, delete and switch the
+active proxy** from that list; the built-in one can be edited into your own
+editable copy and overridden.
 
 <p align="center">
   <img width="520" alt="Custom proxy list manager" src="docs/media/custom-proxy-list.png">

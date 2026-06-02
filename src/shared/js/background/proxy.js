@@ -349,6 +349,55 @@ class ProxyManager {
   }
 
   /**
+   * Updates an existing proxy in the list. If it is the active one, the
+   * mirrored storage keys are refreshed too.
+   * @returns {Promise<boolean>}
+   */
+  async updateCustomProxy (id, { name, protocol, uri }) {
+    const customProxies = await this.getCustomProxies()
+    const proxy = customProxies.find((item) => item.id === id)
+
+    if (!proxy) {
+      return false
+    }
+
+    proxy.name = (name && name.trim()) || uri
+    proxy.protocol = protocol
+    proxy.uri = uri
+
+    await browser.storage.local.set({ customProxies })
+
+    const activeId = await this.getActiveCustomProxyId()
+
+    if (activeId === id) {
+      await this.setActiveCustomProxy(id)
+    }
+    return true
+  }
+
+  /**
+   * Selects the built-in (backend-provided) proxy as the active one in custom
+   * mode. Its address is pinned into the custom keys so it keeps being used
+   * even if the backend later rotates the default proxy.
+   * @returns {Promise<boolean>}
+   */
+  async setActiveBuiltinProxy () {
+    const builtin = await this.getBuiltinProxy()
+
+    if (!builtin) {
+      return false
+    }
+
+    await browser.storage.local.set({
+      useOwnProxy: true,
+      activeCustomProxyId: 'builtin',
+      customProxyProtocol: builtin.protocol,
+      customProxyServerURI: builtin.uri,
+    })
+    return true
+  }
+
+  /**
    * Returns the currently-active built-in (backend-provided) proxy so it can be
    * imported into the editable list and overridden by the user.
    * @returns {Promise<{protocol: string, uri: string}|null>}

@@ -383,7 +383,7 @@ a {
 }
 
 #saveCustomProxyButton {
-  margin-left: 10px;
+  margin-left: 0;
 }
 
 #customProxyPort {
@@ -459,8 +459,156 @@ a {
 
 .proxy-options-inputs {
   display: flex;
+  flex-direction: column;
+  gap: 12px;
   margin-left: 45px;
+  margin-right: 5px;
   margin-bottom: 20px;
+}
+
+.proxy-options-inputs .select,
+.proxy-options-inputs .input-proxy {
+  width: 100%;
+  margin: 0;
+}
+
+/* Current active proxy address */
+.current-proxy-address {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+  margin: 6px 0 14px;
+  font-size: 13px;
+}
+
+.current-proxy-address__label {
+  color: #6d675f;
+}
+
+.current-proxy-address__value {
+  font-family: 'IBM Plex Mono', monospace;
+  color: #3b332b;
+  word-break: break-all;
+}
+
+/* Unified custom proxy list (built-in + user) */
+.custom-proxy-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.custom-proxy-list:empty {
+  display: none;
+}
+
+.cproxy-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid #e0ddd8;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.cproxy-row__main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1 1 auto;
+  min-width: 0;
+  cursor: pointer;
+}
+
+.cproxy-row__main input[type="radio"] {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+}
+
+.cproxy-row__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.cproxy-row__name {
+  font-weight: 600;
+  color: #3b332b;
+}
+
+.cproxy-row__addr {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  color: #6d675f;
+  word-break: break-all;
+}
+
+.cproxy-badge {
+  flex: 0 0 auto;
+  align-self: flex-start;
+  font-size: 11px;
+  line-height: 1;
+  padding: 3px 7px;
+  border-radius: 10px;
+  background: #efece7;
+  color: #6d675f;
+}
+
+.cproxy-row__actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+}
+
+.cproxy-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #6d675f;
+  cursor: pointer;
+}
+
+.cproxy-icon-btn:hover {
+  background: #efece7;
+  color: #3b332b;
+}
+
+.custom-proxy-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 6px;
+}
+
+.custom-proxy-form__title {
+  font-weight: 600;
+  color: #3b332b;
+}
+
+.custom-proxy-form__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.custom-proxy-form__actions .btn {
+  margin: 0;
+}
+
+.invalid-proxy-msg {
+  color: #c0392b;
+  font-size: 13px;
 }
 
 /* Ignore Editor Page */

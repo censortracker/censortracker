@@ -2,6 +2,9 @@
   "addCustomProxyButton": {
     "message": "Додати до списку"
   },
+  "addCustomProxyTitle": {
+    "message": "Додати проксі"
+  },
   "addLocalProxyButton": {
     "message": "Додати"
   },
@@ -46,6 +49,9 @@
   },
   "blockedTitle": {
     "message": "Доступ заборонено"
+  },
+  "builtinProxyBadge": {
+    "message": "вбудований"
   },
   "builtinProxyName": {
     "message": "Вбудована (імпорт)"
@@ -128,6 +134,9 @@
   "countryUZ": {
     "message": "Узбекистан"
   },
+  "currentProxyLabel": {
+    "message": "Поточний проксі:"
+  },
   "customProxyNamePlaceholder": {
     "message": "Назва (необов'язково)"
   },
@@ -152,6 +161,9 @@
   "debugInfoTitle": {
     "message": "Налагоджувальна інформація"
   },
+  "deleteProxyButton": {
+    "message": "Видалити"
+  },
   "disableAll": {
     "message": "Вимкнути все"
   },
@@ -172,6 +184,15 @@
   },
   "downloadAppButton": {
     "message": "Завантажити"
+  },
+  "editBuiltinProxyButton": {
+    "message": "Змінити копію"
+  },
+  "editCustomProxyTitle": {
+    "message": "Змінити проксі"
+  },
+  "editProxyButton": {
+    "message": "Змінити"
   },
   "emptyFileError": {
     "message": "Файл порожній або пошкоджений. Будь ласка, перевірте його та спробуйте ще раз."
@@ -532,6 +553,9 @@
     "message": "Зберегти зміни"
   },
   "saveCustomProxyButton": {
+    "message": "Зберегти"
+  },
+  "saveProxyButton": {
     "message": "Зберегти"
   },
   "shareFeedback": {

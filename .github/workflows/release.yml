@@ -1,7 +1,18 @@
 name: Release
 
-# Builds signed-ready ZIP packages of the extension for every supported
-# browser engine and attaches them to a GitHub Release.
+# Builds the extension for every supported browser engine and attaches the
+# packages to a GitHub Release.
+#
+# Firefox note: a raw ZIP is NOT installable in release/stable Firefox — it
+# refuses unsigned add-ons with the misleading error "this add-on appears to
+# be corrupt". To produce an installable file we submit the Firefox build to
+# Mozilla's signing API (`web-ext sign --channel=unlisted`) and attach the
+# resulting **signed .xpi**. This requires two repository secrets:
+#   * WEB_EXT_API_KEY    -> AMO API "JWT issuer"
+#   * WEB_EXT_API_SECRET -> AMO API "JWT secret"
+# Generate them at https://addons.mozilla.org/developers/addon/api/key/
+# If the secrets are absent the workflow still succeeds and ships the unsigned
+# ZIP (useful for AMO upload or about:debugging), but signing is skipped.
 #
 # Triggers:
 #   * pushing a tag like `v20.1.0`  -> builds + publishes a release
@@ -63,11 +74,38 @@ jobs:
           done
           ls -la artifacts
 
+      # Submit the Firefox build to Mozilla for signing so the released file can
+      # actually be installed in stable Firefox. Skipped (without failing the
+      # run) when AMO credentials are not configured.
+      - name: Sign Firefox add-on (Mozilla, unlisted)
+        if: matrix.browser == 'firefox'
+        env:
+          WEB_EXT_API_KEY: ${{ secrets.WEB_EXT_API_KEY }}
+          WEB_EXT_API_SECRET: ${{ secrets.WEB_EXT_API_SECRET }}
+        run: |
+          mkdir -p artifacts
+          if [ -z "$WEB_EXT_API_KEY" ] || [ -z "$WEB_EXT_API_SECRET" ]; then
+            echo "::warning title=Firefox add-on not signed::WEB_EXT_API_KEY / WEB_EXT_API_SECRET secrets are not set. Shipping the unsigned .zip only — it cannot be installed in release Firefox. See https://addons.mozilla.org/developers/addon/api/key/"
+            exit 0
+          fi
+          VERSION=$(node -p "require('./package.json').version")
+          npx web-ext sign \
+            --source-dir=./dist/firefox/prod \
+            --artifacts-dir=./releases/firefox \
+            --channel=unlisted \
+            --api-key="$WEB_EXT_API_KEY" \
+            --api-secret="$WEB_EXT_API_SECRET"
+          for f in releases/firefox/*.xpi; do
+            [ -e "$f" ] || continue
+            cp "$f" "artifacts/censortracker-firefox-v${VERSION}.xpi"
+          done
+          ls -la artifacts
+
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: censortracker-${{ matrix.browser }}
-          path: artifacts/*.zip
+          path: artifacts/*
           if-no-files-found: error
 
   release:
@@ -86,7 +124,7 @@ jobs:
       - name: Collect packages
         run: |
           mkdir -p release-assets
-          find dist-artifacts -name '*.zip' -exec cp {} release-assets/ \;
+          find dist-artifacts \( -name '*.zip' -o -name '*.xpi' \) -exec cp {} release-assets/ \;
           ls -la release-assets
 
       - name: Create / update GitHub Release
@@ -94,4 +132,4 @@ jobs:
         with:
           name: ${{ github.ref_name }}
           generate_release_notes: true
-          files: release-assets/*.zip
+          files: release-assets/*

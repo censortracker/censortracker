@@ -11,6 +11,7 @@
   },
   "browser_specific_settings": {
     "gecko": {
+      "id": "censortracker@avatardd",
       "strict_min_version": "91.1.0"
     }
   },

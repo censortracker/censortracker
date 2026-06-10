@@ -1,201 +1,234 @@
 <p align="center">
   <a href="https://censortracker.org/" target="_blank" rel="noreferrer noopener">
-    <img width="250" alt="Censor Tracker's Quokka" src="https://censortracker.org/static/img/quokka_big.svg">
+    <img width="250" alt="Квокка Censor Tracker" src="https://censortracker.org/static/img/quokka_big.svg">
   </a>
 </p>
 
 <p align="center">
- <b>Censor Tracker</b> is a powerful <strong>censorship circumvention</strong> browser extension.<br>
+ <b>Censor Tracker</b> — это мощное браузерное расширение для <strong>обхода цензуры</strong>.<br>
 </p>
 
-<p align="center">In addition, it enables the use of custom proxies and supports <strong>Vless</strong>,
-<strong>Vmess</strong>, and <strong>Shadowsocks</strong> in the browser via an external client called <a href="https://github.com/censortracker/proxy">Censor Tracker Proxy</a>.</p>
+<p align="center">Помимо этого, оно позволяет использовать собственные прокси и поддерживает <strong>Vless</strong>,
+<strong>Vmess</strong> и <strong>Shadowsocks</strong> в браузере через внешний клиент <a href="https://github.com/censortracker/proxy">Censor Tracker Proxy</a>.</p>
 
-<p align="center"><b>English</b> · <a href="README.ru.md">Русский</a></p>
+<p align="center"><a href="README.en.md">English</a> · <b>Русский</b></p>
 
 <p align="center">
   <a href="https://chrome.google.com/webstore/detail/censor-tracker/gaidoampbkcknofoejhnhbhbhhifgdop" target="_blank">
-      <img src="https://img.shields.io/chrome-web-store/v/gaidoampbkcknofoejhnhbhbhhifgdop" alt="Test">
+      <img src="https://img.shields.io/chrome-web-store/v/gaidoampbkcknofoejhnhbhbhhifgdop" alt="Chrome Web Store">
   </a>
   <a href="https://addons.mozilla.org/ru/firefox/addon/censor-tracker/" target="_blank">
-      <img src="https://img.shields.io/amo/v/censor-tracker" alt="Test">
+      <img src="https://img.shields.io/amo/v/censor-tracker" alt="Firefox Add-ons">
   </a>
 </p>
 
 
-Features
-========
+Установка
+=========
 
-Censor Tracker offers a range of useful features, including:
+Сборки этого форка прикреплены к каждому
+[релизу на GitHub](https://github.com/avatarDD/censortracker/releases).
+Оригинальное расширение также доступно в официальных магазинах — ссылки на
+бейджах выше.
 
-- Configurable proxy settings
-- Country-specific proxy routing
-- Customizable proxy and exclusion lists
-- Built-in resistance to censorship
-- Warnings for websites that share user data with third parties
-- Support  `Vless`, `Vmess` and `Shadowsocks` proxies ([Censor Tracker Proxy](https://github.com/censortracker/proxy) is
-  required)
+### Firefox
 
-What's new
+Скачайте из последнего релиза файл **`.xpi`** и откройте его в Firefox —
+расширение подписано Mozilla, поэтому ставится в обычный Firefox. Как вариант:
+`about:addons` → ⚙️ → «Установить дополнение из файла…».
+
+> ⚠️ Не устанавливайте `.zip`: стабильный Firefox отклоняет неподписанные
+> дополнения с ошибкой *«дополнение, по-видимому, повреждено»*. Подробности и
+> настройка подписи — в разделе
+> [«Установка релиза в Firefox»](#установка-релиза-в-firefox).
+
+### Chrome / Chromium (Chrome, Edge, Opera, Brave, Yandex, Vivaldi)
+
+1. Скачайте из последнего релиза файл `.zip` и распакуйте его.
+2. Откройте `chrome://extensions/` и включите **Режим разработчика**.
+3. Нажмите **«Загрузить распакованное расширение»** и выберите распакованную
+   папку.
+
+Возможности
+===========
+
+Censor Tracker предлагает ряд полезных возможностей, среди которых:
+
+- Гибкая настройка прокси
+- Маршрутизация прокси по странам
+- Настраиваемые списки проксирования и исключений
+- Встроенная устойчивость к цензуре
+- Предупреждения о сайтах, передающих данные пользователей третьим лицам
+- Поддержка прокси `Vless`, `Vmess` и `Shadowsocks` (требуется
+  [Censor Tracker Proxy](https://github.com/censortracker/proxy))
+
+Что нового
 ==========
 
-This fork adds several reliability and usability improvements on top of the
-upstream extension:
+В этом форке добавлено несколько улучшений надёжности и удобства поверх
+оригинального расширения:
 
-### Works on every modern browser
+### Работает во всех современных браузерах
 
-The runtime detection no longer mistakes Chromium (which, since version 148,
-also exposes a `browser` namespace in service workers) for Firefox. The
-extension now correctly initializes on **Chrome, Edge, Opera, Yandex, Brave,
-Vivaldi and other Chromium browsers, as well as Firefox and Safari**.
+Определение среды выполнения больше не путает Chromium (который, начиная с
+версии 148, тоже предоставляет пространство имён `browser` в service worker'ах)
+с Firefox. Теперь расширение корректно запускается в **Chrome, Edge, Opera,
+Yandex, Brave, Vivaldi и других браузерах на Chromium, а также в Firefox и
+Safari**.
 
-### The UI no longer dies when a proxy goes down
+### Интерфейс больше не «умирает» при падении прокси
 
-- The popup is wrapped in defensive error handling and always becomes visible,
-  even if a background check fails — no more blank popup when the proxy or the
-  backend is unreachable.
-- Every network request (config sync, proxy fetch, registry/ignore lists and
-  the keep-alive ping) is bounded by a timeout, so a dead or slow proxy can
-  never hang background tasks or freeze the GUI.
-- Fixed a typo (`browser.storag.local`) that silently broke the globally
-  ignored-hosts sync, plus a crash when the configured country wasn't present
-  in the remote config.
+- Попап обёрнут в защитную обработку ошибок и всегда становится видимым, даже
+  если фоновая проверка завершилась с ошибкой — больше никакого пустого попапа,
+  когда прокси или бэкенд недоступны.
+- Каждый сетевой запрос (синхронизация конфига, получение прокси, списки
+  реестра/исключений и keep-alive пинг) ограничен таймаутом, поэтому мёртвая
+  или медленная прокся не может «подвесить» фоновые задачи или заморозить GUI.
+- Исправлена опечатка (`browser.storag.local`), из-за которой молча ломалась
+  синхронизация глобального списка игнорируемых хостов, а также падение, когда
+  выбранной страны не было в удалённом конфиге.
 
-### Use any proxy, easily — now with a managed list
+### Любая прокси задаётся легко — теперь со списком
 
-The custom-proxy field accepts almost any common format and auto-detects the
-protocol, e.g. `socks5://user:pass@1.2.3.4:1080`, `https://proxy:8443` or a
-plain `1.2.3.4:1080`.
+Поле собственной прокси принимает практически любой распространённый формат и
+автоматически определяет протокол, например `socks5://user:pass@1.2.3.4:1080`,
+`https://proxy:8443` или просто `1.2.3.4:1080`.
 
-You are no longer limited to a single hidden proxy. The proxy settings now show
-a **single unified list of both the built-in (backend-provided) proxy and your
-own ones**, with the address of each entry visible — including the address of
-the proxy currently in use. You can **add, rename, edit, delete and switch the
-active proxy** from that list; the built-in one can be edited into your own
-editable copy and overridden.
-
-<p align="center">
-  <img width="520" alt="Custom proxy list manager" src="docs/media/custom-proxy-list.png">
-</p>
-
-### One-click helper for adding related domains
-
-Opening a single site often requires proxying a whole set of CDN/API domains,
-not just one. The popup can now **scan the current page** and present every
-domain it depends on as a checklist — tick a box to add a domain to the proxy
-list (untick to remove). The proxy is re-applied instantly.
+Больше не нужно ограничиваться одной скрытой проксей. В настройках прокси
+теперь **единый список и встроенной (приходящей с бэкенда) прокси, и ваших
+собственных**, причём виден адрес каждой записи — включая адрес активной в
+данный момент прокси. Прямо из списка можно **добавлять, переименовывать,
+изменять, удалять и переключать активную** проксю; встроенную можно изменить в
+виде собственной редактируемой копии и переопределить.
 
 <p align="center">
-  <img width="320" alt="Related domains helper" src="docs/media/related-domains-helper.png">
+  <img width="520" alt="Менеджер списка прокси" src="docs/media/custom-proxy-list.png">
 </p>
 
-### Alternative blocklist source
+### Помощник по добавлению связанных доменов в один клик
 
-If the default registry of blocked resources is unavailable, you can point the
-extension at **your own mirror** under *Advanced options*. It accepts a JSON
-array of domains, a JSON object with a `domains`/`data` field, a JSON array of
-objects, or a plain-text list separated by new lines/commas.
+Чтобы открыть один сайт, часто нужно проксировать целый набор доменов
+CDN/API, а не один. Теперь попап может **просканировать текущую страницу** и
+показать все домены, от которых она зависит, в виде списка с галочками —
+поставьте галочку, чтобы добавить домен в список проксирования (снимите, чтобы
+убрать). Прокси применяется мгновенно.
 
 <p align="center">
-  <img width="520" alt="Alternative blocklist source" src="docs/media/custom-registry-source.png">
+  <img width="320" alt="Помощник по связанным доменам" src="docs/media/related-domains-helper.png">
 </p>
 
-### Automated cross-browser release builds
+### Альтернативный источник списка блокировок
 
-A GitHub Actions workflow (`.github/workflows/release.yml`) builds and packages
-the extension for **all supported browsers**. Pushing a `v*` tag produces
-ready-to-upload ZIP packages and attaches them to a GitHub Release; the same
-workflow can also be triggered manually to download build artifacts.
+Если стандартный реестр заблокированных ресурсов недоступен, в *Расширенных
+настройках* можно указать **собственное зеркало**. Поддерживаются: JSON-массив
+доменов, JSON-объект с полем `domains`/`data`, JSON-массив объектов или
+текстовый список, разделённый переносами строк/запятыми.
 
-Permissions
-===========
+<p align="center">
+  <img width="520" alt="Альтернативный источник списка блокировок" src="docs/media/custom-registry-source.png">
+</p>
 
-Censor Tracker requires the following permissions:
+### Автоматическая сборка релизов под все браузеры
 
-- `alarms` — Enables periodic tasks such as database synchronization and re-requesting the list of proxy servers.
-- `activeTab` — Detects IDO websites (primarily relevant for Russian users).
-- `management` — Identifies permission conflicts (e.g., with other extensions).
-- `notifications` — Displays notifications.
-- `proxy` — Configures and utilizes Censor Tracker proxy servers.
-- `scripting` — Scans the active tab (only when you click *Scan this page*) to discover related domains.
-- `storage` — Saves user preferences.
-- `unlimitedStorage` — Stores the database of blocked websites (due to its large size).
-- `webNavigation` — Manages and monitors web requests.
-- `http://*/*` and `https://*/*` — Allows website proxying, retrieval of proxy server lists, and user country
-  detection (required for country-specific proxying).
+GitHub Actions workflow (`.github/workflows/release.yml`) собирает и упаковывает
+расширение для **всех поддерживаемых браузеров**. Пуш тега вида `v*` создаёт
+готовые к загрузке ZIP-пакеты и прикрепляет их к GitHub Release; этот же
+workflow можно запустить вручную, чтобы скачать артефакты сборки.
 
-Requirements
-============
+Разрешения
+==========
 
-Censor Tracker works with following versions of browsers:
+Censor Tracker требует следующие разрешения:
 
-- Mozilla Firefox 98 or higher
-- Chromium (Google Chrome, Brave, Edge, Opera etc.) 94 or higher
+- `alarms` — периодические задачи: синхронизация базы и повторный запрос списка прокси-серверов.
+- `activeTab` — определение сайтов-ОРИ (актуально в первую очередь для пользователей из России).
+- `management` — выявление конфликтов разрешений (например, с другими расширениями).
+- `notifications` — показ уведомлений.
+- `proxy` — настройка и использование прокси-серверов Censor Tracker.
+- `scripting` — сканирование активной вкладки (только при нажатии «Просканировать страницу») для поиска связанных доменов.
+- `storage` — сохранение настроек пользователя.
+- `unlimitedStorage` — хранение базы заблокированных сайтов (из-за её большого размера).
+- `webNavigation` — управление и мониторинг веб-запросов.
+- `http://*/*` и `https://*/*` — проксирование сайтов, получение списков прокси-серверов и
+  определение страны пользователя (нужно для проксирования по странам).
 
-Development
-===========
+Требования
+==========
 
-Make sure you have required versions of `node` and `npm`, which are:
+Censor Tracker работает со следующими версиями браузеров:
 
-- `node v17.4.0` or higher
-- `npm 8.3.1` or higher
+- Mozilla Firefox 98 и выше
+- Chromium (Google Chrome, Brave, Edge, Opera и др.) 94 и выше
 
-Optionally, you may like:
+Разработка
+==========
+
+Убедитесь, что у вас установлены нужные версии `node` и `npm`:
+
+- `node v17.4.0` или выше
+- `npm 8.3.1` или выше
+
+Опционально может пригодиться:
 
 - [`nvm`](https://github.com/nvm-sh/nvm)
 
-Firstly, you will need to install dependencies:
+Сначала установите зависимости:
 
     ~ npm install
 
-Now you can build an extension for Chrome like this:
+Сборка расширения для Chrome:
 
     ~ npm run build:chrome
     ~ cd dist/chrome
 
-and for Firefox, like this:
+Сборка для Firefox:
 
     ~ npm run build:firefox
     ~ cd dist/firefox
 
-**Troubleshooting**: If you're getting error on building an extension using `npm`, please make sure that your
-shell supports per-command environment variables (i.e something like this
-`NODE_ENV=production npm run build:firefox:prod`)
+Готовые к публикации ZIP-пакеты для обоих браузеров:
 
-Installing the Firefox release
-==============================
+    ~ npm run release
 
-Stable Firefox **refuses to install unsigned add-ons** and reports them with
-the misleading message *"this add-on appears to be corrupt"*. A plain `.zip`
-produced by `npm run release:firefox` therefore cannot be installed directly —
-it first has to be signed by Mozilla. Install the **`.xpi`** asset attached to
-each [GitHub Release](https://github.com/avatarDD/censortracker/releases), not
-the `.zip`.
+**Устранение неполадок**: если при сборке через `npm` возникает ошибка,
+убедитесь, что ваш shell поддерживает переменные окружения для отдельных команд
+(то есть что-то вроде `NODE_ENV=production npm run build:firefox:prod`).
 
-To produce a signed `.xpi`, the release CI runs
+Установка релиза в Firefox
+==========================
+
+Стабильный Firefox **отказывается устанавливать неподписанные дополнения** и
+показывает вводящее в заблуждение сообщение *«это дополнение, по-видимому,
+повреждено»*. Поэтому обычный `.zip`, который создаёт `npm run release:firefox`,
+напрямую установить нельзя — его сначала должна подписать Mozilla.
+Устанавливайте файл **`.xpi`**, прикреплённый к каждому
+[релизу на GitHub](https://github.com/avatarDD/censortracker/releases), а не
+`.zip`.
+
+Чтобы получить подписанный `.xpi`, CI запускает
 [`web-ext sign`](https://extensionworkshop.com/documentation/develop/web-ext-command-reference/#web-ext-sign)
-on the `--channel=unlisted` channel. This requires two repository secrets
+на канале `--channel=unlisted`. Для этого нужны два секрета репозитория
 (**Settings → Secrets and variables → Actions**):
 
-- `WEB_EXT_API_KEY` — the AMO API *JWT issuer*
-- `WEB_EXT_API_SECRET` — the AMO API *JWT secret*
+- `WEB_EXT_API_KEY` — *JWT issuer* из API AMO
+- `WEB_EXT_API_SECRET` — *JWT secret* из API AMO
 
-Generate the pair at <https://addons.mozilla.org/developers/addon/api/key/>.
-The add-on id used for signing is `browser_specific_settings.gecko.id` in
-`src/firefox/manifest/firefox.json` — keep it stable across releases so updates
-apply cleanly. You can also sign locally:
+Сгенерировать пару можно на <https://addons.mozilla.org/developers/addon/api/key/>.
+Идентификатор дополнения для подписи задаётся в
+`browser_specific_settings.gecko.id` в файле
+`src/firefox/manifest/firefox.json` — не меняйте его между релизами, иначе
+обновления не будут применяться. Подписать можно и локально:
 
     ~ npm run build:firefox:prod
     ~ WEB_EXT_API_KEY=... WEB_EXT_API_SECRET=... npm run sign:firefox
 
-For quick local testing without signing, load the unpacked build via
-`about:debugging` → *This Firefox* → *Load Temporary Add-on…* (select
-`dist/firefox/prod/manifest.json`); it stays until Firefox is restarted.
+Для быстрой проверки без подписи загрузите распакованную сборку через
+`about:debugging` → *Этот Firefox* → *Загрузить временное дополнение…* (выберите
+`dist/firefox/prod/manifest.json`); оно работает до перезапуска Firefox.
 
-License
-=======
+Лицензия
+========
 
-Censor Tracker is licensed under the MIT License. See [LICENSE] for more
-information.
+Censor Tracker распространяется по лицензии MIT. Подробнее см. [LICENSE].
 
 [LICENSE]: https://github.com/censortracker/censortracker/blob/master/LICENSE

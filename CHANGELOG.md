@@ -1,3 +1,12 @@
+# 20.2.1
+
+- Firefox releases are now signed by Mozilla and shipped as an installable
+  `.xpi` — the previous unsigned `.zip` was rejected by stable Firefox with the
+  misleading "this add-on appears to be corrupt" error
+- Added a stable add-on id (`browser_specific_settings.gecko.id`) so Firefox
+  recognises updates and applies them cleanly
+
+
 # 20.2.0
 
 - Reworked the proxy settings into a single unified list of the built-in

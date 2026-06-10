@@ -1860,3 +1860,32 @@ kbd {
     opacity: 0.3;
   }
 }
+
+/* Dark-theme overrides for the local-proxy options block and the shared
+   .btn-light. These rules sit after the appended light-mode defaults above so
+   they win on equal specificity — otherwise .btn-light keeps its #2c2c2c text
+   and the "Cancel"/"Close tab" labels are invisible on the dark popup, and the
+   loading dots stay black-on-black. */
+@media (prefers-color-scheme: dark) {
+  .btn-light {
+    color: #f4f1f1;
+  }
+
+  .btn-light:hover {
+    background-color: #242728;
+  }
+
+  #localProxyOptions p,
+  #localProxyConfigValueDescr {
+    color: #cbccc6;
+  }
+
+  .local-proxy-disclaimer {
+    background-color: #382e2e;
+    color: #f4f1f1;
+  }
+
+  .loading-dots div {
+    background: #f4f1f1;
+  }
+}

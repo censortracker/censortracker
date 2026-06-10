@@ -1,3 +1,10 @@
+# 20.2.2
+
+- Fixed dark-theme contrast on the popup "Scan this page" / "Add domains"
+  buttons and the options "Cancel" / "Close tab" buttons, whose labels were
+  rendering invisible (same colour as the background) under a dark colour scheme
+
+
 # 20.2.1
 
 - Firefox releases are now signed by Mozilla and shipped as an installable

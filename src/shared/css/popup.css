@@ -797,21 +797,6 @@ div#grantPrivateBrowsingPermissionsButton {
         text-align: center;
         color: #f4f1f1;
     }
-
-    .related-domains {
-        border-top-color: #3a3f45;
-    }
-
-    .related-domains__item {
-        color: #f4f1f1;
-    }
-
-    .related-domains__find-btn,
-    .related-domains__apply-btn {
-        background: #242728;
-        color: #f4f1f1;
-        border-color: #3a3f45;
-    }
 }
 
 .related-domains {
@@ -883,4 +868,25 @@ div#grantPrivateBrowsingPermissionsButton {
 
 .related-domains__apply-btn {
     margin-top: 4px;
+}
+
+/* Dark-theme overrides for the related-domains helper. They must come *after*
+   the base rules above: the two share equal specificity, so when the dark
+   rules lived earlier in the file the later light defaults won and the button
+   labels rendered white-on-white. */
+@media (prefers-color-scheme: dark) {
+    .related-domains {
+        border-top-color: #3a3f45;
+    }
+
+    .related-domains__item {
+        color: #f4f1f1;
+    }
+
+    .related-domains__find-btn,
+    .related-domains__apply-btn {
+        background: #242728;
+        color: #f4f1f1;
+        border-color: #3a3f45;
+    }
 }

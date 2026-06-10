@@ -168,6 +168,38 @@ Censor Tracker работает со следующими версиями бр�
 убедитесь, что ваш shell поддерживает переменные окружения для отдельных команд
 (то есть что-то вроде `NODE_ENV=production npm run build:firefox:prod`).
 
+Установка релиза в Firefox
+==========================
+
+Стабильный Firefox **отказывается устанавливать неподписанные дополнения** и
+показывает вводящее в заблуждение сообщение *«это дополнение, по-видимому,
+повреждено»*. Поэтому обычный `.zip`, который создаёт `npm run release:firefox`,
+напрямую установить нельзя — его сначала должна подписать Mozilla.
+Устанавливайте файл **`.xpi`**, прикреплённый к каждому
+[релизу на GitHub](https://github.com/avatarDD/censortracker/releases), а не
+`.zip`.
+
+Чтобы получить подписанный `.xpi`, CI запускает
+[`web-ext sign`](https://extensionworkshop.com/documentation/develop/web-ext-command-reference/#web-ext-sign)
+на канале `--channel=unlisted`. Для этого нужны два секрета репозитория
+(**Settings → Secrets and variables → Actions**):
+
+- `WEB_EXT_API_KEY` — *JWT issuer* из API AMO
+- `WEB_EXT_API_SECRET` — *JWT secret* из API AMO
+
+Сгенерировать пару можно на <https://addons.mozilla.org/developers/addon/api/key/>.
+Идентификатор дополнения для подписи задаётся в
+`browser_specific_settings.gecko.id` в файле
+`src/firefox/manifest/firefox.json` — не меняйте его между релизами, иначе
+обновления не будут применяться. Подписать можно и локально:
+
+    ~ npm run build:firefox:prod
+    ~ WEB_EXT_API_KEY=... WEB_EXT_API_SECRET=... npm run sign:firefox
+
+Для быстрой проверки без подписи загрузите распакованную сборку через
+`about:debugging` → *Этот Firefox* → *Загрузить временное дополнение…* (выберите
+`dist/firefox/prod/manifest.json`); оно работает до перезапуска Firefox.
+
 Лицензия
 ========
 

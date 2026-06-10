@@ -16,6 +16,7 @@
     "build:firefox:prod": "NODE_ENV=production BROWSER=firefox webpack --progress --config webpack.config.js",
     "release:firefox": "web-ext build -o --source-dir=./dist/firefox/prod --artifacts-dir=./releases/firefox",
     "release:chrome": "web-ext build -o --source-dir=./dist/chrome/prod --artifacts-dir=./releases/chrome",
+    "sign:firefox": "web-ext sign --channel=unlisted --source-dir=./dist/firefox/prod --artifacts-dir=./releases/firefox",
     "release": "web-ext build -o --source-dir=./dist/firefox/prod --artifacts-dir=./releases/firefox && web-ext build -o --source-dir=./dist/chrome/prod --artifacts-dir=./releases/chrome",
     "lint": "eslint --ext=.js ./src/",
     "stylelint": "stylelint ./src/",

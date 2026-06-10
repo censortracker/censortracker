@@ -162,6 +162,36 @@ and for Firefox, like this:
 shell supports per-command environment variables (i.e something like this
 `NODE_ENV=production npm run build:firefox:prod`)
 
+Installing the Firefox release
+==============================
+
+Stable Firefox **refuses to install unsigned add-ons** and reports them with
+the misleading message *"this add-on appears to be corrupt"*. A plain `.zip`
+produced by `npm run release:firefox` therefore cannot be installed directly —
+it first has to be signed by Mozilla. Install the **`.xpi`** asset attached to
+each [GitHub Release](https://github.com/avatarDD/censortracker/releases), not
+the `.zip`.
+
+To produce a signed `.xpi`, the release CI runs
+[`web-ext sign`](https://extensionworkshop.com/documentation/develop/web-ext-command-reference/#web-ext-sign)
+on the `--channel=unlisted` channel. This requires two repository secrets
+(**Settings → Secrets and variables → Actions**):
+
+- `WEB_EXT_API_KEY` — the AMO API *JWT issuer*
+- `WEB_EXT_API_SECRET` — the AMO API *JWT secret*
+
+Generate the pair at <https://addons.mozilla.org/developers/addon/api/key/>.
+The add-on id used for signing is `browser_specific_settings.gecko.id` in
+`src/firefox/manifest/firefox.json` — keep it stable across releases so updates
+apply cleanly. You can also sign locally:
+
+    ~ npm run build:firefox:prod
+    ~ WEB_EXT_API_KEY=... WEB_EXT_API_SECRET=... npm run sign:firefox
+
+For quick local testing without signing, load the unpacked build via
+`about:debugging` → *This Firefox* → *Load Temporary Add-on…* (select
+`dist/firefox/prod/manifest.json`); it stays until Firefox is restarted.
+
 License
 =======
 

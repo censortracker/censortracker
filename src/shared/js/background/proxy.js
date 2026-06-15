@@ -67,11 +67,16 @@ class ProxyManager {
     }
   }
 
-  async setProxy () {
+  async setProxy ({ additionalDomains = [] } = {}) {
     const config = {}
     const domains = await registry.getDomains()
+    // Extra domains are used for temporary PAC rules during registry fetches.
+    const domainsToProxy = Array.from(new Set([
+      ...domains,
+      ...additionalDomains.filter(Boolean),
+    ]))
 
-    if (domains.length === 0) {
+    if (domainsToProxy.length === 0) {
       console.error('No domains to proxy, aborting...')
       await this.removeProxy()
       return false
@@ -83,7 +88,7 @@ class ProxyManager {
     } = await this.getProxyingRules()
 
     const pacData = getPacScript({
-      domains,
+      domains: domainsToProxy,
       proxyServerURI,
       proxyServerProtocol,
     })

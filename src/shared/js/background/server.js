@@ -1,4 +1,6 @@
 import browser from './browser-api'
+import ProxyManager from './proxy'
+import { extractDomainFromUrl } from './utilities'
 
 const getConfigAPIEndpoints = () => {
   return [
@@ -18,6 +20,38 @@ const getConfigAPIEndpoints = () => {
 }
 
 const FALLBACK_COUNTRY_CODE = 'RU'
+
+const setCustomProxyForRegistryFetch = async (urls) => {
+  // Route registry source hosts through the user's proxy before fetching lists.
+  const {
+    customProxyProtocol,
+    customProxyServerURI,
+  } = await browser.storage.local.get([
+    'customProxyProtocol',
+    'customProxyServerURI',
+  ])
+  const usingCustomProxy = await ProxyManager.usingCustomProxy()
+  const proxyingEnabled = await ProxyManager.isEnabled()
+
+  if (
+    !proxyingEnabled ||
+    !usingCustomProxy ||
+    !customProxyProtocol ||
+    !customProxyServerURI
+  ) {
+    return
+  }
+
+  const additionalDomains = urls
+    .filter(Boolean)
+    .map((url) => extractDomainFromUrl(url))
+
+  if (additionalDomains.length === 0) {
+    return
+  }
+
+  await ProxyManager.setProxy({ additionalDomains })
+}
 
 /**
  * Fetches the country code from the given GeoIP API Endpoint.
@@ -192,6 +226,8 @@ const fetchRegistry = async ({ registryUrl, specifics = {} } = {}) => {
       storageKey: 'disseminators',
     })
   }
+
+  await setCustomProxyForRegistryFetch(apis.map(({ url }) => url))
 
   for (const { storageKey, url } of apis) {
     try {

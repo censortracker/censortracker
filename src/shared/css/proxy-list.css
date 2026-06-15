@@ -10,6 +10,19 @@
     cursor: pointer
 }
 
+.sort-domains-link {
+    border-bottom: 1px solid transparent;
+    color: #5173d3;
+    font-size: 13px;
+    font-weight: 400;
+    text-decoration: none
+}
+
+.sort-domains-link:hover {
+    border-bottom: 1px solid #5173d3;
+    cursor: pointer
+}
+
 .btn__add_list span {
     margin-left: 2px;
 }

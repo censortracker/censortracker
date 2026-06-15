@@ -301,6 +301,9 @@
   "optionsLoadFromSource": {
     "message": "Завантажити список із файлу або URL"
   },
+  "optionsSortAlphabetically": {
+    "message": "Сортувати за алфавітом"
+  },
   "optionsPageTitle": {
     "message": "Налаштування"
   },

@@ -301,6 +301,9 @@
   "optionsLoadFromSource": {
     "message": "Загрузить список из файла или URL"
   },
+  "optionsSortAlphabetically": {
+    "message": "Сортировать по алфавиту"
+  },
   "optionsPageTitle": {
     "message": "Настройки"
   },

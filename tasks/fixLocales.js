@@ -1,6 +1,8 @@
-const fs = require('fs')
+const fs = require('node:fs')
+const path = require('node:path')
 
-const getLocalePath = (locale) => `./src/shared/_locales/${locale}/messages.json`
+const getLocalePath = (locale) =>
+  path.join(__dirname, '..', 'src', 'shared', '_locales', locale, 'messages.json')
 
 const loadData = ({ locale }) => {
   try {

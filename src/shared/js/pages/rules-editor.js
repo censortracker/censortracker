@@ -92,6 +92,7 @@ import CodeMirror from 'codemirror'
   const popup = document.getElementById('popup')
 
   if (popup) {
+    const sortDomainsButton = document.getElementById('sortDomains')
     const loadDomainsButton = document.getElementById('loadDomains')
     const closePopupButton = document.getElementById('closePopup')
     const textFileInput = document.getElementById('textFileInput')
@@ -101,6 +102,18 @@ import CodeMirror from 'codemirror'
 
     const maxSizeBytes = 64000 // 64KB
     const maxDomainsAllowed = 1000
+
+    sortDomainsButton.addEventListener('click', async (event) => {
+      event.preventDefault()
+
+      const domains = readlines(editor.getValue())
+        .sort((firstDomain, secondDomain) => (
+          firstDomain.localeCompare(secondDomain)
+        ))
+
+      await browser.storage.local.set({ customProxiedDomains: domains })
+      editor.setValue(domains.join('\n'))
+    })
 
     const updateEditorContent = async (domains) => {
       const { customProxiedDomains } = await browser.storage.local.get({

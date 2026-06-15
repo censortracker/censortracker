@@ -301,6 +301,9 @@
   "optionsLoadFromSource": {
     "message": "Load from a file or URL"
   },
+  "optionsSortAlphabetically": {
+    "message": "Sort alphabetically"
+  },
   "optionsPageTitle": {
     "message": "Settings"
   },

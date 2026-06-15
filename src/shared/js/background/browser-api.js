@@ -25,12 +25,13 @@ export const getBrowserInfo = () => {
  * @returns {*}
  */
 const getBrowser = () => {
-  if (typeof browser !== 'undefined') {
-    browser.isFirefox = true
-    return browser
-  }
-  chrome.isFirefox = false
-  return chrome
+  const ua = navigator.userAgent
+  const isFirefox = /Firefox\/\d+/.test(ua)
+  const api = typeof chrome !== 'undefined' ? chrome : browser
+
+  api.isFirefox = isFirefox
+
+  return api
 }
 
 export default getBrowser()

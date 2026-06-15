@@ -18,7 +18,7 @@ import * as server from 'Background/server'
   const useLocalProxyRadioButton = document.getElementById('useLocalProxy')
   const proxyCustomOptionsRadioGroup = document.getElementById('proxyCustomOptionsRadioGroup')
   const selectProxyProtocol = document.querySelector('.select')
-  const currentProxyProtocol = document.querySelector('#select-toggle')
+  const proxySelectToggle = document.querySelector('#select-toggle')
   const proxyProtocols = document.querySelectorAll('.select-option')
   const localProxyOptions = document.getElementById('localProxyOptions')
   const addLocalProxyButton = document.getElementById('addLocalProxyButton')
@@ -244,7 +244,7 @@ import * as server from 'Background/server'
   ])
 
   if (customProxyProtocol) {
-    currentProxyProtocol.textContent = customProxyProtocol
+    proxySelectToggle.textContent = customProxyProtocol
   }
 
   if (useLocalProxy) {
@@ -266,7 +266,7 @@ import * as server from 'Background/server'
 
   saveCustomProxyButton.addEventListener('click', async (event) => {
     const customProxyServer = proxyServerInput.value
-    const proxyProtocol = currentProxyProtocol.textContent.trim()
+    const proxyProtocol = getSelectedProxyType()
 
     if (customProxyServer) {
       await browser.storage.local.set({
@@ -360,8 +360,22 @@ import * as server from 'Background/server'
     option.addEventListener('click', async (event) => {
       selectProxyProtocol.classList.remove('show-protocols')
 
-      currentProxyProtocol.value = event.target.dataset.value
-      currentProxyProtocol.textContent = event.target.dataset.value
+      proxySelectToggle.value = event.target.dataset.value
+      proxySelectToggle.textContent = event.target.dataset.value
     })
+  }
+
+  const getSelectedProxyType = () => {
+    const currentButtonText = proxySelectToggle.textContent.trim()
+
+    const proxyTypeMap = {
+      HTTP: 'PROXY',
+      HTTPS: 'HTTPS',
+      SOCKS4: 'SOCKS4',
+      SOCKS5: 'SOCKS5',
+      PROXY: 'PROXY',
+    }
+
+    return proxyTypeMap[currentButtonText] || currentButtonText
   }
 })()

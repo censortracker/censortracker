@@ -1,25 +1,150 @@
 name: Build
 
-on: [push]
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Git tag to create, for example v20.0.0
+        required: true
+        type: string
+      release_name:
+        description: Optional GitHub release title
+        required: false
+        default: ""
+        type: string
+
+permissions:
+  contents: write
 
 jobs:
   build:
-    name: Test on node ${{ matrix.node_version }} and ${{ matrix.os }}
+    if: github.event_name != 'workflow_dispatch'
     runs-on: ubuntu-latest
+
     strategy:
       matrix:
-        node-version: [15.4]
+        node-version: [18]
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
-    - run: npm install -g node-pre-gyp
-    - run: npm install
-    - run: npm run lint
-    - run: npm run locales:check
-      env:
-        CI: true
-        PROJECT_NAME: censortracker
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+
+      - run: npm install -g node-pre-gyp
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run locales:check
+        env:
+          CI: true
+          PROJECT_NAME: censortracker
+
+      - run: npm run build:chrome:prod
+      - run: npm run build:firefox:prod
+
+      - name: Upload Chrome artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: censortracker-chrome
+          path: dist/chrome
+          retention-days: 14
+
+      - name: Upload Firefox artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: censortracker-firefox
+          path: dist/firefox
+          retention-days: 14
+
+  release:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Ensure tag does not exist
+        env:
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: |
+          git fetch --tags --force
+          if git rev-parse "${RELEASE_TAG}" >/dev/null 2>&1; then
+            echo "Tag ${RELEASE_TAG} already exists"
+            exit 1
+          fi
+
+      - name: Use Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+
+      - run: npm install -g node-pre-gyp
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run locales:check
+        env:
+          CI: true
+          PROJECT_NAME: censortracker
+
+      - run: npm run build:chrome:prod
+      - run: npm run build:firefox:prod
+      - run: npm run release:chrome
+      - run: npm run release:firefox
+
+      - name: Upload release artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: censortracker-release
+          path: |
+            releases/chrome
+            releases/firefox
+          retention-days: 14
+
+      - name: Create and push tag
+        env:
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag "${RELEASE_TAG}" "${GITHUB_SHA}"
+          git push origin "${RELEASE_TAG}"
+
+      - name: Resolve release name
+        id: release_name
+        env:
+          RELEASE_NAME_INPUT: ${{ inputs.release_name }}
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: |
+          if [ -n "${RELEASE_NAME_INPUT}" ]; then
+            echo "value=${RELEASE_NAME_INPUT}" >> "$GITHUB_OUTPUT"
+          else
+            echo "value=${RELEASE_TAG}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Download release artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: censortracker-release
+          path: downloaded-artifacts
+
+      - name: Pack release zip
+        run: |
+          mkdir -p release-assets
+          cd downloaded-artifacts
+          zip -r ../release-assets/censortracker-release-${{ inputs.tag }}.zip .
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.tag }}
+          name: ${{ steps.release_name.outputs.value }}
+          generate_release_notes: true
+          files: release-assets/censortracker-release-${{ inputs.tag }}.zip

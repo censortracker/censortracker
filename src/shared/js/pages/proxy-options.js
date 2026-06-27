@@ -39,6 +39,8 @@ import { i18nGetMessage, parseProxyString } from 'Background/utilities'
   const currentProxyAddressValue = document.getElementById('currentProxyAddressValue')
   const customProxyFormTitle = document.getElementById('customProxyFormTitle')
   const cancelEditProxyButton = document.getElementById('cancelEditProxyButton')
+  const testAllProxiesButton = document.getElementById('testAllProxiesButton')
+  const proxyTestTargetSelect = document.getElementById('proxyTestTarget')
 
   if (proxyNameInput) {
     proxyNameInput.placeholder = i18nGetMessage('customProxyNamePlaceholder')
@@ -258,10 +260,21 @@ import { i18nGetMessage, parseProxyString } from 'Background/utilities'
     })
   }
 
+  // Builds the alive/dead/latency badge from a stored status entry.
+  const statusBadgeHtml = (status) => {
+    if (!status) {
+      return `<span class="cproxy-status cproxy-status--unknown">${escapeHtml(i18nGetMessage('proxyStatusUntested'))}</span>`
+    }
+    if (status.alive) {
+      return `<span class="cproxy-status cproxy-status--alive">${status.latency} ${escapeHtml(i18nGetMessage('proxyLatencyUnit'))}</span>`
+    }
+    return `<span class="cproxy-status cproxy-status--dead">${escapeHtml(i18nGetMessage('proxyStatusDead'))}</span>`
+  }
+
   // Renders one row (built-in or user) in the unified proxy list. A checked
   // row is part of the proxy chain; `chain` is the ordered list of ids so we
-  // can show each row's position in it.
-  const renderProxyRow = ({ id, name, protocol, uri, builtin = false }, chain) => {
+  // can show each row's position in it. `statuses` holds the last test result.
+  const renderProxyRow = ({ id, name, protocol, uri, builtin = false }, chain, statuses) => {
     const editTitle = i18nGetMessage(builtin ? 'editBuiltinProxyButton' : 'editProxyButton')
     const chainIndex = chain.indexOf(id)
     const inChain = chainIndex !== -1
@@ -291,7 +304,15 @@ import { i18nGetMessage, parseProxyString } from 'Background/utilities'
          </span>
          ${badge}
        </label>
+       <span class="cproxy-status-cell">${statusBadgeHtml(statuses[id])}</span>
        <div class="cproxy-row__actions">
+         <button type="button" class="cproxy-icon-btn cproxy-test"
+                 data-id="${id}" title="${escapeHtml(i18nGetMessage('testProxyButton'))}">
+           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+             <path d="M20 12a8 8 0 1 1-2.34-5.66" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+             <path d="M20 4v4h-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+           </svg>
+         </button>
          <button type="button" class="cproxy-icon-btn cproxy-edit"
                  data-id="${id}" data-builtin="${builtin}" title="${escapeHtml(editTitle)}">
            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -314,6 +335,7 @@ import { i18nGetMessage, parseProxyString } from 'Background/utilities'
     const proxies = await ProxyManager.getCustomProxies()
     const builtin = await ProxyManager.getBuiltinProxy()
     const chain = await ProxyManager.getProxyChain()
+    const statuses = await ProxyManager.getProxyStatuses()
 
     let html = ''
 
@@ -324,11 +346,11 @@ import { i18nGetMessage, parseProxyString } from 'Background/utilities'
         protocol: builtin.protocol,
         uri: builtin.uri,
         builtin: true,
-      }, chain)
+      }, chain, statuses)
     }
 
     for (const proxy of proxies) {
-      html += renderProxyRow(proxy, chain)
+      html += renderProxyRow(proxy, chain, statuses)
     }
 
     customProxyList.innerHTML = html
@@ -409,6 +431,48 @@ import { i18nGetMessage, parseProxyString } from 'Background/utilities'
     proxyServerInput.focus()
   }
 
+  // Collects every testable proxy (built-in + user) as {id, protocol, uri}.
+  const collectTestableProxies = async () => {
+    const proxies = await ProxyManager.getCustomProxies()
+    const list = proxies.map(({ id, protocol, uri }) => ({ id, protocol, uri }))
+    const builtin = await ProxyManager.getBuiltinProxy()
+
+    if (builtin) {
+      list.unshift({ id: 'builtin', protocol: builtin.protocol, uri: builtin.uri })
+    }
+    return list
+  }
+
+  const rowStatusCell = (id) => {
+    return customProxyList.querySelector(
+      `.cproxy-row[data-id="${id}"] .cproxy-status-cell`,
+    )
+  }
+
+  const setRowChecking = (id) => {
+    const cell = rowStatusCell(id)
+
+    if (cell) {
+      cell.innerHTML =
+        `<span class="cproxy-status cproxy-status--checking">${i18nGetMessage('proxyStatusChecking')}</span>`
+    }
+  }
+
+  const setRowStatus = (id, status) => {
+    const cell = rowStatusCell(id)
+
+    if (!cell) {
+      return
+    }
+    if (status.alive) {
+      cell.innerHTML =
+        `<span class="cproxy-status cproxy-status--alive">${status.latency} ${i18nGetMessage('proxyLatencyUnit')}</span>`
+    } else {
+      cell.innerHTML =
+        `<span class="cproxy-status cproxy-status--dead">${i18nGetMessage('proxyStatusDead')}</span>`
+    }
+  }
+
   // Toggle a proxy's membership in the chain (built-in or user). Marked
   // proxies are tried one after another, in the order they were marked.
   customProxyList.addEventListener('change', async (event) => {
@@ -432,8 +496,23 @@ import { i18nGetMessage, parseProxyString } from 'Background/utilities'
     console.log(`Proxy chain updated: ${nextChain.join(', ')}`)
   })
 
-  // Handle edit / delete actions on rows.
+  // Handle test / edit / delete actions on rows.
   customProxyList.addEventListener('click', async (event) => {
+    const testButton = event.target.closest('.cproxy-test')
+
+    if (testButton) {
+      const id = testButton.dataset.id
+      const list = await collectTestableProxies()
+      const proxy = list.find((item) => item.id === id)
+
+      if (!proxy) {
+        return
+      }
+      setRowChecking(id)
+      setRowStatus(id, await ProxyManager.testProxy(proxy))
+      return
+    }
+
     const editButton = event.target.closest('.cproxy-edit')
 
     if (editButton) {
@@ -468,6 +547,36 @@ import { i18nGetMessage, parseProxyString } from 'Background/utilities'
       await renderCustomProxies()
     }
   })
+
+  // Test every proxy in the list, updating each row's status live.
+  if (testAllProxiesButton) {
+    testAllProxiesButton.addEventListener('click', async () => {
+      const list = await collectTestableProxies()
+
+      if (list.length === 0) {
+        return
+      }
+      testAllProxiesButton.disabled = true
+      for (const proxy of list) {
+        setRowChecking(proxy.id)
+      }
+      try {
+        await ProxyManager.testProxies(list, {
+          onResult: (id, status) => setRowStatus(id, status),
+        })
+      } finally {
+        testAllProxiesButton.disabled = false
+      }
+    })
+  }
+
+  // Remember which cloud endpoint to probe against.
+  if (proxyTestTargetSelect) {
+    proxyTestTargetSelect.value = await ProxyManager.getProxyTestTarget()
+    proxyTestTargetSelect.addEventListener('change', async () => {
+      await ProxyManager.setProxyTestTarget(proxyTestTargetSelect.value)
+    })
+  }
 
   const {
     useOwnProxy,

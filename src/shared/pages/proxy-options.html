@@ -63,6 +63,21 @@
               <div class="cproxy-hint" data-i18n-key="proxyChainHint"></div>
               <div class="custom-proxy-list" id="customProxyList"></div>
 
+              <div class="cproxy-toolbar">
+                <button type="button" class="btn btn-dark cproxy-toolbar__btn" id="testAllProxiesButton">
+                  <span class="btn__text" data-i18n-key="testProxiesButton"></span>
+                </button>
+                <label class="cproxy-toolbar__field">
+                  <span data-i18n-key="proxyTestTargetLabel"></span>
+                  <select id="proxyTestTarget" class="cproxy-select">
+                    <option value="google">Google</option>
+                    <option value="cloudflare">Cloudflare</option>
+                    <option value="amazon">Amazon</option>
+                    <option value="azure">Azure</option>
+                  </select>
+                </label>
+              </div>
+
               <div class="custom-proxy-form">
                 <div class="custom-proxy-form__title" id="customProxyFormTitle"
                      data-i18n-key="addCustomProxyTitle"></div>

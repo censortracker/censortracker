@@ -480,6 +480,27 @@
   "proxyChainPositionTitle": {
     "message": "Position in the chain"
   },
+  "proxyLatencyUnit": {
+    "message": "ms"
+  },
+  "proxyStatusChecking": {
+    "message": "checking…"
+  },
+  "proxyStatusDead": {
+    "message": "dead"
+  },
+  "proxyStatusUntested": {
+    "message": "not tested"
+  },
+  "proxyTestTargetLabel": {
+    "message": "Test via:"
+  },
+  "testProxiesButton": {
+    "message": "Test all"
+  },
+  "testProxyButton": {
+    "message": "Test this proxy"
+  },
   "proxyConnectionIssuesMessage": {
     "message": "A network problem has been detected. Please go to our support chat and tell us about the problem, we will try to solve it →"
   },

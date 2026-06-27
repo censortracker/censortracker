@@ -1,6 +1,7 @@
 import { getPacScript } from 'Background/pac'
 
 import browser from './browser-api'
+import { DEFAULT_PROXY_TEST_TARGET, PROXY_TEST_TARGETS } from './constants'
 import registry from './registry'
 import { fetchWithTimeout } from './utilities'
 
@@ -66,8 +67,38 @@ class ProxyManager {
     }
   }
 
-  async setProxy () {
+  /**
+   * Pushes a raw PAC script into the browser proxy settings, normalizing the
+   * call shape across Firefox (autoConfig blob) and Chromium (pac_script).
+   * @param {string} pacData - PAC script source.
+   * @returns {Promise<void>}
+   */
+  async applyPacData (pacData) {
     const config = {}
+
+    if (browser.isFirefox) {
+      const blob = new Blob([pacData], {
+        type: 'application/x-ns-proxy-autoconfig',
+      })
+
+      config.value = {
+        proxyType: 'autoConfig',
+        autoConfigUrl: URL.createObjectURL(blob),
+      }
+    } else {
+      config.scope = 'regular'
+      config.value = {
+        mode: 'pac_script',
+        pacScript: {
+          data: pacData,
+          mandatory: false,
+        },
+      }
+    }
+    await browser.proxy.settings.set(config)
+  }
+
+  async setProxy () {
     const domains = await registry.getDomains()
 
     if (domains.length === 0) {
@@ -98,28 +129,8 @@ class ProxyManager {
       })
     }
 
-    if (browser.isFirefox) {
-      const blob = new Blob([pacData], {
-        type: 'application/x-ns-proxy-autoconfig',
-      })
-
-      config.value = {
-        proxyType: 'autoConfig',
-        autoConfigUrl: URL.createObjectURL(blob),
-      }
-    } else {
-      config.scope = 'regular'
-      config.value = {
-        mode: 'pac_script',
-        pacScript: {
-          data: pacData,
-          mandatory: false,
-        },
-      }
-    }
-
     try {
-      await browser.proxy.settings.set(config)
+      await this.applyPacData(pacData)
       await this.enableProxy()
       await this.grantIncognitoAccess()
       console.warn('PAC has been set successfully!')
@@ -129,6 +140,18 @@ class ProxyManager {
       await this.disableProxy()
       await this.requestIncognitoAccess()
       return false
+    }
+  }
+
+  /**
+   * Restores the user's real proxy configuration after a temporary probe PAC.
+   * @returns {Promise<void>}
+   */
+  async restoreProxy () {
+    if (await this.isEnabled()) {
+      await this.setProxy()
+    } else {
+      await this.removeProxy()
     }
   }
 
@@ -321,6 +344,7 @@ class ProxyManager {
     const filtered = customProxies.filter((proxy) => proxy.id !== id)
 
     await browser.storage.local.set({ customProxies: filtered })
+    await this.clearProxyStatus(id)
 
     // Drop it from the chain too (this also refreshes the mirrored keys or
     // disables custom proxying when the chain becomes empty).
@@ -508,6 +532,171 @@ class ProxyManager {
       return null
     }
     return { protocol: 'HTTPS', uri: proxyServerURI }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Liveness / latency testing
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Returns the key of the cloud endpoint used to test proxies.
+   * @returns {Promise<string>}
+   */
+  async getProxyTestTarget () {
+    const { proxyTestTarget } = await browser.storage.local.get({
+      proxyTestTarget: DEFAULT_PROXY_TEST_TARGET,
+    })
+
+    return PROXY_TEST_TARGETS[proxyTestTarget]
+      ? proxyTestTarget
+      : DEFAULT_PROXY_TEST_TARGET
+  }
+
+  async setProxyTestTarget (key) {
+    if (PROXY_TEST_TARGETS[key]) {
+      await browser.storage.local.set({ proxyTestTarget: key })
+    }
+  }
+
+  /**
+   * Last known status per proxy id: { alive, latency, ts }.
+   * @returns {Promise<Object>}
+   */
+  async getProxyStatuses () {
+    const { proxyStatuses } =
+      await browser.storage.local.get({ proxyStatuses: {} })
+
+    return proxyStatuses
+  }
+
+  async setProxyStatus (id, status) {
+    if (!id) {
+      return
+    }
+    const proxyStatuses = await this.getProxyStatuses()
+
+    proxyStatuses[id] = { ...status, ts: Date.now() }
+    await browser.storage.local.set({ proxyStatuses })
+  }
+
+  async clearProxyStatus (id) {
+    const proxyStatuses = await this.getProxyStatuses()
+
+    if (id in proxyStatuses) {
+      delete proxyStatuses[id]
+      await browser.storage.local.set({ proxyStatuses })
+    }
+  }
+
+  /**
+   * Builds a PAC that routes only the test host through `proxy` (everything
+   * else DIRECT), so a single fetch measures that one proxy in isolation.
+   * @param {{protocol: string, uri: string}} proxy
+   * @param {string} testHost
+   * @returns {string}
+   */
+  buildProbePac (proxy, testHost) {
+    const directive = `${proxy.protocol} ${proxy.uri}`
+
+    return `function FindProxyForURL(url, host) {
+      if (host === ${JSON.stringify(testHost)}) {
+        return '${directive};';
+      }
+      return 'DIRECT';
+    }`
+  }
+
+  /**
+   * Routes a single test request through `proxy` and measures the round-trip.
+   * Does NOT restore the previous proxy (callers do, possibly after a batch).
+   * @param {{protocol: string, uri: string, id?: string}} proxy
+   * @param {{timeout?: number, testUrl?: string}} [options]
+   * @returns {Promise<{alive: boolean, latency: number|null}>}
+   */
+  async probeProxy (proxy, { timeout = 8000, testUrl } = {}) {
+    if (!proxy || !proxy.uri || !proxy.protocol) {
+      return { alive: false, latency: null }
+    }
+
+    let target = testUrl
+
+    if (!target) {
+      target = PROXY_TEST_TARGETS[await this.getProxyTestTarget()]
+    }
+
+    let testHost
+
+    try {
+      testHost = new URL(target).hostname
+    } catch (error) {
+      return { alive: false, latency: null }
+    }
+
+    await this.applyPacData(this.buildProbePac(proxy, testHost))
+
+    const url = `${target}${target.includes('?') ? '&' : '?'}_ct=${Date.now()}`
+    const now = () =>
+      (typeof performance !== 'undefined' && performance.now)
+        ? performance.now()
+        : Date.now()
+    const started = now()
+    let alive = false
+
+    try {
+      // Any HTTP response means the proxy relayed our request to the cloud.
+      await fetchWithTimeout(url, {
+        method: 'GET',
+        timeout,
+        cache: 'no-store',
+        redirect: 'manual',
+      })
+      alive = true
+    } catch (error) {
+      alive = false
+    }
+
+    return { alive, latency: alive ? Math.round(now() - started) : null }
+  }
+
+  /**
+   * Tests one proxy, stores its status and restores the real proxy afterwards.
+   * @returns {Promise<{alive: boolean, latency: number|null}>}
+   */
+  async testProxy (proxy, options = {}) {
+    try {
+      const result = await this.probeProxy(proxy, options)
+
+      await this.setProxyStatus(proxy.id, result)
+      return result
+    } finally {
+      await this.restoreProxy()
+    }
+  }
+
+  /**
+   * Tests a list of proxies sequentially (they share the global proxy
+   * setting), restoring the real proxy once at the end. `onResult(id, result)`
+   * is called after each one so the UI can update live.
+   * @returns {Promise<Object>} Map of proxy id -> result.
+   */
+  async testProxies (proxies, { onResult, ...options } = {}) {
+    const results = {}
+
+    try {
+      for (const proxy of proxies) {
+        const result = await this.probeProxy(proxy, options)
+
+        results[proxy.id] = result
+        await this.setProxyStatus(proxy.id, result)
+
+        if (typeof onResult === 'function') {
+          onResult(proxy.id, result)
+        }
+      }
+    } finally {
+      await this.restoreProxy()
+    }
+    return results
   }
 
   async removeLocalProxy () {

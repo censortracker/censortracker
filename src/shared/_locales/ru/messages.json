@@ -480,6 +480,27 @@
   "proxyChainPositionTitle": {
     "message": "Позиция в цепочке"
   },
+  "proxyLatencyUnit": {
+    "message": "мс"
+  },
+  "proxyStatusChecking": {
+    "message": "проверка…"
+  },
+  "proxyStatusDead": {
+    "message": "недоступна"
+  },
+  "proxyStatusUntested": {
+    "message": "не проверено"
+  },
+  "proxyTestTargetLabel": {
+    "message": "Тест через:"
+  },
+  "testProxiesButton": {
+    "message": "Проверить все"
+  },
+  "testProxyButton": {
+    "message": "Проверить эту прокси"
+  },
   "proxyConnectionIssuesMessage": {
     "message": "Обнаружена проблема с сетью. Пожалуйста, обратитесь в чат поддержки и расскажите нам о проблеме, мы постараемся ее решить →"
   },

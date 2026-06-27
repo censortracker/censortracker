@@ -522,11 +522,41 @@ a {
   cursor: pointer;
 }
 
-.cproxy-row__main input[type="radio"] {
+.cproxy-row__main input[type="radio"],
+.cproxy-row__main input[type="checkbox"] {
   flex: 0 0 auto;
   width: 16px;
   height: 16px;
   margin: 0;
+}
+
+/* Hint above the proxy list explaining the chain behaviour. */
+.cproxy-hint {
+  font-size: 13px;
+  color: #6d675f;
+  margin-bottom: 2px;
+}
+
+/* A row that is part of the chain. */
+.cproxy-row--active {
+  border-color: #6c9e2c;
+}
+
+/* The 1-based position of a proxy inside the chain. */
+.cproxy-order {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: 10px;
+  background: #6c9e2c;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
 }
 
 .cproxy-row__text {
@@ -1736,6 +1766,10 @@ kbd {
 
   .invalid-input {
     border: 1px solid #9e5757 !important;
+  }
+
+  .cproxy-hint {
+    color: #cbccc6;
   }
 
   .update_available {

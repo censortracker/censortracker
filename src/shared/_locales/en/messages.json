@@ -474,6 +474,12 @@
   "proxiedWebsitesTitle": {
     "message": "Proxying List"
   },
+  "proxyChainHint": {
+    "message": "Tick proxies to chain them — they are tried one after another (the first reachable one is used)."
+  },
+  "proxyChainPositionTitle": {
+    "message": "Position in the chain"
+  },
   "proxyConnectionIssuesMessage": {
     "message": "A network problem has been detected. Please go to our support chat and tell us about the problem, we will try to solve it →"
   },

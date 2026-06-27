@@ -1,19 +1,59 @@
 /**
+ * Build the PAC "return" directive from one or more proxies.
+ *
+ * A PAC script can list several proxies separated by ";". The browser then
+ * tries them one after another (failover): the first reachable one wins, the
+ * rest are fallbacks. This is what powers the "proxy chain" feature — the user
+ * marks several proxies and they are tried in order.
+ *
+ * NOTE: PAC cannot do true multi-hop ("onion") routing where traffic flows
+ * *through* proxy A and *then* B; that requires an external relay. Here the
+ * chain means "use these proxies one after another".
+ *
+ * @param {Array<{protocol: string, uri: string}>} list - Ordered proxies.
+ * @returns {string} e.g. "SOCKS5 1.2.3.4:1080; HTTPS 5.6.7.8:8443"
+ */
+const buildProxyDirective = (list) => {
+  return list
+    .filter((proxy) => proxy && proxy.protocol && proxy.uri)
+    .map(({ protocol, uri }) => `${protocol} ${uri}`)
+    .join('; ')
+}
+
+/**
  * Return PAC Script data.
  * @param domains {Array<string>} - List of domains to proxy.
- * @param proxyServerURI {string} - URI of the proxy server.
- * @param proxyServerProtocol {string} - Protocol of the proxy server.
+ * @param proxies {Array<{protocol: string, uri: string}>} - Ordered proxy
+ *   chain. Tried one after another (failover). Takes precedence when present.
+ * @param proxyServerURI {string} - URI of a single proxy server (legacy).
+ * @param proxyServerProtocol {string} - Protocol of a single proxy (legacy).
  * @returns {string} PAC script
  */
 export const getPacScript = (
   {
     domains = [],
+    proxies = null,
     proxyServerURI,
     proxyServerProtocol,
   },
 ) => {
   // Sort domains alphabetically to make binary search work.
   domains.sort()
+
+  // Accept either an explicit proxy chain or a single legacy pair.
+  let list = []
+
+  if (Array.isArray(proxies) && proxies.length > 0) {
+    list = proxies
+  } else if (proxyServerURI) {
+    list = [{ protocol: proxyServerProtocol, uri: proxyServerURI }]
+  }
+
+  const directive = buildProxyDirective(list)
+  // When there is no proxy configured, never accidentally return an empty
+  // string (which is an invalid PAC result): fall back to DIRECT instead.
+  const proxyResult = directive ? `'${directive};'` : '\'DIRECT\''
+
   return `
       function FindProxyForURL(url, host) {
         function isHostBlocked(array, target) {
@@ -52,15 +92,15 @@ export const getPacScript = (
 
         // Domains, which are blocked.
         let domains = ${JSON.stringify(domains)};
-        
+
         // Proxy *.onion and *.i2p domains.
         if (shExpMatch(host, '*.onion') || shExpMatch(host, '*.i2p')) {
-          return '${proxyServerProtocol} ${proxyServerURI};';
+          return ${proxyResult};
         }
 
         // Return result
         if (isHostBlocked(domains, host)) {
-          return '${proxyServerProtocol} ${proxyServerURI};';
+          return ${proxyResult};
         } else {
           return 'DIRECT';
         }

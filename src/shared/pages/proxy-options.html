@@ -58,8 +58,9 @@
               <label class="radio-button-label" for="useCustomProxy" data-i18n-key="useOwnProxy"></label>
             </div>
             <div id="proxyOptionsInputs" class="proxy-options-inputs hidden">
-              <!-- Unified list: built-in (backend) + user proxies. Pick the
-                   active one, edit or delete entries. -->
+              <!-- Unified list: built-in (backend) + user proxies. Tick the
+                   ones to chain (tried one after another), edit or delete. -->
+              <div class="cproxy-hint" data-i18n-key="proxyChainHint"></div>
               <div class="custom-proxy-list" id="customProxyList"></div>
 
               <div class="custom-proxy-form">

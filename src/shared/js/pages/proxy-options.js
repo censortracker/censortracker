@@ -258,9 +258,16 @@ import { i18nGetMessage, parseProxyString } from 'Background/utilities'
     })
   }
 
-  // Renders one row (built-in or user) in the unified proxy list.
-  const renderProxyRow = ({ id, name, protocol, uri, builtin = false }, activeId) => {
+  // Renders one row (built-in or user) in the unified proxy list. A checked
+  // row is part of the proxy chain; `chain` is the ordered list of ids so we
+  // can show each row's position in it.
+  const renderProxyRow = ({ id, name, protocol, uri, builtin = false }, chain) => {
     const editTitle = i18nGetMessage(builtin ? 'editBuiltinProxyButton' : 'editProxyButton')
+    const chainIndex = chain.indexOf(id)
+    const inChain = chainIndex !== -1
+    const order = inChain
+      ? `<span class="cproxy-order" title="${escapeHtml(i18nGetMessage('proxyChainPositionTitle'))}">${chainIndex + 1}</span>`
+      : ''
     const badge = builtin
       ? `<span class="cproxy-badge">${escapeHtml(i18nGetMessage('builtinProxyBadge'))}</span>`
       : ''
@@ -274,9 +281,10 @@ import { i18nGetMessage, parseProxyString } from 'Background/utilities'
         </button>`
 
     return `
-     <div class="cproxy-row" data-id="${id}">
+     <div class="cproxy-row${inChain ? ' cproxy-row--active' : ''}" data-id="${id}">
        <label class="cproxy-row__main">
-         <input type="radio" name="custom-proxy" value="${id}" ${id === activeId ? 'checked' : ''}/>
+         <input type="checkbox" name="chain-proxy" value="${id}" ${inChain ? 'checked' : ''}/>
+         ${order}
          <span class="cproxy-row__text">
            <span class="cproxy-row__name">${escapeHtml(name)}</span>
            <span class="cproxy-row__addr">${escapeHtml(protocol)} ${escapeHtml(uri)}</span>
@@ -305,7 +313,7 @@ import { i18nGetMessage, parseProxyString } from 'Background/utilities'
 
     const proxies = await ProxyManager.getCustomProxies()
     const builtin = await ProxyManager.getBuiltinProxy()
-    const activeId = await ProxyManager.getActiveCustomProxyId()
+    const chain = await ProxyManager.getProxyChain()
 
     let html = ''
 
@@ -316,11 +324,11 @@ import { i18nGetMessage, parseProxyString } from 'Background/utilities'
         protocol: builtin.protocol,
         uri: builtin.uri,
         builtin: true,
-      }, activeId)
+      }, chain)
     }
 
     for (const proxy of proxies) {
-      html += renderProxyRow(proxy, activeId)
+      html += renderProxyRow(proxy, chain)
     }
 
     customProxyList.innerHTML = html
@@ -337,6 +345,17 @@ import { i18nGetMessage, parseProxyString } from 'Background/utilities'
 
     if (localProxyURI) {
       currentProxyAddress.hidden = true
+      return
+    }
+
+    // Prefer showing the full chain (proxies tried one after another).
+    const chainConfigs = await ProxyManager.getChainProxyConfigs()
+
+    if (chainConfigs.length > 0) {
+      currentProxyAddressValue.textContent = chainConfigs
+        .map(({ protocol, uri }) => `${protocol} ${uri}`)
+        .join('  →  ')
+      currentProxyAddress.hidden = false
       return
     }
 
@@ -390,22 +409,27 @@ import { i18nGetMessage, parseProxyString } from 'Background/utilities'
     proxyServerInput.focus()
   }
 
-  // Select an active proxy from the list (built-in or user).
+  // Toggle a proxy's membership in the chain (built-in or user). Marked
+  // proxies are tried one after another, in the order they were marked.
   customProxyList.addEventListener('change', async (event) => {
-    if (event.target.name !== 'custom-proxy') {
+    if (event.target.name !== 'chain-proxy') {
       return
     }
 
-    const value = event.target.value
-    const activated = value === 'builtin'
-      ? await ProxyManager.setActiveBuiltinProxy()
-      : await ProxyManager.setActiveCustomProxy(value)
+    const id = event.target.value
+    const chain = await ProxyManager.getProxyChain()
+    let nextChain
 
-    if (activated) {
-      await ProxyManager.setProxy()
-      await refreshCurrentProxyAddress()
-      console.log(`Active proxy changed to ${value}`)
+    if (event.target.checked) {
+      nextChain = chain.includes(id) ? chain : [...chain, id]
+    } else {
+      nextChain = chain.filter((chainId) => chainId !== id)
     }
+
+    await ProxyManager.setProxyChain(nextChain)
+    await ProxyManager.setProxy()
+    await renderCustomProxies()
+    console.log(`Proxy chain updated: ${nextChain.join(', ')}`)
   })
 
   // Handle edit / delete actions on rows.
@@ -545,19 +569,15 @@ import { i18nGetMessage, parseProxyString } from 'Background/utilities'
       proxyOptionsInputs.classList.remove('hidden')
       localProxyOptions.style.display = 'none'
       addLocalProxyButton.style.display = 'none'
-      await renderCustomProxies()
 
-      // Re-activate the previously selected proxy (built-in or user).
-      const activeId = await ProxyManager.getActiveCustomProxyId()
+      // Re-apply the previously configured chain (if any).
+      const chain = await ProxyManager.getProxyChain()
 
-      if (activeId === 'builtin') {
-        await ProxyManager.setActiveBuiltinProxy()
-        await ProxyManager.setProxy()
-      } else if (activeId) {
-        await ProxyManager.setActiveCustomProxy(activeId)
+      if (chain.length > 0) {
+        await ProxyManager.setProxyChain(chain)
         await ProxyManager.setProxy()
       }
-      await refreshCurrentProxyAddress()
+      await renderCustomProxies()
     } else if (value === 'local') {
       proxyOptionsInputs.classList.add('hidden')
       await showLocalProxySettings()

@@ -76,16 +76,27 @@ class ProxyManager {
       return false
     }
 
-    const {
-      proxyServerURI,
-      proxyServerProtocol,
-    } = await this.getProxyingRules()
+    // A proxy chain (one or more marked proxies, tried one after another)
+    // takes precedence; otherwise fall back to the single default/built-in
+    // proxy resolved from the legacy rules.
+    const chain = await this.getChainProxyConfigs()
 
-    const pacData = getPacScript({
-      domains,
-      proxyServerURI,
-      proxyServerProtocol,
-    })
+    let pacData
+
+    if (chain.length > 0) {
+      pacData = getPacScript({ domains, proxies: chain })
+    } else {
+      const {
+        proxyServerURI,
+        proxyServerProtocol,
+      } = await this.getProxyingRules()
+
+      pacData = getPacScript({
+        domains,
+        proxyServerURI,
+        proxyServerProtocol,
+      })
+    }
 
     if (browser.isFirefox) {
       const blob = new Blob([pacData], {
@@ -228,6 +239,7 @@ class ProxyManager {
     await browser.storage.local.set({
       useOwnProxy: false,
       activeCustomProxyId: '',
+      proxyChain: [],
     })
     await browser.storage.local.remove([
       'customProxyProtocol',
@@ -292,7 +304,10 @@ class ProxyManager {
 
     customProxies.push(proxy)
     await browser.storage.local.set({ customProxies })
-    await this.setActiveCustomProxy(proxy.id)
+    // Adding a proxy appends it to the chain (tried after the existing ones).
+    const chain = await this.getProxyChain()
+
+    await this.setProxyChain([...chain, proxy.id])
     return proxy
   }
 
@@ -304,17 +319,15 @@ class ProxyManager {
   async deleteCustomProxy (id) {
     const customProxies = await this.getCustomProxies()
     const filtered = customProxies.filter((proxy) => proxy.id !== id)
-    const { activeCustomProxyId } =
-      await browser.storage.local.get({ activeCustomProxyId: '' })
 
     await browser.storage.local.set({ customProxies: filtered })
 
-    if (activeCustomProxyId === id) {
-      if (filtered.length > 0) {
-        await this.setActiveCustomProxy(filtered[0].id)
-      } else {
-        await this.removeCustomProxy()
-      }
+    // Drop it from the chain too (this also refreshes the mirrored keys or
+    // disables custom proxying when the chain becomes empty).
+    const chain = await this.getProxyChain()
+
+    if (chain.includes(id)) {
+      await this.setProxyChain(chain.filter((chainId) => chainId !== id))
     }
     return filtered
   }
@@ -332,12 +345,8 @@ class ProxyManager {
       return false
     }
 
-    await browser.storage.local.set({
-      useOwnProxy: true,
-      activeCustomProxyId: id,
-      customProxyProtocol: proxy.protocol,
-      customProxyServerURI: proxy.uri,
-    })
+    // Selecting a single proxy replaces the chain with just that proxy.
+    await this.setProxyChain([id])
     return true
   }
 
@@ -346,6 +355,99 @@ class ProxyManager {
       await browser.storage.local.get({ activeCustomProxyId: '' })
 
     return activeCustomProxyId
+  }
+
+  /**
+   * Returns the ordered list of proxy ids that make up the current chain.
+   * The browser tries them one after another (failover). Falls back to the
+   * legacy single active proxy when no chain has been stored yet.
+   * @returns {Promise<Array<string>>}
+   */
+  async getProxyChain () {
+    const { proxyChain, activeCustomProxyId } =
+      await browser.storage.local.get({
+        proxyChain: null,
+        activeCustomProxyId: '',
+      })
+
+    if (Array.isArray(proxyChain)) {
+      return proxyChain
+    }
+    return activeCustomProxyId ? [activeCustomProxyId] : []
+  }
+
+  /**
+   * Stores the proxy chain (ordered ids) and mirrors the first hop into the
+   * legacy storage keys read by {@link getProxyingRules}, so the popup and PAC
+   * keep working. An empty chain disables custom proxying.
+   * @param {Array<string>} ids - Ordered proxy ids ('builtin' is allowed).
+   * @returns {Promise<void>}
+   */
+  async setProxyChain (ids) {
+    const chain = Array.isArray(ids) ? ids.filter(Boolean) : []
+
+    await browser.storage.local.set({ proxyChain: chain })
+
+    if (chain.length === 0) {
+      await this.removeCustomProxy()
+      return
+    }
+
+    const customProxies = await this.getCustomProxies()
+    const builtin = await this.getBuiltinProxy()
+    const firstId = chain[0]
+    const first = firstId === 'builtin'
+      ? builtin
+      : customProxies.find((proxy) => proxy.id === firstId)
+
+    if (first) {
+      await browser.storage.local.set({
+        useOwnProxy: true,
+        activeCustomProxyId: firstId,
+        customProxyProtocol: first.protocol,
+        customProxyServerURI: first.uri,
+      })
+    }
+  }
+
+  /**
+   * Resolves the chain ids into concrete {protocol, uri} pairs for the PAC.
+   * Returns an empty array unless the user is on their own proxy, so the
+   * default and local-proxy code paths stay untouched.
+   * @returns {Promise<Array<{protocol: string, uri: string}>>}
+   */
+  async getChainProxyConfigs () {
+    const { useOwnProxy, localProxyURI } =
+      await browser.storage.local.get({ useOwnProxy: false, localProxyURI: '' })
+
+    if (localProxyURI || !useOwnProxy) {
+      return []
+    }
+
+    const chain = await this.getProxyChain()
+
+    if (chain.length === 0) {
+      return []
+    }
+
+    const customProxies = await this.getCustomProxies()
+    const builtin = await this.getBuiltinProxy()
+    const configs = []
+
+    for (const id of chain) {
+      if (id === 'builtin') {
+        if (builtin) {
+          configs.push({ protocol: builtin.protocol, uri: builtin.uri })
+        }
+      } else {
+        const proxy = customProxies.find((item) => item.id === id)
+
+        if (proxy) {
+          configs.push({ protocol: proxy.protocol, uri: proxy.uri })
+        }
+      }
+    }
+    return configs
   }
 
   /**
@@ -388,12 +490,8 @@ class ProxyManager {
       return false
     }
 
-    await browser.storage.local.set({
-      useOwnProxy: true,
-      activeCustomProxyId: 'builtin',
-      customProxyProtocol: builtin.protocol,
-      customProxyServerURI: builtin.uri,
-    })
+    // Selecting the built-in proxy replaces the chain with just that proxy.
+    await this.setProxyChain(['builtin'])
     return true
   }
 

@@ -536,7 +536,7 @@ class ProxyManager {
    * mirrored storage keys are refreshed too.
    * @returns {Promise<boolean>}
    */
-  async updateCustomProxy (id, { name, protocol, uri }) {
+  async updateCustomProxy (id, { name, protocol, uri, credentials = '' }) {
     const customProxies = await this.getCustomProxies()
     const proxy = customProxies.find((item) => item.id === id)
 
@@ -547,6 +547,7 @@ class ProxyManager {
     proxy.name = (name && name.trim()) || uri
     proxy.protocol = protocol
     proxy.uri = uri
+    proxy.credentials = credentials
 
     await browser.storage.local.set({ customProxies })
 

@@ -2,7 +2,12 @@ import browser from 'Background/browser-api'
 import ProxyClient from 'Background/localproxy'
 import ProxyManager from 'Background/proxy'
 import * as server from 'Background/server'
-import { i18nGetMessage, parseProxyList, parseProxyString } from 'Background/utilities'
+import {
+  formatProxyForShare,
+  i18nGetMessage,
+  parseProxyList,
+  parseProxyString,
+} from 'Background/utilities'
 
 (async () => {
   const proxyingEnabled = await ProxyManager.isEnabled()
@@ -42,6 +47,7 @@ import { i18nGetMessage, parseProxyList, parseProxyString } from 'Background/uti
   const testAllProxiesButton = document.getElementById('testAllProxiesButton')
   const proxyTestTargetSelect = document.getElementById('proxyTestTarget')
   const pasteProxiesButton = document.getElementById('pasteProxiesButton')
+  const copyAllProxiesButton = document.getElementById('copyAllProxiesButton')
   const autoDeleteDeadProxiesCheckbox = document.getElementById('autoDeleteDeadProxies')
   const proxyImportMsg = document.getElementById('proxyImportMsg')
 
@@ -309,6 +315,13 @@ import { i18nGetMessage, parseProxyList, parseProxyString } from 'Background/uti
        </label>
        <span class="cproxy-status-cell">${statusBadgeHtml(statuses[id])}</span>
        <div class="cproxy-row__actions">
+         <button type="button" class="cproxy-icon-btn cproxy-copy"
+                 data-id="${id}" title="${escapeHtml(i18nGetMessage('shareProxyButton'))}">
+           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+             <rect x="9" y="9" width="11" height="11" rx="2" stroke="currentColor" stroke-width="2"/>
+             <path d="M5 15V5a2 2 0 0 1 2-2h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+           </svg>
+         </button>
          <button type="button" class="cproxy-icon-btn cproxy-test"
                  data-id="${id}" title="${escapeHtml(i18nGetMessage('testProxyButton'))}">
            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -413,12 +426,13 @@ import { i18nGetMessage, parseProxyList, parseProxyString } from 'Background/uti
 
   // Loads a proxy into the form. Built-in proxies are loaded as a *copy*
   // (editingProxyId stays null) so saving creates a new editable entry.
-  const loadProxyIntoForm = ({ id, name, protocol, uri, builtin }) => {
+  const loadProxyIntoForm = ({ id, name, protocol, uri, credentials, builtin }) => {
     editingProxyId = builtin ? null : id
     if (proxyNameInput) {
       proxyNameInput.value = builtin ? i18nGetMessage('builtinProxyName') : name
     }
-    proxyServerInput.value = uri
+    // Keep any credentials in the field so editing preserves them.
+    proxyServerInput.value = credentials ? `${credentials}@${uri}` : uri
     currentProxyProtocol.textContent = protocol
     currentProxyProtocol.value = protocol
 
@@ -476,6 +490,38 @@ import { i18nGetMessage, parseProxyList, parseProxyString } from 'Background/uti
     }
   }
 
+  // Short feedback line shown under the list (imports, copy).
+  const showImportMsg = (text) => {
+    if (proxyImportMsg) {
+      proxyImportMsg.textContent = text
+      proxyImportMsg.hidden = !text
+    }
+  }
+
+  // Copies text to the clipboard, falling back to execCommand when the async
+  // Clipboard API is unavailable.
+  const copyToClipboard = async (text) => {
+    try {
+      await navigator.clipboard.writeText(text)
+      return true
+    } catch (error) {
+      try {
+        const textarea = document.createElement('textarea')
+
+        textarea.value = text
+        textarea.style.position = 'fixed'
+        textarea.style.opacity = '0'
+        document.body.append(textarea)
+        textarea.select()
+        document.execCommand('copy')
+        textarea.remove()
+        return true
+      } catch (fallbackError) {
+        return false
+      }
+    }
+  }
+
   // Toggle a proxy's membership in the chain (built-in or user). Marked
   // proxies are tried one after another, in the order they were marked.
   customProxyList.addEventListener('change', async (event) => {
@@ -499,8 +545,28 @@ import { i18nGetMessage, parseProxyList, parseProxyString } from 'Background/uti
     console.log(`Proxy chain updated: ${nextChain.join(', ')}`)
   })
 
-  // Handle test / edit / delete actions on rows.
+  // Handle copy / test / edit / delete actions on rows.
   customProxyList.addEventListener('click', async (event) => {
+    const copyButton = event.target.closest('.cproxy-copy')
+
+    if (copyButton) {
+      const id = copyButton.dataset.id
+      let proxy
+
+      if (id === 'builtin') {
+        proxy = await ProxyManager.getBuiltinProxy()
+      } else {
+        const proxies = await ProxyManager.getCustomProxies()
+
+        proxy = proxies.find((item) => item.id === id)
+      }
+
+      if (proxy && await copyToClipboard(formatProxyForShare(proxy))) {
+        showImportMsg(i18nGetMessage('proxyCopied'))
+      }
+      return
+    }
+
     const testButton = event.target.closest('.cproxy-test')
 
     if (testButton) {
@@ -581,14 +647,6 @@ import { i18nGetMessage, parseProxyList, parseProxyString } from 'Background/uti
     })
   }
 
-  // Short feedback line shown under the list after an import.
-  const showImportMsg = (text) => {
-    if (proxyImportMsg) {
-      proxyImportMsg.textContent = text
-      proxyImportMsg.hidden = !text
-    }
-  }
-
   // Imports proxies from pasted/typed text: adds the new ones, tests them
   // live and (optionally) removes the dead ones.
   const importProxiesFromText = async (text) => {
@@ -647,6 +705,21 @@ import { i18nGetMessage, parseProxyList, parseProxyString } from 'Background/uti
         await importProxiesFromText(await navigator.clipboard.readText())
       } catch (error) {
         showImportMsg(i18nGetMessage('clipboardReadFailed'))
+      }
+    })
+  }
+
+  // Copy the whole user list to the clipboard in the shareable format.
+  if (copyAllProxiesButton) {
+    copyAllProxiesButton.addEventListener('click', async () => {
+      const proxies = await ProxyManager.getCustomProxies()
+      const text = proxies
+        .map((proxy) => formatProxyForShare(proxy))
+        .filter(Boolean)
+        .join('\n')
+
+      if (text && await copyToClipboard(text)) {
+        showImportMsg(i18nGetMessage('proxyCopied'))
       }
     })
   }
@@ -744,6 +817,7 @@ import { i18nGetMessage, parseProxyList, parseProxyString } from 'Background/uti
         name,
         protocol: parsed.protocol,
         uri: parsed.uri,
+        credentials: parsed.credentials,
       })
       console.log(`Custom proxy updated: ${parsed.protocol} ${parsed.uri}`)
     } else {
@@ -751,6 +825,7 @@ import { i18nGetMessage, parseProxyList, parseProxyString } from 'Background/uti
         name,
         protocol: parsed.protocol,
         uri: parsed.uri,
+        credentials: parsed.credentials,
       })
       console.log(`Custom proxy added: ${parsed.protocol} ${parsed.uri}`)
     }

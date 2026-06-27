@@ -110,6 +110,23 @@ export const parseProxyString = (input, defaultProtocol = 'HTTPS') => {
 }
 
 /**
+ * Serializes a proxy into the shareable string consumed by
+ * {@link parseProxyString}, so copy → paste round-trips losslessly (including
+ * credentials), e.g. "socks5://user:pass@1.2.3.4:1080".
+ * @param {{protocol: string, uri: string, credentials?: string}} proxy
+ * @returns {string} The shareable proxy string, or '' when incomplete.
+ */
+export const formatProxyForShare = ({ protocol, uri, credentials = '' } = {}) => {
+  if (!protocol || !uri) {
+    return ''
+  }
+
+  const auth = credentials ? `${credentials}@` : ''
+
+  return `${protocol.toLowerCase()}://${auth}${uri}`
+}
+
+/**
  * Parses a whitespace/comma/semicolon/newline separated blob of proxy strings
  * (e.g. pasted from the clipboard) into a de-duplicated list of parsed proxies.
  * @param {string} text - Raw text containing zero or more proxy strings.

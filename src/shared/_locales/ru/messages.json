@@ -483,6 +483,15 @@
   "autoDeleteDeadProxiesLabel": {
     "message": "Удалять нерабочие"
   },
+  "copyAllProxiesButton": {
+    "message": "Копировать все"
+  },
+  "proxyCopied": {
+    "message": "Скопировано в буфер обмена"
+  },
+  "shareProxyButton": {
+    "message": "Скопировать для обмена"
+  },
   "clipboardReadFailed": {
     "message": "Не удалось прочитать буфер обмена. Используйте Ctrl+V."
   },

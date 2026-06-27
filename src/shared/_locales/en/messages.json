@@ -483,6 +483,15 @@
   "autoDeleteDeadProxiesLabel": {
     "message": "Auto-remove dead"
   },
+  "copyAllProxiesButton": {
+    "message": "Copy all"
+  },
+  "proxyCopied": {
+    "message": "Copied to clipboard"
+  },
+  "shareProxyButton": {
+    "message": "Copy to share"
+  },
   "clipboardReadFailed": {
     "message": "Couldn't read the clipboard. Use Ctrl+V instead."
   },

@@ -264,6 +264,11 @@ import {
   // Holds the id of the user proxy currently being edited (null when adding).
   let editingProxyId = null
 
+  // Testing/fetching temporarily rewrites the global proxy and restores it in
+  // a `finally`. If the page is closed mid-flight that restore never runs, so
+  // this flag lets a `pagehide` handler put the real proxy back as a fallback.
+  let proxyTestingInProgress = false
+
   const escapeHtml = (value) => {
     return String(value).replace(/[&<>"']/g, (char) => {
       return {
@@ -585,7 +590,12 @@ import {
         return
       }
       setRowChecking(id)
-      setRowStatus(id, await ProxyManager.testProxy(proxy))
+      proxyTestingInProgress = true
+      try {
+        setRowStatus(id, await ProxyManager.testProxy(proxy))
+      } finally {
+        proxyTestingInProgress = false
+      }
       return
     }
 
@@ -633,6 +643,7 @@ import {
         return
       }
       testAllProxiesButton.disabled = true
+      proxyTestingInProgress = true
       for (const proxy of list) {
         setRowChecking(proxy.id)
       }
@@ -641,6 +652,7 @@ import {
           onResult: (id, status) => setRowStatus(id, status),
         })
       } finally {
+        proxyTestingInProgress = false
         testAllProxiesButton.disabled = false
       }
     })
@@ -677,9 +689,16 @@ import {
       setRowChecking(proxy.id)
     }
 
-    const results = await ProxyManager.testProxies(added, {
-      onResult: (id, status) => setRowStatus(id, status),
-    })
+    proxyTestingInProgress = true
+    let results
+
+    try {
+      results = await ProxyManager.testProxies(added, {
+        onResult: (id, status) => setRowStatus(id, status),
+      })
+    } finally {
+      proxyTestingInProgress = false
+    }
     const aliveCount =
       added.filter((proxy) => results[proxy.id] && results[proxy.id].alive).length
     let removedCount = 0
@@ -820,6 +839,7 @@ import {
     fetchProxySourcesButton.addEventListener('click', async () => {
       await ProxyManager.setProxySourcesSettings(readSourcesControls())
       fetchProxySourcesButton.disabled = true
+      proxyTestingInProgress = true
       if (proxySourcesStatus) {
         proxySourcesStatus.textContent = i18nGetMessage('proxySourcesFetching')
       }
@@ -833,10 +853,19 @@ import {
             `${i18nGetMessage('proxiesImportedLabel')}: +${added}  ✓${alive}  ✗${removed}`
         }
       } finally {
+        proxyTestingInProgress = false
         fetchProxySourcesButton.disabled = false
       }
     })
   }
+
+  // Fallback: if the page is closed while a test/fetch is mid-flight, put the
+  // real proxy back so browsing isn't left routed through a probe PAC.
+  window.addEventListener('pagehide', () => {
+    if (proxyTestingInProgress) {
+      ProxyManager.restoreProxy()
+    }
+  })
 
   const {
     useOwnProxy,

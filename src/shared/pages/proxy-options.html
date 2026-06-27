@@ -89,6 +89,38 @@
               </div>
               <div class="cproxy-import-msg" id="proxyImportMsg" hidden></div>
 
+              <div class="cproxy-sources">
+                <div class="cproxy-sources__title" data-i18n-key="proxySourcesTitle"></div>
+                <label class="cproxy-toolbar__check">
+                  <input type="checkbox" id="proxySourcesEnabled"/>
+                  <span data-i18n-key="proxySourcesEnabledLabel"></span>
+                </label>
+                <div class="cproxy-hint" data-i18n-key="proxySourcesHint"></div>
+                <textarea id="proxySourcesList" class="cproxy-sources__textarea"
+                          placeholder="https://example.com/proxies.txt"></textarea>
+                <div class="cproxy-sources__row">
+                  <label class="cproxy-toolbar__field">
+                    <span data-i18n-key="proxySourcesIntervalLabel"></span>
+                    <input type="number" id="proxySourcesInterval" class="cproxy-sources__interval"
+                           min="5" step="5"/>
+                  </label>
+                  <label class="cproxy-toolbar__check">
+                    <input type="checkbox" id="proxySourcesUseProxy"/>
+                    <span data-i18n-key="proxySourcesUseProxyLabel"></span>
+                  </label>
+                  <label class="cproxy-toolbar__check">
+                    <input type="checkbox" id="proxySourcesAutoTest"/>
+                    <span data-i18n-key="proxySourcesAutoTestLabel"></span>
+                  </label>
+                </div>
+                <div class="cproxy-sources__row">
+                  <button type="button" class="btn btn-dark cproxy-toolbar__btn" id="fetchProxySourcesButton">
+                    <span class="btn__text" data-i18n-key="fetchProxySourcesButton"></span>
+                  </button>
+                  <span class="cproxy-sources__status" id="proxySourcesStatus"></span>
+                </div>
+              </div>
+
               <div class="custom-proxy-form">
                 <div class="custom-proxy-form__title" id="customProxyFormTitle"
                      data-i18n-key="addCustomProxyTitle"></div>

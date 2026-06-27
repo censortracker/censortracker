@@ -525,6 +525,30 @@
   "testProxyButton": {
     "message": "Перевірити цю проксі"
   },
+  "fetchProxySourcesButton": {
+    "message": "Завантажити зараз"
+  },
+  "proxySourcesAutoTestLabel": {
+    "message": "Перевіряти, видаляти неробочі, сортувати за затримкою"
+  },
+  "proxySourcesEnabledLabel": {
+    "message": "Автозавантаження за таймером"
+  },
+  "proxySourcesFetching": {
+    "message": "Завантаження…"
+  },
+  "proxySourcesHint": {
+    "message": "URL списків проксі, по одному в рядку (текст або будь-який формат для вставки)."
+  },
+  "proxySourcesIntervalLabel": {
+    "message": "Інтервал (хв):"
+  },
+  "proxySourcesTitle": {
+    "message": "Автозавантаження списків проксі"
+  },
+  "proxySourcesUseProxyLabel": {
+    "message": "Завантажувати через активну проксі"
+  },
   "proxyConnectionIssuesMessage": {
     "message": "Виявлено проблему з мережею. Будь ласка, зверніться в чат підтримки і розкажіть нам про проблему, ми постараємося її вирішити →"
   },

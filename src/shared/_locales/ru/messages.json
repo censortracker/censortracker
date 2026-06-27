@@ -525,6 +525,30 @@
   "testProxyButton": {
     "message": "Проверить эту прокси"
   },
+  "fetchProxySourcesButton": {
+    "message": "Загрузить сейчас"
+  },
+  "proxySourcesAutoTestLabel": {
+    "message": "Проверять, удалять нерабочие, сортировать по задержке"
+  },
+  "proxySourcesEnabledLabel": {
+    "message": "Автозагрузка по таймеру"
+  },
+  "proxySourcesFetching": {
+    "message": "Загрузка…"
+  },
+  "proxySourcesHint": {
+    "message": "URL списков прокси, по одному в строке (текст или любой вставляемый формат)."
+  },
+  "proxySourcesIntervalLabel": {
+    "message": "Интервал (мин):"
+  },
+  "proxySourcesTitle": {
+    "message": "Автозагрузка списков прокси"
+  },
+  "proxySourcesUseProxyLabel": {
+    "message": "Качать через активную прокси"
+  },
   "proxyConnectionIssuesMessage": {
     "message": "Обнаружена проблема с сетью. Пожалуйста, обратитесь в чат поддержки и расскажите нам о проблеме, мы постараемся ее решить →"
   },

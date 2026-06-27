@@ -50,6 +50,13 @@ import {
   const copyAllProxiesButton = document.getElementById('copyAllProxiesButton')
   const autoDeleteDeadProxiesCheckbox = document.getElementById('autoDeleteDeadProxies')
   const proxyImportMsg = document.getElementById('proxyImportMsg')
+  const proxySourcesEnabledCheckbox = document.getElementById('proxySourcesEnabled')
+  const proxySourcesListTextarea = document.getElementById('proxySourcesList')
+  const proxySourcesIntervalInput = document.getElementById('proxySourcesInterval')
+  const proxySourcesUseProxyCheckbox = document.getElementById('proxySourcesUseProxy')
+  const proxySourcesAutoTestCheckbox = document.getElementById('proxySourcesAutoTest')
+  const fetchProxySourcesButton = document.getElementById('fetchProxySourcesButton')
+  const proxySourcesStatus = document.getElementById('proxySourcesStatus')
 
   if (proxyNameInput) {
     proxyNameInput.placeholder = i18nGetMessage('customProxyNamePlaceholder')
@@ -750,6 +757,84 @@ import {
       await ProxyManager.setAutoDeleteDeadProxies(
         autoDeleteDeadProxiesCheckbox.checked,
       )
+    })
+  }
+
+  // Reads the source controls into a settings payload (without `enabled`).
+  const readSourcesControls = () => ({
+    sources: proxySourcesListTextarea
+      ? proxySourcesListTextarea.value.split('\n')
+      : undefined,
+    intervalMinutes: proxySourcesIntervalInput
+      ? Number(proxySourcesIntervalInput.value)
+      : undefined,
+    useProxy: proxySourcesUseProxyCheckbox
+      ? proxySourcesUseProxyCheckbox.checked
+      : undefined,
+    autoTest: proxySourcesAutoTestCheckbox
+      ? proxySourcesAutoTestCheckbox.checked
+      : undefined,
+  })
+
+  // Auto-fetch proxy lists from sources on a timer.
+  if (proxySourcesEnabledCheckbox) {
+    const sourcesSettings = await ProxyManager.getProxySourcesSettings()
+
+    proxySourcesEnabledCheckbox.checked = sourcesSettings.enabled
+    if (proxySourcesListTextarea) {
+      proxySourcesListTextarea.value = sourcesSettings.sources.join('\n')
+    }
+    if (proxySourcesIntervalInput) {
+      proxySourcesIntervalInput.value = sourcesSettings.intervalMinutes
+    }
+    if (proxySourcesUseProxyCheckbox) {
+      proxySourcesUseProxyCheckbox.checked = sourcesSettings.useProxy
+    }
+    if (proxySourcesAutoTestCheckbox) {
+      proxySourcesAutoTestCheckbox.checked = sourcesSettings.autoTest
+    }
+
+    const persistSources = async () => {
+      await ProxyManager.setProxySourcesSettings({
+        ...readSourcesControls(),
+        enabled: proxySourcesEnabledCheckbox.checked,
+      })
+    }
+
+    for (const element of [
+      proxySourcesEnabledCheckbox,
+      proxySourcesListTextarea,
+      proxySourcesIntervalInput,
+      proxySourcesUseProxyCheckbox,
+      proxySourcesAutoTestCheckbox,
+    ]) {
+      if (element) {
+        element.addEventListener('change', persistSources)
+      }
+    }
+  }
+
+  // "Fetch now": save the current source controls, then fetch immediately
+  // (even when the scheduled auto-fetch toggle is off).
+  if (fetchProxySourcesButton) {
+    fetchProxySourcesButton.addEventListener('click', async () => {
+      await ProxyManager.setProxySourcesSettings(readSourcesControls())
+      fetchProxySourcesButton.disabled = true
+      if (proxySourcesStatus) {
+        proxySourcesStatus.textContent = i18nGetMessage('proxySourcesFetching')
+      }
+      try {
+        const { added, alive, removed } =
+          await ProxyManager.fetchProxySources({ force: true })
+
+        await renderCustomProxies()
+        if (proxySourcesStatus) {
+          proxySourcesStatus.textContent =
+            `${i18nGetMessage('proxiesImportedLabel')}: +${added}  ✓${alive}  ✗${removed}`
+        }
+      } finally {
+        fetchProxySourcesButton.disabled = false
+      }
     })
   }
 

@@ -525,6 +525,30 @@
   "testProxyButton": {
     "message": "Test this proxy"
   },
+  "fetchProxySourcesButton": {
+    "message": "Fetch now"
+  },
+  "proxySourcesAutoTestLabel": {
+    "message": "Test, remove dead, sort by latency"
+  },
+  "proxySourcesEnabledLabel": {
+    "message": "Auto-fetch on a timer"
+  },
+  "proxySourcesFetching": {
+    "message": "Fetching…"
+  },
+  "proxySourcesHint": {
+    "message": "Proxy list URLs, one per line (plain text or any pasteable format)."
+  },
+  "proxySourcesIntervalLabel": {
+    "message": "Every (min):"
+  },
+  "proxySourcesTitle": {
+    "message": "Auto-fetch proxy lists"
+  },
+  "proxySourcesUseProxyLabel": {
+    "message": "Download via active proxy"
+  },
   "proxyConnectionIssuesMessage": {
     "message": "A network problem has been detected. Please go to our support chat and tell us about the problem, we will try to solve it →"
   },

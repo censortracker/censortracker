@@ -640,6 +640,58 @@ a {
   color: #3b332b;
 }
 
+/* Auto-fetch proxy sources block. */
+.cproxy-sources {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid #e0ddd8;
+}
+
+.cproxy-sources__title {
+  font-weight: 600;
+  color: #3b332b;
+}
+
+.cproxy-sources__textarea {
+  width: 100%;
+  min-height: 70px;
+  box-sizing: border-box;
+  resize: vertical;
+  border: 1px solid #c4c2bf;
+  border-radius: 4px;
+  padding: 8px 10px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px;
+  color: #3b332b;
+  background: #fff;
+}
+
+.cproxy-sources__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.cproxy-sources__interval {
+  width: 70px;
+  height: 32px;
+  border: 1px solid #c4c2bf;
+  border-radius: 4px;
+  background: #fff;
+  color: #3b332b;
+  padding: 0 6px;
+}
+
+.cproxy-sources__status {
+  font-size: 13px;
+  font-family: 'IBM Plex Mono', monospace;
+  color: #6d675f;
+}
+
 .cproxy-row__text {
   display: flex;
   flex-direction: column;
@@ -1855,10 +1907,20 @@ kbd {
     color: #cbccc6;
   }
 
-  .cproxy-select {
+  .cproxy-select,
+  .cproxy-sources__textarea,
+  .cproxy-sources__interval {
     background: #242728;
     color: #c4c2bf;
     border-color: #292828;
+  }
+
+  .cproxy-sources__status {
+    color: #cbccc6;
+  }
+
+  .cproxy-sources {
+    border-top-color: #292828;
   }
 
   .update_available {

@@ -2,6 +2,7 @@ export const TaskType = {
   PING: 'ping',
   REMOVE_BAD_PROXIES: 'removeBadProxies',
   SET_PROXY: 'setProxy',
+  FETCH_PROXY_SOURCES: 'fetchProxySources',
 }
 
 /**

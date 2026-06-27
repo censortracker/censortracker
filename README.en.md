@@ -139,6 +139,7 @@ Censor Tracker requires the following permissions:
 
 - `alarms` — Enables periodic tasks such as database synchronization and re-requesting the list of proxy servers.
 - `activeTab` — Detects IDO websites (primarily relevant for Russian users).
+- `clipboardRead` / `clipboardWrite` — Pastes a proxy list from the clipboard and copies a proxy to share it.
 - `management` — Identifies permission conflicts (e.g., with other extensions).
 - `notifications` — Displays notifications.
 - `proxy` — Configures and utilizes Censor Tracker proxy servers.

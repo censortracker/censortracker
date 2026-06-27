@@ -623,6 +623,23 @@ a {
   padding: 0 6px;
 }
 
+.cproxy-toolbar__check {
+  cursor: pointer;
+}
+
+.cproxy-toolbar__check input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+}
+
+.cproxy-import-msg {
+  margin-top: 6px;
+  font-size: 13px;
+  font-family: 'IBM Plex Mono', monospace;
+  color: #3b332b;
+}
+
 .cproxy-row__text {
   display: flex;
   flex-direction: column;
@@ -1833,7 +1850,8 @@ kbd {
   }
 
   .cproxy-hint,
-  .cproxy-toolbar__field {
+  .cproxy-toolbar__field,
+  .cproxy-import-msg {
     color: #cbccc6;
   }
 

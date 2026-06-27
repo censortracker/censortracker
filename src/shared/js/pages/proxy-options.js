@@ -2,7 +2,7 @@ import browser from 'Background/browser-api'
 import ProxyClient from 'Background/localproxy'
 import ProxyManager from 'Background/proxy'
 import * as server from 'Background/server'
-import { i18nGetMessage, parseProxyString } from 'Background/utilities'
+import { i18nGetMessage, parseProxyList, parseProxyString } from 'Background/utilities'
 
 (async () => {
   const proxyingEnabled = await ProxyManager.isEnabled()
@@ -41,6 +41,9 @@ import { i18nGetMessage, parseProxyString } from 'Background/utilities'
   const cancelEditProxyButton = document.getElementById('cancelEditProxyButton')
   const testAllProxiesButton = document.getElementById('testAllProxiesButton')
   const proxyTestTargetSelect = document.getElementById('proxyTestTarget')
+  const pasteProxiesButton = document.getElementById('pasteProxiesButton')
+  const autoDeleteDeadProxiesCheckbox = document.getElementById('autoDeleteDeadProxies')
+  const proxyImportMsg = document.getElementById('proxyImportMsg')
 
   if (proxyNameInput) {
     proxyNameInput.placeholder = i18nGetMessage('customProxyNamePlaceholder')
@@ -575,6 +578,105 @@ import { i18nGetMessage, parseProxyString } from 'Background/utilities'
     proxyTestTargetSelect.value = await ProxyManager.getProxyTestTarget()
     proxyTestTargetSelect.addEventListener('change', async () => {
       await ProxyManager.setProxyTestTarget(proxyTestTargetSelect.value)
+    })
+  }
+
+  // Short feedback line shown under the list after an import.
+  const showImportMsg = (text) => {
+    if (proxyImportMsg) {
+      proxyImportMsg.textContent = text
+      proxyImportMsg.hidden = !text
+    }
+  }
+
+  // Imports proxies from pasted/typed text: adds the new ones, tests them
+  // live and (optionally) removes the dead ones.
+  const importProxiesFromText = async (text) => {
+    const parsed = parseProxyList(text)
+
+    if (parsed.length === 0) {
+      showImportMsg(i18nGetMessage('noProxiesInClipboard'))
+      return
+    }
+
+    const added = await ProxyManager.addCustomProxies(parsed)
+
+    await renderCustomProxies()
+
+    if (added.length === 0) {
+      showImportMsg(i18nGetMessage('noProxiesInClipboard'))
+      return
+    }
+
+    for (const proxy of added) {
+      setRowChecking(proxy.id)
+    }
+
+    const results = await ProxyManager.testProxies(added, {
+      onResult: (id, status) => setRowStatus(id, status),
+    })
+    const aliveCount =
+      added.filter((proxy) => results[proxy.id] && results[proxy.id].alive).length
+    let removedCount = 0
+
+    if (await ProxyManager.getAutoDeleteDeadProxies()) {
+      for (const proxy of added) {
+        if (!results[proxy.id] || !results[proxy.id].alive) {
+          await ProxyManager.deleteCustomProxy(proxy.id)
+          removedCount += 1
+        }
+      }
+      if (removedCount > 0) {
+        await ProxyManager.setProxy()
+        await renderCustomProxies()
+      }
+    }
+
+    let summary = `${i18nGetMessage('proxiesImportedLabel')}: +${added.length}  ✓${aliveCount}`
+
+    if (removedCount > 0) {
+      summary += `  ✗${removedCount}`
+    }
+    showImportMsg(summary)
+  }
+
+  // Explicit "paste list" button (reads the clipboard directly).
+  if (pasteProxiesButton) {
+    pasteProxiesButton.addEventListener('click', async () => {
+      try {
+        await importProxiesFromText(await navigator.clipboard.readText())
+      } catch (error) {
+        showImportMsg(i18nGetMessage('clipboardReadFailed'))
+      }
+    })
+  }
+
+  // Ctrl+V anywhere on the page (outside the form fields) imports a list.
+  document.addEventListener('paste', async (event) => {
+    if (event.target.closest('input, textarea')) {
+      return
+    }
+    if (proxyOptionsInputs.classList.contains('hidden')) {
+      return
+    }
+
+    const clipboard = event.clipboardData || window.clipboardData
+    const text = clipboard ? clipboard.getData('text') : ''
+
+    if (text && text.trim()) {
+      event.preventDefault()
+      await importProxiesFromText(text)
+    }
+  })
+
+  // Persisted "auto-remove dead proxies" preference.
+  if (autoDeleteDeadProxiesCheckbox) {
+    autoDeleteDeadProxiesCheckbox.checked =
+      await ProxyManager.getAutoDeleteDeadProxies()
+    autoDeleteDeadProxiesCheckbox.addEventListener('change', async () => {
+      await ProxyManager.setAutoDeleteDeadProxies(
+        autoDeleteDeadProxiesCheckbox.checked,
+      )
     })
   }
 

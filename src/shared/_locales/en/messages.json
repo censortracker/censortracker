@@ -480,6 +480,21 @@
   "proxyChainPositionTitle": {
     "message": "Position in the chain"
   },
+  "autoDeleteDeadProxiesLabel": {
+    "message": "Auto-remove dead"
+  },
+  "clipboardReadFailed": {
+    "message": "Couldn't read the clipboard. Use Ctrl+V instead."
+  },
+  "noProxiesInClipboard": {
+    "message": "No valid proxies found."
+  },
+  "pasteProxiesButton": {
+    "message": "Paste list"
+  },
+  "proxiesImportedLabel": {
+    "message": "Imported"
+  },
   "proxyLatencyUnit": {
     "message": "ms"
   },

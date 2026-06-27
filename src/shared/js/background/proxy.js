@@ -316,13 +316,14 @@ class ProxyManager {
    * @returns {Promise<{id: string, name: string, protocol: string,
    *   uri: string}>}
    */
-  async addCustomProxy ({ name, protocol, uri }) {
+  async addCustomProxy ({ name, protocol, uri, credentials = '' }) {
     const customProxies = await this.getCustomProxies()
     const proxy = {
       id: this.generateProxyId(),
       name: (name && name.trim()) || uri,
       protocol,
       uri,
+      credentials,
     }
 
     customProxies.push(proxy)
@@ -332,6 +333,62 @@ class ProxyManager {
 
     await this.setProxyChain([...chain, proxy.id])
     return proxy
+  }
+
+  /**
+   * Adds many proxies at once (e.g. pasted/fetched), skipping ones already in
+   * the list (matched by protocol + uri). Does NOT touch the chain, so a bulk
+   * import never silently re-routes traffic.
+   * @param {Array<{name?: string, protocol: string, uri: string,
+   *   credentials?: string}>} list
+   * @returns {Promise<Array>} Only the newly-added proxies (with ids).
+   */
+  async addCustomProxies (list) {
+    const customProxies = await this.getCustomProxies()
+    const existing = new Set(
+      customProxies.map((proxy) => `${proxy.protocol}|${proxy.uri}`.toLowerCase()),
+    )
+    const added = []
+
+    for (const item of list) {
+      if (!item || !item.protocol || !item.uri) {
+        continue
+      }
+
+      const key = `${item.protocol}|${item.uri}`.toLowerCase()
+
+      if (existing.has(key)) {
+        continue
+      }
+      existing.add(key)
+
+      const proxy = {
+        id: this.generateProxyId(),
+        name: (item.name && item.name.trim()) || item.uri,
+        protocol: item.protocol,
+        uri: item.uri,
+        credentials: item.credentials || '',
+      }
+
+      customProxies.push(proxy)
+      added.push(proxy)
+    }
+
+    if (added.length > 0) {
+      await browser.storage.local.set({ customProxies })
+    }
+    return added
+  }
+
+  async getAutoDeleteDeadProxies () {
+    const { autoDeleteDeadProxies } =
+      await browser.storage.local.get({ autoDeleteDeadProxies: false })
+
+    return autoDeleteDeadProxies
+  }
+
+  async setAutoDeleteDeadProxies (value) {
+    await browser.storage.local.set({ autoDeleteDeadProxies: !!value })
   }
 
   /**

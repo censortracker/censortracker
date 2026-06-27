@@ -480,6 +480,21 @@
   "proxyChainPositionTitle": {
     "message": "Позиція в ланцюжку"
   },
+  "autoDeleteDeadProxiesLabel": {
+    "message": "Видаляти неробочі"
+  },
+  "clipboardReadFailed": {
+    "message": "Не вдалося прочитати буфер обміну. Використайте Ctrl+V."
+  },
+  "noProxiesInClipboard": {
+    "message": "Проксі не знайдено."
+  },
+  "pasteProxiesButton": {
+    "message": "Вставити список"
+  },
+  "proxiesImportedLabel": {
+    "message": "Імпортовано"
+  },
   "proxyLatencyUnit": {
     "message": "мс"
   },

@@ -480,6 +480,21 @@
   "proxyChainPositionTitle": {
     "message": "Позиция в цепочке"
   },
+  "autoDeleteDeadProxiesLabel": {
+    "message": "Удалять нерабочие"
+  },
+  "clipboardReadFailed": {
+    "message": "Не удалось прочитать буфер обмена. Используйте Ctrl+V."
+  },
+  "noProxiesInClipboard": {
+    "message": "Прокси не найдены."
+  },
+  "pasteProxiesButton": {
+    "message": "Вставить список"
+  },
+  "proxiesImportedLabel": {
+    "message": "Импортировано"
+  },
   "proxyLatencyUnit": {
     "message": "мс"
   },

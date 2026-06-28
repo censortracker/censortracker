@@ -474,6 +474,81 @@
   "proxiedWebsitesTitle": {
     "message": "Проксируемые сайты"
   },
+  "proxyChainHint": {
+    "message": "Отметьте прокси, чтобы выстроить цепочку — они пробуются одна за другой (используется первая доступная)."
+  },
+  "proxyChainPositionTitle": {
+    "message": "Позиция в цепочке"
+  },
+  "autoDeleteDeadProxiesLabel": {
+    "message": "Удалять нерабочие"
+  },
+  "copyAllProxiesButton": {
+    "message": "Копировать все"
+  },
+  "proxyCopied": {
+    "message": "Скопировано в буфер обмена"
+  },
+  "shareProxyButton": {
+    "message": "Скопировать для обмена"
+  },
+  "clipboardReadFailed": {
+    "message": "Не удалось прочитать буфер обмена. Используйте Ctrl+V."
+  },
+  "noProxiesInClipboard": {
+    "message": "Прокси не найдены."
+  },
+  "pasteProxiesButton": {
+    "message": "Вставить список"
+  },
+  "proxiesImportedLabel": {
+    "message": "Импортировано"
+  },
+  "proxyLatencyUnit": {
+    "message": "мс"
+  },
+  "proxyStatusChecking": {
+    "message": "проверка…"
+  },
+  "proxyStatusDead": {
+    "message": "недоступна"
+  },
+  "proxyStatusUntested": {
+    "message": "не проверено"
+  },
+  "proxyTestTargetLabel": {
+    "message": "Тест через:"
+  },
+  "testProxiesButton": {
+    "message": "Проверить все"
+  },
+  "testProxyButton": {
+    "message": "Проверить эту прокси"
+  },
+  "fetchProxySourcesButton": {
+    "message": "Загрузить сейчас"
+  },
+  "proxySourcesAutoTestLabel": {
+    "message": "Проверять, удалять нерабочие, сортировать по задержке"
+  },
+  "proxySourcesEnabledLabel": {
+    "message": "Автозагрузка по таймеру"
+  },
+  "proxySourcesFetching": {
+    "message": "Загрузка…"
+  },
+  "proxySourcesHint": {
+    "message": "URL списков прокси, по одному в строке (текст или любой вставляемый формат)."
+  },
+  "proxySourcesIntervalLabel": {
+    "message": "Интервал (мин):"
+  },
+  "proxySourcesTitle": {
+    "message": "Автозагрузка списков прокси"
+  },
+  "proxySourcesUseProxyLabel": {
+    "message": "Качать через активную прокси"
+  },
   "proxyConnectionIssuesMessage": {
     "message": "Обнаружена проблема с сетью. Пожалуйста, обратитесь в чат поддержки и расскажите нам о проблеме, мы постараемся ее решить →"
   },

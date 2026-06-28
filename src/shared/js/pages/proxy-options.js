@@ -2,7 +2,12 @@ import browser from 'Background/browser-api'
 import ProxyClient from 'Background/localproxy'
 import ProxyManager from 'Background/proxy'
 import * as server from 'Background/server'
-import { i18nGetMessage, parseProxyString } from 'Background/utilities'
+import {
+  formatProxyForShare,
+  i18nGetMessage,
+  parseProxyList,
+  parseProxyString,
+} from 'Background/utilities'
 
 (async () => {
   const proxyingEnabled = await ProxyManager.isEnabled()
@@ -39,6 +44,19 @@ import { i18nGetMessage, parseProxyString } from 'Background/utilities'
   const currentProxyAddressValue = document.getElementById('currentProxyAddressValue')
   const customProxyFormTitle = document.getElementById('customProxyFormTitle')
   const cancelEditProxyButton = document.getElementById('cancelEditProxyButton')
+  const testAllProxiesButton = document.getElementById('testAllProxiesButton')
+  const proxyTestTargetSelect = document.getElementById('proxyTestTarget')
+  const pasteProxiesButton = document.getElementById('pasteProxiesButton')
+  const copyAllProxiesButton = document.getElementById('copyAllProxiesButton')
+  const autoDeleteDeadProxiesCheckbox = document.getElementById('autoDeleteDeadProxies')
+  const proxyImportMsg = document.getElementById('proxyImportMsg')
+  const proxySourcesEnabledCheckbox = document.getElementById('proxySourcesEnabled')
+  const proxySourcesListTextarea = document.getElementById('proxySourcesList')
+  const proxySourcesIntervalInput = document.getElementById('proxySourcesInterval')
+  const proxySourcesUseProxyCheckbox = document.getElementById('proxySourcesUseProxy')
+  const proxySourcesAutoTestCheckbox = document.getElementById('proxySourcesAutoTest')
+  const fetchProxySourcesButton = document.getElementById('fetchProxySourcesButton')
+  const proxySourcesStatus = document.getElementById('proxySourcesStatus')
 
   if (proxyNameInput) {
     proxyNameInput.placeholder = i18nGetMessage('customProxyNamePlaceholder')
@@ -246,6 +264,11 @@ import { i18nGetMessage, parseProxyString } from 'Background/utilities'
   // Holds the id of the user proxy currently being edited (null when adding).
   let editingProxyId = null
 
+  // Testing/fetching temporarily rewrites the global proxy and restores it in
+  // a `finally`. If the page is closed mid-flight that restore never runs, so
+  // this flag lets a `pagehide` handler put the real proxy back as a fallback.
+  let proxyTestingInProgress = false
+
   const escapeHtml = (value) => {
     return String(value).replace(/[&<>"']/g, (char) => {
       return {
@@ -258,9 +281,27 @@ import { i18nGetMessage, parseProxyString } from 'Background/utilities'
     })
   }
 
-  // Renders one row (built-in or user) in the unified proxy list.
-  const renderProxyRow = ({ id, name, protocol, uri, builtin = false }, activeId) => {
+  // Builds the alive/dead/latency badge from a stored status entry.
+  const statusBadgeHtml = (status) => {
+    if (!status) {
+      return `<span class="cproxy-status cproxy-status--unknown">${escapeHtml(i18nGetMessage('proxyStatusUntested'))}</span>`
+    }
+    if (status.alive) {
+      return `<span class="cproxy-status cproxy-status--alive">${status.latency} ${escapeHtml(i18nGetMessage('proxyLatencyUnit'))}</span>`
+    }
+    return `<span class="cproxy-status cproxy-status--dead">${escapeHtml(i18nGetMessage('proxyStatusDead'))}</span>`
+  }
+
+  // Renders one row (built-in or user) in the unified proxy list. A checked
+  // row is part of the proxy chain; `chain` is the ordered list of ids so we
+  // can show each row's position in it. `statuses` holds the last test result.
+  const renderProxyRow = ({ id, name, protocol, uri, builtin = false }, chain, statuses) => {
     const editTitle = i18nGetMessage(builtin ? 'editBuiltinProxyButton' : 'editProxyButton')
+    const chainIndex = chain.indexOf(id)
+    const inChain = chainIndex !== -1
+    const order = inChain
+      ? `<span class="cproxy-order" title="${escapeHtml(i18nGetMessage('proxyChainPositionTitle'))}">${chainIndex + 1}</span>`
+      : ''
     const badge = builtin
       ? `<span class="cproxy-badge">${escapeHtml(i18nGetMessage('builtinProxyBadge'))}</span>`
       : ''
@@ -274,16 +315,32 @@ import { i18nGetMessage, parseProxyString } from 'Background/utilities'
         </button>`
 
     return `
-     <div class="cproxy-row" data-id="${id}">
+     <div class="cproxy-row${inChain ? ' cproxy-row--active' : ''}" data-id="${id}">
        <label class="cproxy-row__main">
-         <input type="radio" name="custom-proxy" value="${id}" ${id === activeId ? 'checked' : ''}/>
+         <input type="checkbox" name="chain-proxy" value="${id}" ${inChain ? 'checked' : ''}/>
+         ${order}
          <span class="cproxy-row__text">
            <span class="cproxy-row__name">${escapeHtml(name)}</span>
            <span class="cproxy-row__addr">${escapeHtml(protocol)} ${escapeHtml(uri)}</span>
          </span>
          ${badge}
        </label>
+       <span class="cproxy-status-cell">${statusBadgeHtml(statuses[id])}</span>
        <div class="cproxy-row__actions">
+         <button type="button" class="cproxy-icon-btn cproxy-copy"
+                 data-id="${id}" title="${escapeHtml(i18nGetMessage('shareProxyButton'))}">
+           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+             <rect x="9" y="9" width="11" height="11" rx="2" stroke="currentColor" stroke-width="2"/>
+             <path d="M5 15V5a2 2 0 0 1 2-2h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+           </svg>
+         </button>
+         <button type="button" class="cproxy-icon-btn cproxy-test"
+                 data-id="${id}" title="${escapeHtml(i18nGetMessage('testProxyButton'))}">
+           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+             <path d="M20 12a8 8 0 1 1-2.34-5.66" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+             <path d="M20 4v4h-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+           </svg>
+         </button>
          <button type="button" class="cproxy-icon-btn cproxy-edit"
                  data-id="${id}" data-builtin="${builtin}" title="${escapeHtml(editTitle)}">
            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -305,7 +362,8 @@ import { i18nGetMessage, parseProxyString } from 'Background/utilities'
 
     const proxies = await ProxyManager.getCustomProxies()
     const builtin = await ProxyManager.getBuiltinProxy()
-    const activeId = await ProxyManager.getActiveCustomProxyId()
+    const chain = await ProxyManager.getProxyChain()
+    const statuses = await ProxyManager.getProxyStatuses()
 
     let html = ''
 
@@ -316,11 +374,11 @@ import { i18nGetMessage, parseProxyString } from 'Background/utilities'
         protocol: builtin.protocol,
         uri: builtin.uri,
         builtin: true,
-      }, activeId)
+      }, chain, statuses)
     }
 
     for (const proxy of proxies) {
-      html += renderProxyRow(proxy, activeId)
+      html += renderProxyRow(proxy, chain, statuses)
     }
 
     customProxyList.innerHTML = html
@@ -337,6 +395,17 @@ import { i18nGetMessage, parseProxyString } from 'Background/utilities'
 
     if (localProxyURI) {
       currentProxyAddress.hidden = true
+      return
+    }
+
+    // Prefer showing the full chain (proxies tried one after another).
+    const chainConfigs = await ProxyManager.getChainProxyConfigs()
+
+    if (chainConfigs.length > 0) {
+      currentProxyAddressValue.textContent = chainConfigs
+        .map(({ protocol, uri }) => `${protocol} ${uri}`)
+        .join('  →  ')
+      currentProxyAddress.hidden = false
       return
     }
 
@@ -369,12 +438,13 @@ import { i18nGetMessage, parseProxyString } from 'Background/utilities'
 
   // Loads a proxy into the form. Built-in proxies are loaded as a *copy*
   // (editingProxyId stays null) so saving creates a new editable entry.
-  const loadProxyIntoForm = ({ id, name, protocol, uri, builtin }) => {
+  const loadProxyIntoForm = ({ id, name, protocol, uri, credentials, builtin }) => {
     editingProxyId = builtin ? null : id
     if (proxyNameInput) {
       proxyNameInput.value = builtin ? i18nGetMessage('builtinProxyName') : name
     }
-    proxyServerInput.value = uri
+    // Keep any credentials in the field so editing preserves them.
+    proxyServerInput.value = credentials ? `${credentials}@${uri}` : uri
     currentProxyProtocol.textContent = protocol
     currentProxyProtocol.value = protocol
 
@@ -390,26 +460,145 @@ import { i18nGetMessage, parseProxyString } from 'Background/utilities'
     proxyServerInput.focus()
   }
 
-  // Select an active proxy from the list (built-in or user).
+  // Collects every testable proxy (built-in + user) as {id, protocol, uri}.
+  const collectTestableProxies = async () => {
+    const proxies = await ProxyManager.getCustomProxies()
+    const list = proxies.map(({ id, protocol, uri }) => ({ id, protocol, uri }))
+    const builtin = await ProxyManager.getBuiltinProxy()
+
+    if (builtin) {
+      list.unshift({ id: 'builtin', protocol: builtin.protocol, uri: builtin.uri })
+    }
+    return list
+  }
+
+  const rowStatusCell = (id) => {
+    return customProxyList.querySelector(
+      `.cproxy-row[data-id="${id}"] .cproxy-status-cell`,
+    )
+  }
+
+  const setRowChecking = (id) => {
+    const cell = rowStatusCell(id)
+
+    if (cell) {
+      cell.innerHTML =
+        `<span class="cproxy-status cproxy-status--checking">${i18nGetMessage('proxyStatusChecking')}</span>`
+    }
+  }
+
+  const setRowStatus = (id, status) => {
+    const cell = rowStatusCell(id)
+
+    if (!cell) {
+      return
+    }
+    if (status.alive) {
+      cell.innerHTML =
+        `<span class="cproxy-status cproxy-status--alive">${status.latency} ${i18nGetMessage('proxyLatencyUnit')}</span>`
+    } else {
+      cell.innerHTML =
+        `<span class="cproxy-status cproxy-status--dead">${i18nGetMessage('proxyStatusDead')}</span>`
+    }
+  }
+
+  // Short feedback line shown under the list (imports, copy).
+  const showImportMsg = (text) => {
+    if (proxyImportMsg) {
+      proxyImportMsg.textContent = text
+      proxyImportMsg.hidden = !text
+    }
+  }
+
+  // Copies text to the clipboard, falling back to execCommand when the async
+  // Clipboard API is unavailable.
+  const copyToClipboard = async (text) => {
+    try {
+      await navigator.clipboard.writeText(text)
+      return true
+    } catch (error) {
+      try {
+        const textarea = document.createElement('textarea')
+
+        textarea.value = text
+        textarea.style.position = 'fixed'
+        textarea.style.opacity = '0'
+        document.body.append(textarea)
+        textarea.select()
+        document.execCommand('copy')
+        textarea.remove()
+        return true
+      } catch (fallbackError) {
+        return false
+      }
+    }
+  }
+
+  // Toggle a proxy's membership in the chain (built-in or user). Marked
+  // proxies are tried one after another, in the order they were marked.
   customProxyList.addEventListener('change', async (event) => {
-    if (event.target.name !== 'custom-proxy') {
+    if (event.target.name !== 'chain-proxy') {
       return
     }
 
-    const value = event.target.value
-    const activated = value === 'builtin'
-      ? await ProxyManager.setActiveBuiltinProxy()
-      : await ProxyManager.setActiveCustomProxy(value)
+    const id = event.target.value
+    const chain = await ProxyManager.getProxyChain()
+    let nextChain
 
-    if (activated) {
-      await ProxyManager.setProxy()
-      await refreshCurrentProxyAddress()
-      console.log(`Active proxy changed to ${value}`)
+    if (event.target.checked) {
+      nextChain = chain.includes(id) ? chain : [...chain, id]
+    } else {
+      nextChain = chain.filter((chainId) => chainId !== id)
     }
+
+    await ProxyManager.setProxyChain(nextChain)
+    await ProxyManager.setProxy()
+    await renderCustomProxies()
+    console.log(`Proxy chain updated: ${nextChain.join(', ')}`)
   })
 
-  // Handle edit / delete actions on rows.
+  // Handle copy / test / edit / delete actions on rows.
   customProxyList.addEventListener('click', async (event) => {
+    const copyButton = event.target.closest('.cproxy-copy')
+
+    if (copyButton) {
+      const id = copyButton.dataset.id
+      let proxy
+
+      if (id === 'builtin') {
+        proxy = await ProxyManager.getBuiltinProxy()
+      } else {
+        const proxies = await ProxyManager.getCustomProxies()
+
+        proxy = proxies.find((item) => item.id === id)
+      }
+
+      if (proxy && await copyToClipboard(formatProxyForShare(proxy))) {
+        showImportMsg(i18nGetMessage('proxyCopied'))
+      }
+      return
+    }
+
+    const testButton = event.target.closest('.cproxy-test')
+
+    if (testButton) {
+      const id = testButton.dataset.id
+      const list = await collectTestableProxies()
+      const proxy = list.find((item) => item.id === id)
+
+      if (!proxy) {
+        return
+      }
+      setRowChecking(id)
+      proxyTestingInProgress = true
+      try {
+        setRowStatus(id, await ProxyManager.testProxy(proxy))
+      } finally {
+        proxyTestingInProgress = false
+      }
+      return
+    }
+
     const editButton = event.target.closest('.cproxy-edit')
 
     if (editButton) {
@@ -442,6 +631,239 @@ import { i18nGetMessage, parseProxyString } from 'Background/utilities'
       await ProxyManager.deleteCustomProxy(deleteButton.dataset.id)
       await ProxyManager.setProxy()
       await renderCustomProxies()
+    }
+  })
+
+  // Test every proxy in the list, updating each row's status live.
+  if (testAllProxiesButton) {
+    testAllProxiesButton.addEventListener('click', async () => {
+      const list = await collectTestableProxies()
+
+      if (list.length === 0) {
+        return
+      }
+      testAllProxiesButton.disabled = true
+      proxyTestingInProgress = true
+      for (const proxy of list) {
+        setRowChecking(proxy.id)
+      }
+      try {
+        await ProxyManager.testProxies(list, {
+          onResult: (id, status) => setRowStatus(id, status),
+        })
+      } finally {
+        proxyTestingInProgress = false
+        testAllProxiesButton.disabled = false
+      }
+    })
+  }
+
+  // Remember which cloud endpoint to probe against.
+  if (proxyTestTargetSelect) {
+    proxyTestTargetSelect.value = await ProxyManager.getProxyTestTarget()
+    proxyTestTargetSelect.addEventListener('change', async () => {
+      await ProxyManager.setProxyTestTarget(proxyTestTargetSelect.value)
+    })
+  }
+
+  // Imports proxies from pasted/typed text: adds the new ones, tests them
+  // live and (optionally) removes the dead ones.
+  const importProxiesFromText = async (text) => {
+    const parsed = parseProxyList(text)
+
+    if (parsed.length === 0) {
+      showImportMsg(i18nGetMessage('noProxiesInClipboard'))
+      return
+    }
+
+    const added = await ProxyManager.addCustomProxies(parsed)
+
+    await renderCustomProxies()
+
+    if (added.length === 0) {
+      showImportMsg(i18nGetMessage('noProxiesInClipboard'))
+      return
+    }
+
+    for (const proxy of added) {
+      setRowChecking(proxy.id)
+    }
+
+    proxyTestingInProgress = true
+    let results
+
+    try {
+      results = await ProxyManager.testProxies(added, {
+        onResult: (id, status) => setRowStatus(id, status),
+      })
+    } finally {
+      proxyTestingInProgress = false
+    }
+    const aliveCount =
+      added.filter((proxy) => results[proxy.id] && results[proxy.id].alive).length
+    let removedCount = 0
+
+    if (await ProxyManager.getAutoDeleteDeadProxies()) {
+      for (const proxy of added) {
+        if (!results[proxy.id] || !results[proxy.id].alive) {
+          await ProxyManager.deleteCustomProxy(proxy.id)
+          removedCount += 1
+        }
+      }
+      if (removedCount > 0) {
+        await ProxyManager.setProxy()
+        await renderCustomProxies()
+      }
+    }
+
+    let summary = `${i18nGetMessage('proxiesImportedLabel')}: +${added.length}  ✓${aliveCount}`
+
+    if (removedCount > 0) {
+      summary += `  ✗${removedCount}`
+    }
+    showImportMsg(summary)
+  }
+
+  // Explicit "paste list" button (reads the clipboard directly).
+  if (pasteProxiesButton) {
+    pasteProxiesButton.addEventListener('click', async () => {
+      try {
+        await importProxiesFromText(await navigator.clipboard.readText())
+      } catch (error) {
+        showImportMsg(i18nGetMessage('clipboardReadFailed'))
+      }
+    })
+  }
+
+  // Copy the whole user list to the clipboard in the shareable format.
+  if (copyAllProxiesButton) {
+    copyAllProxiesButton.addEventListener('click', async () => {
+      const proxies = await ProxyManager.getCustomProxies()
+      const text = proxies
+        .map((proxy) => formatProxyForShare(proxy))
+        .filter(Boolean)
+        .join('\n')
+
+      if (text && await copyToClipboard(text)) {
+        showImportMsg(i18nGetMessage('proxyCopied'))
+      }
+    })
+  }
+
+  // Ctrl+V anywhere on the page (outside the form fields) imports a list.
+  document.addEventListener('paste', async (event) => {
+    if (event.target.closest('input, textarea')) {
+      return
+    }
+    if (proxyOptionsInputs.classList.contains('hidden')) {
+      return
+    }
+
+    const clipboard = event.clipboardData || window.clipboardData
+    const text = clipboard ? clipboard.getData('text') : ''
+
+    if (text && text.trim()) {
+      event.preventDefault()
+      await importProxiesFromText(text)
+    }
+  })
+
+  // Persisted "auto-remove dead proxies" preference.
+  if (autoDeleteDeadProxiesCheckbox) {
+    autoDeleteDeadProxiesCheckbox.checked =
+      await ProxyManager.getAutoDeleteDeadProxies()
+    autoDeleteDeadProxiesCheckbox.addEventListener('change', async () => {
+      await ProxyManager.setAutoDeleteDeadProxies(
+        autoDeleteDeadProxiesCheckbox.checked,
+      )
+    })
+  }
+
+  // Reads the source controls into a settings payload (without `enabled`).
+  const readSourcesControls = () => ({
+    sources: proxySourcesListTextarea
+      ? proxySourcesListTextarea.value.split('\n')
+      : undefined,
+    intervalMinutes: proxySourcesIntervalInput
+      ? Number(proxySourcesIntervalInput.value)
+      : undefined,
+    useProxy: proxySourcesUseProxyCheckbox
+      ? proxySourcesUseProxyCheckbox.checked
+      : undefined,
+    autoTest: proxySourcesAutoTestCheckbox
+      ? proxySourcesAutoTestCheckbox.checked
+      : undefined,
+  })
+
+  // Auto-fetch proxy lists from sources on a timer.
+  if (proxySourcesEnabledCheckbox) {
+    const sourcesSettings = await ProxyManager.getProxySourcesSettings()
+
+    proxySourcesEnabledCheckbox.checked = sourcesSettings.enabled
+    if (proxySourcesListTextarea) {
+      proxySourcesListTextarea.value = sourcesSettings.sources.join('\n')
+    }
+    if (proxySourcesIntervalInput) {
+      proxySourcesIntervalInput.value = sourcesSettings.intervalMinutes
+    }
+    if (proxySourcesUseProxyCheckbox) {
+      proxySourcesUseProxyCheckbox.checked = sourcesSettings.useProxy
+    }
+    if (proxySourcesAutoTestCheckbox) {
+      proxySourcesAutoTestCheckbox.checked = sourcesSettings.autoTest
+    }
+
+    const persistSources = async () => {
+      await ProxyManager.setProxySourcesSettings({
+        ...readSourcesControls(),
+        enabled: proxySourcesEnabledCheckbox.checked,
+      })
+    }
+
+    for (const element of [
+      proxySourcesEnabledCheckbox,
+      proxySourcesListTextarea,
+      proxySourcesIntervalInput,
+      proxySourcesUseProxyCheckbox,
+      proxySourcesAutoTestCheckbox,
+    ]) {
+      if (element) {
+        element.addEventListener('change', persistSources)
+      }
+    }
+  }
+
+  // "Fetch now": save the current source controls, then fetch immediately
+  // (even when the scheduled auto-fetch toggle is off).
+  if (fetchProxySourcesButton) {
+    fetchProxySourcesButton.addEventListener('click', async () => {
+      await ProxyManager.setProxySourcesSettings(readSourcesControls())
+      fetchProxySourcesButton.disabled = true
+      proxyTestingInProgress = true
+      if (proxySourcesStatus) {
+        proxySourcesStatus.textContent = i18nGetMessage('proxySourcesFetching')
+      }
+      try {
+        const { added, alive, removed } =
+          await ProxyManager.fetchProxySources({ force: true })
+
+        await renderCustomProxies()
+        if (proxySourcesStatus) {
+          proxySourcesStatus.textContent =
+            `${i18nGetMessage('proxiesImportedLabel')}: +${added}  ✓${alive}  ✗${removed}`
+        }
+      } finally {
+        proxyTestingInProgress = false
+        fetchProxySourcesButton.disabled = false
+      }
+    })
+  }
+
+  // Fallback: if the page is closed while a test/fetch is mid-flight, put the
+  // real proxy back so browsing isn't left routed through a probe PAC.
+  window.addEventListener('pagehide', () => {
+    if (proxyTestingInProgress) {
+      ProxyManager.restoreProxy()
     }
   })
 
@@ -509,6 +931,7 @@ import { i18nGetMessage, parseProxyString } from 'Background/utilities'
         name,
         protocol: parsed.protocol,
         uri: parsed.uri,
+        credentials: parsed.credentials,
       })
       console.log(`Custom proxy updated: ${parsed.protocol} ${parsed.uri}`)
     } else {
@@ -516,6 +939,7 @@ import { i18nGetMessage, parseProxyString } from 'Background/utilities'
         name,
         protocol: parsed.protocol,
         uri: parsed.uri,
+        credentials: parsed.credentials,
       })
       console.log(`Custom proxy added: ${parsed.protocol} ${parsed.uri}`)
     }
@@ -545,19 +969,15 @@ import { i18nGetMessage, parseProxyString } from 'Background/utilities'
       proxyOptionsInputs.classList.remove('hidden')
       localProxyOptions.style.display = 'none'
       addLocalProxyButton.style.display = 'none'
-      await renderCustomProxies()
 
-      // Re-activate the previously selected proxy (built-in or user).
-      const activeId = await ProxyManager.getActiveCustomProxyId()
+      // Re-apply the previously configured chain (if any).
+      const chain = await ProxyManager.getProxyChain()
 
-      if (activeId === 'builtin') {
-        await ProxyManager.setActiveBuiltinProxy()
-        await ProxyManager.setProxy()
-      } else if (activeId) {
-        await ProxyManager.setActiveCustomProxy(activeId)
+      if (chain.length > 0) {
+        await ProxyManager.setProxyChain(chain)
         await ProxyManager.setProxy()
       }
-      await refreshCurrentProxyAddress()
+      await renderCustomProxies()
     } else if (value === 'local') {
       proxyOptionsInputs.classList.add('hidden')
       await showLocalProxySettings()

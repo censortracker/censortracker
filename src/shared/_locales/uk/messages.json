@@ -474,6 +474,81 @@
   "proxiedWebsitesTitle": {
     "message": "Проксовані сайти"
   },
+  "proxyChainHint": {
+    "message": "Позначте проксі, щоб вибудувати ланцюжок — вони пробуються одна за одною (використовується перша доступна)."
+  },
+  "proxyChainPositionTitle": {
+    "message": "Позиція в ланцюжку"
+  },
+  "autoDeleteDeadProxiesLabel": {
+    "message": "Видаляти неробочі"
+  },
+  "copyAllProxiesButton": {
+    "message": "Копіювати всі"
+  },
+  "proxyCopied": {
+    "message": "Скопійовано в буфер обміну"
+  },
+  "shareProxyButton": {
+    "message": "Скопіювати для обміну"
+  },
+  "clipboardReadFailed": {
+    "message": "Не вдалося прочитати буфер обміну. Використайте Ctrl+V."
+  },
+  "noProxiesInClipboard": {
+    "message": "Проксі не знайдено."
+  },
+  "pasteProxiesButton": {
+    "message": "Вставити список"
+  },
+  "proxiesImportedLabel": {
+    "message": "Імпортовано"
+  },
+  "proxyLatencyUnit": {
+    "message": "мс"
+  },
+  "proxyStatusChecking": {
+    "message": "перевірка…"
+  },
+  "proxyStatusDead": {
+    "message": "недоступна"
+  },
+  "proxyStatusUntested": {
+    "message": "не перевірено"
+  },
+  "proxyTestTargetLabel": {
+    "message": "Тест через:"
+  },
+  "testProxiesButton": {
+    "message": "Перевірити всі"
+  },
+  "testProxyButton": {
+    "message": "Перевірити цю проксі"
+  },
+  "fetchProxySourcesButton": {
+    "message": "Завантажити зараз"
+  },
+  "proxySourcesAutoTestLabel": {
+    "message": "Перевіряти, видаляти неробочі, сортувати за затримкою"
+  },
+  "proxySourcesEnabledLabel": {
+    "message": "Автозавантаження за таймером"
+  },
+  "proxySourcesFetching": {
+    "message": "Завантаження…"
+  },
+  "proxySourcesHint": {
+    "message": "URL списків проксі, по одному в рядку (текст або будь-який формат для вставки)."
+  },
+  "proxySourcesIntervalLabel": {
+    "message": "Інтервал (хв):"
+  },
+  "proxySourcesTitle": {
+    "message": "Автозавантаження списків проксі"
+  },
+  "proxySourcesUseProxyLabel": {
+    "message": "Завантажувати через активну проксі"
+  },
   "proxyConnectionIssuesMessage": {
     "message": "Виявлено проблему з мережею. Будь ласка, зверніться в чат підтримки і розкажіть нам про проблему, ми постараємося її вирішити →"
   },

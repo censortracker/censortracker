@@ -110,6 +110,62 @@ export const parseProxyString = (input, defaultProtocol = 'HTTPS') => {
 }
 
 /**
+ * Serializes a proxy into the shareable string consumed by
+ * {@link parseProxyString}, so copy → paste round-trips losslessly (including
+ * credentials), e.g. "socks5://user:pass@1.2.3.4:1080".
+ * @param {{protocol: string, uri: string, credentials?: string}} proxy
+ * @returns {string} The shareable proxy string, or '' when incomplete.
+ */
+export const formatProxyForShare = ({ protocol, uri, credentials = '' } = {}) => {
+  if (!protocol || !uri) {
+    return ''
+  }
+
+  const auth = credentials ? `${credentials}@` : ''
+
+  return `${protocol.toLowerCase()}://${auth}${uri}`
+}
+
+/**
+ * Parses a whitespace/comma/semicolon/newline separated blob of proxy strings
+ * (e.g. pasted from the clipboard) into a de-duplicated list of parsed proxies.
+ * @param {string} text - Raw text containing zero or more proxy strings.
+ * @param {string} [defaultProtocol='HTTPS'] - Protocol when none is present.
+ * @returns {Array<{protocol: string, uri: string, host: string, port: string,
+ *   credentials: string}>}
+ */
+export const parseProxyList = (text, defaultProtocol = 'HTTPS') => {
+  if (!text || typeof text !== 'string') {
+    return []
+  }
+
+  const tokens = text
+    .split(/[\s,;]+/)
+    .map((token) => token.trim())
+    .filter(Boolean)
+
+  const seen = new Set()
+  const result = []
+
+  for (const token of tokens) {
+    const parsed = parseProxyString(token, defaultProtocol)
+
+    if (!parsed) {
+      continue
+    }
+
+    const key = `${parsed.protocol}|${parsed.uri}`.toLowerCase()
+
+    if (seen.has(key)) {
+      continue
+    }
+    seen.add(key)
+    result.push(parsed)
+  }
+  return result
+}
+
+/**
  * Resolves a promise with a fallback value if it doesn't settle in time.
  * Useful to keep the UI responsive when a background check might hang.
  * @param {Promise<*>} promise - Promise to guard.

@@ -522,11 +522,174 @@ a {
   cursor: pointer;
 }
 
-.cproxy-row__main input[type="radio"] {
+.cproxy-row__main input[type="radio"],
+.cproxy-row__main input[type="checkbox"] {
   flex: 0 0 auto;
   width: 16px;
   height: 16px;
   margin: 0;
+}
+
+/* Hint above the proxy list explaining the chain behaviour. */
+.cproxy-hint {
+  font-size: 13px;
+  color: #6d675f;
+  margin-bottom: 2px;
+}
+
+/* A row that is part of the chain. */
+.cproxy-row--active {
+  border-color: #6c9e2c;
+}
+
+/* The 1-based position of a proxy inside the chain. */
+.cproxy-order {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: 10px;
+  background: #6c9e2c;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+/* Per-proxy liveness / latency status. */
+.cproxy-status-cell {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+}
+
+.cproxy-status {
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.cproxy-status--unknown {
+  color: #9a948c;
+}
+
+.cproxy-status--checking {
+  color: #6d675f;
+}
+
+.cproxy-status--alive {
+  color: #2e7d32;
+}
+
+.cproxy-status--dead {
+  color: #c0392b;
+}
+
+.cproxy-status--alive::before,
+.cproxy-status--dead::before {
+  content: "\25cf\00a0";
+}
+
+/* Toolbar under the list: test-all button, target picker, paste/auto-delete. */
+.cproxy-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin: 6px 0 2px;
+}
+
+.cproxy-toolbar__btn {
+  margin: 0;
+}
+
+.cproxy-toolbar__field {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #6d675f;
+}
+
+.cproxy-select {
+  height: 32px;
+  border: 1px solid #c4c2bf;
+  border-radius: 4px;
+  background: #fff;
+  color: #3b332b;
+  padding: 0 6px;
+}
+
+.cproxy-toolbar__check {
+  cursor: pointer;
+}
+
+.cproxy-toolbar__check input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+}
+
+.cproxy-import-msg {
+  margin-top: 6px;
+  font-size: 13px;
+  font-family: 'IBM Plex Mono', monospace;
+  color: #3b332b;
+}
+
+/* Auto-fetch proxy sources block. */
+.cproxy-sources {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid #e0ddd8;
+}
+
+.cproxy-sources__title {
+  font-weight: 600;
+  color: #3b332b;
+}
+
+.cproxy-sources__textarea {
+  width: 100%;
+  min-height: 70px;
+  box-sizing: border-box;
+  resize: vertical;
+  border: 1px solid #c4c2bf;
+  border-radius: 4px;
+  padding: 8px 10px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px;
+  color: #3b332b;
+  background: #fff;
+}
+
+.cproxy-sources__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.cproxy-sources__interval {
+  width: 70px;
+  height: 32px;
+  border: 1px solid #c4c2bf;
+  border-radius: 4px;
+  background: #fff;
+  color: #3b332b;
+  padding: 0 6px;
+}
+
+.cproxy-sources__status {
+  font-size: 13px;
+  font-family: 'IBM Plex Mono', monospace;
+  color: #6d675f;
 }
 
 .cproxy-row__text {
@@ -1736,6 +1899,28 @@ kbd {
 
   .invalid-input {
     border: 1px solid #9e5757 !important;
+  }
+
+  .cproxy-hint,
+  .cproxy-toolbar__field,
+  .cproxy-import-msg {
+    color: #cbccc6;
+  }
+
+  .cproxy-select,
+  .cproxy-sources__textarea,
+  .cproxy-sources__interval {
+    background: #242728;
+    color: #c4c2bf;
+    border-color: #292828;
+  }
+
+  .cproxy-sources__status {
+    color: #cbccc6;
+  }
+
+  .cproxy-sources {
+    border-top-color: #292828;
   }
 
   .update_available {

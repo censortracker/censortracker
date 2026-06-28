@@ -1,8 +1,13 @@
 import { getPacScript } from 'Background/pac'
 
 import browser from './browser-api'
+import {
+  DEFAULT_PROXY_TEST_TARGET,
+  PROXY_TEST_TARGETS,
+  TaskType,
+} from './constants'
 import registry from './registry'
-import { fetchWithTimeout } from './utilities'
+import { fetchWithTimeout, parseProxyList } from './utilities'
 
 class ProxyManager {
   async getProxyingRules () {
@@ -66,26 +71,14 @@ class ProxyManager {
     }
   }
 
-  async setProxy () {
+  /**
+   * Pushes a raw PAC script into the browser proxy settings, normalizing the
+   * call shape across Firefox (autoConfig blob) and Chromium (pac_script).
+   * @param {string} pacData - PAC script source.
+   * @returns {Promise<void>}
+   */
+  async applyPacData (pacData) {
     const config = {}
-    const domains = await registry.getDomains()
-
-    if (domains.length === 0) {
-      console.error('No domains to proxy, aborting...')
-      await this.removeProxy()
-      return false
-    }
-
-    const {
-      proxyServerURI,
-      proxyServerProtocol,
-    } = await this.getProxyingRules()
-
-    const pacData = getPacScript({
-      domains,
-      proxyServerURI,
-      proxyServerProtocol,
-    })
 
     if (browser.isFirefox) {
       const blob = new Blob([pacData], {
@@ -106,9 +99,42 @@ class ProxyManager {
         },
       }
     }
+    await browser.proxy.settings.set(config)
+  }
+
+  async setProxy () {
+    const domains = await registry.getDomains()
+
+    if (domains.length === 0) {
+      console.error('No domains to proxy, aborting...')
+      await this.removeProxy()
+      return false
+    }
+
+    // A proxy chain (one or more marked proxies, tried one after another)
+    // takes precedence; otherwise fall back to the single default/built-in
+    // proxy resolved from the legacy rules.
+    const chain = await this.getChainProxyConfigs()
+
+    let pacData
+
+    if (chain.length > 0) {
+      pacData = getPacScript({ domains, proxies: chain })
+    } else {
+      const {
+        proxyServerURI,
+        proxyServerProtocol,
+      } = await this.getProxyingRules()
+
+      pacData = getPacScript({
+        domains,
+        proxyServerURI,
+        proxyServerProtocol,
+      })
+    }
 
     try {
-      await browser.proxy.settings.set(config)
+      await this.applyPacData(pacData)
       await this.enableProxy()
       await this.grantIncognitoAccess()
       console.warn('PAC has been set successfully!')
@@ -118,6 +144,18 @@ class ProxyManager {
       await this.disableProxy()
       await this.requestIncognitoAccess()
       return false
+    }
+  }
+
+  /**
+   * Restores the user's real proxy configuration after a temporary probe PAC.
+   * @returns {Promise<void>}
+   */
+  async restoreProxy () {
+    if (await this.isEnabled()) {
+      await this.setProxy()
+    } else {
+      await this.removeProxy()
     }
   }
 
@@ -228,6 +266,7 @@ class ProxyManager {
     await browser.storage.local.set({
       useOwnProxy: false,
       activeCustomProxyId: '',
+      proxyChain: [],
     })
     await browser.storage.local.remove([
       'customProxyProtocol',
@@ -281,19 +320,79 @@ class ProxyManager {
    * @returns {Promise<{id: string, name: string, protocol: string,
    *   uri: string}>}
    */
-  async addCustomProxy ({ name, protocol, uri }) {
+  async addCustomProxy ({ name, protocol, uri, credentials = '' }) {
     const customProxies = await this.getCustomProxies()
     const proxy = {
       id: this.generateProxyId(),
       name: (name && name.trim()) || uri,
       protocol,
       uri,
+      credentials,
     }
 
     customProxies.push(proxy)
     await browser.storage.local.set({ customProxies })
-    await this.setActiveCustomProxy(proxy.id)
+    // Adding a proxy appends it to the chain (tried after the existing ones).
+    const chain = await this.getProxyChain()
+
+    await this.setProxyChain([...chain, proxy.id])
     return proxy
+  }
+
+  /**
+   * Adds many proxies at once (e.g. pasted/fetched), skipping ones already in
+   * the list (matched by protocol + uri). Does NOT touch the chain, so a bulk
+   * import never silently re-routes traffic.
+   * @param {Array<{name?: string, protocol: string, uri: string,
+   *   credentials?: string}>} list
+   * @returns {Promise<Array>} Only the newly-added proxies (with ids).
+   */
+  async addCustomProxies (list) {
+    const customProxies = await this.getCustomProxies()
+    const existing = new Set(
+      customProxies.map((proxy) => `${proxy.protocol}|${proxy.uri}`.toLowerCase()),
+    )
+    const added = []
+
+    for (const item of list) {
+      if (!item || !item.protocol || !item.uri) {
+        continue
+      }
+
+      const key = `${item.protocol}|${item.uri}`.toLowerCase()
+
+      if (existing.has(key)) {
+        continue
+      }
+      existing.add(key)
+
+      const proxy = {
+        id: this.generateProxyId(),
+        name: (item.name && item.name.trim()) || item.uri,
+        protocol: item.protocol,
+        uri: item.uri,
+        credentials: item.credentials || '',
+      }
+
+      customProxies.push(proxy)
+      added.push(proxy)
+    }
+
+    if (added.length > 0) {
+      await browser.storage.local.set({ customProxies })
+    }
+    return added
+  }
+
+  async getAutoDeleteDeadProxies () {
+    const { autoDeleteDeadProxies } =
+      await browser.storage.local.get({ autoDeleteDeadProxies: false })
+
+    return autoDeleteDeadProxies
+  }
+
+  async setAutoDeleteDeadProxies (value) {
+    await browser.storage.local.set({ autoDeleteDeadProxies: !!value })
   }
 
   /**
@@ -304,17 +403,16 @@ class ProxyManager {
   async deleteCustomProxy (id) {
     const customProxies = await this.getCustomProxies()
     const filtered = customProxies.filter((proxy) => proxy.id !== id)
-    const { activeCustomProxyId } =
-      await browser.storage.local.get({ activeCustomProxyId: '' })
 
     await browser.storage.local.set({ customProxies: filtered })
+    await this.clearProxyStatus(id)
 
-    if (activeCustomProxyId === id) {
-      if (filtered.length > 0) {
-        await this.setActiveCustomProxy(filtered[0].id)
-      } else {
-        await this.removeCustomProxy()
-      }
+    // Drop it from the chain too (this also refreshes the mirrored keys or
+    // disables custom proxying when the chain becomes empty).
+    const chain = await this.getProxyChain()
+
+    if (chain.includes(id)) {
+      await this.setProxyChain(chain.filter((chainId) => chainId !== id))
     }
     return filtered
   }
@@ -332,12 +430,8 @@ class ProxyManager {
       return false
     }
 
-    await browser.storage.local.set({
-      useOwnProxy: true,
-      activeCustomProxyId: id,
-      customProxyProtocol: proxy.protocol,
-      customProxyServerURI: proxy.uri,
-    })
+    // Selecting a single proxy replaces the chain with just that proxy.
+    await this.setProxyChain([id])
     return true
   }
 
@@ -349,11 +443,104 @@ class ProxyManager {
   }
 
   /**
+   * Returns the ordered list of proxy ids that make up the current chain.
+   * The browser tries them one after another (failover). Falls back to the
+   * legacy single active proxy when no chain has been stored yet.
+   * @returns {Promise<Array<string>>}
+   */
+  async getProxyChain () {
+    const { proxyChain, activeCustomProxyId } =
+      await browser.storage.local.get({
+        proxyChain: null,
+        activeCustomProxyId: '',
+      })
+
+    if (Array.isArray(proxyChain)) {
+      return proxyChain
+    }
+    return activeCustomProxyId ? [activeCustomProxyId] : []
+  }
+
+  /**
+   * Stores the proxy chain (ordered ids) and mirrors the first hop into the
+   * legacy storage keys read by {@link getProxyingRules}, so the popup and PAC
+   * keep working. An empty chain disables custom proxying.
+   * @param {Array<string>} ids - Ordered proxy ids ('builtin' is allowed).
+   * @returns {Promise<void>}
+   */
+  async setProxyChain (ids) {
+    const chain = Array.isArray(ids) ? ids.filter(Boolean) : []
+
+    await browser.storage.local.set({ proxyChain: chain })
+
+    if (chain.length === 0) {
+      await this.removeCustomProxy()
+      return
+    }
+
+    const customProxies = await this.getCustomProxies()
+    const builtin = await this.getBuiltinProxy()
+    const firstId = chain[0]
+    const first = firstId === 'builtin'
+      ? builtin
+      : customProxies.find((proxy) => proxy.id === firstId)
+
+    if (first) {
+      await browser.storage.local.set({
+        useOwnProxy: true,
+        activeCustomProxyId: firstId,
+        customProxyProtocol: first.protocol,
+        customProxyServerURI: first.uri,
+      })
+    }
+  }
+
+  /**
+   * Resolves the chain ids into concrete {protocol, uri} pairs for the PAC.
+   * Returns an empty array unless the user is on their own proxy, so the
+   * default and local-proxy code paths stay untouched.
+   * @returns {Promise<Array<{protocol: string, uri: string}>>}
+   */
+  async getChainProxyConfigs () {
+    const { useOwnProxy, localProxyURI } =
+      await browser.storage.local.get({ useOwnProxy: false, localProxyURI: '' })
+
+    if (localProxyURI || !useOwnProxy) {
+      return []
+    }
+
+    const chain = await this.getProxyChain()
+
+    if (chain.length === 0) {
+      return []
+    }
+
+    const customProxies = await this.getCustomProxies()
+    const builtin = await this.getBuiltinProxy()
+    const configs = []
+
+    for (const id of chain) {
+      if (id === 'builtin') {
+        if (builtin) {
+          configs.push({ protocol: builtin.protocol, uri: builtin.uri })
+        }
+      } else {
+        const proxy = customProxies.find((item) => item.id === id)
+
+        if (proxy) {
+          configs.push({ protocol: proxy.protocol, uri: proxy.uri })
+        }
+      }
+    }
+    return configs
+  }
+
+  /**
    * Updates an existing proxy in the list. If it is the active one, the
    * mirrored storage keys are refreshed too.
    * @returns {Promise<boolean>}
    */
-  async updateCustomProxy (id, { name, protocol, uri }) {
+  async updateCustomProxy (id, { name, protocol, uri, credentials = '' }) {
     const customProxies = await this.getCustomProxies()
     const proxy = customProxies.find((item) => item.id === id)
 
@@ -364,6 +551,7 @@ class ProxyManager {
     proxy.name = (name && name.trim()) || uri
     proxy.protocol = protocol
     proxy.uri = uri
+    proxy.credentials = credentials
 
     await browser.storage.local.set({ customProxies })
 
@@ -388,12 +576,8 @@ class ProxyManager {
       return false
     }
 
-    await browser.storage.local.set({
-      useOwnProxy: true,
-      activeCustomProxyId: 'builtin',
-      customProxyProtocol: builtin.protocol,
-      customProxyServerURI: builtin.uri,
-    })
+    // Selecting the built-in proxy replaces the chain with just that proxy.
+    await this.setProxyChain(['builtin'])
     return true
   }
 
@@ -410,6 +594,369 @@ class ProxyManager {
       return null
     }
     return { protocol: 'HTTPS', uri: proxyServerURI }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Liveness / latency testing
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Returns the key of the cloud endpoint used to test proxies.
+   * @returns {Promise<string>}
+   */
+  async getProxyTestTarget () {
+    const { proxyTestTarget } = await browser.storage.local.get({
+      proxyTestTarget: DEFAULT_PROXY_TEST_TARGET,
+    })
+
+    return PROXY_TEST_TARGETS[proxyTestTarget]
+      ? proxyTestTarget
+      : DEFAULT_PROXY_TEST_TARGET
+  }
+
+  async setProxyTestTarget (key) {
+    if (PROXY_TEST_TARGETS[key]) {
+      await browser.storage.local.set({ proxyTestTarget: key })
+    }
+  }
+
+  /**
+   * Last known status per proxy id: { alive, latency, ts }.
+   * @returns {Promise<Object>}
+   */
+  async getProxyStatuses () {
+    const { proxyStatuses } =
+      await browser.storage.local.get({ proxyStatuses: {} })
+
+    return proxyStatuses
+  }
+
+  async setProxyStatus (id, status) {
+    if (!id) {
+      return
+    }
+    const proxyStatuses = await this.getProxyStatuses()
+
+    proxyStatuses[id] = { ...status, ts: Date.now() }
+    await browser.storage.local.set({ proxyStatuses })
+  }
+
+  async clearProxyStatus (id) {
+    const proxyStatuses = await this.getProxyStatuses()
+
+    if (id in proxyStatuses) {
+      delete proxyStatuses[id]
+      await browser.storage.local.set({ proxyStatuses })
+    }
+  }
+
+  /**
+   * Builds a PAC that routes only the test host through `proxy` (everything
+   * else DIRECT), so a single fetch measures that one proxy in isolation.
+   * @param {{protocol: string, uri: string}} proxy
+   * @param {string} testHost
+   * @returns {string}
+   */
+  buildProbePac (proxy, testHost) {
+    const directive = `${proxy.protocol} ${proxy.uri}`
+
+    return `function FindProxyForURL(url, host) {
+      if (host === ${JSON.stringify(testHost)}) {
+        return '${directive};';
+      }
+      return 'DIRECT';
+    }`
+  }
+
+  /**
+   * Routes a single test request through `proxy` and measures the round-trip.
+   * Does NOT restore the previous proxy (callers do, possibly after a batch).
+   * @param {{protocol: string, uri: string, id?: string}} proxy
+   * @param {{timeout?: number, testUrl?: string}} [options]
+   * @returns {Promise<{alive: boolean, latency: number|null}>}
+   */
+  async probeProxy (proxy, { timeout = 8000, testUrl } = {}) {
+    if (!proxy || !proxy.uri || !proxy.protocol) {
+      return { alive: false, latency: null }
+    }
+
+    let target = testUrl
+
+    if (!target) {
+      target = PROXY_TEST_TARGETS[await this.getProxyTestTarget()]
+    }
+
+    let testHost
+
+    try {
+      testHost = new URL(target).hostname
+    } catch (error) {
+      return { alive: false, latency: null }
+    }
+
+    await this.applyPacData(this.buildProbePac(proxy, testHost))
+
+    const url = `${target}${target.includes('?') ? '&' : '?'}_ct=${Date.now()}`
+    const now = () =>
+      (typeof performance !== 'undefined' && performance.now)
+        ? performance.now()
+        : Date.now()
+    const started = now()
+    let alive = false
+
+    try {
+      // Any HTTP response means the proxy relayed our request to the cloud.
+      await fetchWithTimeout(url, {
+        method: 'GET',
+        timeout,
+        cache: 'no-store',
+        redirect: 'manual',
+      })
+      alive = true
+    } catch (error) {
+      alive = false
+    }
+
+    return { alive, latency: alive ? Math.round(now() - started) : null }
+  }
+
+  /**
+   * Tests one proxy, stores its status and restores the real proxy afterwards.
+   * @returns {Promise<{alive: boolean, latency: number|null}>}
+   */
+  async testProxy (proxy, options = {}) {
+    try {
+      const result = await this.probeProxy(proxy, options)
+
+      await this.setProxyStatus(proxy.id, result)
+      return result
+    } finally {
+      await this.restoreProxy()
+    }
+  }
+
+  /**
+   * Tests a list of proxies sequentially (they share the global proxy
+   * setting), restoring the real proxy once at the end. `onResult(id, result)`
+   * is called after each one so the UI can update live.
+   * @returns {Promise<Object>} Map of proxy id -> result.
+   */
+  async testProxies (proxies, { onResult, ...options } = {}) {
+    const results = {}
+
+    try {
+      for (const proxy of proxies) {
+        const result = await this.probeProxy(proxy, options)
+
+        results[proxy.id] = result
+        await this.setProxyStatus(proxy.id, result)
+
+        if (typeof onResult === 'function') {
+          onResult(proxy.id, result)
+        }
+      }
+    } finally {
+      await this.restoreProxy()
+    }
+    return results
+  }
+
+  // ---------------------------------------------------------------------------
+  // Auto-fetching proxy lists from configured sources
+  // ---------------------------------------------------------------------------
+
+  async getProxySourcesSettings () {
+    const {
+      proxySources,
+      proxySourcesEnabled,
+      proxySourcesIntervalMinutes,
+      proxySourcesUseProxy,
+      proxySourcesAutoTest,
+      proxySourcesLastRun,
+    } = await browser.storage.local.get({
+      proxySources: [],
+      proxySourcesEnabled: false,
+      proxySourcesIntervalMinutes: 60,
+      proxySourcesUseProxy: false,
+      proxySourcesAutoTest: true,
+      proxySourcesLastRun: 0,
+    })
+
+    return {
+      sources: proxySources,
+      enabled: proxySourcesEnabled,
+      intervalMinutes: proxySourcesIntervalMinutes,
+      useProxy: proxySourcesUseProxy,
+      autoTest: proxySourcesAutoTest,
+      lastRun: proxySourcesLastRun,
+    }
+  }
+
+  async setProxySourcesSettings (
+    { sources, enabled, intervalMinutes, useProxy, autoTest } = {},
+  ) {
+    const updates = {}
+
+    if (Array.isArray(sources)) {
+      updates.proxySources = sources.map((url) => url.trim()).filter(Boolean)
+    }
+    if (typeof enabled === 'boolean') {
+      updates.proxySourcesEnabled = enabled
+    }
+    if (Number.isFinite(intervalMinutes)) {
+      updates.proxySourcesIntervalMinutes = Math.max(5, Math.round(intervalMinutes))
+    }
+    if (typeof useProxy === 'boolean') {
+      updates.proxySourcesUseProxy = useProxy
+    }
+    if (typeof autoTest === 'boolean') {
+      updates.proxySourcesAutoTest = autoTest
+    }
+
+    await browser.storage.local.set(updates)
+    await this.applyProxySourcesSchedule()
+  }
+
+  /**
+   * (Re)schedules the background fetch alarm to match the current settings.
+   * @returns {Promise<void>}
+   */
+  async applyProxySourcesSchedule () {
+    await Promise.resolve(
+      browser.alarms.clear(TaskType.FETCH_PROXY_SOURCES),
+    ).catch(() => {})
+
+    const { enabled, sources, intervalMinutes } =
+      await this.getProxySourcesSettings()
+
+    if (enabled && sources.length > 0) {
+      const minutes = Math.max(5, intervalMinutes || 60)
+
+      browser.alarms.create(TaskType.FETCH_PROXY_SOURCES, {
+        delayInMinutes: minutes,
+        periodInMinutes: minutes,
+      })
+    }
+  }
+
+  /**
+   * Fetches one source URL's body, optionally through the active proxy chain
+   * (otherwise directly). Restores the real proxy afterwards.
+   * @returns {Promise<string>} The body text, or '' on failure.
+   */
+  async fetchSourceText (url, useProxy) {
+    let host
+
+    try {
+      host = new URL(url).hostname
+    } catch (error) {
+      return ''
+    }
+
+    const chain = useProxy ? await this.getChainProxyConfigs() : []
+    const routedThroughProxy = chain.length > 0
+
+    if (routedThroughProxy) {
+      const directive = chain
+        .map(({ protocol, uri }) => `${protocol} ${uri}`)
+        .join('; ')
+
+      await this.applyPacData(`function FindProxyForURL(url, h) {
+        if (h === ${JSON.stringify(host)}) { return '${directive};'; }
+        return 'DIRECT';
+      }`)
+    }
+
+    try {
+      const response = await fetchWithTimeout(url, {
+        timeout: 15000,
+        cache: 'no-store',
+      })
+
+      return await response.text()
+    } catch (error) {
+      console.error(`Failed to fetch proxy source ${url}: ${error}`)
+      return ''
+    } finally {
+      if (routedThroughProxy) {
+        await this.restoreProxy()
+      }
+    }
+  }
+
+  /**
+   * Reorders the proxy list by last-measured latency: alive (fastest first),
+   * then untested, then dead. The chain (referenced by id) is unaffected.
+   * @returns {Promise<void>}
+   */
+  async sortProxiesByLatency () {
+    const customProxies = await this.getCustomProxies()
+    const statuses = await this.getProxyStatuses()
+    const rank = (proxy) => {
+      const status = statuses[proxy.id]
+
+      if (status && status.alive) {
+        return status.latency
+      }
+      if (!status) {
+        return Number.MAX_SAFE_INTEGER - 1
+      }
+      return Number.MAX_SAFE_INTEGER
+    }
+
+    customProxies.sort((first, second) => rank(first) - rank(second))
+    await browser.storage.local.set({ customProxies })
+  }
+
+  /**
+   * Background job: fetch proxies from the configured sources, add the new
+   * ones, then (optionally) test them, drop the dead ones and sort the list by
+   * latency.
+   * @returns {Promise<{added: number, alive: number, removed: number}>}
+   */
+  async fetchProxySources ({ force = false } = {}) {
+    const settings = await this.getProxySourcesSettings()
+
+    // The scheduled run respects the on/off toggle; "Fetch now" forces it.
+    if (settings.sources.length === 0 || (!settings.enabled && !force)) {
+      return { added: 0, alive: 0, removed: 0 }
+    }
+
+    const collected = []
+
+    for (const url of settings.sources) {
+      const text = await this.fetchSourceText(url, settings.useProxy)
+
+      if (text) {
+        collected.push(...parseProxyList(text))
+      }
+    }
+
+    const added = await this.addCustomProxies(collected)
+    let alive = 0
+    let removed = 0
+
+    if (settings.autoTest && added.length > 0) {
+      // Bound the work so a long list can't outlive the service worker.
+      const toTest = added.slice(0, 40)
+      const results = await this.testProxies(toTest, { timeout: 5000 })
+
+      for (const proxy of toTest) {
+        if (results[proxy.id] && results[proxy.id].alive) {
+          alive += 1
+        } else {
+          await this.deleteCustomProxy(proxy.id)
+          removed += 1
+        }
+      }
+      await this.sortProxiesByLatency()
+    }
+
+    await browser.storage.local.set({ proxySourcesLastRun: Date.now() })
+    console.warn(
+      `Proxy sources: +${added.length}, alive ${alive}, removed ${removed}`,
+    )
+    return { added: added.length, alive, removed }
   }
 
   async removeLocalProxy () {

@@ -22,6 +22,8 @@
     "webRequest",
     "alarms",
     "activeTab",
+    "clipboardRead",
+    "clipboardWrite",
     "management",
     "notifications",
     "proxy",

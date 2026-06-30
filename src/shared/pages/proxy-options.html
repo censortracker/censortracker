@@ -58,94 +58,110 @@
               <label class="radio-button-label" for="useCustomProxy" data-i18n-key="useOwnProxy"></label>
             </div>
             <div id="proxyOptionsInputs" class="proxy-options-inputs hidden">
+              <!-- Unified list: built-in (backend) + user proxies. Tick the
+                   ones to chain (tried one after another), edit or delete. -->
+              <div class="cproxy-hint" data-i18n-key="proxyChainHint"></div>
 
-              <!-- Import proxies from a ready-made subscription or a URL. -->
-              <section class="cproxy-section">
-                <button type="button" class="cproxy-section__head" id="importToggle" aria-expanded="false">
-                  <svg class="cproxy-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none"
-                       xmlns="http://www.w3.org/2000/svg">
-                    <path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2"
-                          stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                  <span class="cproxy-section__title" data-i18n-key="importProxiesTitle"></span>
+              <button type="button" class="cproxy-section__head" id="proxyListToggle" aria-expanded="true">
+                <svg class="cproxy-chevron cproxy-chevron--open" width="14" height="14" viewBox="0 0 24 24"
+                     fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span class="cproxy-section__title" data-i18n-key="myProxiesTitle"></span>
+                <span class="cproxy-count" id="proxyCount"></span>
+              </button>
+              <div id="proxyListBody">
+                <div class="custom-proxy-list" id="customProxyList"></div>
+              </div>
+
+              <div class="cproxy-toolbar">
+                <button type="button" class="btn btn-dark cproxy-toolbar__btn" id="testAllProxiesButton">
+                  <span class="btn__text" data-i18n-key="testProxiesButton"></span>
                 </button>
-                <div class="cproxy-section__body hidden" id="importBody">
-                  <label class="cproxy-field-label" for="subscriptionSelect"
-                         data-i18n-key="subscriptionLabel"></label>
-                  <div class="cproxy-import-row">
-                    <select id="subscriptionSelect" class="cproxy-native-select"></select>
-                    <button class="btn btn-dark cproxy-import-btn" id="loadSubscriptionButton">
-                      <span class="btn__text" data-i18n-key="loadSubscriptionButton"></span>
-                    </button>
-                  </div>
-
-                  <div class="cproxy-or" data-i18n-key="popupOr"></div>
-
-                  <label class="cproxy-field-label" for="proxyListUrlInput"
-                         data-i18n-key="customListUrlLabel"></label>
-                  <div class="cproxy-import-row">
-                    <input type="text" id="proxyListUrlInput" class="input-proxy" placeholder="https://...">
-                    <button class="btn cproxy-import-btn" id="loadProxyListUrlButton">
-                      <span class="btn__text" data-i18n-key="popupLoadButton"></span>
-                    </button>
-                  </div>
-
-                  <div class="cproxy-import-options">
-                    <label class="cproxy-checkbox">
-                      <input type="checkbox" id="loadViaActiveProxy"/>
-                      <span data-i18n-key="loadViaActiveProxyLabel"></span>
-                    </label>
-                    <label class="cproxy-field-inline" for="importLimitInput">
-                      <span data-i18n-key="importLimitLabel"></span>
-                      <input type="number" id="importLimitInput" class="input-proxy cproxy-num"
-                             min="0" max="1000" value="100">
-                    </label>
-                  </div>
-
-                  <div class="cproxy-import-status hidden" id="importStatus"></div>
+                <button type="button" class="btn cproxy-toolbar__btn hidden" id="stopTestProxiesButton">
+                  <span class="btn__text" data-i18n-key="stopTestProxiesButton"></span>
+                </button>
+                <button type="button" class="btn cproxy-toolbar__btn" id="removeDeadProxiesButton">
+                  <span class="btn__text" data-i18n-key="removeDeadProxiesButton"></span>
+                </button>
+                <button type="button" class="btn cproxy-toolbar__btn" id="pasteProxiesButton">
+                  <span class="btn__text" data-i18n-key="pasteProxiesButton"></span>
+                </button>
+                <button type="button" class="btn cproxy-toolbar__btn" id="copyAllProxiesButton">
+                  <span class="btn__text" data-i18n-key="copyAllProxiesButton"></span>
+                </button>
+                <label class="cproxy-toolbar__field">
+                  <span data-i18n-key="proxyTestTargetLabel"></span>
+                  <select id="proxyTestTarget" class="cproxy-select">
+                    <option value="google">Google</option>
+                    <option value="cloudflare">Cloudflare</option>
+                    <option value="amazon">Amazon</option>
+                    <option value="azure">Azure</option>
+                  </select>
+                </label>
+                <label class="cproxy-toolbar__field cproxy-toolbar__check">
+                  <input type="checkbox" id="autoDeleteDeadProxies"/>
+                  <span data-i18n-key="autoDeleteDeadProxiesLabel"></span>
+                </label>
+              </div>
+              <div class="cproxy-progress hidden" id="checkProgress">
+                <div class="cproxy-progress__bar">
+                  <div class="cproxy-progress__fill" id="checkProgressFill"></div>
                 </div>
-              </section>
+                <div class="cproxy-progress__text" id="checkProgressText"></div>
+              </div>
+              <div class="cproxy-import-msg" id="proxyImportMsg" hidden></div>
 
-              <!-- Unified list: built-in (backend) + user proxies, with a
-                   concurrent checker. Pick the active one, edit or delete. -->
-              <section class="cproxy-section">
-                <button type="button" class="cproxy-section__head" id="listToggle" aria-expanded="true">
-                  <svg class="cproxy-chevron cproxy-chevron--open" width="14" height="14" viewBox="0 0 24 24"
+              <div class="cproxy-sources">
+                <button type="button" class="cproxy-section__head" id="proxySourcesToggle" aria-expanded="false">
+                  <svg class="cproxy-chevron" width="14" height="14" viewBox="0 0 24 24"
                        fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2"
                           stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
-                  <span class="cproxy-section__title" data-i18n-key="myProxiesTitle"></span>
-                  <span class="cproxy-count" id="proxyCount"></span>
+                  <span class="cproxy-section__title" data-i18n-key="proxySourcesTitle"></span>
                 </button>
-                <div class="cproxy-section__body" id="listBody">
-                  <div class="cproxy-toolbar">
-                    <button class="btn btn-dark cproxy-toolbar__btn" id="checkAllButton">
-                      <span class="btn__text" data-i18n-key="checkAllButton"></span>
-                    </button>
-                    <button class="btn cproxy-toolbar__btn hidden" id="stopCheckButton">
-                      <span class="btn__text" data-i18n-key="stopCheckButton"></span>
-                    </button>
-                    <button class="btn cproxy-toolbar__btn" id="removeDeadButton">
-                      <span class="btn__text" data-i18n-key="removeDeadButton"></span>
-                    </button>
-                  </div>
-
-                  <label class="cproxy-checkbox">
-                    <input type="checkbox" id="autoRemoveDead" checked/>
-                    <span data-i18n-key="autoRemoveDeadLabel"></span>
+                <div id="proxySourcesBody" class="hidden">
+                <label class="cproxy-toolbar__check">
+                  <input type="checkbox" id="proxySourcesEnabled"/>
+                  <span data-i18n-key="proxySourcesEnabledLabel"></span>
+                </label>
+                <div class="cproxy-hint" data-i18n-key="proxySourcesHint"></div>
+                <div class="cproxy-sources__row">
+                  <label class="cproxy-toolbar__field cproxy-sources__preset">
+                    <span data-i18n-key="recommendedSourcesLabel"></span>
+                    <select id="proxySourcesPreset" class="cproxy-select"></select>
                   </label>
-
-                  <div class="cproxy-progress hidden" id="checkProgress">
-                    <div class="cproxy-progress__bar">
-                      <div class="cproxy-progress__fill" id="checkProgressFill"></div>
-                    </div>
-                    <div class="cproxy-progress__text" id="checkProgressText"></div>
-                  </div>
-
-                  <div class="custom-proxy-list" id="customProxyList"></div>
+                  <button type="button" class="btn cproxy-toolbar__btn" id="addProxySourcePreset">
+                    <span class="btn__text" data-i18n-key="addSourceButton"></span>
+                  </button>
                 </div>
-              </section>
+                <textarea id="proxySourcesList" class="cproxy-sources__textarea"
+                          placeholder="https://example.com/proxies.txt"></textarea>
+                <div class="cproxy-sources__row">
+                  <label class="cproxy-toolbar__field">
+                    <span data-i18n-key="proxySourcesIntervalLabel"></span>
+                    <input type="number" id="proxySourcesInterval" class="cproxy-sources__interval"
+                           min="5" step="5"/>
+                  </label>
+                  <label class="cproxy-toolbar__check">
+                    <input type="checkbox" id="proxySourcesUseProxy"/>
+                    <span data-i18n-key="proxySourcesUseProxyLabel"></span>
+                  </label>
+                  <label class="cproxy-toolbar__check">
+                    <input type="checkbox" id="proxySourcesAutoTest"/>
+                    <span data-i18n-key="proxySourcesAutoTestLabel"></span>
+                  </label>
+                </div>
+                <div class="cproxy-sources__row">
+                  <button type="button" class="btn btn-dark cproxy-toolbar__btn" id="fetchProxySourcesButton">
+                    <span class="btn__text" data-i18n-key="fetchProxySourcesButton"></span>
+                  </button>
+                  <span class="cproxy-sources__status" id="proxySourcesStatus"></span>
+                </div>
+                </div>
+              </div>
 
               <div class="custom-proxy-form">
                 <div class="custom-proxy-form__title" id="customProxyFormTitle"

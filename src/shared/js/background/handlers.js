@@ -42,6 +42,8 @@ export const handleOnAlarm = async ({ name }) => {
     await ProxyManager.ping()
   } else if (name === TaskType.REMOVE_BAD_PROXIES) {
     await ProxyManager.removeBadProxies()
+  } else if (name === TaskType.FETCH_PROXY_SOURCES) {
+    await ProxyManager.fetchProxySources()
   } else if (name === TaskType.SET_PROXY) {
     const proxyingEnabled = await ProxyManager.isEnabled()
 
@@ -73,6 +75,7 @@ export const handleStartup = async () => {
     { name: TaskType.SET_PROXY, minutes: 15 },
     { name: TaskType.REMOVE_BAD_PROXIES, minutes: 20 },
   ])
+  await ProxyManager.applyProxySourcesSchedule()
   console.groupEnd()
 }
 
@@ -198,6 +201,7 @@ export const handleInstalled = async ({ reason }) => {
       { name: TaskType.SET_PROXY, minutes: 15 },
       { name: TaskType.REMOVE_BAD_PROXIES, minutes: 5 },
     ])
+    await ProxyManager.applyProxySourcesSchedule()
   }
 }
 

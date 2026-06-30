@@ -105,29 +105,24 @@ editable copy and overridden.
 
 ### Multi-threaded proxy checking and ready-made subscriptions
 
-Your custom proxy list can now be **tested for connectivity right inside the
-extension**:
+Testing proxies for connectivity:
 
-- **Multi-threaded checking.** Proxies are probed in parallel instead of one by
-  one, so a long list finishes far faster. Every row shows its status —
-  **working** (with latency in ms) or **dead**.
-- **«Check all», «Stop» and «Remove dead» buttons.** A running check can be
-  interrupted at any time with a dedicated button; dead proxies are removed
-  either manually with one click or **on the fly as the check runs** (a
-  checkbox) — no need to wait for the whole list to finish.
-- **Browsing never drops during a check.** Previously testing disabled the
-  active proxy and traffic leaked directly. Now all of your normal proxying
-  **keeps flowing through the enabled proxy** while the candidates are being
-  tested.
-- **Ready-made, regularly-updated subscriptions.** The “Import proxies” section
-  loads a fresh list from vetted public sources in one click (monosans —
-  validated, refreshed hourly; Proxifly — every ~5 minutes; TheSpeedX — daily),
-  or you can paste **your own URL**. The “Download lists through the active
-  proxy” option lets you fetch a subscription even when its address is blocked.
-  After importing, the form **re-renders immediately** — no need to reopen the
-  page.
-- **Collapsible lists.** The “Import proxies” and “My proxies” blocks can be
-  collapsed so they don’t take up half the screen; the state is remembered.
+- **In parallel.** Proxies are probed concurrently instead of one by one, so a
+  long list finishes far faster; every row shows its status — working (with
+  latency in ms) or dead — and a progress bar tracks the run.
+- **Browsing never drops.** While checking, all of your normal proxying **keeps
+  flowing through the active proxy/chain** — only the connectivity-probe
+  endpoints are routed through the proxies under test. The checker PAC is
+  applied as mandatory, so a dead proxy fails the probe instead of leaking to a
+  direct connection.
+- **"Stop" and "Remove dead" buttons.** A running check can be interrupted at
+  any time; dead proxies are removed manually with one button or dropped on the
+  fly during the check.
+- **Ready-made subscriptions.** In the sources block, one click adds a vetted,
+  regularly-updated public list (monosans — validated, hourly; Proxifly — every
+  ~5 minutes; TheSpeedX — daily).
+- **Collapsible lists.** The "My proxies" and "Sources" blocks can be collapsed
+  so they don't take up half the screen; the state is remembered.
 
 ### One-click helper for adding related domains
 
@@ -165,6 +160,7 @@ Censor Tracker requires the following permissions:
 
 - `alarms` — Enables periodic tasks such as database synchronization and re-requesting the list of proxy servers.
 - `activeTab` — Detects IDO websites (primarily relevant for Russian users).
+- `clipboardRead` / `clipboardWrite` — Pastes a proxy list from the clipboard and copies a proxy to share it.
 - `management` — Identifies permission conflicts (e.g., with other extensions).
 - `notifications` — Displays notifications.
 - `proxy` — Configures and utilizes Censor Tracker proxy servers.

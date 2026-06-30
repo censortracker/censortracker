@@ -43,6 +43,20 @@ export const normalizeProxyProtocol = (protocol) => {
 }
 
 /**
+ * Builds a PAC return token (e.g. "SOCKS5 1.2.3.4:1080") for a proxy. PAC uses
+ * "PROXY" for plain HTTP proxies, while HTTPS/SOCKS4/SOCKS5 keep their names.
+ * @param {string} protocol - Canonical protocol (HTTP/HTTPS/SOCKS4/SOCKS5).
+ * @param {string} uri - "host:port".
+ * @returns {string} PAC token.
+ */
+export const proxyToPacToken = (protocol, uri) => {
+  const normalized = normalizeProxyProtocol(protocol) || 'HTTPS'
+  const keyword = normalized === 'HTTP' ? 'PROXY' : normalized
+
+  return `${keyword} ${uri}`
+}
+
+/**
  * Parses a free-form proxy string into a protocol + server URI pair so the
  * user can paste a proxy in almost any common format, e.g.:
  *   socks5://user:pass@1.2.3.4:1080
@@ -110,17 +124,59 @@ export const parseProxyString = (input, defaultProtocol = 'HTTPS') => {
 }
 
 /**
- * Builds a PAC return token (e.g. "SOCKS5 1.2.3.4:1080") for a proxy. PAC uses
- * "PROXY" for plain HTTP proxies, while HTTPS/SOCKS4/SOCKS5 keep their names.
- * @param {string} protocol - Canonical protocol (HTTP/HTTPS/SOCKS4/SOCKS5).
- * @param {string} uri - "host:port".
- * @returns {string} PAC token.
+ * Serializes a proxy into the shareable string consumed by
+ * {@link parseProxyString}, so copy → paste round-trips losslessly (including
+ * credentials), e.g. "socks5://user:pass@1.2.3.4:1080".
+ * @param {{protocol: string, uri: string, credentials?: string}} proxy
+ * @returns {string} The shareable proxy string, or '' when incomplete.
  */
-export const proxyToPacToken = (protocol, uri) => {
-  const normalized = normalizeProxyProtocol(protocol) || 'HTTPS'
-  const keyword = normalized === 'HTTP' ? 'PROXY' : normalized
+export const formatProxyForShare = ({ protocol, uri, credentials = '' } = {}) => {
+  if (!protocol || !uri) {
+    return ''
+  }
 
-  return `${keyword} ${uri}`
+  const auth = credentials ? `${credentials}@` : ''
+
+  return `${protocol.toLowerCase()}://${auth}${uri}`
+}
+
+/**
+ * Parses a whitespace/comma/semicolon/newline separated blob of proxy strings
+ * (e.g. pasted from the clipboard) into a de-duplicated list of parsed proxies.
+ * @param {string} text - Raw text containing zero or more proxy strings.
+ * @param {string} [defaultProtocol='HTTPS'] - Protocol when none is present.
+ * @returns {Array<{protocol: string, uri: string, host: string, port: string,
+ *   credentials: string}>}
+ */
+export const parseProxyList = (text, defaultProtocol = 'HTTPS') => {
+  if (!text || typeof text !== 'string') {
+    return []
+  }
+
+  const tokens = text
+    .split(/[\s,;]+/)
+    .map((token) => token.trim())
+    .filter(Boolean)
+
+  const seen = new Set()
+  const result = []
+
+  for (const token of tokens) {
+    const parsed = parseProxyString(token, defaultProtocol)
+
+    if (!parsed) {
+      continue
+    }
+
+    const key = `${parsed.protocol}|${parsed.uri}`.toLowerCase()
+
+    if (seen.has(key)) {
+      continue
+    }
+    seen.add(key)
+    result.push(parsed)
+  }
+  return result
 }
 
 /**

@@ -522,11 +522,238 @@ a {
   cursor: pointer;
 }
 
-.cproxy-row__main input[type="radio"] {
+.cproxy-row__main input[type="radio"],
+.cproxy-row__main input[type="checkbox"] {
   flex: 0 0 auto;
   width: 16px;
   height: 16px;
   margin: 0;
+}
+
+/* Hint above the proxy list explaining the chain behaviour. */
+.cproxy-hint {
+  font-size: 13px;
+  color: #6d675f;
+  margin-bottom: 2px;
+}
+
+/* A row that is part of the chain. */
+.cproxy-row--active {
+  border-color: #6c9e2c;
+}
+
+/* The 1-based position of a proxy inside the chain. */
+.cproxy-order {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: 10px;
+  background: #6c9e2c;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+/* Per-proxy liveness / latency status. */
+.cproxy-status-cell {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+}
+
+.cproxy-status {
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.cproxy-status--unknown {
+  color: #9a948c;
+}
+
+.cproxy-status--checking {
+  color: #6d675f;
+}
+
+.cproxy-status--alive {
+  color: #2e7d32;
+}
+
+.cproxy-status--dead {
+  color: #c0392b;
+}
+
+.cproxy-status--alive::before,
+.cproxy-status--dead::before {
+  content: "\25cf\00a0";
+}
+
+/* Toolbar under the list: test-all button, target picker, paste/auto-delete. */
+.cproxy-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin: 6px 0 2px;
+}
+
+.cproxy-toolbar__btn {
+  margin: 0;
+}
+
+.cproxy-toolbar__field {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #6d675f;
+}
+
+.cproxy-select {
+  height: 32px;
+  border: 1px solid #c4c2bf;
+  border-radius: 4px;
+  background: #fff;
+  color: #3b332b;
+  padding: 0 6px;
+}
+
+.cproxy-toolbar__check {
+  cursor: pointer;
+}
+
+/* Collapsible section headers (proxy list + sources). */
+.cproxy-section__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 0;
+  border: none;
+  background: transparent;
+  font: inherit;
+  font-weight: 600;
+  color: #3b332b;
+  cursor: pointer;
+  text-align: left;
+}
+
+.cproxy-chevron {
+  flex: 0 0 auto;
+  color: #6d675f;
+  transition: transform 0.15s ease;
+}
+
+.cproxy-chevron--open {
+  transform: rotate(90deg);
+}
+
+.cproxy-section__title {
+  flex: 1 1 auto;
+}
+
+.cproxy-count {
+  flex: 0 0 auto;
+  font-size: 12px;
+  font-weight: 400;
+  color: #6d675f;
+}
+
+/* Checker progress bar. */
+.cproxy-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 8px 0;
+}
+
+.cproxy-progress__bar {
+  height: 6px;
+  border-radius: 3px;
+  background: #efece7;
+  overflow: hidden;
+}
+
+.cproxy-progress__fill {
+  height: 100%;
+  width: 0;
+  background: #5173d3;
+  transition: width 0.15s ease;
+}
+
+.cproxy-progress__text {
+  font-size: 12px;
+  color: #6d675f;
+}
+
+.cproxy-toolbar__check input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+}
+
+.cproxy-import-msg {
+  margin-top: 6px;
+  font-size: 13px;
+  font-family: 'IBM Plex Mono', monospace;
+  color: #3b332b;
+}
+
+/* Auto-fetch proxy sources block. */
+.cproxy-sources {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid #e0ddd8;
+}
+
+.cproxy-sources__title {
+  font-weight: 600;
+  color: #3b332b;
+}
+
+.cproxy-sources__textarea {
+  width: 100%;
+  min-height: 70px;
+  box-sizing: border-box;
+  resize: vertical;
+  border: 1px solid #c4c2bf;
+  border-radius: 4px;
+  padding: 8px 10px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px;
+  color: #3b332b;
+  background: #fff;
+}
+
+.cproxy-sources__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.cproxy-sources__interval {
+  width: 70px;
+  height: 32px;
+  border: 1px solid #c4c2bf;
+  border-radius: 4px;
+  background: #fff;
+  color: #3b332b;
+  padding: 0 6px;
+}
+
+.cproxy-sources__status {
+  font-size: 13px;
+  font-family: 'IBM Plex Mono', monospace;
+  color: #6d675f;
 }
 
 .cproxy-row__text {
@@ -609,231 +836,6 @@ a {
 .invalid-proxy-msg {
   color: #c0392b;
   font-size: 13px;
-}
-
-/* Collapsible sections (import + proxy list) */
-.cproxy-section {
-  border: 1px solid #e0ddd8;
-  border-radius: 8px;
-  margin-bottom: 12px;
-  background: #fff;
-}
-
-.cproxy-section__head {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-  padding: 12px 14px;
-  border: none;
-  background: transparent;
-  font: inherit;
-  font-weight: 600;
-  color: #3b332b;
-  cursor: pointer;
-  text-align: left;
-}
-
-.cproxy-chevron {
-  flex: 0 0 auto;
-  color: #6d675f;
-  transition: transform 0.15s ease;
-}
-
-.cproxy-chevron--open {
-  transform: rotate(90deg);
-}
-
-.cproxy-section__title {
-  flex: 1 1 auto;
-}
-
-.cproxy-count {
-  flex: 0 0 auto;
-  font-size: 12px;
-  font-weight: 400;
-  color: #6d675f;
-}
-
-.cproxy-section__body {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 0 14px 14px;
-}
-
-.cproxy-field-label {
-  font-size: 13px;
-  color: #6d675f;
-}
-
-.cproxy-import-row {
-  display: flex;
-  gap: 8px;
-  align-items: stretch;
-}
-
-.cproxy-import-row .input-proxy {
-  flex: 1 1 auto;
-  min-width: 0;
-}
-
-.cproxy-native-select {
-  flex: 1 1 auto;
-  min-width: 0;
-  padding: 8px 10px;
-  border: 1px solid #e0ddd8;
-  border-radius: 6px;
-  background: #fff;
-  color: #3b332b;
-  font: inherit;
-  font-size: 14px;
-}
-
-.cproxy-import-btn {
-  margin: 0;
-  flex: 0 0 auto;
-  white-space: nowrap;
-}
-
-.cproxy-or {
-  text-align: center;
-  font-size: 12px;
-  color: #9b948b;
-  text-transform: uppercase;
-}
-
-.cproxy-import-options {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px 18px;
-  align-items: center;
-}
-
-.cproxy-checkbox {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  color: #3b332b;
-  cursor: pointer;
-}
-
-.cproxy-checkbox input {
-  width: 16px;
-  height: 16px;
-  margin: 0;
-}
-
-.cproxy-field-inline {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  color: #3b332b;
-}
-
-.cproxy-num {
-  width: 80px;
-  flex: 0 0 auto;
-}
-
-.cproxy-import-status {
-  font-size: 13px;
-  color: #6d675f;
-}
-
-.cproxy-import-status.is-error {
-  color: #c0392b;
-}
-
-.cproxy-import-status.is-success {
-  color: #2e7d32;
-}
-
-/* Checker toolbar + progress */
-.cproxy-toolbar {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.cproxy-toolbar__btn {
-  margin: 0;
-}
-
-.cproxy-progress {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.cproxy-progress__bar {
-  height: 6px;
-  border-radius: 3px;
-  background: #efece7;
-  overflow: hidden;
-}
-
-.cproxy-progress__fill {
-  height: 100%;
-  width: 0;
-  background: #5173d3;
-  transition: width 0.15s ease;
-}
-
-.cproxy-progress__text {
-  font-size: 12px;
-  color: #6d675f;
-}
-
-/* Per-row connectivity status */
-.cproxy-status {
-  flex: 0 0 auto;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 12px;
-  color: #6d675f;
-  white-space: nowrap;
-}
-
-.cproxy-status__dot {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: #c9c3ba;
-  flex: 0 0 auto;
-}
-
-.cproxy-status[data-status="alive"] {
-  color: #2e7d32;
-}
-
-.cproxy-status[data-status="alive"] .cproxy-status__dot {
-  background: #2e7d32;
-}
-
-.cproxy-status[data-status="dead"] {
-  color: #c0392b;
-}
-
-.cproxy-status[data-status="dead"] .cproxy-status__dot {
-  background: #c0392b;
-}
-
-.cproxy-status[data-status="checking"] .cproxy-status__dot {
-  background: #e0a106;
-  animation: cproxy-pulse 0.9s ease-in-out infinite;
-}
-
-@keyframes cproxy-pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.3;
-  }
 }
 
 /* Ignore Editor Page */
@@ -1963,6 +1965,28 @@ kbd {
     border: 1px solid #9e5757 !important;
   }
 
+  .cproxy-hint,
+  .cproxy-toolbar__field,
+  .cproxy-import-msg {
+    color: #cbccc6;
+  }
+
+  .cproxy-select,
+  .cproxy-sources__textarea,
+  .cproxy-sources__interval {
+    background: #242728;
+    color: #c4c2bf;
+    border-color: #292828;
+  }
+
+  .cproxy-sources__status {
+    color: #cbccc6;
+  }
+
+  .cproxy-sources {
+    border-top-color: #292828;
+  }
+
   .update_available {
     color-scheme: light;
   }
@@ -2115,74 +2139,20 @@ kbd {
   }
 }
 
-/* Dark-theme overrides for the proxy list, checker and import sections. */
+/* Dark-theme overrides for the collapsible headers and checker progress. */
 @media (prefers-color-scheme: dark) {
-  .cproxy-row,
-  .cproxy-section {
-    background: #242728;
-    border-color: #3a3c3e;
-  }
-
-  .cproxy-row__name,
   .cproxy-section__head,
-  .cproxy-checkbox,
-  .cproxy-field-inline {
+  .cproxy-section__title {
     color: #f4f1f1;
   }
 
-  .cproxy-row__addr,
-  .cproxy-row__name {
-    color: #cbccc6;
-  }
-
-  .cproxy-badge {
-    background: #3a3c3e;
-    color: #cbccc6;
-  }
-
-  .cproxy-icon-btn {
-    color: #cbccc6;
-  }
-
-  .cproxy-icon-btn:hover {
-    background: #3a3c3e;
-    color: #fff;
-  }
-
-  .cproxy-native-select {
-    background: #1f2122;
-    border-color: #3a3c3e;
-    color: #f4f1f1;
-  }
-
+  .cproxy-chevron,
   .cproxy-count,
-  .cproxy-field-label,
-  .cproxy-progress__text,
-  .cproxy-import-status {
+  .cproxy-progress__text {
     color: #9b948b;
   }
 
   .cproxy-progress__bar {
     background: #3a3c3e;
-  }
-
-  .cproxy-status__dot {
-    background: #61666b;
-  }
-
-  .cproxy-status[data-status="alive"] {
-    color: #7bc47f;
-  }
-
-  .cproxy-status[data-status="alive"] .cproxy-status__dot {
-    background: #7bc47f;
-  }
-
-  .cproxy-status[data-status="dead"] {
-    color: #e57373;
-  }
-
-  .cproxy-status[data-status="dead"] .cproxy-status__dot {
-    background: #e57373;
   }
 }

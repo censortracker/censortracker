@@ -8,6 +8,9 @@
   "addLocalProxyButton": {
     "message": "Добавить"
   },
+  "addSourceButton": {
+    "message": "Добавить"
+  },
   "advancedOptionsDesc": {
     "message": "Вы можете вручную обновить локальную базу данных заблокированных веб-сайтов, обновить конфигурацию Censor Tracker и управлять другими расширенными параметрами."
   },
@@ -35,8 +38,8 @@
   "areYouSureYouWantToResetSettingsTitle": {
     "message": "Вы уверены, что хотите сбросить все настройки?"
   },
-  "autoRemoveDeadLabel": {
-    "message": "Удалять нерабочие сразу"
+  "autoDeleteDeadProxiesLabel": {
+    "message": "Удалять нерабочие"
   },
   "backendIsIntermittentDesc": {
     "message": "Попробуйте <a href='advanced-options.html'>сбросить настройки расширения</a> или <a target='_blank' href='https://t.me/censortracker_feedback'>напишите нам в Telegram</a> об этой проблеме."
@@ -65,11 +68,11 @@
   "censorshipCircumventionBlockTitle": {
     "message": "Обход Блокировок"
   },
-  "checkAllButton": {
-    "message": "Проверить все"
-  },
   "chooseFileOnComputer": {
     "message": "Выберите файл на компьютере"
+  },
+  "clipboardReadFailed": {
+    "message": "Не удалось прочитать буфер обмена. Используйте Ctrl+V."
   },
   "closeTab": {
     "message": "Закрыть вкладку"
@@ -113,6 +116,9 @@
       }
     }
   },
+  "copyAllProxiesButton": {
+    "message": "Копировать все"
+  },
   "copyButton": {
     "message": "Скопировать"
   },
@@ -142,9 +148,6 @@
   },
   "currentProxyLabel": {
     "message": "Текущий прокси:"
-  },
-  "customListUrlLabel": {
-    "message": "Или загрузить по ссылке"
   },
   "customProxyNamePlaceholder": {
     "message": "Название (необязательно)"
@@ -227,6 +230,9 @@
   "faqLink": {
     "message": "Ответы на вопросы по работе расширения"
   },
+  "fetchProxySourcesButton": {
+    "message": "Загрузить сейчас"
+  },
   "fetchURLError": {
     "message": "Введенный вами URL-адрес недоступен. Пожалуйста, проверьте его и повторите попытку."
   },
@@ -260,38 +266,14 @@
   "ignoredSitesTitle": {
     "message": "Игнорируемые сайты"
   },
-  "importAdded": {
-    "message": "Добавлено"
-  },
   "importBuiltinProxyButton": {
     "message": "Импортировать встроенную"
-  },
-  "importFailed": {
-    "message": "Не удалось загрузить"
-  },
-  "importLimitLabel": {
-    "message": "Сколько импортировать"
-  },
-  "importLoading": {
-    "message": "Загрузка…"
-  },
-  "importNoUrl": {
-    "message": "Введите ссылку"
-  },
-  "importNothingFound": {
-    "message": "Не найдено ни одного валидного прокси"
-  },
-  "importProxiesTitle": {
-    "message": "Импорт прокси"
   },
   "importSettingsDesc": {
     "message": "Вы можете импортировать настройки из файла JSON."
   },
   "importSettingsTitle": {
     "message": "Импортировать Настроек"
-  },
-  "importSkipped": {
-    "message": "пропущено"
   },
   "incognitoAccessRequiredDescription": {
     "message": "Чтобы открыть <b>$hostname$</b> через прокси в Firefox требуется разрешение на работу в приватных окнах. Иначе прокси не работает.",
@@ -331,15 +313,6 @@
   "invalidURLError": {
     "message": "Неверный URL. Пожалуйста, проверьте его и попробуйте ещё раз."
   },
-  "latencyMsSuffix": {
-    "message": "мс"
-  },
-  "loadSubscriptionButton": {
-    "message": "Загрузить"
-  },
-  "loadViaActiveProxyLabel": {
-    "message": "Загружать списки через активный прокси"
-  },
   "localProxyConfigValueDescr": {
     "message": "Вставьте конфигурацию vless://, vmess:// или ss://."
   },
@@ -372,6 +345,9 @@
   },
   "myProxiesTitle": {
     "message": "Мои прокси"
+  },
+  "noProxiesInClipboard": {
+    "message": "Прокси не найдены."
   },
   "notBlockedDesc": {
     "message": "Если доступ к сайту запретят - Censor Tracker предложит открыть сайт через надёжный прокси."
@@ -459,6 +435,9 @@
   "overlayNetworkDesc": {
     "message": "Censor Tracker позволяет открывать такие сайты в обычном браузере"
   },
+  "pasteProxiesButton": {
+    "message": "Вставить список"
+  },
   "popupAutoMessage": {
     "message": "Определить автоматически"
   },
@@ -522,14 +501,29 @@
   "proxiesCountSuffix": {
     "message": "шт."
   },
+  "proxiesImportedLabel": {
+    "message": "Импортировано"
+  },
+  "proxyChainHint": {
+    "message": "Отметьте прокси, чтобы выстроить цепочку — они пробуются одна за другой (используется первая доступная)."
+  },
+  "proxyChainPositionTitle": {
+    "message": "Позиция в цепочке"
+  },
   "proxyConnectionIssuesMessage": {
     "message": "Обнаружена проблема с сетью. Пожалуйста, обратитесь в чат поддержки и расскажите нам о проблеме, мы постараемся ее решить →"
+  },
+  "proxyCopied": {
+    "message": "Скопировано в буфер обмена"
   },
   "proxyDisabledPageTitle": {
     "message": "Проксирование Отключено"
   },
   "proxyHost": {
     "message": "Адрес прокси-сервера"
+  },
+  "proxyLatencyUnit": {
+    "message": "мс"
   },
   "proxyOptionsStatusDesc": {
     "message": "Можете попробовать отключить проксирование совсем или переключиться на свой прокси."
@@ -543,17 +537,47 @@
   "proxySettings": {
     "message": "Настройки прокси"
   },
-  "proxyStatusAlive": {
-    "message": "Рабочий"
+  "proxySourcesAutoTestLabel": {
+    "message": "Проверять, удалять нерабочие, сортировать по задержке"
+  },
+  "proxySourcesEnabledLabel": {
+    "message": "Автозагрузка по таймеру"
+  },
+  "proxySourcesFetching": {
+    "message": "Загрузка…"
+  },
+  "proxySourcesHint": {
+    "message": "URL списков прокси, по одному в строке (текст или любой вставляемый формат)."
+  },
+  "proxySourcesIntervalLabel": {
+    "message": "Интервал (мин):"
+  },
+  "proxySourcesTitle": {
+    "message": "Автозагрузка списков прокси"
+  },
+  "proxySourcesUseProxyLabel": {
+    "message": "Качать через активную прокси"
+  },
+  "proxyStatusAliveShort": {
+    "message": "рабочих"
   },
   "proxyStatusChecking": {
-    "message": "Проверка…"
+    "message": "проверка…"
   },
   "proxyStatusDead": {
-    "message": "Не работает"
+    "message": "недоступна"
+  },
+  "proxyStatusUntested": {
+    "message": "не проверено"
+  },
+  "proxyTestTargetLabel": {
+    "message": "Тест через:"
   },
   "readMoreButton": {
     "message": "Подробнее →"
+  },
+  "recommendedSourcesLabel": {
+    "message": "Готовые подписки"
   },
   "registrySelectRegionDesc": {
     "message": "Вы можете выбрать регион, чтобы обходить блокировки специфичные для вашей страны. Выбор конкретной страны также отключает автоматическое определение вашей страны (на основе GeoIP), что полезно, если вы используете программное обеспечение, которое изменяет ваш реальный IP-адрес (например, VPN). Эта опция не меняет ваш прокси сервер."
@@ -585,10 +609,10 @@
   "relatedDomainsTitle": {
     "message": "Связанные домены"
   },
-  "removeDeadButton": {
+  "removeDeadProxiesButton": {
     "message": "Удалить нерабочие"
   },
-  "removedDeadProxies": {
+  "removedDeadProxiesLabel": {
     "message": "Удалено"
   },
   "resetToDefaultDesc": {
@@ -624,6 +648,9 @@
   "shareFeedback": {
     "message": "Есть вопросы или предложения? Дайте нам знать!"
   },
+  "shareProxyButton": {
+    "message": "Скопировать для обмена"
+  },
   "showDebugInfoDesc": {
     "message": "Показать отладочную информацию расширения."
   },
@@ -657,11 +684,20 @@
   "siteActionTitle": {
     "message": "Когда следует использовать прокси для открытия этого сайта?"
   },
-  "stopCheckButton": {
+  "sourceAddedLabel": {
+    "message": "Источник добавлен"
+  },
+  "sourceAlreadyAddedLabel": {
+    "message": "Уже добавлен"
+  },
+  "stopTestProxiesButton": {
     "message": "Остановить"
   },
-  "subscriptionLabel": {
-    "message": "Готовая подписка"
+  "testProxiesButton": {
+    "message": "Проверить все"
+  },
+  "testProxyButton": {
+    "message": "Проверить эту прокси"
   },
   "thankYou": {
     "message": "Спасибо!"

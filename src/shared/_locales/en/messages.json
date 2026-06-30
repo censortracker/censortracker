@@ -8,6 +8,9 @@
   "addLocalProxyButton": {
     "message": "Add"
   },
+  "addSourceButton": {
+    "message": "Add"
+  },
   "advancedOptionsDesc": {
     "message": "You can manually update the local database of blocked websites, update the config of Censor Tracker and manage other advanced options."
   },
@@ -35,8 +38,8 @@
   "areYouSureYouWantToResetSettingsTitle": {
     "message": "Are you sure you want to reset all settings?"
   },
-  "autoRemoveDeadLabel": {
-    "message": "Remove dead proxies immediately"
+  "autoDeleteDeadProxiesLabel": {
+    "message": "Auto-remove dead"
   },
   "backendIsIntermittentDesc": {
     "message": "Try to <a href='advanced-options.html'>reset the settings to defaults</a> or <a target='_blank' href='https://t.me/censortracker_feedback'>contact us via Telegram</a>."
@@ -65,11 +68,11 @@
   "censorshipCircumventionBlockTitle": {
     "message": "Censorship Circumvention"
   },
-  "checkAllButton": {
-    "message": "Check all"
-  },
   "chooseFileOnComputer": {
     "message": "Choose a file on your computer"
+  },
+  "clipboardReadFailed": {
+    "message": "Couldn't read the clipboard. Use Ctrl+V instead."
   },
   "closeTab": {
     "message": "Close tab"
@@ -113,6 +116,9 @@
       }
     }
   },
+  "copyAllProxiesButton": {
+    "message": "Copy all"
+  },
   "copyButton": {
     "message": "Copy"
   },
@@ -142,9 +148,6 @@
   },
   "currentProxyLabel": {
     "message": "Current proxy:"
-  },
-  "customListUrlLabel": {
-    "message": "Or load from a URL"
   },
   "customProxyNamePlaceholder": {
     "message": "Name (optional)"
@@ -227,6 +230,9 @@
   "faqLink": {
     "message": "Frequently asked questions"
   },
+  "fetchProxySourcesButton": {
+    "message": "Fetch now"
+  },
   "fetchURLError": {
     "message": "The URL you entered is not available. Please check it and try again."
   },
@@ -260,38 +266,14 @@
   "ignoredSitesTitle": {
     "message": "Ignored Websites"
   },
-  "importAdded": {
-    "message": "Added"
-  },
   "importBuiltinProxyButton": {
     "message": "Import built-in proxy"
-  },
-  "importFailed": {
-    "message": "Failed to load"
-  },
-  "importLimitLabel": {
-    "message": "Max to import"
-  },
-  "importLoading": {
-    "message": "Loading…"
-  },
-  "importNoUrl": {
-    "message": "Enter a URL"
-  },
-  "importNothingFound": {
-    "message": "No valid proxies found"
-  },
-  "importProxiesTitle": {
-    "message": "Import proxies"
   },
   "importSettingsDesc": {
     "message": "You can import your settings from a JSON file."
   },
   "importSettingsTitle": {
     "message": "Import Settings"
-  },
-  "importSkipped": {
-    "message": "skipped"
   },
   "incognitoAccessRequiredDescription": {
     "message": "To open <b>$hostname$</b> through a proxy in Firefox, you need permission to work in Private Windows. Otherwise, our proxy will not work.",
@@ -331,15 +313,6 @@
   "invalidURLError": {
     "message": "The URL you entered is invalid. Please check it and try again."
   },
-  "latencyMsSuffix": {
-    "message": "ms"
-  },
-  "loadSubscriptionButton": {
-    "message": "Load"
-  },
-  "loadViaActiveProxyLabel": {
-    "message": "Download lists through the active proxy"
-  },
   "localProxyConfigValueDescr": {
     "message": "Enter your vless://, vmess:// or ss:// config."
   },
@@ -372,6 +345,9 @@
   },
   "myProxiesTitle": {
     "message": "My proxies"
+  },
+  "noProxiesInClipboard": {
+    "message": "No valid proxies found."
   },
   "notBlockedDesc": {
     "message": "If access to the website is blocked, Censor Tracker will offer to load it through a reliable proxy."
@@ -459,6 +435,9 @@
   "overlayNetworkDesc": {
     "message": "Censor Tracker allows you to open websites through overlaid networks"
   },
+  "pasteProxiesButton": {
+    "message": "Paste list"
+  },
   "popupAutoMessage": {
     "message": "Auto"
   },
@@ -522,14 +501,29 @@
   "proxiesCountSuffix": {
     "message": "proxies"
   },
+  "proxiesImportedLabel": {
+    "message": "Imported"
+  },
+  "proxyChainHint": {
+    "message": "Tick proxies to chain them — they are tried one after another (the first reachable one is used)."
+  },
+  "proxyChainPositionTitle": {
+    "message": "Position in the chain"
+  },
   "proxyConnectionIssuesMessage": {
     "message": "A network problem has been detected. Please go to our support chat and tell us about the problem, we will try to solve it →"
+  },
+  "proxyCopied": {
+    "message": "Copied to clipboard"
   },
   "proxyDisabledPageTitle": {
     "message": "Proxying Disabled"
   },
   "proxyHost": {
     "message": "Proxy Server address"
+  },
+  "proxyLatencyUnit": {
+    "message": "ms"
   },
   "proxyOptionsStatusDesc": {
     "message": "You can disable proxying or switch to your own proxy."
@@ -543,17 +537,47 @@
   "proxySettings": {
     "message": "Proxy Settings"
   },
-  "proxyStatusAlive": {
-    "message": "Working"
+  "proxySourcesAutoTestLabel": {
+    "message": "Test, remove dead, sort by latency"
+  },
+  "proxySourcesEnabledLabel": {
+    "message": "Auto-fetch on a timer"
+  },
+  "proxySourcesFetching": {
+    "message": "Fetching…"
+  },
+  "proxySourcesHint": {
+    "message": "Proxy list URLs, one per line (plain text or any pasteable format)."
+  },
+  "proxySourcesIntervalLabel": {
+    "message": "Every (min):"
+  },
+  "proxySourcesTitle": {
+    "message": "Auto-fetch proxy lists"
+  },
+  "proxySourcesUseProxyLabel": {
+    "message": "Download via active proxy"
+  },
+  "proxyStatusAliveShort": {
+    "message": "alive"
   },
   "proxyStatusChecking": {
-    "message": "Checking…"
+    "message": "checking…"
   },
   "proxyStatusDead": {
-    "message": "Dead"
+    "message": "dead"
+  },
+  "proxyStatusUntested": {
+    "message": "not tested"
+  },
+  "proxyTestTargetLabel": {
+    "message": "Test via:"
   },
   "readMoreButton": {
     "message": "Read More →"
+  },
+  "recommendedSourcesLabel": {
+    "message": "Recommended subscriptions"
   },
   "registrySelectRegionDesc": {
     "message": "You can select a region to circumvent country-specific censorship. Selecting particular country also disables auto-detection of your country (based on GeoIP)  which is helpful if you're using software which changes your real IP (for instance VPN)."
@@ -585,10 +609,10 @@
   "relatedDomainsTitle": {
     "message": "Related domains"
   },
-  "removeDeadButton": {
+  "removeDeadProxiesButton": {
     "message": "Remove dead"
   },
-  "removedDeadProxies": {
+  "removedDeadProxiesLabel": {
     "message": "Removed"
   },
   "resetToDefaultDesc": {
@@ -624,6 +648,9 @@
   "shareFeedback": {
     "message": "Got issues or suggestions? Let us know!"
   },
+  "shareProxyButton": {
+    "message": "Copy to share"
+  },
   "showDebugInfoDesc": {
     "message": "Show debug information of the extension."
   },
@@ -657,11 +684,20 @@
   "siteActionTitle": {
     "message": "How should a proxy be used to for this website?"
   },
-  "stopCheckButton": {
+  "sourceAddedLabel": {
+    "message": "Source added"
+  },
+  "sourceAlreadyAddedLabel": {
+    "message": "Already added"
+  },
+  "stopTestProxiesButton": {
     "message": "Stop"
   },
-  "subscriptionLabel": {
-    "message": "Ready-made subscription"
+  "testProxiesButton": {
+    "message": "Test all"
+  },
+  "testProxyButton": {
+    "message": "Test this proxy"
   },
   "thankYou": {
     "message": "Thank you!"

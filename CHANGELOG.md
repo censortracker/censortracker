@@ -1,20 +1,20 @@
-# 20.3.0
+# 20.4.0
 
-- Added a multi-threaded proxy checker to the custom proxy list: proxies are
-  probed for connectivity in parallel, each row shows a working/dead status with
-  latency, and results stream in live
-- Added dedicated "Stop" (abort the check) and "Remove dead" buttons, plus an
-  option to drop dead proxies on the fly instead of waiting for the whole list
-- Browsing no longer drops while checking — all normal traffic keeps flowing
-  through the active proxy; only the connectivity-probe endpoints are routed
-  through the proxies under test
-- Added ready-made, regularly-updated proxy subscriptions (monosans, Proxifly,
-  TheSpeedX) and import from a custom URL, with an option to download the list
-  through the active proxy; the list re-renders immediately after importing
-- Made the "Import proxies" and "My proxies" sections collapsible and persisted
-  their state
-- The PAC script now emits the correct `PROXY` keyword for plain HTTP proxies so
-  imported HTTP proxies actually work when activated
+- Proxy checking now runs in parallel (multi-threaded) instead of one proxy at
+  a time, so large lists finish far faster
+- Browsing no longer drops while checking: the user's real traffic keeps
+  flowing through the active proxy/chain for the whole run — only the
+  connectivity-probe endpoints are routed through the proxies under test
+  (the checker PAC is applied as mandatory so a dead proxy fails the probe
+  instead of leaking to a direct connection)
+- Added a "Stop" button to abort a running check and a manual "Remove dead"
+  button; dead proxies can also be dropped on the fly during a check
+- Added one-click presets for ready-made, regularly-updated proxy
+  subscriptions (monosans, Proxifly, TheSpeedX)
+- Made the proxy list and proxy-sources sections collapsible (state is
+  remembered) and added a live progress bar while checking
+- The PAC script now emits the correct `PROXY` keyword for plain HTTP proxies
+  so imported HTTP proxies work when activated
 
 
 # 20.2.2

@@ -8,6 +8,9 @@
   "addLocalProxyButton": {
     "message": "Додати"
   },
+  "addSourceButton": {
+    "message": "Додати"
+  },
   "advancedOptionsDesc": {
     "message": "Ви можете вручну оновити локальну базу даних заблокованих веб-сайтів, оновити конфігурацію Censor Tracker і керувати іншими розширеними параметрами."
   },
@@ -34,6 +37,9 @@
   },
   "areYouSureYouWantToResetSettingsTitle": {
     "message": "Ви впевнені, що хочете скинути всі налаштування?"
+  },
+  "autoDeleteDeadProxiesLabel": {
+    "message": "Видаляти неробочі"
   },
   "backendIsIntermittentDesc": {
     "message": "Спробуйте <a href='advanced-options.html'>скинути налаштування розширення</a> або <a target='_blank' href='https://t.me/censortracker_feedback'>напишіть нам у Telegram</a> про цю проблему."
@@ -64,6 +70,9 @@
   },
   "chooseFileOnComputer": {
     "message": "Виберіть файл на комп'ютері"
+  },
+  "clipboardReadFailed": {
+    "message": "Не вдалося прочитати буфер обміну. Використайте Ctrl+V."
   },
   "closeTab": {
     "message": "Закрити вкладку"
@@ -106,6 +115,9 @@
         "content": "$1"
       }
     }
+  },
+  "copyAllProxiesButton": {
+    "message": "Копіювати всі"
   },
   "copyButton": {
     "message": "Скопіювати"
@@ -218,6 +230,9 @@
   "faqLink": {
     "message": "Відповіді на запитання щодо роботи розширення"
   },
+  "fetchProxySourcesButton": {
+    "message": "Завантажити зараз"
+  },
   "fetchURLError": {
     "message": "Введена вами URL-адреса недоступна. Будь ласка, перевірте її та спробуйте ще раз."
   },
@@ -328,6 +343,12 @@
   "maxDomainsExceededError": {
     "message": "Максимальна кількість доменів, яку можна додати - 1000. Будь ласка, скоротіть список і спробуйте ще раз."
   },
+  "myProxiesTitle": {
+    "message": "Мої проксі"
+  },
+  "noProxiesInClipboard": {
+    "message": "Проксі не знайдено."
+  },
   "notBlockedDesc": {
     "message": "Якщо доступ до сайту заборонять - Censor Tracker запропонує відкрити сайт через надійний проксі."
   },
@@ -414,6 +435,9 @@
   "overlayNetworkDesc": {
     "message": "Censor Tracker дає змогу відкривати такі сайти у звичайному браузері"
   },
+  "pasteProxiesButton": {
+    "message": "Вставити список"
+  },
   "popupAutoMessage": {
     "message": "Авто"
   },
@@ -474,59 +498,44 @@
   "proxiedWebsitesTitle": {
     "message": "Проксовані сайти"
   },
+  "proxiesCountSuffix": {
+    "message": "шт."
+  },
+  "proxiesImportedLabel": {
+    "message": "Імпортовано"
+  },
   "proxyChainHint": {
     "message": "Позначте проксі, щоб вибудувати ланцюжок — вони пробуються одна за одною (використовується перша доступна)."
   },
   "proxyChainPositionTitle": {
     "message": "Позиція в ланцюжку"
   },
-  "autoDeleteDeadProxiesLabel": {
-    "message": "Видаляти неробочі"
-  },
-  "copyAllProxiesButton": {
-    "message": "Копіювати всі"
+  "proxyConnectionIssuesMessage": {
+    "message": "Виявлено проблему з мережею. Будь ласка, зверніться в чат підтримки і розкажіть нам про проблему, ми постараємося її вирішити →"
   },
   "proxyCopied": {
     "message": "Скопійовано в буфер обміну"
   },
-  "shareProxyButton": {
-    "message": "Скопіювати для обміну"
+  "proxyDisabledPageTitle": {
+    "message": "Проксування Вимкнено"
   },
-  "clipboardReadFailed": {
-    "message": "Не вдалося прочитати буфер обміну. Використайте Ctrl+V."
-  },
-  "noProxiesInClipboard": {
-    "message": "Проксі не знайдено."
-  },
-  "pasteProxiesButton": {
-    "message": "Вставити список"
-  },
-  "proxiesImportedLabel": {
-    "message": "Імпортовано"
+  "proxyHost": {
+    "message": "Адреса проксі-сервера"
   },
   "proxyLatencyUnit": {
     "message": "мс"
   },
-  "proxyStatusChecking": {
-    "message": "перевірка…"
+  "proxyOptionsStatusDesc": {
+    "message": "Можете спробувати відключити проксування зовсім або переключитися на свій проксі."
   },
-  "proxyStatusDead": {
-    "message": "недоступна"
+  "proxyOptionsStatusTitle": {
+    "message": "Не вдалося встановити з'єднання з проксі-сервером"
   },
-  "proxyStatusUntested": {
-    "message": "не перевірено"
+  "proxyPort": {
+    "message": "Порт"
   },
-  "proxyTestTargetLabel": {
-    "message": "Тест через:"
-  },
-  "testProxiesButton": {
-    "message": "Перевірити всі"
-  },
-  "testProxyButton": {
-    "message": "Перевірити цю проксі"
-  },
-  "fetchProxySourcesButton": {
-    "message": "Завантажити зараз"
+  "proxySettings": {
+    "message": "Налаштування проксування"
   },
   "proxySourcesAutoTestLabel": {
     "message": "Перевіряти, видаляти неробочі, сортувати за затримкою"
@@ -549,29 +558,26 @@
   "proxySourcesUseProxyLabel": {
     "message": "Завантажувати через активну проксі"
   },
-  "proxyConnectionIssuesMessage": {
-    "message": "Виявлено проблему з мережею. Будь ласка, зверніться в чат підтримки і розкажіть нам про проблему, ми постараємося її вирішити →"
+  "proxyStatusAliveShort": {
+    "message": "робочих"
   },
-  "proxyDisabledPageTitle": {
-    "message": "Проксування Вимкнено"
+  "proxyStatusChecking": {
+    "message": "перевірка…"
   },
-  "proxyHost": {
-    "message": "Адреса проксі-сервера"
+  "proxyStatusDead": {
+    "message": "недоступна"
   },
-  "proxyOptionsStatusDesc": {
-    "message": "Можете спробувати відключити проксування зовсім або переключитися на свій проксі."
+  "proxyStatusUntested": {
+    "message": "не перевірено"
   },
-  "proxyOptionsStatusTitle": {
-    "message": "Не вдалося встановити з'єднання з проксі-сервером"
-  },
-  "proxyPort": {
-    "message": "Порт"
-  },
-  "proxySettings": {
-    "message": "Налаштування проксування"
+  "proxyTestTargetLabel": {
+    "message": "Тест через:"
   },
   "readMoreButton": {
     "message": "Детальніше →"
+  },
+  "recommendedSourcesLabel": {
+    "message": "Готові підписки"
   },
   "registrySelectRegionDesc": {
     "message": "Ви можете вибрати регіон, щоб обходити блокування специфічні для вашої країни. Вибір конкретної країни також відключає автоматичне визначення вашої країни (на основі GeoIP), що корисно, якщо ви використовуєте програмне забезпечення, яке змінює вашу реальну IP-адресу (наприклад, VPN)."
@@ -602,6 +608,12 @@
   },
   "relatedDomainsTitle": {
     "message": "Пов'язані домени"
+  },
+  "removeDeadProxiesButton": {
+    "message": "Видалити неробочі"
+  },
+  "removedDeadProxiesLabel": {
+    "message": "Видалено"
   },
   "resetToDefaultDesc": {
     "message": "Скинути налаштування до значень за замовчуванням і перезібрати PAC-файл для вашого поточного регіону. Якщо у вас є проблеми з доступом до заблокованих сайтів, то ця опція - ваш вибір."
@@ -636,6 +648,9 @@
   "shareFeedback": {
     "message": "Маєте запитання чи пропозиції? Дайте нам знати!"
   },
+  "shareProxyButton": {
+    "message": "Скопіювати для обміну"
+  },
   "showDebugInfoDesc": {
     "message": "Показати налагоджувальну інформацію розширення."
   },
@@ -668,6 +683,21 @@
   },
   "siteActionTitle": {
     "message": "Коли слід використовувати проксі для відкриття цього сайту?"
+  },
+  "sourceAddedLabel": {
+    "message": "Джерело додано"
+  },
+  "sourceAlreadyAddedLabel": {
+    "message": "Вже додано"
+  },
+  "stopTestProxiesButton": {
+    "message": "Зупинити"
+  },
+  "testProxiesButton": {
+    "message": "Перевірити всі"
+  },
+  "testProxyButton": {
+    "message": "Перевірити цю проксі"
   },
   "thankYou": {
     "message": "Дякую!"

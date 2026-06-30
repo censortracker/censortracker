@@ -103,6 +103,27 @@ editable copy and overridden.
   <img width="520" alt="Custom proxy list manager" src="docs/media/custom-proxy-list.png">
 </p>
 
+### Multi-threaded proxy checking and ready-made subscriptions
+
+Testing proxies for connectivity:
+
+- **In parallel.** Proxies are probed concurrently instead of one by one, so a
+  long list finishes far faster; every row shows its status — working (with
+  latency in ms) or dead — and a progress bar tracks the run.
+- **Browsing never drops.** While checking, all of your normal proxying **keeps
+  flowing through the active proxy/chain** — only the connectivity-probe
+  endpoints are routed through the proxies under test. The checker PAC is
+  applied as mandatory, so a dead proxy fails the probe instead of leaking to a
+  direct connection.
+- **"Stop" and "Remove dead" buttons.** A running check can be interrupted at
+  any time; dead proxies are removed manually with one button or dropped on the
+  fly during the check.
+- **Ready-made subscriptions.** In the sources block, one click adds a vetted,
+  regularly-updated public list (monosans — validated, hourly; Proxifly — every
+  ~5 minutes; TheSpeedX — daily).
+- **Collapsible lists.** The "My proxies" and "Sources" blocks can be collapsed
+  so they don't take up half the screen; the state is remembered.
+
 ### One-click helper for adding related domains
 
 Opening a single site often requires proxying a whole set of CDN/API domains,

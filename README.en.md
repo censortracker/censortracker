@@ -103,6 +103,32 @@ editable copy and overridden.
   <img width="520" alt="Custom proxy list manager" src="docs/media/custom-proxy-list.png">
 </p>
 
+### Multi-threaded proxy checking and ready-made subscriptions
+
+Your custom proxy list can now be **tested for connectivity right inside the
+extension**:
+
+- **Multi-threaded checking.** Proxies are probed in parallel instead of one by
+  one, so a long list finishes far faster. Every row shows its status —
+  **working** (with latency in ms) or **dead**.
+- **«Check all», «Stop» and «Remove dead» buttons.** A running check can be
+  interrupted at any time with a dedicated button; dead proxies are removed
+  either manually with one click or **on the fly as the check runs** (a
+  checkbox) — no need to wait for the whole list to finish.
+- **Browsing never drops during a check.** Previously testing disabled the
+  active proxy and traffic leaked directly. Now all of your normal proxying
+  **keeps flowing through the enabled proxy** while the candidates are being
+  tested.
+- **Ready-made, regularly-updated subscriptions.** The “Import proxies” section
+  loads a fresh list from vetted public sources in one click (monosans —
+  validated, refreshed hourly; Proxifly — every ~5 minutes; TheSpeedX — daily),
+  or you can paste **your own URL**. The “Download lists through the active
+  proxy” option lets you fetch a subscription even when its address is blocked.
+  After importing, the form **re-renders immediately** — no need to reopen the
+  page.
+- **Collapsible lists.** The “Import proxies” and “My proxies” blocks can be
+  collapsed so they don’t take up half the screen; the state is remembered.
+
 ### One-click helper for adding related domains
 
 Opening a single site often requires proxying a whole set of CDN/API domains,

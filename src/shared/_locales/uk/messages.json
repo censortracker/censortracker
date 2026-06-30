@@ -35,6 +35,9 @@
   "areYouSureYouWantToResetSettingsTitle": {
     "message": "Ви впевнені, що хочете скинути всі налаштування?"
   },
+  "autoRemoveDeadLabel": {
+    "message": "Видаляти неробочі одразу"
+  },
   "backendIsIntermittentDesc": {
     "message": "Спробуйте <a href='advanced-options.html'>скинути налаштування розширення</a> або <a target='_blank' href='https://t.me/censortracker_feedback'>напишіть нам у Telegram</a> про цю проблему."
   },
@@ -61,6 +64,9 @@
   },
   "censorshipCircumventionBlockTitle": {
     "message": "Обхід Блокувань"
+  },
+  "checkAllButton": {
+    "message": "Перевірити всі"
   },
   "chooseFileOnComputer": {
     "message": "Виберіть файл на комп'ютері"
@@ -136,6 +142,9 @@
   },
   "currentProxyLabel": {
     "message": "Поточний проксі:"
+  },
+  "customListUrlLabel": {
+    "message": "Або завантажити за посиланням"
   },
   "customProxyNamePlaceholder": {
     "message": "Назва (необов'язково)"
@@ -251,14 +260,38 @@
   "ignoredSitesTitle": {
     "message": "Ігноровані сайти"
   },
+  "importAdded": {
+    "message": "Додано"
+  },
   "importBuiltinProxyButton": {
     "message": "Імпортувати вбудовану"
+  },
+  "importFailed": {
+    "message": "Не вдалося завантажити"
+  },
+  "importLimitLabel": {
+    "message": "Скільки імпортувати"
+  },
+  "importLoading": {
+    "message": "Завантаження…"
+  },
+  "importNoUrl": {
+    "message": "Введіть посилання"
+  },
+  "importNothingFound": {
+    "message": "Не знайдено жодного валідного проксі"
+  },
+  "importProxiesTitle": {
+    "message": "Імпорт проксі"
   },
   "importSettingsDesc": {
     "message": "Ви можете імпортувати налаштування з файлу JSON."
   },
   "importSettingsTitle": {
     "message": "Імпортувати Налаштування"
+  },
+  "importSkipped": {
+    "message": "пропущено"
   },
   "incognitoAccessRequiredDescription": {
     "message": "Щоб відкрити <b>$hostname$</b> через проксі в Firefox потрібен дозвіл на роботу в приватних вікнах. Інакше проксі не працює.",
@@ -298,6 +331,15 @@
   "invalidURLError": {
     "message": "Неправильний URL. Будь ласка, перевірте його і спробуйте ще раз."
   },
+  "latencyMsSuffix": {
+    "message": "мс"
+  },
+  "loadSubscriptionButton": {
+    "message": "Завантажити"
+  },
+  "loadViaActiveProxyLabel": {
+    "message": "Завантажувати списки через активний проксі"
+  },
   "localProxyConfigValueDescr": {
     "message": "Вставте конфігурацію vless://, vmess:// або ss://."
   },
@@ -327,6 +369,9 @@
   },
   "maxDomainsExceededError": {
     "message": "Максимальна кількість доменів, яку можна додати - 1000. Будь ласка, скоротіть список і спробуйте ще раз."
+  },
+  "myProxiesTitle": {
+    "message": "Мої проксі"
   },
   "notBlockedDesc": {
     "message": "Якщо доступ до сайту заборонять - Censor Tracker запропонує відкрити сайт через надійний проксі."
@@ -474,6 +519,9 @@
   "proxiedWebsitesTitle": {
     "message": "Проксовані сайти"
   },
+  "proxiesCountSuffix": {
+    "message": "шт."
+  },
   "proxyConnectionIssuesMessage": {
     "message": "Виявлено проблему з мережею. Будь ласка, зверніться в чат підтримки і розкажіть нам про проблему, ми постараємося її вирішити →"
   },
@@ -494,6 +542,15 @@
   },
   "proxySettings": {
     "message": "Налаштування проксування"
+  },
+  "proxyStatusAlive": {
+    "message": "Робочий"
+  },
+  "proxyStatusChecking": {
+    "message": "Перевірка…"
+  },
+  "proxyStatusDead": {
+    "message": "Не працює"
   },
   "readMoreButton": {
     "message": "Детальніше →"
@@ -527,6 +584,12 @@
   },
   "relatedDomainsTitle": {
     "message": "Пов'язані домени"
+  },
+  "removeDeadButton": {
+    "message": "Видалити неробочі"
+  },
+  "removedDeadProxies": {
+    "message": "Видалено"
   },
   "resetToDefaultDesc": {
     "message": "Скинути налаштування до значень за замовчуванням і перезібрати PAC-файл для вашого поточного регіону. Якщо у вас є проблеми з доступом до заблокованих сайтів, то ця опція - ваш вибір."
@@ -593,6 +656,12 @@
   },
   "siteActionTitle": {
     "message": "Коли слід використовувати проксі для відкриття цього сайту?"
+  },
+  "stopCheckButton": {
+    "message": "Зупинити"
+  },
+  "subscriptionLabel": {
+    "message": "Готова підписка"
   },
   "thankYou": {
     "message": "Дякую!"

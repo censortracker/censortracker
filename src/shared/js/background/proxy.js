@@ -2,7 +2,7 @@ import { getPacScript } from 'Background/pac'
 
 import browser from './browser-api'
 import registry from './registry'
-import { fetchWithTimeout } from './utilities'
+import { fetchWithTimeout, proxyToPacToken } from './utilities'
 
 class ProxyManager {
   async getProxyingRules () {
@@ -66,8 +66,52 @@ class ProxyManager {
     }
   }
 
-  async setProxy () {
+  /**
+   * Pushes a PAC script into the browser's proxy settings. Shared by the normal
+   * proxying flow and the proxy checker so both apply PAC the exact same way
+   * across Firefox (autoConfig blob) and Chromium (inline pac_script).
+   * @param {string} pacData - PAC script source.
+   * @param {object} [options]
+   * @param {boolean} [options.mandatory=false] - On Chromium, when true a proxy
+   *   that can't be reached is NOT silently bypassed with a direct connection.
+   *   The checker needs this so a dead proxy fails the probe instead of falling
+   *   through to DIRECT and looking alive.
+   * @returns {Promise<void>}
+   */
+  async applyPacScript (pacData, { mandatory = false } = {}) {
     const config = {}
+
+    if (browser.isFirefox) {
+      const blob = new Blob([pacData], {
+        type: 'application/x-ns-proxy-autoconfig',
+      })
+
+      // Revoke the URL of the previously installed PAC so repeated checker
+      // updates don't leak object URLs.
+      if (this._lastPacObjectUrl) {
+        URL.revokeObjectURL(this._lastPacObjectUrl)
+      }
+      this._lastPacObjectUrl = URL.createObjectURL(blob)
+
+      config.value = {
+        proxyType: 'autoConfig',
+        autoConfigUrl: this._lastPacObjectUrl,
+      }
+    } else {
+      config.scope = 'regular'
+      config.value = {
+        mode: 'pac_script',
+        pacScript: {
+          data: pacData,
+          mandatory,
+        },
+      }
+    }
+
+    await browser.proxy.settings.set(config)
+  }
+
+  async setProxy () {
     const domains = await registry.getDomains()
 
     if (domains.length === 0) {
@@ -87,28 +131,8 @@ class ProxyManager {
       proxyServerProtocol,
     })
 
-    if (browser.isFirefox) {
-      const blob = new Blob([pacData], {
-        type: 'application/x-ns-proxy-autoconfig',
-      })
-
-      config.value = {
-        proxyType: 'autoConfig',
-        autoConfigUrl: URL.createObjectURL(blob),
-      }
-    } else {
-      config.scope = 'regular'
-      config.value = {
-        mode: 'pac_script',
-        pacScript: {
-          data: pacData,
-          mandatory: false,
-        },
-      }
-    }
-
     try {
-      await browser.proxy.settings.set(config)
+      await this.applyPacScript(pacData)
       await this.enableProxy()
       await this.grantIncognitoAccess()
       console.warn('PAC has been set successfully!')
@@ -119,6 +143,78 @@ class ProxyManager {
       await this.requestIncognitoAccess()
       return false
     }
+  }
+
+  /**
+   * Installs a temporary PAC used while checking a batch of proxies. Everything
+   * keeps routing exactly as it does for the user right now (so browsing never
+   * drops mid-check, see point 4 of the feature request) except the hosts named
+   * in `testRoutes`, which are sent through the proxy currently being tested.
+   *
+   * This never changes the persisted `useProxy` flag — call
+   * {@link restoreNormalProxy} when the check finishes to put routing back.
+   * @param {Object<string, string>} testRoutes - host -> PAC return token.
+   * @returns {Promise<boolean>}
+   */
+  async applyCheckerPac (testRoutes) {
+    const enabled = await this.isEnabled()
+
+    let domains = []
+    let proxyServerURI = ''
+    let proxyServerProtocol = 'HTTPS'
+
+    // Preserve the user's real routing only when proxying is actually on;
+    // otherwise non-test traffic must stay DIRECT just like it is now.
+    if (enabled) {
+      domains = await registry.getDomains()
+      const rules = await this.getProxyingRules()
+
+      proxyServerURI = rules.proxyServerURI
+      proxyServerProtocol = rules.proxyServerProtocol
+    }
+
+    const pacData = getPacScript({
+      domains,
+      proxyServerURI,
+      proxyServerProtocol,
+      testRoutes,
+    })
+
+    try {
+      // mandatory: a dead candidate must fail the probe, not fall back to
+      // DIRECT (which would mislabel it as working).
+      await this.applyPacScript(pacData, { mandatory: true })
+      return true
+    } catch (error) {
+      console.error(`Checker PAC could not be set: ${error}`)
+      return false
+    }
+  }
+
+  /**
+   * Restores the user's normal proxy routing after a check (or a one-off
+   * download routed through the active proxy). Mirrors what the extension would
+   * have configured on its own based on the persisted state.
+   * @returns {Promise<void>}
+   */
+  async restoreNormalProxy () {
+    const enabled = await this.isEnabled()
+    const domains = await registry.getDomains()
+
+    if (enabled && domains.length > 0) {
+      await this.setProxy()
+    } else {
+      await this.removeProxy()
+    }
+  }
+
+  /**
+   * Builds the PAC return token (e.g. "SOCKS5 1.2.3.4:1080") for a proxy.
+   * @param {{protocol: string, uri: string}} proxy
+   * @returns {string}
+   */
+  toPacToken ({ protocol, uri }) {
+    return proxyToPacToken(protocol, uri)
   }
 
   async removeProxy () {
@@ -410,6 +506,110 @@ class ProxyManager {
       return null
     }
     return { protocol: 'HTTPS', uri: proxyServerURI }
+  }
+
+  /**
+   * Adds many proxies at once (e.g. from a subscription), skipping duplicates
+   * already present in the list. Does not change which proxy is active.
+   * @param {Array<{name?: string, protocol: string, uri: string}>} proxies
+   * @returns {Promise<{added: number, skipped: number, proxies: Array}>}
+   */
+  async bulkAddCustomProxies (proxies) {
+    const customProxies = await this.getCustomProxies()
+    const seen = new Set(
+      customProxies.map((proxy) => `${proxy.protocol}|${proxy.uri}`.toLowerCase()),
+    )
+
+    let added = 0
+    let skipped = 0
+
+    for (const { name, protocol, uri } of proxies) {
+      if (!protocol || !uri) {
+        skipped += 1
+        continue
+      }
+
+      const key = `${protocol}|${uri}`.toLowerCase()
+
+      if (seen.has(key)) {
+        skipped += 1
+        continue
+      }
+
+      seen.add(key)
+      customProxies.push({
+        id: this.generateProxyId(),
+        name: (name && name.trim()) || uri,
+        protocol,
+        uri,
+        lastStatus: '',
+        latency: null,
+      })
+      added += 1
+    }
+
+    if (added > 0) {
+      await browser.storage.local.set({ customProxies })
+
+      // Make sure custom proxying is on so the freshly imported list is usable
+      // (without forcing any single proxy to become active).
+      if (!(await this.getActiveCustomProxyId())) {
+        await browser.storage.local.set({ useOwnProxy: true })
+      }
+    }
+
+    return { added, skipped, proxies: customProxies }
+  }
+
+  /**
+   * Stores the result of the last connectivity check for a proxy so the UI can
+   * keep the alive/dead badge and latency between page reloads.
+   * @param {string} id
+   * @param {{status: string, latency?: number|null}} result
+   * @returns {Promise<void>}
+   */
+  async setProxyStatus (id, { status, latency = null }) {
+    const customProxies = await this.getCustomProxies()
+    const proxy = customProxies.find((item) => item.id === id)
+
+    if (!proxy) {
+      return
+    }
+
+    proxy.lastStatus = status
+    proxy.latency = latency
+    await browser.storage.local.set({ customProxies })
+  }
+
+  /**
+   * Removes every proxy whose last check marked it dead. Falls back to a still
+   * working proxy (or disables custom proxying) if the active one was removed.
+   * @returns {Promise<{removed: number, proxies: Array}>}
+   */
+  async removeDeadCustomProxies () {
+    const customProxies = await this.getCustomProxies()
+    const alive = customProxies.filter((proxy) => proxy.lastStatus !== 'dead')
+    const removed = customProxies.length - alive.length
+
+    if (removed === 0) {
+      return { removed: 0, proxies: customProxies }
+    }
+
+    await browser.storage.local.set({ customProxies: alive })
+
+    const activeId = await this.getActiveCustomProxyId()
+    const activeStillExists =
+      activeId === 'builtin' || alive.some((proxy) => proxy.id === activeId)
+
+    if (!activeStillExists) {
+      if (alive.length > 0) {
+        await this.setActiveCustomProxy(alive[0].id)
+      } else {
+        await this.removeCustomProxy()
+      }
+    }
+
+    return { removed, proxies: alive }
   }
 
   async removeLocalProxy () {

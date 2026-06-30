@@ -35,6 +35,9 @@
   "areYouSureYouWantToResetSettingsTitle": {
     "message": "Вы уверены, что хотите сбросить все настройки?"
   },
+  "autoRemoveDeadLabel": {
+    "message": "Удалять нерабочие сразу"
+  },
   "backendIsIntermittentDesc": {
     "message": "Попробуйте <a href='advanced-options.html'>сбросить настройки расширения</a> или <a target='_blank' href='https://t.me/censortracker_feedback'>напишите нам в Telegram</a> об этой проблеме."
   },
@@ -61,6 +64,9 @@
   },
   "censorshipCircumventionBlockTitle": {
     "message": "Обход Блокировок"
+  },
+  "checkAllButton": {
+    "message": "Проверить все"
   },
   "chooseFileOnComputer": {
     "message": "Выберите файл на компьютере"
@@ -136,6 +142,9 @@
   },
   "currentProxyLabel": {
     "message": "Текущий прокси:"
+  },
+  "customListUrlLabel": {
+    "message": "Или загрузить по ссылке"
   },
   "customProxyNamePlaceholder": {
     "message": "Название (необязательно)"
@@ -251,14 +260,38 @@
   "ignoredSitesTitle": {
     "message": "Игнорируемые сайты"
   },
+  "importAdded": {
+    "message": "Добавлено"
+  },
   "importBuiltinProxyButton": {
     "message": "Импортировать встроенную"
+  },
+  "importFailed": {
+    "message": "Не удалось загрузить"
+  },
+  "importLimitLabel": {
+    "message": "Сколько импортировать"
+  },
+  "importLoading": {
+    "message": "Загрузка…"
+  },
+  "importNoUrl": {
+    "message": "Введите ссылку"
+  },
+  "importNothingFound": {
+    "message": "Не найдено ни одного валидного прокси"
+  },
+  "importProxiesTitle": {
+    "message": "Импорт прокси"
   },
   "importSettingsDesc": {
     "message": "Вы можете импортировать настройки из файла JSON."
   },
   "importSettingsTitle": {
     "message": "Импортировать Настроек"
+  },
+  "importSkipped": {
+    "message": "пропущено"
   },
   "incognitoAccessRequiredDescription": {
     "message": "Чтобы открыть <b>$hostname$</b> через прокси в Firefox требуется разрешение на работу в приватных окнах. Иначе прокси не работает.",
@@ -298,6 +331,15 @@
   "invalidURLError": {
     "message": "Неверный URL. Пожалуйста, проверьте его и попробуйте ещё раз."
   },
+  "latencyMsSuffix": {
+    "message": "мс"
+  },
+  "loadSubscriptionButton": {
+    "message": "Загрузить"
+  },
+  "loadViaActiveProxyLabel": {
+    "message": "Загружать списки через активный прокси"
+  },
   "localProxyConfigValueDescr": {
     "message": "Вставьте конфигурацию vless://, vmess:// или ss://."
   },
@@ -327,6 +369,9 @@
   },
   "maxDomainsExceededError": {
     "message": "Максимальное количество доменов, которое можно добавить - 1000. Пожалуйста, сократите список и попробуйте ещё раз."
+  },
+  "myProxiesTitle": {
+    "message": "Мои прокси"
   },
   "notBlockedDesc": {
     "message": "Если доступ к сайту запретят - Censor Tracker предложит открыть сайт через надёжный прокси."
@@ -474,6 +519,9 @@
   "proxiedWebsitesTitle": {
     "message": "Проксируемые сайты"
   },
+  "proxiesCountSuffix": {
+    "message": "шт."
+  },
   "proxyConnectionIssuesMessage": {
     "message": "Обнаружена проблема с сетью. Пожалуйста, обратитесь в чат поддержки и расскажите нам о проблеме, мы постараемся ее решить →"
   },
@@ -494,6 +542,15 @@
   },
   "proxySettings": {
     "message": "Настройки прокси"
+  },
+  "proxyStatusAlive": {
+    "message": "Рабочий"
+  },
+  "proxyStatusChecking": {
+    "message": "Проверка…"
+  },
+  "proxyStatusDead": {
+    "message": "Не работает"
   },
   "readMoreButton": {
     "message": "Подробнее →"
@@ -527,6 +584,12 @@
   },
   "relatedDomainsTitle": {
     "message": "Связанные домены"
+  },
+  "removeDeadButton": {
+    "message": "Удалить нерабочие"
+  },
+  "removedDeadProxies": {
+    "message": "Удалено"
   },
   "resetToDefaultDesc": {
     "message": "Сбросить настройки к значениям по умолчанию и пересобрать PAC-файл для вашего текущего региона. Если у вас есть проблемы с доступом к заблокированным сайтам, то эта опция — ваш выбор."
@@ -593,6 +656,12 @@
   },
   "siteActionTitle": {
     "message": "Когда следует использовать прокси для открытия этого сайта?"
+  },
+  "stopCheckButton": {
+    "message": "Остановить"
+  },
+  "subscriptionLabel": {
+    "message": "Готовая подписка"
   },
   "thankYou": {
     "message": "Спасибо!"

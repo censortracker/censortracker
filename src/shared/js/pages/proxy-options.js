@@ -1,7 +1,13 @@
 import browser from 'Background/browser-api'
 import ProxyClient from 'Background/localproxy'
 import ProxyManager from 'Background/proxy'
+import ProxyChecker from 'Background/proxychecker'
 import * as server from 'Background/server'
+import {
+  fetchProxyList,
+  getSubscriptionById,
+  SUBSCRIPTIONS,
+} from 'Background/subscriptions'
 import { i18nGetMessage, parseProxyString } from 'Background/utilities'
 
 (async () => {
@@ -39,6 +45,32 @@ import { i18nGetMessage, parseProxyString } from 'Background/utilities'
   const currentProxyAddressValue = document.getElementById('currentProxyAddressValue')
   const customProxyFormTitle = document.getElementById('customProxyFormTitle')
   const cancelEditProxyButton = document.getElementById('cancelEditProxyButton')
+
+  // Import / subscriptions.
+  const importToggle = document.getElementById('importToggle')
+  const importBody = document.getElementById('importBody')
+  const subscriptionSelect = document.getElementById('subscriptionSelect')
+  const loadSubscriptionButton = document.getElementById('loadSubscriptionButton')
+  const proxyListUrlInput = document.getElementById('proxyListUrlInput')
+  const loadProxyListUrlButton = document.getElementById('loadProxyListUrlButton')
+  const loadViaActiveProxy = document.getElementById('loadViaActiveProxy')
+  const importLimitInput = document.getElementById('importLimitInput')
+  const importStatus = document.getElementById('importStatus')
+
+  // Proxy list + checker.
+  const listToggle = document.getElementById('listToggle')
+  const listBody = document.getElementById('listBody')
+  const proxyCount = document.getElementById('proxyCount')
+  const checkAllButton = document.getElementById('checkAllButton')
+  const stopCheckButton = document.getElementById('stopCheckButton')
+  const removeDeadButton = document.getElementById('removeDeadButton')
+  const autoRemoveDead = document.getElementById('autoRemoveDead')
+  const checkProgress = document.getElementById('checkProgress')
+  const checkProgressFill = document.getElementById('checkProgressFill')
+  const checkProgressText = document.getElementById('checkProgressText')
+
+  // Holds the AbortController of an in-flight check (null when idle).
+  let checkController = null
 
   if (proxyNameInput) {
     proxyNameInput.placeholder = i18nGetMessage('customProxyNamePlaceholder')
@@ -258,12 +290,69 @@ import { i18nGetMessage, parseProxyString } from 'Background/utilities'
     })
   }
 
+  // Human-readable label for a connectivity status (+ latency when alive).
+  const statusLabel = (status = '', latency = null) => {
+    if (status === 'alive') {
+      return latency
+        ? `${latency} ${i18nGetMessage('latencyMsSuffix')}`
+        : i18nGetMessage('proxyStatusAlive')
+    }
+    if (status === 'dead') {
+      return i18nGetMessage('proxyStatusDead')
+    }
+    if (status === 'checking') {
+      return i18nGetMessage('proxyStatusChecking')
+    }
+    return ''
+  }
+
+  // Builds the connectivity-status pill shown on each user proxy row.
+  const statusBadgeHtml = (status = '', latency = null) => {
+    return `<span class="cproxy-status" data-status="${escapeHtml(status)}">
+        <span class="cproxy-status__dot"></span>
+        <span class="cproxy-status__label">${escapeHtml(statusLabel(status, latency))}</span>
+      </span>`
+  }
+
+  // Updates one row's status pill in place (used for live check results).
+  const setRowStatus = (id, status, latency = null) => {
+    const row = customProxyList.querySelector(`.cproxy-row[data-id="${CSS.escape(id)}"]`)
+
+    if (!row) {
+      return
+    }
+
+    const badge = row.querySelector('.cproxy-status')
+
+    if (!badge) {
+      return
+    }
+
+    badge.setAttribute('data-status', status)
+    const label = badge.querySelector('.cproxy-status__label')
+
+    if (label) {
+      label.textContent = statusLabel(status, latency)
+    }
+  }
+
+  const removeRowFromDom = (id) => {
+    const row = customProxyList.querySelector(`.cproxy-row[data-id="${CSS.escape(id)}"]`)
+
+    if (row) {
+      row.remove()
+    }
+  }
+
   // Renders one row (built-in or user) in the unified proxy list.
-  const renderProxyRow = ({ id, name, protocol, uri, builtin = false }, activeId) => {
+  const renderProxyRow = (
+    { id, name, protocol, uri, builtin = false, lastStatus = '', latency = null },
+    activeId,
+  ) => {
     const editTitle = i18nGetMessage(builtin ? 'editBuiltinProxyButton' : 'editProxyButton')
     const badge = builtin
       ? `<span class="cproxy-badge">${escapeHtml(i18nGetMessage('builtinProxyBadge'))}</span>`
-      : ''
+      : statusBadgeHtml(lastStatus, latency)
     const deleteBtn = builtin
       ? ''
       : `<button type="button" class="cproxy-icon-btn cproxy-del" data-id="${id}"
@@ -324,7 +413,22 @@ import { i18nGetMessage, parseProxyString } from 'Background/utilities'
     }
 
     customProxyList.innerHTML = html
+    updateListMeta(proxies.length)
     await refreshCurrentProxyAddress()
+  }
+
+  // Keeps the "N proxies" counter and the toolbar buttons in sync with the
+  // current list size (without re-querying storage).
+  const updateListMeta = (count) => {
+    if (proxyCount) {
+      proxyCount.textContent = count > 0 ? `${count} ${i18nGetMessage('proxiesCountSuffix')}` : ''
+    }
+    if (removeDeadButton) {
+      removeDeadButton.disabled = count === 0
+    }
+    if (checkAllButton) {
+      checkAllButton.disabled = count === 0
+    }
   }
 
   // Shows the address of the proxy that is effectively in use right now.
@@ -340,7 +444,8 @@ import { i18nGetMessage, parseProxyString } from 'Background/utilities'
       return
     }
 
-    const { proxyServerProtocol, proxyServerURI } = await ProxyManager.getProxyingRules()
+    const { proxyServerProtocol, proxyServerURI } =
+      await ProxyManager.getProxyingRules()
 
     if (proxyServerURI) {
       currentProxyAddressValue.textContent = `${proxyServerProtocol} ${proxyServerURI}`
@@ -396,6 +501,12 @@ import { i18nGetMessage, parseProxyString } from 'Background/utilities'
       return
     }
 
+    // Switching proxies mid-check would clobber the temporary checker PAC.
+    if (checkController) {
+      event.target.checked = false
+      return
+    }
+
     const value = event.target.value
     const activated = value === 'builtin'
       ? await ProxyManager.setActiveBuiltinProxy()
@@ -410,6 +521,11 @@ import { i18nGetMessage, parseProxyString } from 'Background/utilities'
 
   // Handle edit / delete actions on rows.
   customProxyList.addEventListener('click', async (event) => {
+    // Don't mutate the list while a check is walking through it.
+    if (checkController) {
+      return
+    }
+
     const editButton = event.target.closest('.cproxy-edit')
 
     if (editButton) {
@@ -619,4 +735,311 @@ import { i18nGetMessage, parseProxyString } from 'Background/utilities'
       currentProxyProtocol.textContent = event.target.dataset.value
     })
   }
+
+  // ---------------------------------------------------------------------------
+  // Collapsible sections (import + proxy list).
+  // ---------------------------------------------------------------------------
+  const wireCollapsible = (toggle, body, key) => {
+    if (!toggle || !body) {
+      return
+    }
+
+    const chevron = toggle.querySelector('.cproxy-chevron')
+
+    toggle.addEventListener('click', async () => {
+      const collapsed = body.classList.toggle('hidden')
+
+      toggle.setAttribute('aria-expanded', String(!collapsed))
+      if (chevron) {
+        chevron.classList.toggle('cproxy-chevron--open', !collapsed)
+      }
+
+      const { proxyUiCollapsed = {} } =
+        await browser.storage.local.get({ proxyUiCollapsed: {} })
+
+      proxyUiCollapsed[key] = collapsed
+      await browser.storage.local.set({ proxyUiCollapsed })
+    })
+  }
+
+  const restoreCollapsibleState = async () => {
+    const { proxyUiCollapsed = {} } =
+      await browser.storage.local.get({ proxyUiCollapsed: {} })
+
+    const apply = (toggle, body, collapsed) => {
+      if (!toggle || !body || collapsed === undefined) {
+        return
+      }
+
+      const chevron = toggle.querySelector('.cproxy-chevron')
+
+      body.classList.toggle('hidden', collapsed)
+      toggle.setAttribute('aria-expanded', String(!collapsed))
+      if (chevron) {
+        chevron.classList.toggle('cproxy-chevron--open', !collapsed)
+      }
+    }
+
+    apply(importToggle, importBody, proxyUiCollapsed.import)
+    apply(listToggle, listBody, proxyUiCollapsed.list)
+  }
+
+  wireCollapsible(importToggle, importBody, 'import')
+  wireCollapsible(listToggle, listBody, 'list')
+  await restoreCollapsibleState()
+
+  // ---------------------------------------------------------------------------
+  // Subscriptions / import.
+  // ---------------------------------------------------------------------------
+  const populateSubscriptions = () => {
+    if (!subscriptionSelect) {
+      return
+    }
+
+    subscriptionSelect.innerHTML = SUBSCRIPTIONS
+      .map((subscription) => {
+        return `<option value="${escapeHtml(subscription.id)}">${escapeHtml(subscription.name)}</option>`
+      })
+      .join('')
+  }
+
+  populateSubscriptions()
+
+  const setImportStatus = (message, type = '') => {
+    if (!importStatus) {
+      return
+    }
+
+    importStatus.textContent = message
+    importStatus.classList.remove('is-error', 'is-success', 'hidden')
+    if (type) {
+      importStatus.classList.add(type === 'error' ? 'is-error' : 'is-success')
+    }
+  }
+
+  const getImportLimit = () => {
+    const value = parseInt(importLimitInput && importLimitInput.value, 10)
+
+    if (Number.isNaN(value) || value < 0) {
+      return 100
+    }
+    return Math.min(value, 1000)
+  }
+
+  // Adds a freshly fetched list to storage and re-renders the form so the new
+  // proxies appear immediately (no need to reopen the page).
+  const importProxyList = async (proxies) => {
+    if (!proxies || proxies.length === 0) {
+      setImportStatus(i18nGetMessage('importNothingFound'), 'error')
+      return
+    }
+
+    const { added, skipped } = await ProxyManager.bulkAddCustomProxies(proxies)
+
+    await renderCustomProxies()
+    setImportStatus(
+      `${i18nGetMessage('importAdded')}: ${added} · ${i18nGetMessage('importSkipped')}: ${skipped}`,
+      'success',
+    )
+  }
+
+  const withImportBusy = async (task) => {
+    const buttons = [loadSubscriptionButton, loadProxyListUrlButton]
+
+    for (const element of buttons) {
+      if (element) {
+        element.disabled = true
+      }
+    }
+    setImportStatus(i18nGetMessage('importLoading'))
+
+    try {
+      await task()
+    } catch (error) {
+      console.error('Import failed:', error)
+      setImportStatus(`${i18nGetMessage('importFailed')}: ${error.message || error}`, 'error')
+    } finally {
+      for (const element of buttons) {
+        if (element) {
+          element.disabled = false
+        }
+      }
+    }
+  }
+
+  if (loadSubscriptionButton) {
+    loadSubscriptionButton.addEventListener('click', () => {
+      return withImportBusy(async () => {
+        const subscription = getSubscriptionById(subscriptionSelect.value)
+
+        if (!subscription) {
+          setImportStatus(i18nGetMessage('importFailed'), 'error')
+          return
+        }
+
+        const proxies = await fetchProxyList(subscription.url, {
+          protocol: subscription.protocol,
+          limit: getImportLimit(),
+          viaActiveProxy: loadViaActiveProxy && loadViaActiveProxy.checked,
+        })
+
+        await importProxyList(proxies)
+      })
+    })
+  }
+
+  if (loadProxyListUrlButton) {
+    loadProxyListUrlButton.addEventListener('click', () => {
+      return withImportBusy(async () => {
+        const url = proxyListUrlInput.value.trim()
+
+        if (!url) {
+          setImportStatus(i18nGetMessage('importNoUrl'), 'error')
+          return
+        }
+
+        const proxies = await fetchProxyList(url, {
+          protocol: 'HTTPS',
+          limit: getImportLimit(),
+          viaActiveProxy: loadViaActiveProxy && loadViaActiveProxy.checked,
+        })
+
+        await importProxyList(proxies)
+      })
+    })
+  }
+
+  // ---------------------------------------------------------------------------
+  // Concurrent proxy checker.
+  // ---------------------------------------------------------------------------
+  const setCheckingUi = (checking) => {
+    if (checkAllButton) {
+      checkAllButton.classList.toggle('hidden', checking)
+    }
+    if (stopCheckButton) {
+      stopCheckButton.classList.toggle('hidden', !checking)
+    }
+    if (removeDeadButton) {
+      removeDeadButton.disabled = checking
+    }
+    if (loadSubscriptionButton) {
+      loadSubscriptionButton.disabled = checking
+    }
+    if (loadProxyListUrlButton) {
+      loadProxyListUrlButton.disabled = checking
+    }
+  }
+
+  const updateProgress = (done, total, alive, dead) => {
+    if (!checkProgress) {
+      return
+    }
+
+    checkProgress.classList.remove('hidden')
+    if (checkProgressFill) {
+      const percent = total > 0 ? Math.round((done / total) * 100) : 0
+
+      checkProgressFill.style.width = `${percent}%`
+    }
+    if (checkProgressText) {
+      checkProgressText.textContent =
+        `${done}/${total} · ${i18nGetMessage('proxyStatusAlive')}: ${alive} · ` +
+        `${i18nGetMessage('proxyStatusDead')}: ${dead}`
+    }
+  }
+
+  if (checkAllButton) {
+    checkAllButton.addEventListener('click', async () => {
+      if (checkController) {
+        return
+      }
+
+      const proxies = await ProxyManager.getCustomProxies()
+
+      if (proxies.length === 0) {
+        return
+      }
+
+      checkController = new AbortController()
+      setCheckingUi(true)
+
+      // Reset every row to the "checking" state up-front.
+      for (const proxy of proxies) {
+        setRowStatus(proxy.id, 'checking')
+      }
+
+      const total = proxies.length
+      let done = 0
+      let alive = 0
+      let dead = 0
+      const removeDead = autoRemoveDead && autoRemoveDead.checked
+
+      updateProgress(done, total, alive, dead)
+
+      try {
+        await ProxyChecker.check(proxies, {
+          signal: checkController.signal,
+          onResult: async (id, { status, latency }) => {
+            done += 1
+            if (status === 'alive') {
+              alive += 1
+              setRowStatus(id, 'alive', latency)
+              await ProxyManager.setProxyStatus(id, { status, latency })
+            } else {
+              dead += 1
+              await ProxyManager.setProxyStatus(id, { status, latency })
+              if (removeDead) {
+                // Drop dead proxies from the UI right away.
+                removeRowFromDom(id)
+              } else {
+                setRowStatus(id, 'dead')
+              }
+            }
+            updateProgress(done, total, alive, dead)
+          },
+        })
+      } finally {
+        // Purge the dead entries from storage in one shot. This can drop the
+        // active proxy, so re-apply normal routing afterwards to match the
+        // final list state.
+        if (removeDead) {
+          await ProxyManager.removeDeadCustomProxies()
+          await ProxyManager.restoreNormalProxy()
+        }
+        checkController = null
+        setCheckingUi(false)
+        await renderCustomProxies()
+      }
+    })
+  }
+
+  if (stopCheckButton) {
+    stopCheckButton.addEventListener('click', () => {
+      if (checkController) {
+        checkController.abort()
+      }
+    })
+  }
+
+  if (removeDeadButton) {
+    removeDeadButton.addEventListener('click', async () => {
+      if (checkController) {
+        return
+      }
+
+      const { removed } = await ProxyManager.removeDeadCustomProxies()
+
+      await renderCustomProxies()
+      setImportStatus(`${i18nGetMessage('removedDeadProxies')}: ${removed}`, 'success')
+    })
+  }
+
+  // If the page is closed mid-check, stop probing and restore normal routing so
+  // the temporary checker PAC never lingers.
+  window.addEventListener('pagehide', () => {
+    if (checkController) {
+      checkController.abort()
+      ProxyManager.restoreNormalProxy()
+    }
+  })
 })()

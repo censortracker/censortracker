@@ -1,0 +1,119 @@
+import browser from './browser-api'
+import { fetchWithTimeout } from './utilities'
+
+// Free, key-less, HTTPS geo-IP endpoint that accepts a comma-separated batch of
+// IPs and returns [{ ip, country, country_3, name }]. HTTPS matters: an
+// extension page is a secure context, so plain-HTTP geo APIs are blocked as
+// mixed content.
+const GEOJS_BATCH_URL = 'https://get.geojs.io/v1/ip/country.json?ip='
+const BATCH_SIZE = 90
+
+/**
+ * @param {string} host
+ * @returns {boolean} true for an IPv4 literal (the only form geo-IP can map).
+ */
+export const isIpv4 = (host) => {
+  if (!/^(\d{1,3}\.){3}\d{1,3}$/.test(host)) {
+    return false
+  }
+  return host.split('.').every((part) => Number(part) <= 255)
+}
+
+/**
+ * Extracts the host part of a "host:port" proxy URI.
+ * @param {string} uri
+ * @returns {string}
+ */
+export const hostFromUri = (uri) => {
+  if (!uri) {
+    return ''
+  }
+  const lastColon = uri.lastIndexOf(':')
+
+  return lastColon === -1 ? uri : uri.slice(0, lastColon)
+}
+
+/**
+ * Turns a 2-letter country code into its flag emoji (regional indicators).
+ * @param {string} code
+ * @returns {string}
+ */
+export const countryFlagEmoji = (code) => {
+  const cc = (code || '').toUpperCase()
+
+  if (!/^[A-Z]{2}$/.test(cc)) {
+    return ''
+  }
+  return String.fromCodePoint(
+    ...[...cc].map((char) => 0x1F1E6 + char.charCodeAt(0) - 65),
+  )
+}
+
+/**
+ * Returns the cached host -> { code, name } geo map.
+ * @returns {Promise<Object>}
+ */
+export const getCachedGeo = async () => {
+  const { proxyGeo } = await browser.storage.local.get({ proxyGeo: {} })
+
+  return proxyGeo
+}
+
+const chunk = (array, size) => {
+  const chunks = []
+
+  for (let index = 0; index < array.length; index += size) {
+    chunks.push(array.slice(index, index + size))
+  }
+  return chunks
+}
+
+/**
+ * Looks up the countries of the given hosts, using (and updating) the local
+ * cache so each IP is only fetched once. Non-IPv4 hosts and lookup failures are
+ * skipped silently. Returns the merged host -> { code, name } map.
+ * @param {Array<string>} hosts
+ * @returns {Promise<Object>}
+ */
+export const lookupCountries = async (hosts) => {
+  const cache = await getCachedGeo()
+  const pending = [...new Set(
+    hosts.filter((host) => isIpv4(host) && !(host in cache)),
+  )]
+
+  if (pending.length === 0) {
+    return cache
+  }
+
+  let changed = false
+
+  for (const batch of chunk(pending, BATCH_SIZE)) {
+    try {
+      const response = await fetchWithTimeout(GEOJS_BATCH_URL + batch.join(','), {
+        timeout: 15000,
+        cache: 'no-store',
+      })
+
+      if (!response.ok) {
+        continue
+      }
+
+      const entries = await response.json()
+
+      for (const entry of Array.isArray(entries) ? entries : []) {
+        if (entry && entry.ip) {
+          // Cache the result (even when empty) so a geo-less IP isn't re-queried.
+          cache[entry.ip] = { code: entry.country || '', name: entry.name || '' }
+          changed = true
+        }
+      }
+    } catch (error) {
+      console.warn(`Geo-IP lookup failed for a batch: ${error}`)
+    }
+  }
+
+  if (changed) {
+    await browser.storage.local.set({ proxyGeo: cache })
+  }
+  return cache
+}

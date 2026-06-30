@@ -785,6 +785,15 @@ a {
   color: #6d675f;
 }
 
+.cproxy-country {
+  flex: 0 0 auto;
+  align-self: center;
+  font-size: 12px;
+  line-height: 1;
+  white-space: nowrap;
+  color: #6d675f;
+}
+
 .cproxy-row__actions {
   display: flex;
   align-items: center;
@@ -2148,6 +2157,7 @@ kbd {
 
   .cproxy-chevron,
   .cproxy-count,
+  .cproxy-country,
   .cproxy-progress__text {
     color: #9b948b;
   }

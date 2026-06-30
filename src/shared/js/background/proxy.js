@@ -861,26 +861,44 @@ class ProxyManager {
           break
         }
 
-        await Promise.all(assignments.map(async ({ proxy, target }) => {
-          const probe = target
-            ? await this.probeUrl(target, { timeout, signal })
-            : { ok: false, latency: null }
+        const batchResults = await Promise.all(
+          assignments.map(async ({ proxy, target }) => {
+            const probe = target
+              ? await this.probeUrl(target, { timeout, signal })
+              : { ok: false, latency: null }
 
-          // A failure caused by the user aborting is not a dead proxy: leave it
-          // untouched so an interrupted run doesn't mislabel good proxies.
-          if (!probe.ok && signal && signal.aborted) {
-            return
+            // A failure caused by the user aborting is not a dead proxy: leave
+            // it untouched so an interrupted run doesn't mislabel good proxies.
+            if (!probe.ok && signal && signal.aborted) {
+              return null
+            }
+
+            const result = { alive: probe.ok, latency: probe.latency }
+
+            results[proxy.id] = result
+
+            if (typeof onResult === 'function') {
+              onResult(proxy.id, result)
+            }
+            return { id: proxy.id, result }
+          }),
+        )
+
+        // Persist this batch's statuses in a SINGLE write. Per-result writes
+        // would race (the parallel probes resolve together) and silently lose
+        // updates, leaving some dead proxies without a stored "dead" status.
+        const statuses = await this.getProxyStatuses()
+        let dirty = false
+
+        for (const entry of batchResults) {
+          if (entry) {
+            statuses[entry.id] = { ...entry.result, ts: Date.now() }
+            dirty = true
           }
-
-          const result = { alive: probe.ok, latency: probe.latency }
-
-          results[proxy.id] = result
-          await this.setProxyStatus(proxy.id, result)
-
-          if (typeof onResult === 'function') {
-            onResult(proxy.id, result)
-          }
-        }))
+        }
+        if (dirty) {
+          await browser.storage.local.set({ proxyStatuses: statuses })
+        }
       }
     } finally {
       await this.restoreProxy()
@@ -896,18 +914,39 @@ class ProxyManager {
   async removeDeadCustomProxies () {
     const customProxies = await this.getCustomProxies()
     const statuses = await this.getProxyStatuses()
-    const deadIds = customProxies
-      .filter((proxy) => {
-        const status = statuses[proxy.id]
+    const deadIds = new Set(
+      customProxies
+        .filter((proxy) => {
+          const status = statuses[proxy.id]
 
-        return status && status.alive === false
-      })
-      .map((proxy) => proxy.id)
+          return status && status.alive === false
+        })
+        .map((proxy) => proxy.id),
+    )
+
+    if (deadIds.size === 0) {
+      return { removed: 0 }
+    }
+
+    // Remove every dead proxy in a single atomic pass (list, statuses, chain)
+    // so nothing races and no removal is lost.
+    const remaining = customProxies.filter((proxy) => !deadIds.has(proxy.id))
+
+    await browser.storage.local.set({ customProxies: remaining })
 
     for (const id of deadIds) {
-      await this.deleteCustomProxy(id)
+      delete statuses[id]
     }
-    return { removed: deadIds.length }
+    await browser.storage.local.set({ proxyStatuses: statuses })
+
+    const chain = await this.getProxyChain()
+    const nextChain = chain.filter((id) => !deadIds.has(id))
+
+    if (nextChain.length !== chain.length) {
+      await this.setProxyChain(nextChain)
+    }
+
+    return { removed: deadIds.size }
   }
 
   // ---------------------------------------------------------------------------

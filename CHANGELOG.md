@@ -1,22 +1,3 @@
-# 20.3.0
-
-- Added a multi-threaded proxy checker to the custom proxy list: proxies are
-  probed for connectivity in parallel, each row shows a working/dead status with
-  latency, and results stream in live
-- Added dedicated "Stop" (abort the check) and "Remove dead" buttons, plus an
-  option to drop dead proxies on the fly instead of waiting for the whole list
-- Browsing no longer drops while checking — all normal traffic keeps flowing
-  through the active proxy; only the connectivity-probe endpoints are routed
-  through the proxies under test
-- Added ready-made, regularly-updated proxy subscriptions (monosans, Proxifly,
-  TheSpeedX) and import from a custom URL, with an option to download the list
-  through the active proxy; the list re-renders immediately after importing
-- Made the "Import proxies" and "My proxies" sections collapsible and persisted
-  their state
-- The PAC script now emits the correct `PROXY` keyword for plain HTTP proxies so
-  imported HTTP proxies actually work when activated
-
-
 # 20.2.2
 
 - Fixed dark-theme contrast on the popup "Scan this page" / "Add domains"

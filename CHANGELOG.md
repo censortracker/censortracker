@@ -1,3 +1,10 @@
+# 20.5.0
+
+- Each proxy row now shows the country of its server (flag + code), resolved
+  from the proxy IP via a free HTTPS geo-IP lookup and cached so every IP is
+  fetched only once; flags fill in automatically in the background
+
+
 # 20.4.1
 
 - Fixed dead-proxy removal after a parallel check: results are now persisted

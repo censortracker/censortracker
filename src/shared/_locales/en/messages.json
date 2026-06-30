@@ -8,6 +8,9 @@
   "addLocalProxyButton": {
     "message": "Add"
   },
+  "addSourceButton": {
+    "message": "Add"
+  },
   "advancedOptionsDesc": {
     "message": "You can manually update the local database of blocked websites, update the config of Censor Tracker and manage other advanced options."
   },
@@ -34,6 +37,9 @@
   },
   "areYouSureYouWantToResetSettingsTitle": {
     "message": "Are you sure you want to reset all settings?"
+  },
+  "autoDeleteDeadProxiesLabel": {
+    "message": "Auto-remove dead"
   },
   "backendIsIntermittentDesc": {
     "message": "Try to <a href='advanced-options.html'>reset the settings to defaults</a> or <a target='_blank' href='https://t.me/censortracker_feedback'>contact us via Telegram</a>."
@@ -64,6 +70,9 @@
   },
   "chooseFileOnComputer": {
     "message": "Choose a file on your computer"
+  },
+  "clipboardReadFailed": {
+    "message": "Couldn't read the clipboard. Use Ctrl+V instead."
   },
   "closeTab": {
     "message": "Close tab"
@@ -106,6 +115,9 @@
         "content": "$1"
       }
     }
+  },
+  "copyAllProxiesButton": {
+    "message": "Copy all"
   },
   "copyButton": {
     "message": "Copy"
@@ -218,6 +230,9 @@
   "faqLink": {
     "message": "Frequently asked questions"
   },
+  "fetchProxySourcesButton": {
+    "message": "Fetch now"
+  },
   "fetchURLError": {
     "message": "The URL you entered is not available. Please check it and try again."
   },
@@ -328,6 +343,12 @@
   "maxDomainsExceededError": {
     "message": "The maximum number of domains that can be added is 1000. Please shorten the list and try again."
   },
+  "myProxiesTitle": {
+    "message": "My proxies"
+  },
+  "noProxiesInClipboard": {
+    "message": "No valid proxies found."
+  },
   "notBlockedDesc": {
     "message": "If access to the website is blocked, Censor Tracker will offer to load it through a reliable proxy."
   },
@@ -414,6 +435,9 @@
   "overlayNetworkDesc": {
     "message": "Censor Tracker allows you to open websites through overlaid networks"
   },
+  "pasteProxiesButton": {
+    "message": "Paste list"
+  },
   "popupAutoMessage": {
     "message": "Auto"
   },
@@ -474,59 +498,44 @@
   "proxiedWebsitesTitle": {
     "message": "Proxying List"
   },
+  "proxiesCountSuffix": {
+    "message": "proxies"
+  },
+  "proxiesImportedLabel": {
+    "message": "Imported"
+  },
   "proxyChainHint": {
     "message": "Tick proxies to chain them — they are tried one after another (the first reachable one is used)."
   },
   "proxyChainPositionTitle": {
     "message": "Position in the chain"
   },
-  "autoDeleteDeadProxiesLabel": {
-    "message": "Auto-remove dead"
-  },
-  "copyAllProxiesButton": {
-    "message": "Copy all"
+  "proxyConnectionIssuesMessage": {
+    "message": "A network problem has been detected. Please go to our support chat and tell us about the problem, we will try to solve it →"
   },
   "proxyCopied": {
     "message": "Copied to clipboard"
   },
-  "shareProxyButton": {
-    "message": "Copy to share"
+  "proxyDisabledPageTitle": {
+    "message": "Proxying Disabled"
   },
-  "clipboardReadFailed": {
-    "message": "Couldn't read the clipboard. Use Ctrl+V instead."
-  },
-  "noProxiesInClipboard": {
-    "message": "No valid proxies found."
-  },
-  "pasteProxiesButton": {
-    "message": "Paste list"
-  },
-  "proxiesImportedLabel": {
-    "message": "Imported"
+  "proxyHost": {
+    "message": "Proxy Server address"
   },
   "proxyLatencyUnit": {
     "message": "ms"
   },
-  "proxyStatusChecking": {
-    "message": "checking…"
+  "proxyOptionsStatusDesc": {
+    "message": "You can disable proxying or switch to your own proxy."
   },
-  "proxyStatusDead": {
-    "message": "dead"
+  "proxyOptionsStatusTitle": {
+    "message": "Failed to establish a connection to the proxy server"
   },
-  "proxyStatusUntested": {
-    "message": "not tested"
+  "proxyPort": {
+    "message": "Port"
   },
-  "proxyTestTargetLabel": {
-    "message": "Test via:"
-  },
-  "testProxiesButton": {
-    "message": "Test all"
-  },
-  "testProxyButton": {
-    "message": "Test this proxy"
-  },
-  "fetchProxySourcesButton": {
-    "message": "Fetch now"
+  "proxySettings": {
+    "message": "Proxy Settings"
   },
   "proxySourcesAutoTestLabel": {
     "message": "Test, remove dead, sort by latency"
@@ -549,29 +558,26 @@
   "proxySourcesUseProxyLabel": {
     "message": "Download via active proxy"
   },
-  "proxyConnectionIssuesMessage": {
-    "message": "A network problem has been detected. Please go to our support chat and tell us about the problem, we will try to solve it →"
+  "proxyStatusAliveShort": {
+    "message": "alive"
   },
-  "proxyDisabledPageTitle": {
-    "message": "Proxying Disabled"
+  "proxyStatusChecking": {
+    "message": "checking…"
   },
-  "proxyHost": {
-    "message": "Proxy Server address"
+  "proxyStatusDead": {
+    "message": "dead"
   },
-  "proxyOptionsStatusDesc": {
-    "message": "You can disable proxying or switch to your own proxy."
+  "proxyStatusUntested": {
+    "message": "not tested"
   },
-  "proxyOptionsStatusTitle": {
-    "message": "Failed to establish a connection to the proxy server"
-  },
-  "proxyPort": {
-    "message": "Port"
-  },
-  "proxySettings": {
-    "message": "Proxy Settings"
+  "proxyTestTargetLabel": {
+    "message": "Test via:"
   },
   "readMoreButton": {
     "message": "Read More →"
+  },
+  "recommendedSourcesLabel": {
+    "message": "Recommended subscriptions"
   },
   "registrySelectRegionDesc": {
     "message": "You can select a region to circumvent country-specific censorship. Selecting particular country also disables auto-detection of your country (based on GeoIP)  which is helpful if you're using software which changes your real IP (for instance VPN)."
@@ -602,6 +608,12 @@
   },
   "relatedDomainsTitle": {
     "message": "Related domains"
+  },
+  "removeDeadProxiesButton": {
+    "message": "Remove dead"
+  },
+  "removedDeadProxiesLabel": {
+    "message": "Removed"
   },
   "resetToDefaultDesc": {
     "message": "Reset all settings to default and generate PAC file for your current region. Use this option if there are availability problems with blocked websites."
@@ -636,6 +648,9 @@
   "shareFeedback": {
     "message": "Got issues or suggestions? Let us know!"
   },
+  "shareProxyButton": {
+    "message": "Copy to share"
+  },
   "showDebugInfoDesc": {
     "message": "Show debug information of the extension."
   },
@@ -668,6 +683,21 @@
   },
   "siteActionTitle": {
     "message": "How should a proxy be used to for this website?"
+  },
+  "sourceAddedLabel": {
+    "message": "Source added"
+  },
+  "sourceAlreadyAddedLabel": {
+    "message": "Already added"
+  },
+  "stopTestProxiesButton": {
+    "message": "Stop"
+  },
+  "testProxiesButton": {
+    "message": "Test all"
+  },
+  "testProxyButton": {
+    "message": "Test this proxy"
   },
   "thankYou": {
     "message": "Thank you!"

@@ -1,4 +1,5 @@
 import browser from 'Background/browser-api'
+import { RECOMMENDED_PROXY_SOURCES } from 'Background/constants'
 import ProxyClient from 'Background/localproxy'
 import ProxyManager from 'Background/proxy'
 import * as server from 'Background/server'
@@ -57,6 +58,21 @@ import {
   const proxySourcesAutoTestCheckbox = document.getElementById('proxySourcesAutoTest')
   const fetchProxySourcesButton = document.getElementById('fetchProxySourcesButton')
   const proxySourcesStatus = document.getElementById('proxySourcesStatus')
+  const stopTestProxiesButton = document.getElementById('stopTestProxiesButton')
+  const removeDeadProxiesButton = document.getElementById('removeDeadProxiesButton')
+  const proxyListToggle = document.getElementById('proxyListToggle')
+  const proxyListBody = document.getElementById('proxyListBody')
+  const proxyCount = document.getElementById('proxyCount')
+  const proxySourcesToggle = document.getElementById('proxySourcesToggle')
+  const proxySourcesBody = document.getElementById('proxySourcesBody')
+  const proxySourcesPreset = document.getElementById('proxySourcesPreset')
+  const addProxySourcePreset = document.getElementById('addProxySourcePreset')
+  const checkProgress = document.getElementById('checkProgress')
+  const checkProgressFill = document.getElementById('checkProgressFill')
+  const checkProgressText = document.getElementById('checkProgressText')
+
+  // Holds the AbortController of an in-flight "test all" run (null when idle).
+  let checkController = null
 
   if (proxyNameInput) {
     proxyNameInput.placeholder = i18nGetMessage('customProxyNamePlaceholder')
@@ -382,6 +398,11 @@ import {
     }
 
     customProxyList.innerHTML = html
+    if (proxyCount) {
+      proxyCount.textContent = proxies.length > 0
+        ? `${proxies.length} ${i18nGetMessage('proxiesCountSuffix')}`
+        : ''
+    }
     await refreshCurrentProxyAddress()
   }
 
@@ -478,6 +499,16 @@ import {
     )
   }
 
+  // Removes a row from the list immediately (used to drop dead proxies on the
+  // fly during a check, without waiting for a full re-render).
+  const removeRowFromList = (id) => {
+    const row = customProxyList.querySelector(`.cproxy-row[data-id="${id}"]`)
+
+    if (row) {
+      row.remove()
+    }
+  }
+
   const setRowChecking = (id) => {
     const cell = rowStatusCell(id)
 
@@ -541,6 +572,12 @@ import {
       return
     }
 
+    // Changing the chain mid-check would clobber the temporary checker PAC.
+    if (checkController) {
+      event.target.checked = !event.target.checked
+      return
+    }
+
     const id = event.target.value
     const chain = await ProxyManager.getProxyChain()
     let nextChain
@@ -559,6 +596,11 @@ import {
 
   // Handle copy / test / edit / delete actions on rows.
   customProxyList.addEventListener('click', async (event) => {
+    // Don't run single-row actions while a full check owns the proxy PAC.
+    if (checkController) {
+      return
+    }
+
     const copyButton = event.target.closest('.cproxy-copy')
 
     if (copyButton) {
@@ -634,27 +676,124 @@ import {
     }
   })
 
-  // Test every proxy in the list, updating each row's status live.
+  const updateCheckProgress = (done, total, alive, dead) => {
+    if (!checkProgress) {
+      return
+    }
+    checkProgress.classList.remove('hidden')
+    if (checkProgressFill) {
+      const percent = total > 0 ? Math.round((done / total) * 100) : 0
+
+      checkProgressFill.style.width = `${percent}%`
+    }
+    if (checkProgressText) {
+      checkProgressText.textContent =
+        `${done}/${total} · ${i18nGetMessage('proxyStatusAliveShort')}: ${alive} · ` +
+        `${i18nGetMessage('proxyStatusDead')}: ${dead}`
+    }
+  }
+
+  // Test every proxy in the list in parallel, updating each row live. The run
+  // can be stopped, and dead proxies are dropped on the fly when auto-delete is
+  // on. The user's real traffic stays on the active proxy for the whole run.
   if (testAllProxiesButton) {
     testAllProxiesButton.addEventListener('click', async () => {
+      if (checkController) {
+        return
+      }
+
       const list = await collectTestableProxies()
 
       if (list.length === 0) {
         return
       }
-      testAllProxiesButton.disabled = true
+
+      const autoDelete = await ProxyManager.getAutoDeleteDeadProxies()
+
+      checkController = new AbortController()
       proxyTestingInProgress = true
+      testAllProxiesButton.classList.add('hidden')
+      if (stopTestProxiesButton) {
+        stopTestProxiesButton.classList.remove('hidden')
+      }
+      if (removeDeadProxiesButton) {
+        removeDeadProxiesButton.disabled = true
+      }
+
       for (const proxy of list) {
         setRowChecking(proxy.id)
       }
+
+      const total = list.length
+      let done = 0
+      let alive = 0
+      let dead = 0
+
+      updateCheckProgress(done, total, alive, dead)
+
       try {
         await ProxyManager.testProxies(list, {
-          onResult: (id, status) => setRowStatus(id, status),
+          signal: checkController.signal,
+          onResult: async (id, status) => {
+            done += 1
+            if (status.alive) {
+              alive += 1
+              setRowStatus(id, status)
+            } else {
+              dead += 1
+              // The built-in proxy is not user-removable; never drop it.
+              if (autoDelete && id !== 'builtin') {
+                await ProxyManager.deleteCustomProxy(id)
+                removeRowFromList(id)
+              } else {
+                setRowStatus(id, status)
+              }
+            }
+            updateCheckProgress(done, total, alive, dead)
+          },
         })
       } finally {
+        checkController = null
         proxyTestingInProgress = false
-        testAllProxiesButton.disabled = false
+        testAllProxiesButton.classList.remove('hidden')
+        if (stopTestProxiesButton) {
+          stopTestProxiesButton.classList.add('hidden')
+        }
+        if (removeDeadProxiesButton) {
+          removeDeadProxiesButton.disabled = false
+        }
+        if (checkProgress) {
+          checkProgress.classList.add('hidden')
+        }
+        // Auto-delete may have dropped the active proxy: re-apply routing and
+        // re-sync the list with storage.
+        await ProxyManager.setProxy()
+        await renderCustomProxies()
       }
+    })
+  }
+
+  // Stop an in-flight "test all" run.
+  if (stopTestProxiesButton) {
+    stopTestProxiesButton.addEventListener('click', () => {
+      if (checkController) {
+        checkController.abort()
+      }
+    })
+  }
+
+  // Manually remove every proxy the last check marked dead.
+  if (removeDeadProxiesButton) {
+    removeDeadProxiesButton.addEventListener('click', async () => {
+      if (checkController) {
+        return
+      }
+
+      const { removed } = await ProxyManager.removeDeadCustomProxies()
+
+      await ProxyManager.setProxy()
+      await renderCustomProxies()
+      showImportMsg(`${i18nGetMessage('removedDeadProxiesLabel')}: ${removed}`)
     })
   }
 
@@ -859,10 +998,100 @@ import {
     })
   }
 
+  // Collapsible sections (proxy list + proxy sources) so long lists don't take
+  // up half the screen. The open/closed state is remembered.
+  const wireCollapsible = (toggle, body, key) => {
+    if (!toggle || !body) {
+      return
+    }
+
+    const chevron = toggle.querySelector('.cproxy-chevron')
+
+    toggle.addEventListener('click', async () => {
+      const collapsed = body.classList.toggle('hidden')
+
+      toggle.setAttribute('aria-expanded', String(!collapsed))
+      if (chevron) {
+        chevron.classList.toggle('cproxy-chevron--open', !collapsed)
+      }
+
+      const { proxyUiCollapsed = {} } =
+        await browser.storage.local.get({ proxyUiCollapsed: {} })
+
+      proxyUiCollapsed[key] = collapsed
+      await browser.storage.local.set({ proxyUiCollapsed })
+    })
+  }
+
+  const restoreCollapsible = async () => {
+    const { proxyUiCollapsed = {} } =
+      await browser.storage.local.get({ proxyUiCollapsed: {} })
+
+    const apply = (toggle, body, collapsed) => {
+      if (!toggle || !body || collapsed === undefined) {
+        return
+      }
+
+      const chevron = toggle.querySelector('.cproxy-chevron')
+
+      body.classList.toggle('hidden', collapsed)
+      toggle.setAttribute('aria-expanded', String(!collapsed))
+      if (chevron) {
+        chevron.classList.toggle('cproxy-chevron--open', !collapsed)
+      }
+    }
+
+    apply(proxyListToggle, proxyListBody, proxyUiCollapsed.list)
+    apply(proxySourcesToggle, proxySourcesBody, proxyUiCollapsed.sources)
+  }
+
+  wireCollapsible(proxyListToggle, proxyListBody, 'list')
+  wireCollapsible(proxySourcesToggle, proxySourcesBody, 'sources')
+  await restoreCollapsible()
+
+  // Ready-made subscription presets: pick one and append it to the sources.
+  if (proxySourcesPreset) {
+    proxySourcesPreset.innerHTML = RECOMMENDED_PROXY_SOURCES
+      .map((source) => `<option value="${source.url}">${source.name}</option>`)
+      .join('')
+  }
+
+  if (addProxySourcePreset && proxySourcesPreset && proxySourcesListTextarea) {
+    addProxySourcePreset.addEventListener('click', async () => {
+      const url = proxySourcesPreset.value
+
+      if (!url) {
+        return
+      }
+
+      const current = proxySourcesListTextarea.value
+        .split('\n')
+        .map((line) => line.trim())
+        .filter(Boolean)
+
+      if (current.includes(url)) {
+        if (proxySourcesStatus) {
+          proxySourcesStatus.textContent = i18nGetMessage('sourceAlreadyAddedLabel')
+        }
+        return
+      }
+
+      current.push(url)
+      proxySourcesListTextarea.value = current.join('\n')
+      await ProxyManager.setProxySourcesSettings(readSourcesControls())
+      if (proxySourcesStatus) {
+        proxySourcesStatus.textContent = i18nGetMessage('sourceAddedLabel')
+      }
+    })
+  }
+
   // Fallback: if the page is closed while a test/fetch is mid-flight, put the
   // real proxy back so browsing isn't left routed through a probe PAC.
   window.addEventListener('pagehide', () => {
     if (proxyTestingInProgress) {
+      if (checkController) {
+        checkController.abort()
+      }
       ProxyManager.restoreProxy()
     }
   })

@@ -1,3 +1,5 @@
+import { proxyToPacToken } from './utilities'
+
 /**
  * Build the PAC "return" directive from one or more proxies.
  *
@@ -16,7 +18,7 @@
 const buildProxyDirective = (list) => {
   return list
     .filter((proxy) => proxy && proxy.protocol && proxy.uri)
-    .map(({ protocol, uri }) => `${protocol} ${uri}`)
+    .map(({ protocol, uri }) => proxyToPacToken(protocol, uri))
     .join('; ')
 }
 
@@ -27,6 +29,10 @@ const buildProxyDirective = (list) => {
  *   chain. Tried one after another (failover). Takes precedence when present.
  * @param proxyServerURI {string} - URI of a single proxy server (legacy).
  * @param proxyServerProtocol {string} - Protocol of a single proxy (legacy).
+ * @param testRoutes {Object<string, string>|null} - Optional map of
+ *   destination host -> PAC return token. Used by the proxy checker to send
+ *   specific connectivity endpoints through the proxy being tested, while every
+ *   other request keeps following the rules below (so browsing never drops).
  * @returns {string} PAC script
  */
 export const getPacScript = (
@@ -35,6 +41,7 @@ export const getPacScript = (
     proxies = null,
     proxyServerURI,
     proxyServerProtocol,
+    testRoutes = null,
   },
 ) => {
   // Sort domains alphabetically to make binary search work.
@@ -53,6 +60,11 @@ export const getPacScript = (
   // When there is no proxy configured, never accidentally return an empty
   // string (which is an invalid PAC result): fall back to DIRECT instead.
   const proxyResult = directive ? `'${directive};'` : '\'DIRECT\''
+
+  const testRoutesLiteral =
+    testRoutes && Object.keys(testRoutes).length > 0
+      ? JSON.stringify(testRoutes)
+      : 'null'
 
   return `
       function FindProxyForURL(url, host) {
@@ -79,6 +91,14 @@ export const getPacScript = (
         // Remove ending dot
         if (host.endsWith('.')) {
           host = host.substring(0, host.length - 1);
+        }
+
+        // Proxy-checker test routes take precedence and are matched against the
+        // full host so each connectivity endpoint goes through the exact proxy
+        // currently being tested.
+        const testRoutes = ${testRoutesLiteral};
+        if (testRoutes && Object.prototype.hasOwnProperty.call(testRoutes, host)) {
+          return testRoutes[host];
         }
 
         // Make domain second-level.

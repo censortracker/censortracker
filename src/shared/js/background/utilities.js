@@ -43,6 +43,20 @@ export const normalizeProxyProtocol = (protocol) => {
 }
 
 /**
+ * Builds a PAC return token (e.g. "SOCKS5 1.2.3.4:1080") for a proxy. PAC uses
+ * "PROXY" for plain HTTP proxies, while HTTPS/SOCKS4/SOCKS5 keep their names.
+ * @param {string} protocol - Canonical protocol (HTTP/HTTPS/SOCKS4/SOCKS5).
+ * @param {string} uri - "host:port".
+ * @returns {string} PAC token.
+ */
+export const proxyToPacToken = (protocol, uri) => {
+  const normalized = normalizeProxyProtocol(protocol) || 'HTTPS'
+  const keyword = normalized === 'HTTP' ? 'PROXY' : normalized
+
+  return `${keyword} ${uri}`
+}
+
+/**
  * Parses a free-form proxy string into a protocol + server URI pair so the
  * user can paste a proxy in almost any common format, e.g.:
  *   socks5://user:pass@1.2.3.4:1080

@@ -3,11 +3,16 @@ import { getPacScript } from 'Background/pac'
 import browser from './browser-api'
 import {
   DEFAULT_PROXY_TEST_TARGET,
+  PROXY_TEST_POOL,
   PROXY_TEST_TARGETS,
   TaskType,
 } from './constants'
 import registry from './registry'
-import { fetchWithTimeout, parseProxyList } from './utilities'
+import {
+  fetchWithTimeout,
+  parseProxyList,
+  proxyToPacToken,
+} from './utilities'
 
 class ProxyManager {
   async getProxyingRules () {
@@ -75,9 +80,14 @@ class ProxyManager {
    * Pushes a raw PAC script into the browser proxy settings, normalizing the
    * call shape across Firefox (autoConfig blob) and Chromium (pac_script).
    * @param {string} pacData - PAC script source.
+   * @param {object} [options]
+   * @param {boolean} [options.mandatory=false] - On Chromium, when true a proxy
+   *   that can't be reached is NOT silently bypassed with a direct connection.
+   *   The checker needs this so a dead proxy fails the probe instead of falling
+   *   through to DIRECT and looking alive.
    * @returns {Promise<void>}
    */
-  async applyPacData (pacData) {
+  async applyPacData (pacData, { mandatory = false } = {}) {
     const config = {}
 
     if (browser.isFirefox) {
@@ -85,9 +95,16 @@ class ProxyManager {
         type: 'application/x-ns-proxy-autoconfig',
       })
 
+      // Revoke the previous PAC object URL so repeated checker updates don't
+      // leak object URLs.
+      if (this._lastPacObjectUrl) {
+        URL.revokeObjectURL(this._lastPacObjectUrl)
+      }
+      this._lastPacObjectUrl = URL.createObjectURL(blob)
+
       config.value = {
         proxyType: 'autoConfig',
-        autoConfigUrl: URL.createObjectURL(blob),
+        autoConfigUrl: this._lastPacObjectUrl,
       }
     } else {
       config.scope = 'regular'
@@ -95,11 +112,55 @@ class ProxyManager {
         mode: 'pac_script',
         pacScript: {
           data: pacData,
-          mandatory: false,
+          mandatory,
         },
       }
     }
     await browser.proxy.settings.set(config)
+  }
+
+  /**
+   * Installs a temporary PAC used while checking proxies. Everything keeps
+   * routing exactly as it does for the user right now (so browsing never drops
+   * mid-check) except the hosts named in `testRoutes`, which are sent through
+   * the proxy currently being tested. Applied as mandatory so a dead candidate
+   * fails the probe instead of leaking to DIRECT.
+   * @param {Object<string, string>} testRoutes - host -> PAC return token.
+   * @returns {Promise<void>}
+   */
+  async applyCheckerPac (testRoutes) {
+    const enabled = await this.isEnabled()
+
+    let domains = []
+    let proxies = []
+    let proxyServerURI = ''
+    let proxyServerProtocol = 'HTTPS'
+
+    // Preserve the user's real routing only when proxying is actually on;
+    // otherwise non-test traffic must stay DIRECT just like it is now.
+    if (enabled) {
+      domains = await registry.getDomains()
+      const chain = await this.getChainProxyConfigs()
+
+      if (chain.length > 0) {
+        proxies = chain
+      } else {
+        const rules = await this.getProxyingRules()
+
+        proxyServerURI = rules.proxyServerURI
+        proxyServerProtocol = rules.proxyServerProtocol
+      }
+    }
+
+    const pacData = getPacScript({
+      domains,
+      proxies,
+      proxyServerURI,
+      proxyServerProtocol,
+      testRoutes,
+    })
+
+    await this.applyPacData(pacData, { mandatory: true })
   }
 
   async setProxy () {
@@ -651,41 +712,67 @@ class ProxyManager {
   }
 
   /**
-   * Builds a PAC that routes only the test host through `proxy` (everything
-   * else DIRECT), so a single fetch measures that one proxy in isolation.
-   * @param {{protocol: string, uri: string}} proxy
-   * @param {string} testHost
-   * @returns {string}
+   * Sends one probe request and resolves with whether it reached the endpoint
+   * and how long it took. Never throws. Aborts on the shared signal or after
+   * `timeout`. Assumes the routing PAC is already in place.
+   * @param {string} target - Connectivity endpoint URL.
+   * @param {{timeout?: number, signal?: AbortSignal}} [options]
+   * @returns {Promise<{ok: boolean, latency: number|null}>}
    */
-  buildProbePac (proxy, testHost) {
-    const directive = `${proxy.protocol} ${proxy.uri}`
+  async probeUrl (target, { timeout = 8000, signal } = {}) {
+    const url = `${target}${target.includes('?') ? '&' : '?'}_ct=${Date.now()}`
+    const controller = new AbortController()
+    const onAbort = () => controller.abort()
 
-    return `function FindProxyForURL(url, host) {
-      if (host === ${JSON.stringify(testHost)}) {
-        return '${directive};';
+    if (signal) {
+      if (signal.aborted) {
+        controller.abort()
+      } else {
+        signal.addEventListener('abort', onAbort, { once: true })
       }
-      return 'DIRECT';
-    }`
+    }
+
+    const timer = setTimeout(() => controller.abort(), timeout)
+    const now = () =>
+      (typeof performance !== 'undefined' && performance.now)
+        ? performance.now()
+        : Date.now()
+    const started = now()
+
+    try {
+      // Any HTTP response means the proxy relayed our request to the cloud.
+      await fetch(url, {
+        method: 'GET',
+        cache: 'no-store',
+        redirect: 'manual',
+        signal: controller.signal,
+      })
+      return { ok: true, latency: Math.round(now() - started) }
+    } catch (error) {
+      return { ok: false, latency: null }
+    } finally {
+      clearTimeout(timer)
+      if (signal) {
+        signal.removeEventListener('abort', onAbort)
+      }
+    }
   }
 
   /**
-   * Routes a single test request through `proxy` and measures the round-trip.
-   * Does NOT restore the previous proxy (callers do, possibly after a batch).
+   * Routes a single test request through `proxy` (while keeping the user's real
+   * traffic on the active proxy) and measures the round-trip. Does NOT restore
+   * the previous proxy (callers do, possibly after a batch).
    * @param {{protocol: string, uri: string, id?: string}} proxy
-   * @param {{timeout?: number, testUrl?: string}} [options]
+   * @param {{timeout?: number, testUrl?: string, signal?: AbortSignal}} [options]
    * @returns {Promise<{alive: boolean, latency: number|null}>}
    */
-  async probeProxy (proxy, { timeout = 8000, testUrl } = {}) {
+  async probeProxy (proxy, { timeout = 8000, testUrl, signal } = {}) {
     if (!proxy || !proxy.uri || !proxy.protocol) {
       return { alive: false, latency: null }
     }
 
-    let target = testUrl
-
-    if (!target) {
-      target = PROXY_TEST_TARGETS[await this.getProxyTestTarget()]
-    }
-
+    const target =
+      testUrl || PROXY_TEST_TARGETS[await this.getProxyTestTarget()]
     let testHost
 
     try {
@@ -694,30 +781,13 @@ class ProxyManager {
       return { alive: false, latency: null }
     }
 
-    await this.applyPacData(this.buildProbePac(proxy, testHost))
+    await this.applyCheckerPac({
+      [testHost]: proxyToPacToken(proxy.protocol, proxy.uri),
+    })
 
-    const url = `${target}${target.includes('?') ? '&' : '?'}_ct=${Date.now()}`
-    const now = () =>
-      (typeof performance !== 'undefined' && performance.now)
-        ? performance.now()
-        : Date.now()
-    const started = now()
-    let alive = false
+    const result = await this.probeUrl(target, { timeout, signal })
 
-    try {
-      // Any HTTP response means the proxy relayed our request to the cloud.
-      await fetchWithTimeout(url, {
-        method: 'GET',
-        timeout,
-        cache: 'no-store',
-        redirect: 'manual',
-      })
-      alive = true
-    } catch (error) {
-      alive = false
-    }
-
-    return { alive, latency: alive ? Math.round(now() - started) : null }
+    return { alive: result.ok, latency: result.latency }
   }
 
   /**
@@ -736,29 +806,108 @@ class ProxyManager {
   }
 
   /**
-   * Tests a list of proxies sequentially (they share the global proxy
-   * setting), restoring the real proxy once at the end. `onResult(id, result)`
-   * is called after each one so the UI can update live.
+   * Tests a list of proxies *in parallel*: each batch maps several distinct
+   * connectivity endpoints (one per proxy) into a single PAC, so up to
+   * `PROXY_TEST_POOL.length` proxies are probed at once. The user's real
+   * traffic keeps flowing through the active proxy for the whole run, and the
+   * run can be aborted via `signal`. `onResult(id, result)` fires the moment
+   * each result is known so the UI can update live. Restores routing at the
+   * end.
+   * @param {Array<{id: string, protocol: string, uri: string}>} proxies
+   * @param {{onResult?: Function, signal?: AbortSignal, timeout?: number,
+   *   concurrency?: number}} [options]
    * @returns {Promise<Object>} Map of proxy id -> result.
    */
-  async testProxies (proxies, { onResult, ...options } = {}) {
+  async testProxies (
+    proxies,
+    { onResult, signal, timeout = 8000, concurrency } = {},
+  ) {
     const results = {}
 
+    if (!Array.isArray(proxies) || proxies.length === 0) {
+      return results
+    }
+
+    const pool = PROXY_TEST_POOL
+    const slots = Math.max(1, Math.min(concurrency || pool.length, pool.length))
+
     try {
-      for (const proxy of proxies) {
-        const result = await this.probeProxy(proxy, options)
-
-        results[proxy.id] = result
-        await this.setProxyStatus(proxy.id, result)
-
-        if (typeof onResult === 'function') {
-          onResult(proxy.id, result)
+      for (let offset = 0; offset < proxies.length; offset += slots) {
+        if (signal && signal.aborted) {
+          break
         }
+
+        const batch = proxies.slice(offset, offset + slots)
+        const testRoutes = {}
+        const assignments = []
+
+        batch.forEach((proxy, index) => {
+          const target = pool[index]
+
+          try {
+            testRoutes[new URL(target).hostname] =
+              proxyToPacToken(proxy.protocol, proxy.uri)
+            assignments.push({ proxy, target })
+          } catch (error) {
+            assignments.push({ proxy, target: null })
+          }
+        })
+
+        await this.applyCheckerPac(testRoutes)
+        // Let the browser pick up the temporary PAC before probing.
+        await new Promise((resolve) => setTimeout(resolve, 200))
+
+        if (signal && signal.aborted) {
+          break
+        }
+
+        await Promise.all(assignments.map(async ({ proxy, target }) => {
+          const probe = target
+            ? await this.probeUrl(target, { timeout, signal })
+            : { ok: false, latency: null }
+
+          // A failure caused by the user aborting is not a dead proxy: leave it
+          // untouched so an interrupted run doesn't mislabel good proxies.
+          if (!probe.ok && signal && signal.aborted) {
+            return
+          }
+
+          const result = { alive: probe.ok, latency: probe.latency }
+
+          results[proxy.id] = result
+          await this.setProxyStatus(proxy.id, result)
+
+          if (typeof onResult === 'function') {
+            onResult(proxy.id, result)
+          }
+        }))
       }
     } finally {
       await this.restoreProxy()
     }
     return results
+  }
+
+  /**
+   * Removes every proxy whose last check marked it dead. Falls back to a still
+   * working proxy (or disables custom proxying) if a removed one was active.
+   * @returns {Promise<{removed: number}>}
+   */
+  async removeDeadCustomProxies () {
+    const customProxies = await this.getCustomProxies()
+    const statuses = await this.getProxyStatuses()
+    const deadIds = customProxies
+      .filter((proxy) => {
+        const status = statuses[proxy.id]
+
+        return status && status.alive === false
+      })
+      .map((proxy) => proxy.id)
+
+    for (const id of deadIds) {
+      await this.deleteCustomProxy(id)
+    }
+    return { removed: deadIds.length }
   }
 
   // ---------------------------------------------------------------------------

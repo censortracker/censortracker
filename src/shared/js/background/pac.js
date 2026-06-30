@@ -1,32 +1,23 @@
 import { proxyToPacToken } from './utilities'
 
 /**
- * Build the PAC "return" directive from one or more proxies.
- *
- * A PAC script can list several proxies separated by ";". The browser then
- * tries them one after another (failover): the first reachable one wins, the
- * rest are fallbacks. This is what powers the "proxy chain" feature — the user
- * marks several proxies and they are tried in order.
- *
- * NOTE: PAC cannot do true multi-hop ("onion") routing where traffic flows
- * *through* proxy A and *then* B; that requires an external relay. Here the
- * chain means "use these proxies one after another".
- *
- * @param {Array<{protocol: string, uri: string}>} list - Ordered proxies.
- * @returns {string} e.g. "SOCKS5 1.2.3.4:1080; HTTPS 5.6.7.8:8443"
- */
-const buildProxyDirective = (list) => {
-  return list
-    .filter((proxy) => proxy && proxy.protocol && proxy.uri)
-    .map(({ protocol, uri }) => proxyToPacToken(protocol, uri))
-    .join('; ')
-}
-
-/**
  * Return PAC Script data.
+ *
+ * When several proxies are selected they are *load-balanced*, not merely listed
+ * for failover. A plain PAC list ("A; B; C") makes the browser always use A and
+ * only fall back to B/C when A is unreachable — so with a working first proxy
+ * the rest are never touched. Instead we hash the destination host to pick a
+ * primary proxy per site (consistent for that site, so sessions don't break)
+ * and append the remaining proxies as automatic fallbacks. Across many sites
+ * every selected proxy gets used.
+ *
+ * NOTE: this is distribution + failover, NOT true multi-hop ("onion") routing
+ * where traffic flows *through* proxy A and then B — that's impossible with a
+ * browser PAC and needs an external relay.
+ *
  * @param domains {Array<string>} - List of domains to proxy.
- * @param proxies {Array<{protocol: string, uri: string}>} - Ordered proxy
- *   chain. Tried one after another (failover). Takes precedence when present.
+ * @param proxies {Array<{protocol: string, uri: string}>} - Selected proxies,
+ *   load-balanced per destination. Takes precedence when present.
  * @param proxyServerURI {string} - URI of a single proxy server (legacy).
  * @param proxyServerProtocol {string} - Protocol of a single proxy (legacy).
  * @param testRoutes {Object<string, string>|null} - Optional map of
@@ -47,7 +38,7 @@ export const getPacScript = (
   // Sort domains alphabetically to make binary search work.
   domains.sort()
 
-  // Accept either an explicit proxy chain or a single legacy pair.
+  // Accept either an explicit list of proxies or a single legacy pair.
   let list = []
 
   if (Array.isArray(proxies) && proxies.length > 0) {
@@ -56,10 +47,11 @@ export const getPacScript = (
     list = [{ protocol: proxyServerProtocol, uri: proxyServerURI }]
   }
 
-  const directive = buildProxyDirective(list)
-  // When there is no proxy configured, never accidentally return an empty
-  // string (which is an invalid PAC result): fall back to DIRECT instead.
-  const proxyResult = directive ? `'${directive};'` : '\'DIRECT\''
+  const proxyTokens = list
+    .filter((proxy) => proxy && proxy.protocol && proxy.uri)
+    .map(({ protocol, uri }) => proxyToPacToken(protocol, uri))
+
+  const proxyTokensLiteral = JSON.stringify(proxyTokens)
 
   const testRoutesLiteral =
     testRoutes && Object.keys(testRoutes).length > 0
@@ -86,6 +78,24 @@ export const getPacScript = (
             }
           }
           return false;
+        }
+
+        // Load-balance the selected proxies across destinations: hash the host
+        // to choose a primary, then append the rest as failover. One site
+        // always maps to the same primary (stable sessions), but different
+        // sites spread across every selected proxy.
+        var proxyTokens = ${proxyTokensLiteral};
+        function pickProxy(target) {
+          if (!proxyTokens || proxyTokens.length === 0) {
+            return 'DIRECT';
+          }
+          var sum = 0;
+          for (var i = 0; i < target.length; i++) {
+            sum = (sum * 31 + target.charCodeAt(i)) % 2147483647;
+          }
+          var start = sum % proxyTokens.length;
+          var ordered = proxyTokens.slice(start).concat(proxyTokens.slice(0, start));
+          return ordered.join('; ') + ';';
         }
 
         // Remove ending dot
@@ -115,12 +125,12 @@ export const getPacScript = (
 
         // Proxy *.onion and *.i2p domains.
         if (shExpMatch(host, '*.onion') || shExpMatch(host, '*.i2p')) {
-          return ${proxyResult};
+          return pickProxy(host);
         }
 
         // Return result
         if (isHostBlocked(domains, host)) {
-          return ${proxyResult};
+          return pickProxy(host);
         } else {
           return 'DIRECT';
         }

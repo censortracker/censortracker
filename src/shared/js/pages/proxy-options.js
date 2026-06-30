@@ -1,5 +1,12 @@
 import browser from 'Background/browser-api'
 import { RECOMMENDED_PROXY_SOURCES } from 'Background/constants'
+import {
+  countryFlagEmoji,
+  getCachedGeo,
+  hostFromUri,
+  isIpv4,
+  lookupCountries,
+} from 'Background/geoip'
 import ProxyClient from 'Background/localproxy'
 import ProxyManager from 'Background/proxy'
 import * as server from 'Background/server'
@@ -308,16 +315,37 @@ import {
     return `<span class="cproxy-status cproxy-status--dead">${escapeHtml(i18nGetMessage('proxyStatusDead'))}</span>`
   }
 
+  // Builds the country flag/code badge from a cached geo entry.
+  const countryBadgeHtml = (uri, geo) => {
+    const info = geo[hostFromUri(uri)]
+
+    if (!info || !info.code) {
+      return ''
+    }
+
+    const flag = countryFlagEmoji(info.code)
+
+    return `<span class="cproxy-country" title="${escapeHtml(info.name || info.code)}">` +
+      `${flag ? `${flag} ` : ''}${escapeHtml(info.code)}</span>`
+  }
+
   // Renders one row (built-in or user) in the unified proxy list. A checked
   // row is part of the proxy chain; `chain` is the ordered list of ids so we
-  // can show each row's position in it. `statuses` holds the last test result.
-  const renderProxyRow = ({ id, name, protocol, uri, builtin = false }, chain, statuses) => {
+  // can show each row's position in it. `statuses` holds the last test result,
+  // `geo` the cached host -> country map.
+  const renderProxyRow = (
+    { id, name, protocol, uri, builtin = false },
+    chain,
+    statuses,
+    geo,
+  ) => {
     const editTitle = i18nGetMessage(builtin ? 'editBuiltinProxyButton' : 'editProxyButton')
     const chainIndex = chain.indexOf(id)
     const inChain = chainIndex !== -1
     const order = inChain
       ? `<span class="cproxy-order" title="${escapeHtml(i18nGetMessage('proxyChainPositionTitle'))}">${chainIndex + 1}</span>`
       : ''
+    const country = countryBadgeHtml(uri, geo)
     const badge = builtin
       ? `<span class="cproxy-badge">${escapeHtml(i18nGetMessage('builtinProxyBadge'))}</span>`
       : ''
@@ -339,6 +367,7 @@ import {
            <span class="cproxy-row__name">${escapeHtml(name)}</span>
            <span class="cproxy-row__addr">${escapeHtml(protocol)} ${escapeHtml(uri)}</span>
          </span>
+         ${country}
          ${badge}
        </label>
        <span class="cproxy-status-cell">${statusBadgeHtml(statuses[id])}</span>
@@ -380,6 +409,7 @@ import {
     const builtin = await ProxyManager.getBuiltinProxy()
     const chain = await ProxyManager.getProxyChain()
     const statuses = await ProxyManager.getProxyStatuses()
+    const geo = await getCachedGeo()
 
     let html = ''
 
@@ -390,11 +420,11 @@ import {
         protocol: builtin.protocol,
         uri: builtin.uri,
         builtin: true,
-      }, chain, statuses)
+      }, chain, statuses, geo)
     }
 
     for (const proxy of proxies) {
-      html += renderProxyRow(proxy, chain, statuses)
+      html += renderProxyRow(proxy, chain, statuses, geo)
     }
 
     customProxyList.innerHTML = html
@@ -404,6 +434,46 @@ import {
         : ''
     }
     await refreshCurrentProxyAddress()
+
+    // Fill in any missing country flags in the background (cached, never blocks
+    // the render, re-renders itself when done).
+    ensureCountries()
+  }
+
+  // Looks up the country of any proxy IP we don't know yet (cached, batched),
+  // then refreshes the rows so the flags appear. Safe to call repeatedly: it
+  // no-ops once every IP is cached, and never throws.
+  let geoLookupInFlight = false
+
+  async function ensureCountries () {
+    if (geoLookupInFlight || checkController) {
+      return
+    }
+
+    const proxies = await ProxyManager.getCustomProxies()
+    const builtin = await ProxyManager.getBuiltinProxy()
+    const hosts = proxies.map((proxy) => hostFromUri(proxy.uri))
+
+    if (builtin) {
+      hosts.push(hostFromUri(builtin.uri))
+    }
+
+    const cache = await getCachedGeo()
+    const missing = hosts.filter((host) => isIpv4(host) && !(host in cache))
+
+    if (missing.length === 0) {
+      return
+    }
+
+    geoLookupInFlight = true
+    try {
+      await lookupCountries(missing)
+      await renderCustomProxies()
+    } catch (error) {
+      console.warn(`Country detection failed: ${error}`)
+    } finally {
+      geoLookupInFlight = false
+    }
   }
 
   // Shows the address of the proxy that is effectively in use right now.

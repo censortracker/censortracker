@@ -1,3 +1,11 @@
+# 20.4.1
+
+- Fixed dead-proxy removal after a parallel check: results are now persisted
+  per batch in a single write (the parallel probes were racing each other and
+  losing some "dead" statuses), removal happens in one atomic pass, and routing
+  is restored without forcing proxying back on
+
+
 # 20.4.0
 
 - Proxy checking now runs in parallel (multi-threaded) instead of one proxy at

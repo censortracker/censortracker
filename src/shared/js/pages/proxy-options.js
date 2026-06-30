@@ -732,18 +732,21 @@ import {
       updateCheckProgress(done, total, alive, dead)
 
       try {
+        // `onResult` only touches the DOM — it must never write to storage,
+        // because the parallel probes resolve together and concurrent
+        // read-modify-write deletes would race and lose updates. The actual
+        // removal happens once, after the run, via removeDeadCustomProxies().
         await ProxyManager.testProxies(list, {
           signal: checkController.signal,
-          onResult: async (id, status) => {
+          onResult: (id, status) => {
             done += 1
             if (status.alive) {
               alive += 1
               setRowStatus(id, status)
             } else {
               dead += 1
-              // The built-in proxy is not user-removable; never drop it.
+              // Instant visual feedback; the built-in proxy is never removable.
               if (autoDelete && id !== 'builtin') {
-                await ProxyManager.deleteCustomProxy(id)
                 removeRowFromList(id)
               } else {
                 setRowStatus(id, status)
@@ -765,9 +768,13 @@ import {
         if (checkProgress) {
           checkProgress.classList.add('hidden')
         }
-        // Auto-delete may have dropped the active proxy: re-apply routing and
-        // re-sync the list with storage.
-        await ProxyManager.setProxy()
+        // Purge the dead proxies in one atomic pass (avoids the lost-update
+        // race), then re-apply routing (auto-delete may have dropped the
+        // active proxy) and re-sync the list with storage.
+        if (autoDelete) {
+          await ProxyManager.removeDeadCustomProxies()
+        }
+        await ProxyManager.restoreProxy()
         await renderCustomProxies()
       }
     })
@@ -791,7 +798,7 @@ import {
 
       const { removed } = await ProxyManager.removeDeadCustomProxies()
 
-      await ProxyManager.setProxy()
+      await ProxyManager.restoreProxy()
       await renderCustomProxies()
       showImportMsg(`${i18nGetMessage('removedDeadProxiesLabel')}: ${removed}`)
     })

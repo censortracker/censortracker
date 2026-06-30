@@ -505,7 +505,7 @@
     "message": "Imported"
   },
   "proxyChainHint": {
-    "message": "Tick proxies to chain them — they are tried one after another (the first reachable one is used)."
+    "message": "Tick several proxies to use them together — traffic is spread across them (each site through one, the rest as automatic fallback). Note: browsers cannot tunnel through several proxies in sequence (multi-hop)."
   },
   "proxyChainPositionTitle": {
     "message": "Position in the chain"

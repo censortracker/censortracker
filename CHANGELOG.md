@@ -1,3 +1,12 @@
+# 20.6.0
+
+- Selecting several proxies now actually uses all of them: traffic is
+  load-balanced across the selected proxies (each site is routed through one,
+  chosen consistently, with the rest as automatic failover) instead of always
+  using only the first reachable one. (True multi-hop chaining isn't possible
+  with a browser PAC.)
+
+
 # 20.5.0
 
 - Each proxy row now shows the country of its server (flag + code), resolved

@@ -609,8 +609,20 @@
   "relatedDomainsTitle": {
     "message": "Related domains"
   },
+  "removeAllProxiesButton": {
+    "message": "Remove all"
+  },
+  "removeAllProxiesConfirm": {
+    "message": "Remove ALL proxies from the list?"
+  },
   "removeDeadProxiesButton": {
     "message": "Remove dead"
+  },
+  "removeUncheckedProxiesButton": {
+    "message": "Remove unchecked"
+  },
+  "removeUntestedProxiesButton": {
+    "message": "Remove untested"
   },
   "removedDeadProxiesLabel": {
     "message": "Removed"

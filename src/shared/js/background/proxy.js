@@ -353,13 +353,23 @@ class ProxyManager {
       customProxies,
       customProxyServerURI,
       customProxyProtocol,
+      proxyChain,
     } = await browser.storage.local.get({
       customProxies: [],
       customProxyServerURI: '',
       customProxyProtocol: '',
+      proxyChain: null,
     })
 
-    if (customProxies.length === 0 && customProxyServerURI) {
+    // Migrate ONLY genuinely legacy state (no chain ever stored). Once a
+    // chain exists, customProxyServerURI is just a mirror of its first hop
+    // (possibly the built-in proxy) — re-importing it here would resurrect a
+    // phantom entry every time the list is emptied.
+    if (
+      customProxies.length === 0 &&
+      customProxyServerURI &&
+      !Array.isArray(proxyChain)
+    ) {
       const migrated = [{
         id: this.generateProxyId(),
         name: customProxyServerURI,
@@ -951,6 +961,49 @@ class ProxyManager {
     }
 
     return removed
+  }
+
+  /**
+   * Removes every proxy that is NOT ticked into the chain, keeping only the
+   * ones the user actually routes through. The built-in proxy is untouched
+   * (it is not part of the custom list).
+   * @returns {Promise<{removed: number}>}
+   */
+  async removeUncheckedCustomProxies () {
+    const customProxies = await this.getCustomProxies()
+    const chain = new Set(await this.getProxyChain())
+    const uncheckedIds = customProxies
+      .filter((proxy) => !chain.has(proxy.id))
+      .map((proxy) => proxy.id)
+
+    return { removed: await this.removeCustomProxiesByIds(uncheckedIds) }
+  }
+
+  /**
+   * Removes every proxy that has never been tested (no stored status). Dead
+   * ones are covered by {@link removeDeadCustomProxies}.
+   * @returns {Promise<{removed: number}>}
+   */
+  async removeUntestedCustomProxies () {
+    const customProxies = await this.getCustomProxies()
+    const statuses = await this.getProxyStatuses()
+    const untestedIds = customProxies
+      .filter((proxy) => !(proxy.id in statuses))
+      .map((proxy) => proxy.id)
+
+    return { removed: await this.removeCustomProxiesByIds(untestedIds) }
+  }
+
+  /**
+   * Removes every user-defined proxy. The chain keeps the built-in proxy if
+   * it was ticked; otherwise custom proxying is disabled.
+   * @returns {Promise<{removed: number}>}
+   */
+  async removeAllCustomProxies () {
+    const customProxies = await this.getCustomProxies()
+    const ids = customProxies.map((proxy) => proxy.id)
+
+    return { removed: await this.removeCustomProxiesByIds(ids) }
   }
 
   /**

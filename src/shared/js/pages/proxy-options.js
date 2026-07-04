@@ -67,6 +67,9 @@ import {
   const proxySourcesStatus = document.getElementById('proxySourcesStatus')
   const stopTestProxiesButton = document.getElementById('stopTestProxiesButton')
   const removeDeadProxiesButton = document.getElementById('removeDeadProxiesButton')
+  const removeUntestedProxiesButton = document.getElementById('removeUntestedProxiesButton')
+  const removeUncheckedProxiesButton = document.getElementById('removeUncheckedProxiesButton')
+  const removeAllProxiesButton = document.getElementById('removeAllProxiesButton')
   const proxyListToggle = document.getElementById('proxyListToggle')
   const proxyListBody = document.getElementById('proxyListBody')
   const proxyCount = document.getElementById('proxyCount')
@@ -859,20 +862,52 @@ import {
     })
   }
 
-  // Manually remove every proxy the last check marked dead.
-  if (removeDeadProxiesButton) {
-    removeDeadProxiesButton.addEventListener('click', async () => {
+  // Shared wiring for the bulk-removal buttons: each removes a subset of the
+  // list in one atomic pass, re-applies routing (the active proxy may have
+  // been dropped) and reports how many entries went away.
+  const setupBulkRemoveButton = (button, removeAction, { confirmKey } = {}) => {
+    if (!button) {
+      return
+    }
+
+    button.addEventListener('click', async () => {
       if (checkController) {
         return
       }
 
-      const { removed } = await ProxyManager.removeDeadCustomProxies()
+      if (confirmKey && !window.confirm(i18nGetMessage(confirmKey))) {
+        return
+      }
+
+      const { removed } = await removeAction()
 
       await ProxyManager.restoreProxy()
       await renderCustomProxies()
       showImportMsg(`${i18nGetMessage('removedDeadProxiesLabel')}: ${removed}`)
     })
   }
+
+  // Manually remove every proxy the last check marked dead.
+  setupBulkRemoveButton(
+    removeDeadProxiesButton,
+    () => ProxyManager.removeDeadCustomProxies(),
+  )
+  // Remove every proxy that has never been tested.
+  setupBulkRemoveButton(
+    removeUntestedProxiesButton,
+    () => ProxyManager.removeUntestedCustomProxies(),
+  )
+  // Remove every proxy that is not ticked into the chain.
+  setupBulkRemoveButton(
+    removeUncheckedProxiesButton,
+    () => ProxyManager.removeUncheckedCustomProxies(),
+  )
+  // Remove the whole list (asks for confirmation first).
+  setupBulkRemoveButton(
+    removeAllProxiesButton,
+    () => ProxyManager.removeAllCustomProxies(),
+    { confirmKey: 'removeAllProxiesConfirm' },
+  )
 
   // Remember which cloud endpoint to probe against.
   if (proxyTestTargetSelect) {

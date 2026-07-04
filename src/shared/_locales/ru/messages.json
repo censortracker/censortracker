@@ -609,8 +609,20 @@
   "relatedDomainsTitle": {
     "message": "Связанные домены"
   },
+  "removeAllProxiesButton": {
+    "message": "Удалить все"
+  },
+  "removeAllProxiesConfirm": {
+    "message": "Удалить ВСЕ прокси из списка?"
+  },
   "removeDeadProxiesButton": {
     "message": "Удалить нерабочие"
+  },
+  "removeUncheckedProxiesButton": {
+    "message": "Удалить неотмеченные"
+  },
+  "removeUntestedProxiesButton": {
+    "message": "Удалить непротестированные"
   },
   "removedDeadProxiesLabel": {
     "message": "Удалено"

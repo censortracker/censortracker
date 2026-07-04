@@ -39,6 +39,30 @@ export const PROXY_TEST_POOL = [
 ]
 
 /**
+ * Pool of *distinct* keyless HTTPS endpoints that echo the caller's public IP
+ * (2ip.ru-style "what is my IP" services). Fetched THROUGH the proxy being
+ * tested, the echoed address is the proxy's exit IP, which gives the real
+ * exit country even when the proxy's entry host is hosted elsewhere. Each
+ * lives on its own host (mirroring PROXY_TEST_POOL) so parallel batches can
+ * route one echo endpoint through each candidate in a single PAC. The first
+ * one (Cloudflare trace) reports the country directly (`loc=XX`); the plain
+ * ones return only the IP, which is then geo-resolved via the cached geo-IP
+ * lookup.
+ */
+export const EXIT_INFO_POOL = [
+  'https://www.cloudflare.com/cdn-cgi/trace',
+  'https://checkip.amazonaws.com',
+  'https://api.ipify.org',
+  'https://icanhazip.com',
+  'https://ifconfig.me/ip',
+  'https://ident.me',
+  'https://api64.ipify.org',
+  'https://ipinfo.io/ip',
+  'https://ipecho.net/plain',
+  'https://myexternalip.com/raw',
+]
+
+/**
  * Curated, free, public proxy subscriptions that refresh themselves on a
  * schedule (verified live and auto-updating). Offered as one-click presets the
  * user can add to their proxy sources:

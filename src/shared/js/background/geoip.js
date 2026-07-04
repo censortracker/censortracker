@@ -50,6 +50,40 @@ export const countryFlagEmoji = (code) => {
 }
 
 /**
+ * Parses the body of an IP-echo endpoint into the exit IP (and country when
+ * the endpoint reports it). Supports the Cloudflare trace format
+ * ("ip=1.2.3.4\nloc=NL\n...") and plain-text responses that start with the
+ * address (checkip/ipify/icanhazip-style).
+ * @param {string} body - Raw response body.
+ * @returns {{ip: string, code: string}|null}
+ */
+export const parseExitInfo = (body) => {
+  if (!body || typeof body !== 'string') {
+    return null
+  }
+
+  const text = body.trim().slice(0, 4096)
+  const traceIp = text.match(/^ip=(\S+)$/m)
+
+  if (traceIp) {
+    const traceLoc = text.match(/^loc=([A-Z]{2})$/m)
+
+    return { ip: traceIp[1], code: traceLoc ? traceLoc[1] : '' }
+  }
+
+  const first = text.split(/\s+/)[0]
+
+  if (isIpv4(first)) {
+    return { ip: first, code: '' }
+  }
+  // IPv6 (returned by dual-stack echo services when the proxy is v6-only).
+  if (first.includes(':') && /^[0-9a-fA-F:.]+$/.test(first)) {
+    return { ip: first, code: '' }
+  }
+  return null
+}
+
+/**
  * Returns the cached host -> { code, name } geo map.
  * @returns {Promise<Object>}
  */

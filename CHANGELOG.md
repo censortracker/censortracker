@@ -1,3 +1,27 @@
+# 20.7.0
+
+- The proxy list is now a datagrid with one column per parameter: name,
+  address, country, exit country, ping, site-open time and status
+- The proxy's country moved out of the name into its own column, and a new
+  "exit" column shows the country websites actually see when connecting
+  through the proxy (detected 2ip.ru-style — an IP-echo request routed
+  through the proxy, geo-resolved and cached)
+- Latency is now measured two ways, each in its own column: "ping" (raw
+  round-trip to the proxy server itself) and "site" (time to open a test
+  site through the proxy)
+- New bulk actions: remove unchecked, remove untested and remove all proxies
+  (with confirmation)
+- Added "Copy list" buttons to the proxied-domains and exclusions editors
+- Performance: the PAC script no longer rebuilds its blocklist and proxy
+  rotations on every request; the registry is cached in memory (invalidated
+  via storage.onChanged); config sync fetches run in parallel; the warm-up
+  ping is throttled; dead proxies fetched from sources are removed in one
+  batch
+- Fixed a phantom proxy re-appearing after the list was emptied (the legacy
+  single-proxy migration re-imported the mirrored address of the chain's
+  first hop)
+
+
 # 20.6.0
 
 - Selecting several proxies now actually uses all of them: traffic is

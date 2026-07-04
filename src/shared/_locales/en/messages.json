@@ -122,6 +122,9 @@
   "copyButton": {
     "message": "Copy"
   },
+  "copyDomainsButton": {
+    "message": "Copy list"
+  },
   "countryAUTO": {
     "message": "Auto"
   },
@@ -510,6 +513,39 @@
   "proxyChainPositionTitle": {
     "message": "Position in the chain"
   },
+  "proxyColAddress": {
+    "message": "Address"
+  },
+  "proxyColCountry": {
+    "message": "Country"
+  },
+  "proxyColCountryTitle": {
+    "message": "Country of the proxy server (by its IP address)"
+  },
+  "proxyColExit": {
+    "message": "Exit"
+  },
+  "proxyColExitTitle": {
+    "message": "Country websites see when you connect through this proxy (checked via an IP-echo service through the proxy)"
+  },
+  "proxyColName": {
+    "message": "Name"
+  },
+  "proxyColPing": {
+    "message": "Ping"
+  },
+  "proxyColPingTitle": {
+    "message": "Round-trip time to the proxy server itself"
+  },
+  "proxyColSite": {
+    "message": "Site"
+  },
+  "proxyColSiteTitle": {
+    "message": "Time to open a test site through the proxy"
+  },
+  "proxyColStatus": {
+    "message": "Status"
+  },
   "proxyConnectionIssuesMessage": {
     "message": "A network problem has been detected. Please go to our support chat and tell us about the problem, we will try to solve it →"
   },
@@ -557,6 +593,9 @@
   },
   "proxySourcesUseProxyLabel": {
     "message": "Download via active proxy"
+  },
+  "proxyStatusAlive": {
+    "message": "working"
   },
   "proxyStatusAliveShort": {
     "message": "alive"

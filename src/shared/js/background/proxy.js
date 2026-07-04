@@ -3,10 +3,12 @@ import { getPacScript } from 'Background/pac'
 import browser from './browser-api'
 import {
   DEFAULT_PROXY_TEST_TARGET,
+  EXIT_INFO_POOL,
   PROXY_TEST_POOL,
   PROXY_TEST_TARGETS,
   TaskType,
 } from './constants'
+import { lookupCountries, parseExitInfo } from './geoip'
 import registry from './registry'
 import {
   fetchWithTimeout,
@@ -726,10 +728,13 @@ class ProxyManager {
    * and how long it took. Never throws. Aborts on the shared signal or after
    * `timeout`. Assumes the routing PAC is already in place.
    * @param {string} target - Connectivity endpoint URL.
-   * @param {{timeout?: number, signal?: AbortSignal}} [options]
-   * @returns {Promise<{ok: boolean, latency: number|null}>}
+   * @param {{timeout?: number, signal?: AbortSignal, readBody?: boolean}}
+   *   [options] - `readBody` additionally returns the response text (used for
+   *   IP-echo endpoints); latency is still measured up to the headers, so
+   *   reading the body doesn't skew the timing.
+   * @returns {Promise<{ok: boolean, latency: number|null, body: string|null}>}
    */
-  async probeUrl (target, { timeout = 8000, signal } = {}) {
+  async probeUrl (target, { timeout = 8000, signal, readBody = false } = {}) {
     const url = `${target}${target.includes('?') ? '&' : '?'}_ct=${Date.now()}`
     const controller = new AbortController()
     const onAbort = () => controller.abort()
@@ -751,15 +756,25 @@ class ProxyManager {
 
     try {
       // Any HTTP response means the proxy relayed our request to the cloud.
-      await fetch(url, {
+      const response = await fetch(url, {
         method: 'GET',
         cache: 'no-store',
         redirect: 'manual',
         signal: controller.signal,
       })
-      return { ok: true, latency: Math.round(now() - started) }
+      const latency = Math.round(now() - started)
+      let body = null
+
+      if (readBody) {
+        try {
+          body = await response.text()
+        } catch (error) {
+          // An unreadable body (opaque redirect etc.) is not a failed probe.
+        }
+      }
+      return { ok: true, latency, body }
     } catch (error) {
-      return { ok: false, latency: null }
+      return { ok: false, latency: null, body: null }
     } finally {
       clearTimeout(timer)
       if (signal) {
@@ -769,50 +784,221 @@ class ProxyManager {
   }
 
   /**
+   * Measures the raw round-trip to the proxy server itself: the time until
+   * the proxy host answers (or actively refuses) a direct request to its
+   * port. No PAC is involved — this is "ping" as opposed to the full
+   * open-a-site-through-the-proxy timing measured by {@link probeUrl}. SOCKS
+   * and HTTPS proxies reject a plain HTTP request AFTER accepting the TCP
+   * connection, so even an error response approximates the network RTT; only
+   * a timeout means the host is unreachable.
+   * @param {string} uri - "host:port" of the proxy.
+   * @param {{timeout?: number, signal?: AbortSignal}} [options]
+   * @returns {Promise<number|null>} Milliseconds, or null when unreachable.
+   */
+  async pingProxyHost (uri, { timeout = 5000, signal } = {}) {
+    if (!uri) {
+      return null
+    }
+
+    const controller = new AbortController()
+    const onAbort = () => controller.abort()
+    let timedOut = false
+
+    if (signal) {
+      if (signal.aborted) {
+        return null
+      }
+      signal.addEventListener('abort', onAbort, { once: true })
+    }
+
+    const timer = setTimeout(() => {
+      timedOut = true
+      controller.abort()
+    }, timeout)
+    const now = () =>
+      (typeof performance !== 'undefined' && performance.now)
+        ? performance.now()
+        : Date.now()
+    const started = now()
+
+    try {
+      await fetch(`http://${uri}/`, {
+        method: 'GET',
+        mode: 'no-cors',
+        cache: 'no-store',
+        redirect: 'manual',
+        signal: controller.signal,
+      })
+      return Math.round(now() - started)
+    } catch (error) {
+      if (timedOut || (signal && signal.aborted)) {
+        return null
+      }
+      // The host answered with a refusal/protocol error — that's still a
+      // round-trip.
+      return Math.round(now() - started)
+    } finally {
+      clearTimeout(timer)
+      if (signal) {
+        signal.removeEventListener('abort', onAbort)
+      }
+    }
+  }
+
+  /**
+   * Probes the exit of a proxy: fetches an IP-echo endpoint through it (the
+   * PAC route must already be in place) and parses the echoed address and,
+   * when reported, country. Never throws.
+   * @param {string} exitTarget - IP-echo endpoint URL routed via the proxy.
+   * @param {{timeout?: number, signal?: AbortSignal}} [options]
+   * @returns {Promise<{exitIp: string|null, exitCountry: string}>}
+   */
+  async probeExitInfo (exitTarget, { timeout = 8000, signal } = {}) {
+    const probe = await this.probeUrl(exitTarget, {
+      timeout,
+      signal,
+      readBody: true,
+    })
+    const info = probe.ok && probe.body ? parseExitInfo(probe.body) : null
+
+    return {
+      exitIp: info ? info.ip : null,
+      exitCountry: info ? info.code : '',
+    }
+  }
+
+  /**
+   * Fills in the exit country for results that only carry an exit IP, using
+   * the cached geo-IP lookup (one batched request for the whole run). Updates
+   * the stored statuses in a single write and re-fires `onResult` for rows
+   * that gained a country. Call AFTER the real proxy has been restored.
+   * @param {Object} results - Map of proxy id -> result (mutated in place).
+   * @param {Function} [onResult]
+   * @returns {Promise<void>}
+   */
+  async resolveExitCountries (results, onResult) {
+    const pendingIps = [...new Set(
+      Object.values(results)
+        .filter((result) => result.exitIp && !result.exitCountry)
+        .map((result) => result.exitIp),
+    )]
+
+    if (pendingIps.length === 0) {
+      return
+    }
+
+    const cache = await lookupCountries(pendingIps)
+    const statuses = await this.getProxyStatuses()
+    let dirty = false
+
+    for (const [id, result] of Object.entries(results)) {
+      if (!result.exitIp || result.exitCountry) {
+        continue
+      }
+
+      const info = cache[result.exitIp]
+
+      if (info && info.code) {
+        result.exitCountry = info.code
+
+        if (statuses[id]) {
+          statuses[id].exitCountry = info.code
+          dirty = true
+        }
+        if (typeof onResult === 'function') {
+          onResult(id, result)
+        }
+      }
+    }
+
+    if (dirty) {
+      await browser.storage.local.set({ proxyStatuses: statuses })
+    }
+  }
+
+  /**
    * Routes a single test request through `proxy` (while keeping the user's real
-   * traffic on the active proxy) and measures the round-trip. Does NOT restore
-   * the previous proxy (callers do, possibly after a batch).
+   * traffic on the active proxy) and measures: the ping to the proxy server,
+   * the time to open a site through it, and the exit IP/country. Does NOT
+   * restore the previous proxy (callers do, possibly after a batch).
    * @param {{protocol: string, uri: string, id?: string}} proxy
    * @param {{timeout?: number, testUrl?: string, signal?: AbortSignal}} [options]
-   * @returns {Promise<{alive: boolean, latency: number|null}>}
+   * @returns {Promise<{alive: boolean, latency: number|null,
+   *   ping: number|null, exitIp: string|null, exitCountry: string}>}
    */
   async probeProxy (proxy, { timeout = 8000, testUrl, signal } = {}) {
+    const failed = {
+      alive: false,
+      latency: null,
+      ping: null,
+      exitIp: null,
+      exitCountry: '',
+    }
+
     if (!proxy || !proxy.uri || !proxy.protocol) {
-      return { alive: false, latency: null }
+      return failed
     }
 
     const target =
       testUrl || PROXY_TEST_TARGETS[await this.getProxyTestTarget()]
+    const exitTarget = EXIT_INFO_POOL[0]
     let testHost
+    let exitHost
 
     try {
       testHost = new URL(target).hostname
+      exitHost = new URL(exitTarget).hostname
     } catch (error) {
-      return { alive: false, latency: null }
+      return failed
     }
 
+    const token = proxyToPacToken(proxy.protocol, proxy.uri)
+
     await this.applyCheckerPac({
-      [testHost]: proxyToPacToken(proxy.protocol, proxy.uri),
+      [testHost]: token,
+      [exitHost]: token,
     })
 
-    const result = await this.probeUrl(target, { timeout, signal })
+    // The ping goes straight to the proxy host (no PAC involved), so it can
+    // run concurrently with the through-the-proxy site probe.
+    const [ping, result] = await Promise.all([
+      this.pingProxyHost(proxy.uri, { timeout, signal }),
+      this.probeUrl(target, { timeout, signal }),
+    ])
 
-    return { alive: result.ok, latency: result.latency }
+    const exit = result.ok
+      ? await this.probeExitInfo(exitTarget, { timeout, signal })
+      : { exitIp: null, exitCountry: '' }
+
+    return {
+      alive: result.ok,
+      latency: result.latency,
+      ping,
+      exitIp: exit.exitIp,
+      exitCountry: exit.exitCountry,
+    }
   }
 
   /**
    * Tests one proxy, stores its status and restores the real proxy afterwards.
-   * @returns {Promise<{alive: boolean, latency: number|null}>}
+   * @returns {Promise<{alive: boolean, latency: number|null,
+   *   ping: number|null, exitIp: string|null, exitCountry: string}>}
    */
   async testProxy (proxy, options = {}) {
-    try {
-      const result = await this.probeProxy(proxy, options)
+    let result
 
-      await this.setProxyStatus(proxy.id, result)
-      return result
+    try {
+      result = await this.probeProxy(proxy, options)
     } finally {
       await this.restoreProxy()
     }
+
+    // Geo-resolve the exit IP after the real routing is back in place.
+    const results = { [proxy.id]: result }
+
+    await this.setProxyStatus(proxy.id, result)
+    await this.resolveExitCountries(results)
+    return result
   }
 
   /**
@@ -853,13 +1039,19 @@ class ProxyManager {
 
         batch.forEach((proxy, index) => {
           const target = pool[index]
+          const exitTarget = EXIT_INFO_POOL[index % EXIT_INFO_POOL.length]
 
           try {
-            testRoutes[new URL(target).hostname] =
-              proxyToPacToken(proxy.protocol, proxy.uri)
-            assignments.push({ proxy, target })
+            const token = proxyToPacToken(proxy.protocol, proxy.uri)
+
+            // Route both this slot's connectivity endpoint and its IP-echo
+            // endpoint through the candidate, so one PAC covers the site-open
+            // timing AND the exit-IP check.
+            testRoutes[new URL(target).hostname] = token
+            testRoutes[new URL(exitTarget).hostname] = token
+            assignments.push({ proxy, target, exitTarget })
           } catch (error) {
-            assignments.push({ proxy, target: null })
+            assignments.push({ proxy, target: null, exitTarget: null })
           }
         })
 
@@ -872,10 +1064,15 @@ class ProxyManager {
         }
 
         const batchResults = await Promise.all(
-          assignments.map(async ({ proxy, target }) => {
-            const probe = target
-              ? await this.probeUrl(target, { timeout, signal })
-              : { ok: false, latency: null }
+          assignments.map(async ({ proxy, target, exitTarget }) => {
+            // Ping goes directly to the proxy host (no PAC), so it runs
+            // concurrently with the through-the-proxy site probe.
+            const [ping, probe] = target
+              ? await Promise.all([
+                this.pingProxyHost(proxy.uri, { timeout, signal }),
+                this.probeUrl(target, { timeout, signal }),
+              ])
+              : [null, { ok: false, latency: null }]
 
             // A failure caused by the user aborting is not a dead proxy: leave
             // it untouched so an interrupted run doesn't mislabel good proxies.
@@ -883,7 +1080,17 @@ class ProxyManager {
               return null
             }
 
-            const result = { alive: probe.ok, latency: probe.latency }
+            const exit = probe.ok && exitTarget
+              ? await this.probeExitInfo(exitTarget, { timeout, signal })
+              : { exitIp: null, exitCountry: '' }
+
+            const result = {
+              alive: probe.ok,
+              latency: probe.latency,
+              ping,
+              exitIp: exit.exitIp,
+              exitCountry: exit.exitCountry,
+            }
 
             results[proxy.id] = result
 
@@ -912,6 +1119,14 @@ class ProxyManager {
       }
     } finally {
       await this.restoreProxy()
+    }
+
+    // Turn exit IPs into countries in one batched lookup, now that the real
+    // routing is back (updates stored statuses and re-fires onResult).
+    try {
+      await this.resolveExitCountries(results, onResult)
+    } catch (error) {
+      console.warn(`Exit country resolution failed: ${error}`)
     }
     return results
   }

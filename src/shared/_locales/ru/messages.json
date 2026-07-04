@@ -122,6 +122,9 @@
   "copyButton": {
     "message": "Скопировать"
   },
+  "copyDomainsButton": {
+    "message": "Скопировать список"
+  },
   "countryAUTO": {
     "message": "Определить автоматически"
   },
@@ -510,6 +513,39 @@
   "proxyChainPositionTitle": {
     "message": "Позиция в цепочке"
   },
+  "proxyColAddress": {
+    "message": "Адрес"
+  },
+  "proxyColCountry": {
+    "message": "Страна"
+  },
+  "proxyColCountryTitle": {
+    "message": "Страна прокси-сервера (по его IP-адресу)"
+  },
+  "proxyColExit": {
+    "message": "Выход"
+  },
+  "proxyColExitTitle": {
+    "message": "Страна, которую видят сайты при заходе через этот прокси (проверяется IP-echo сервисом через прокси)"
+  },
+  "proxyColName": {
+    "message": "Название"
+  },
+  "proxyColPing": {
+    "message": "Пинг"
+  },
+  "proxyColPingTitle": {
+    "message": "Время отклика самого прокси-сервера"
+  },
+  "proxyColSite": {
+    "message": "Сайт"
+  },
+  "proxyColSiteTitle": {
+    "message": "Время открытия тестового сайта через прокси"
+  },
+  "proxyColStatus": {
+    "message": "Статус"
+  },
   "proxyConnectionIssuesMessage": {
     "message": "Обнаружена проблема с сетью. Пожалуйста, обратитесь в чат поддержки и расскажите нам о проблеме, мы постараемся ее решить →"
   },
@@ -557,6 +593,9 @@
   },
   "proxySourcesUseProxyLabel": {
     "message": "Качать через активную прокси"
+  },
+  "proxyStatusAlive": {
+    "message": "работает"
   },
   "proxyStatusAliveShort": {
     "message": "рабочих"

@@ -307,15 +307,26 @@ import {
     })
   }
 
-  // Builds the alive/dead/latency badge from a stored status entry.
+  // Builds the alive/dead/untested badge from a stored status entry (the
+  // latency itself lives in its own "site" column).
   const statusBadgeHtml = (status) => {
     if (!status) {
       return `<span class="cproxy-status cproxy-status--unknown">${escapeHtml(i18nGetMessage('proxyStatusUntested'))}</span>`
     }
     if (status.alive) {
-      return `<span class="cproxy-status cproxy-status--alive">${status.latency} ${escapeHtml(i18nGetMessage('proxyLatencyUnit'))}</span>`
+      return `<span class="cproxy-status cproxy-status--alive">${escapeHtml(i18nGetMessage('proxyStatusAlive'))}</span>`
     }
     return `<span class="cproxy-status cproxy-status--dead">${escapeHtml(i18nGetMessage('proxyStatusDead'))}</span>`
+  }
+
+  const EMPTY_CELL = '<span class="cproxy-cell--empty">—</span>'
+
+  // Milliseconds cell (ping / site-open latency columns).
+  const msCellHtml = (value) => {
+    if (typeof value === 'number' && Number.isFinite(value)) {
+      return `${value} ${escapeHtml(i18nGetMessage('proxyLatencyUnit'))}`
+    }
+    return EMPTY_CELL
   }
 
   // Builds the country flag/code badge from a cached geo entry.
@@ -323,7 +334,7 @@ import {
     const info = geo[hostFromUri(uri)]
 
     if (!info || !info.code) {
-      return ''
+      return EMPTY_CELL
     }
 
     const flag = countryFlagEmoji(info.code)
@@ -332,10 +343,52 @@ import {
       `${flag ? `${flag} ` : ''}${escapeHtml(info.code)}</span>`
   }
 
-  // Renders one row (built-in or user) in the unified proxy list. A checked
-  // row is part of the proxy chain; `chain` is the ordered list of ids so we
-  // can show each row's position in it. `statuses` holds the last test result,
-  // `geo` the cached host -> country map.
+  // Exit-country cell: the country seen by websites when going through the
+  // proxy (detected via an IP-echo request routed through it). The tooltip
+  // carries the exit IP.
+  const exitCellHtml = (status) => {
+    if (!status || (!status.exitCountry && !status.exitIp)) {
+      return EMPTY_CELL
+    }
+
+    const code = status.exitCountry || ''
+    const flag = code ? countryFlagEmoji(code) : ''
+    const title = [code, status.exitIp].filter(Boolean).join(' · ')
+    const label = code ? `${flag ? `${flag} ` : ''}${escapeHtml(code)}` : 'IP'
+
+    return `<span class="cproxy-country" title="${escapeHtml(title)}">${label}</span>`
+  }
+
+  // Header row of the proxy datagrid: one labelled column per parameter.
+  const renderGridHeader = () => {
+    const col = (key, titleKey) => {
+      const title = titleKey
+        ? ` title="${escapeHtml(i18nGetMessage(titleKey))}"`
+        : ''
+
+      return `<span${title}>${escapeHtml(i18nGetMessage(key))}</span>`
+    }
+
+    return `
+     <div class="cproxy-row cproxy-grid__header" aria-hidden="true">
+       <span></span>
+       ${col('proxyColName')}
+       ${col('proxyColAddress')}
+       ${col('proxyColCountry', 'proxyColCountryTitle')}
+       ${col('proxyColExit', 'proxyColExitTitle')}
+       ${col('proxyColPing', 'proxyColPingTitle')}
+       ${col('proxyColSite', 'proxyColSiteTitle')}
+       ${col('proxyColStatus')}
+       <span></span>
+     </div>`
+  }
+
+  // Renders one row (built-in or user) of the proxy datagrid. A checked row
+  // is part of the proxy chain; `chain` is the ordered list of ids so we can
+  // show each row's position in it. `statuses` holds the last test result,
+  // `geo` the cached host -> country map. Every parameter gets its own
+  // column: country (by proxy host IP), exit country (seen through the
+  // proxy), ping, site-open latency and status.
   const renderProxyRow = (
     { id, name, protocol, uri, builtin = false },
     chain,
@@ -348,9 +401,9 @@ import {
     const order = inChain
       ? `<span class="cproxy-order" title="${escapeHtml(i18nGetMessage('proxyChainPositionTitle'))}">${chainIndex + 1}</span>`
       : ''
-    const country = countryBadgeHtml(uri, geo)
+    const status = statuses[id]
     const badge = builtin
-      ? `<span class="cproxy-badge">${escapeHtml(i18nGetMessage('builtinProxyBadge'))}</span>`
+      ? ` <span class="cproxy-badge">${escapeHtml(i18nGetMessage('builtinProxyBadge'))}</span>`
       : ''
     const deleteBtn = builtin
       ? ''
@@ -366,14 +419,14 @@ import {
        <label class="cproxy-row__main">
          <input type="checkbox" name="chain-proxy" value="${id}" ${inChain ? 'checked' : ''}/>
          ${order}
-         <span class="cproxy-row__text">
-           <span class="cproxy-row__name">${escapeHtml(name)}</span>
-           <span class="cproxy-row__addr">${escapeHtml(protocol)} ${escapeHtml(uri)}</span>
-         </span>
-         ${country}
-         ${badge}
        </label>
-       <span class="cproxy-status-cell">${statusBadgeHtml(statuses[id])}</span>
+       <span class="cproxy-row__name" title="${escapeHtml(name)}">${escapeHtml(name)}${badge}</span>
+       <span class="cproxy-row__addr">${escapeHtml(protocol)} ${escapeHtml(uri)}</span>
+       <span class="cproxy-country-cell">${countryBadgeHtml(uri, geo)}</span>
+       <span class="cproxy-exit-cell">${exitCellHtml(status)}</span>
+       <span class="cproxy-ping-cell">${msCellHtml(status && status.ping)}</span>
+       <span class="cproxy-site-cell">${msCellHtml(status && status.alive ? status.latency : null)}</span>
+       <span class="cproxy-status-cell">${statusBadgeHtml(status)}</span>
        <div class="cproxy-row__actions">
          <button type="button" class="cproxy-icon-btn cproxy-copy"
                  data-id="${id}" title="${escapeHtml(i18nGetMessage('shareProxyButton'))}">
@@ -430,7 +483,7 @@ import {
       html += renderProxyRow(proxy, chain, statuses, geo)
     }
 
-    customProxyList.innerHTML = html
+    customProxyList.innerHTML = html ? renderGridHeader() + html : ''
     if (proxyCount) {
       proxyCount.textContent = proxies.length > 0
         ? `${proxies.length} ${i18nGetMessage('proxiesCountSuffix')}`
@@ -566,11 +619,13 @@ import {
     return list
   }
 
-  const rowStatusCell = (id) => {
+  const rowCell = (id, cellClass) => {
     return customProxyList.querySelector(
-      `.cproxy-row[data-id="${id}"] .cproxy-status-cell`,
+      `.cproxy-row[data-id="${id}"] .${cellClass}`,
     )
   }
+
+  const rowStatusCell = (id) => rowCell(id, 'cproxy-status-cell')
 
   // Removes a row from the list immediately (used to drop dead proxies on the
   // fly during a check, without waiting for a full re-render).
@@ -591,18 +646,28 @@ import {
     }
   }
 
+  // Live-updates every measured column of a row from a fresh test result:
+  // status, ping, site-open latency and exit country.
   const setRowStatus = (id, status) => {
-    const cell = rowStatusCell(id)
+    const statusCell = rowStatusCell(id)
 
-    if (!cell) {
+    if (!statusCell) {
       return
     }
-    if (status.alive) {
-      cell.innerHTML =
-        `<span class="cproxy-status cproxy-status--alive">${status.latency} ${i18nGetMessage('proxyLatencyUnit')}</span>`
-    } else {
-      cell.innerHTML =
-        `<span class="cproxy-status cproxy-status--dead">${i18nGetMessage('proxyStatusDead')}</span>`
+    statusCell.innerHTML = statusBadgeHtml(status)
+
+    const pingCell = rowCell(id, 'cproxy-ping-cell')
+    const siteCell = rowCell(id, 'cproxy-site-cell')
+    const exitCell = rowCell(id, 'cproxy-exit-cell')
+
+    if (pingCell) {
+      pingCell.innerHTML = msCellHtml(status.ping)
+    }
+    if (siteCell) {
+      siteCell.innerHTML = msCellHtml(status.alive ? status.latency : null)
+    }
+    if (exitCell) {
+      exitCell.innerHTML = exitCellHtml(status)
     }
   }
 

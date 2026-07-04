@@ -492,32 +492,74 @@ a {
   word-break: break-all;
 }
 
-/* Unified custom proxy list (built-in + user) */
+/* Unified custom proxy datagrid (built-in + user): one column per
+   parameter — chain, name, address, country, exit country, ping, site-open
+   latency, status, actions. Scrolls horizontally when it doesn't fit. */
+#proxyListBody {
+  overflow-x: auto;
+}
+
 .custom-proxy-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  border: 1px solid #e0ddd8;
+  border-radius: 8px;
+  background: #fff;
+  min-width: max-content;
 }
 
 .custom-proxy-list:empty {
   display: none;
+  border: 0;
 }
 
 .cproxy-row {
-  display: flex;
+  display: grid;
+  grid-template-columns:
+    40px minmax(120px, 1.3fr) minmax(150px, 1.6fr)
+    56px 56px 64px 64px 96px max-content;
   align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
-  border: 1px solid #e0ddd8;
-  border-radius: 8px;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 1px solid #e0ddd8;
   background: #fff;
+  min-width: 720px;
+}
+
+.cproxy-row:first-child {
+  border-radius: 8px 8px 0 0;
+}
+
+.cproxy-row:last-child {
+  border-bottom: 0;
+  border-radius: 0 0 8px 8px;
+}
+
+.cproxy-grid__header {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6d675f;
+  background: #f4f1ec;
+  white-space: nowrap;
+}
+
+.cproxy-country-cell,
+.cproxy-exit-cell,
+.cproxy-ping-cell,
+.cproxy-site-cell {
+  font-size: 12px;
+  color: #3b332b;
+  white-space: nowrap;
+}
+
+.cproxy-cell--empty {
+  color: #b6b0a7;
 }
 
 .cproxy-row__main {
   display: flex;
   align-items: center;
-  gap: 10px;
-  flex: 1 1 auto;
+  gap: 6px;
   min-width: 0;
   cursor: pointer;
 }
@@ -539,7 +581,7 @@ a {
 
 /* A row that is part of the chain. */
 .cproxy-row--active {
-  border-color: #6c9e2c;
+  box-shadow: inset 3px 0 0 #6c9e2c;
 }
 
 /* The 1-based position of a proxy inside the chain. */
@@ -765,6 +807,9 @@ a {
 .cproxy-row__name {
   font-weight: 600;
   color: #3b332b;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .cproxy-row__addr {

@@ -122,6 +122,9 @@
   "copyButton": {
     "message": "Скопіювати"
   },
+  "copyDomainsButton": {
+    "message": "Скопіювати список"
+  },
   "countryAUTO": {
     "message": "Визначити автоматично"
   },
@@ -510,6 +513,39 @@
   "proxyChainPositionTitle": {
     "message": "Позиція в ланцюжку"
   },
+  "proxyColAddress": {
+    "message": "Адреса"
+  },
+  "proxyColCountry": {
+    "message": "Країна"
+  },
+  "proxyColCountryTitle": {
+    "message": "Країна проксі-сервера (за його IP-адресою)"
+  },
+  "proxyColExit": {
+    "message": "Вихід"
+  },
+  "proxyColExitTitle": {
+    "message": "Країна, яку бачать сайти при заході через цей проксі (перевіряється IP-echo сервісом через проксі)"
+  },
+  "proxyColName": {
+    "message": "Назва"
+  },
+  "proxyColPing": {
+    "message": "Пінг"
+  },
+  "proxyColPingTitle": {
+    "message": "Час відгуку самого проксі-сервера"
+  },
+  "proxyColSite": {
+    "message": "Сайт"
+  },
+  "proxyColSiteTitle": {
+    "message": "Час відкриття тестового сайту через проксі"
+  },
+  "proxyColStatus": {
+    "message": "Статус"
+  },
   "proxyConnectionIssuesMessage": {
     "message": "Виявлено проблему з мережею. Будь ласка, зверніться в чат підтримки і розкажіть нам про проблему, ми постараємося її вирішити →"
   },
@@ -557,6 +593,9 @@
   },
   "proxySourcesUseProxyLabel": {
     "message": "Завантажувати через активну проксі"
+  },
+  "proxyStatusAlive": {
+    "message": "працює"
   },
   "proxyStatusAliveShort": {
     "message": "робочих"

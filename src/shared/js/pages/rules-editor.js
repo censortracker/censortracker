@@ -14,6 +14,7 @@ import CodeMirror from 'codemirror'
   const search = document.getElementById('search')
   const textarea = document.getElementById('textarea')
   const saveChangesButton = document.getElementById('saveChanges')
+  const copyListButton = document.getElementById('copyList')
   const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)')
 
   const editor = CodeMirror.fromTextArea(
@@ -87,6 +88,31 @@ import CodeMirror from 'codemirror'
       .then(({ customProxiedDomains }) => {
         editor.setValue(customProxiedDomains.join('\n'))
       })
+  }
+
+  // Copies the whole domain list (as shown in the editor, one per line) to
+  // the clipboard, so it can be shared or backed up.
+  if (copyListButton) {
+    copyListButton.addEventListener('click', async (event) => {
+      const content = editor.getValue().trim()
+
+      try {
+        await navigator.clipboard.writeText(content)
+      } catch (error) {
+        // Fall back to the legacy path when the async Clipboard API is
+        // unavailable (e.g. no focus): select the underlying textarea.
+        editor.execCommand('selectAll')
+        document.execCommand('copy')
+      }
+
+      copyListButton.querySelector('.btn__text').textContent =
+        i18nGetMessage('proxyCopied')
+
+      setTimeout(() => {
+        copyListButton.querySelector('.btn__text').textContent =
+          i18nGetMessage('copyDomainsButton')
+      }, 1000)
+    })
   }
 
   const popup = document.getElementById('popup')

@@ -56,7 +56,22 @@ export const handleOnAlarm = async ({ name }) => {
   }
 }
 
+// The warm-up ping only needs to keep the proxy connection fresh, so firing
+// it on every single page load is wasted traffic: one ping per minute is
+// plenty (the PING alarm still covers long-idle periods). The timestamp lives
+// in memory, so after a service-worker restart the first navigation simply
+// pings again — which is exactly what we want.
+const PING_THROTTLE_MS = 60 * 1000
+let lastPingAt = 0
+
 export const handleBeforeRequest = async (_details) => {
+  const now = Date.now()
+
+  if (now - lastPingAt < PING_THROTTLE_MS) {
+    return
+  }
+  lastPingAt = now
+
   await ProxyManager.ping()
   await ProxyManager.requestIncognitoAccess()
 }

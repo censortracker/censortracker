@@ -332,17 +332,25 @@ export const synchronize = async ({
   if (Object.keys(config).length > 0) {
     const { proxyUrl, ignoreUrl, registryUrl, specifics } = config
 
+    // The three fetches hit independent endpoints and write disjoint storage
+    // keys, so they run in parallel: the whole sync takes as long as the
+    // slowest fetch instead of the sum of all of them. Each helper handles
+    // its own errors, so Promise.all can never reject here.
+    const syncTasks = []
+
     if (syncIgnore) {
-      await fetchIgnore({ ignoreUrl })
+      syncTasks.push(fetchIgnore({ ignoreUrl }))
     }
 
     if (syncProxy) {
-      await fetchProxy({ proxyUrl })
+      syncTasks.push(fetchProxy({ proxyUrl }))
     }
 
     if (syncRegistry) {
-      await fetchRegistry({ registryUrl, specifics })
+      syncTasks.push(fetchRegistry({ registryUrl, specifics }))
     }
+
+    await Promise.all(syncTasks)
   } else {
     await browser.storage.local.set({ backendIsIntermittent: true })
 

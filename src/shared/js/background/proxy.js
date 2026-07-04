@@ -907,37 +907,41 @@ class ProxyManager {
   }
 
   /**
-   * Removes every proxy whose last check marked it dead. Falls back to a still
-   * working proxy (or disables custom proxying) if a removed one was active.
-   * @returns {Promise<{removed: number}>}
+   * Removes several proxies at once in a single pass over storage (list,
+   * statuses, chain), instead of a full read-modify-write round-trip per
+   * proxy. Nothing races and no removal is lost.
+   * @param {Iterable<string>} ids - Ids of the proxies to remove.
+   * @returns {Promise<number>} How many proxies were actually removed.
    */
-  async removeDeadCustomProxies () {
-    const customProxies = await this.getCustomProxies()
-    const statuses = await this.getProxyStatuses()
-    const deadIds = new Set(
-      customProxies
-        .filter((proxy) => {
-          const status = statuses[proxy.id]
-
-          return status && status.alive === false
-        })
-        .map((proxy) => proxy.id),
-    )
+  async removeCustomProxiesByIds (ids) {
+    const deadIds = new Set(ids)
 
     if (deadIds.size === 0) {
-      return { removed: 0 }
+      return 0
     }
 
-    // Remove every dead proxy in a single atomic pass (list, statuses, chain)
-    // so nothing races and no removal is lost.
+    const customProxies = await this.getCustomProxies()
     const remaining = customProxies.filter((proxy) => !deadIds.has(proxy.id))
+    const removed = customProxies.length - remaining.length
+
+    if (removed === 0) {
+      return 0
+    }
 
     await browser.storage.local.set({ customProxies: remaining })
 
+    const statuses = await this.getProxyStatuses()
+    let statusesDirty = false
+
     for (const id of deadIds) {
-      delete statuses[id]
+      if (id in statuses) {
+        delete statuses[id]
+        statusesDirty = true
+      }
     }
-    await browser.storage.local.set({ proxyStatuses: statuses })
+    if (statusesDirty) {
+      await browser.storage.local.set({ proxyStatuses: statuses })
+    }
 
     const chain = await this.getProxyChain()
     const nextChain = chain.filter((id) => !deadIds.has(id))
@@ -946,7 +950,26 @@ class ProxyManager {
       await this.setProxyChain(nextChain)
     }
 
-    return { removed: deadIds.size }
+    return removed
+  }
+
+  /**
+   * Removes every proxy whose last check marked it dead. Falls back to a still
+   * working proxy (or disables custom proxying) if a removed one was active.
+   * @returns {Promise<{removed: number}>}
+   */
+  async removeDeadCustomProxies () {
+    const customProxies = await this.getCustomProxies()
+    const statuses = await this.getProxyStatuses()
+    const deadIds = customProxies
+      .filter((proxy) => {
+        const status = statuses[proxy.id]
+
+        return status && status.alive === false
+      })
+      .map((proxy) => proxy.id)
+
+    return { removed: await this.removeCustomProxiesByIds(deadIds) }
   }
 
   // ---------------------------------------------------------------------------
@@ -1128,15 +1151,19 @@ class ProxyManager {
       // Bound the work so a long list can't outlive the service worker.
       const toTest = added.slice(0, 40)
       const results = await this.testProxies(toTest, { timeout: 5000 })
+      const deadIds = []
 
       for (const proxy of toTest) {
         if (results[proxy.id] && results[proxy.id].alive) {
           alive += 1
         } else {
-          await this.deleteCustomProxy(proxy.id)
-          removed += 1
+          deadIds.push(proxy.id)
         }
       }
+
+      // Batch-remove the dead ones: deleting one by one costs several storage
+      // round-trips per proxy, which adds up fast on a big fetched list.
+      removed = await this.removeCustomProxiesByIds(deadIds)
       await this.sortProxiesByLatency()
     }
 

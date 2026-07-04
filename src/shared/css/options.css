@@ -111,6 +111,30 @@ a {
   width: 640px;
 }
 
+/* Wide variant for data-heavy pages (proxy datagrid, domain editors): use
+   the whole viewport instead of the phone-ish fixed column. */
+.main-page--wide {
+  max-width: none;
+  width: min(1500px, 96vw);
+}
+
+.main-page--wide .main-page__info,
+.main-page--wide .main-page__info.main-page__info-proxy_options {
+  width: 100%;
+  max-width: none;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* Extra breathing room between the proxy-all toggle and its neighbours. */
+.proxy-all-traffic {
+  margin: 14px 0 4px;
+}
+
+.proxy-all-traffic__hint {
+  margin: 6px 0 4px;
+}
+
 .main-container__after-install .main-page__info {
   margin-right: 44px;
 }
@@ -505,7 +529,9 @@ a {
   border: 1px solid #e0ddd8;
   border-radius: 8px;
   background: #fff;
-  min-width: max-content;
+  /* Wide enough for every fixed column; the parent scrolls horizontally
+     when the viewport is narrower. */
+  min-width: 880px;
 }
 
 .custom-proxy-list:empty {
@@ -515,15 +541,16 @@ a {
 
 .cproxy-row {
   display: grid;
+  /* Every track is either fixed or fr — identical resolution in every row
+     (a max-content track would size per-row and skew the columns). */
   grid-template-columns:
     40px minmax(120px, 1.3fr) minmax(150px, 1.6fr)
-    56px 56px 64px 64px 96px max-content;
+    56px 56px 64px 64px 96px 132px;
   align-items: center;
   gap: 8px;
   padding: 8px 12px;
   border-bottom: 1px solid #e0ddd8;
   background: #fff;
-  min-width: 720px;
 }
 
 .cproxy-row:first-child {

@@ -45,13 +45,16 @@ export const PROXY_TEST_POOL = [
  * exit country even when the proxy's entry host is hosted elsewhere. Each
  * lives on its own host (mirroring PROXY_TEST_POOL) so parallel batches can
  * route one echo endpoint through each candidate in a single PAC. The first
- * one (Cloudflare trace) reports the country directly (`loc=XX`); the plain
- * ones return only the IP, which is then geo-resolved via the cached geo-IP
- * lookup.
+ * one (Cloudflare trace on 1.1.1.1) reports the country directly (`loc=XX`);
+ * the plain ones return only the IP, which is then geo-resolved via the
+ * cached geo-IP lookup.
+ *
+ * IMPORTANT: these hosts must stay DISJOINT from the PROXY_TEST_POOL hosts —
+ * a shared host would make one candidate's exit check ride another
+ * candidate's PAC route in the same parallel batch.
  */
 export const EXIT_INFO_POOL = [
-  'https://www.cloudflare.com/cdn-cgi/trace',
-  'https://checkip.amazonaws.com',
+  'https://1.1.1.1/cdn-cgi/trace',
   'https://api.ipify.org',
   'https://icanhazip.com',
   'https://ifconfig.me/ip',
@@ -60,6 +63,7 @@ export const EXIT_INFO_POOL = [
   'https://ipinfo.io/ip',
   'https://ipecho.net/plain',
   'https://myexternalip.com/raw',
+  'https://api.seeip.org',
 ]
 
 /**

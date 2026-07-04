@@ -1,3 +1,22 @@
+# 20.7.1
+
+- Added a "Proxy ALL traffic" toggle in the proxy settings: route every
+  website (except local/private destinations) through the selected proxies,
+  not only the blocked ones. Previously, selecting a proxy only affected
+  websites from the registry/custom list, so any other site kept connecting
+  directly by design — which looked like "proxying doesn't work" when
+  checked against an IP-echo site
+- When that toggle is on, an empty blocklist no longer disables proxying,
+  and the settings page now warns when the proxying list is empty
+- Fixed the proxy datagrid columns drifting out of alignment (the actions
+  column was content-sized, so every row resolved its own grid)
+- The proxy settings and domain list pages now use the full window width
+  instead of a fixed phone-sized column
+- Fixed the exit-country check of two proxies in one parallel batch
+  colliding on a shared host (www.cloudflare.com / checkip.amazonaws.com
+  were used by both the connectivity pool and the IP-echo pool)
+
+
 # 20.7.0
 
 - The proxy list is now a datagrid with one column per parameter: name,

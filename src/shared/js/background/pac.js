@@ -24,6 +24,9 @@ import { proxyToPacToken } from './utilities'
  *   destination host -> PAC return token. Used by the proxy checker to send
  *   specific connectivity endpoints through the proxy being tested, while every
  *   other request keeps following the rules below (so browsing never drops).
+ * @param proxyAll {boolean} - When true, EVERY destination (except local and
+ *   private ones) is sent through the selected proxies, not only the domains
+ *   from the registry/custom list.
  * @returns {string} PAC script
  */
 export const getPacScript = (
@@ -33,6 +36,7 @@ export const getPacScript = (
     proxyServerURI,
     proxyServerProtocol,
     testRoutes = null,
+    proxyAll = false,
   },
 ) => {
   // Sort domains alphabetically to make binary search work.
@@ -84,6 +88,9 @@ export const getPacScript = (
       // Proxy-checker test routes: full host -> PAC return token.
       var testRoutes = ${testRoutesLiteral};
 
+      // When true, everything except local/private destinations is proxied.
+      var proxyAll = ${proxyAll ? 'true' : 'false'};
+
       function isHostBlocked(array, target) {
         var left = 0;
         var right = array.length - 1;
@@ -126,6 +133,23 @@ export const getPacScript = (
         // currently being tested.
         if (testRoutes && Object.prototype.hasOwnProperty.call(testRoutes, host)) {
           return testRoutes[host];
+        }
+
+        // Proxy-all mode: send everything through the selected proxies,
+        // keeping local and private destinations direct.
+        if (proxyAll) {
+          if (
+            isPlainHostName(host) ||
+            shExpMatch(host, 'localhost') ||
+            shExpMatch(host, '*.local') ||
+            shExpMatch(host, '127.*') ||
+            shExpMatch(host, '10.*') ||
+            shExpMatch(host, '192.168.*') ||
+            host === '::1'
+          ) {
+            return 'DIRECT';
+          }
+          return pickProxy(host);
         }
 
         // Make domain second-level.

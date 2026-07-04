@@ -137,11 +137,13 @@ class ProxyManager {
     let proxies = []
     let proxyServerURI = ''
     let proxyServerProtocol = 'HTTPS'
+    let proxyAll = false
 
     // Preserve the user's real routing only when proxying is actually on;
     // otherwise non-test traffic must stay DIRECT just like it is now.
     if (enabled) {
       domains = await registry.getDomains()
+      proxyAll = await this.getProxyAllTraffic()
       const chain = await this.getChainProxyConfigs()
 
       if (chain.length > 0) {
@@ -160,6 +162,7 @@ class ProxyManager {
       proxyServerURI,
       proxyServerProtocol,
       testRoutes,
+      proxyAll,
     })
 
     await this.applyPacData(pacData, { mandatory: true })
@@ -167,8 +170,11 @@ class ProxyManager {
 
   async setProxy () {
     const domains = await registry.getDomains()
+    const proxyAll = await this.getProxyAllTraffic()
 
-    if (domains.length === 0) {
+    // Without proxy-all, an empty domain list means there is nothing to
+    // route; with it, the PAC proxies everything regardless of the list.
+    if (domains.length === 0 && !proxyAll) {
       console.error('No domains to proxy, aborting...')
       await this.removeProxy()
       return false
@@ -182,7 +188,7 @@ class ProxyManager {
     let pacData
 
     if (chain.length > 0) {
-      pacData = getPacScript({ domains, proxies: chain })
+      pacData = getPacScript({ domains, proxies: chain, proxyAll })
     } else {
       const {
         proxyServerURI,
@@ -193,6 +199,7 @@ class ProxyManager {
         domains,
         proxyServerURI,
         proxyServerProtocol,
+        proxyAll,
       })
     }
 
@@ -455,6 +462,22 @@ class ProxyManager {
       await browser.storage.local.set({ customProxies })
     }
     return added
+  }
+
+  /**
+   * When true, the PAC routes ALL traffic (except local/private hosts)
+   * through the selected proxies, not only the blocked/custom domains.
+   * @returns {Promise<boolean>}
+   */
+  async getProxyAllTraffic () {
+    const { proxyAllTraffic } =
+      await browser.storage.local.get({ proxyAllTraffic: false })
+
+    return proxyAllTraffic
+  }
+
+  async setProxyAllTraffic (value) {
+    await browser.storage.local.set({ proxyAllTraffic: !!value })
   }
 
   async getAutoDeleteDeadProxies () {

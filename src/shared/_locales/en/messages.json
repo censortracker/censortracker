@@ -212,6 +212,9 @@
   "emptyFileError": {
     "message": "The file is empty or damaged. Please check it and try again."
   },
+  "emptyRegistryHint": {
+    "message": "The list of websites to proxy is empty, so no traffic is proxied right now. Enable proxying all traffic above, or add websites to the proxying list."
+  },
   "exportSettingsDesc": {
     "message": "You can export your settings to a JSON file and import them later."
   },
@@ -506,6 +509,9 @@
   },
   "proxiesImportedLabel": {
     "message": "Imported"
+  },
+  "proxyAllTrafficLabel": {
+    "message": "Proxy ALL traffic through the selected proxies (not only blocked websites)"
   },
   "proxyChainHint": {
     "message": "Tick several proxies to use them together — traffic is spread across them (each site through one, the rest as automatic fallback). Note: browsers cannot tunnel through several proxies in sequence (multi-hop)."

@@ -9,6 +9,7 @@ import {
 } from 'Background/geoip'
 import ProxyClient from 'Background/localproxy'
 import ProxyManager from 'Background/proxy'
+import Registry from 'Background/registry'
 import * as server from 'Background/server'
 import {
   formatProxyForShare,
@@ -57,6 +58,8 @@ import {
   const pasteProxiesButton = document.getElementById('pasteProxiesButton')
   const copyAllProxiesButton = document.getElementById('copyAllProxiesButton')
   const autoDeleteDeadProxiesCheckbox = document.getElementById('autoDeleteDeadProxies')
+  const proxyAllTrafficCheckbox = document.getElementById('proxyAllTraffic')
+  const emptyRegistryHint = document.getElementById('emptyRegistryHint')
   const proxyImportMsg = document.getElementById('proxyImportMsg')
   const proxySourcesEnabledCheckbox = document.getElementById('proxySourcesEnabled')
   const proxySourcesListTextarea = document.getElementById('proxySourcesList')
@@ -1094,6 +1097,34 @@ import {
       )
     })
   }
+
+  // Warns that nothing is being proxied: the domain list is empty and
+  // proxy-all mode is off, so every request goes DIRECT by design.
+  const refreshEmptyRegistryHint = async () => {
+    if (!emptyRegistryHint) {
+      return
+    }
+
+    const empty = await Registry.isEmpty()
+    const proxyAll = await ProxyManager.getProxyAllTraffic()
+
+    emptyRegistryHint.hidden = !empty || proxyAll
+  }
+
+  // "Proxy ALL traffic" toggle: reroutes everything (except local/private
+  // destinations) through the selected proxies, not only blocked websites.
+  if (proxyAllTrafficCheckbox) {
+    proxyAllTrafficCheckbox.checked = await ProxyManager.getProxyAllTraffic()
+    proxyAllTrafficCheckbox.addEventListener('change', async () => {
+      await ProxyManager.setProxyAllTraffic(proxyAllTrafficCheckbox.checked)
+
+      if (await ProxyManager.isEnabled()) {
+        await ProxyManager.setProxy()
+      }
+      await refreshEmptyRegistryHint()
+    })
+  }
+  await refreshEmptyRegistryHint()
 
   // Reads the source controls into a settings payload (without `enabled`).
   const readSourcesControls = () => ({

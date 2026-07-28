@@ -685,7 +685,7 @@ a {
 }
 
 .block_custom-local-proxy {
-  display: none;
+  display: block;
 }
 
 .block_custom-local-proxy .censortracker-not-found__wrapper {

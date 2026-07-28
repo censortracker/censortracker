@@ -30,6 +30,11 @@ const contentSecurityPolicy = {
 
 const webWorkerConfig = {
   mode: NODE_ENV,
+  // Without this webpack defaults to «eval» in development, and the
+  // background service worker dies on start with an EvalError: the
+  // extension CSP allows no 'unsafe-eval'. Nothing in the background
+  // runs then — no alarms, no storage listeners, no proxy teardown.
+  devtool: 'inline-nosources-cheap-module-source-map',
   target: isFirefox ? 'webworker' : 'web',
   entry: {
     background: './src/shared/js/background/background.js',

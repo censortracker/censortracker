@@ -1,6 +1,7 @@
 import 'notyf/notyf.min.css'
 
 import browser from 'Background/browser-api'
+import { ProxyMode } from 'Background/constants'
 import ProxyClient from 'Background/localproxy'
 import ProxyManager from 'Background/proxy'
 import * as server from 'Background/server'
@@ -8,6 +9,11 @@ import { i18nGetMessage } from 'Background/utilities'
 import { Notyf } from 'notyf'
 
 (async () => {
+  // How often the page asks the Amnezia client whether it's still up.
+  // The background script does the same once a minute, this is only to
+  // keep the open page in sync with the app without a noticeable delay.
+  const LOCAL_PROXY_POLL_INTERVAL = 3000
+
   const notyf = new Notyf({
     duration: 2500,
     position: {
@@ -18,7 +24,6 @@ import { Notyf } from 'notyf'
     ripple: false,
   })
 
-  const proxyingEnabled = await ProxyManager.isEnabled()
   const proxyIsDown = document.getElementById('proxyIsDown')
   const proxyServerInput = document.getElementById('proxyServerInput')
   const saveCustomProxyButton = document.getElementById('saveCustomProxyButton')
@@ -35,18 +40,134 @@ import { Notyf } from 'notyf'
   const localProxyOptions = document.getElementById('localProxyOptions')
   const moreAboutAmneziaPremiumLink = document.getElementById('moreAboutAmneziaPremiumLink')
   const whereToFindAddressLink = document.getElementById('whereToFindAddressLink')
-  const localProxyClientNotFound = document.getElementById('localProxyClientNotFound')
-  const localProxyLinksContainer = document.getElementById('localProxyLinksContainer')
 
-  ProxyManager.isEnabled().then((isEnabled) => {
-    useProxyCheckbox.checked = isEnabled
+  const radioButtons = {
+    [ProxyMode.DEFAULT]: useDefaultProxyRadioButton,
+    [ProxyMode.CUSTOM]: useCustomProxyRadioButton,
+    [ProxyMode.LOCAL]: useLocalProxyRadioButton,
+  }
+
+  // Whether the extension is currently proxying through the Amnezia
+  // local proxy. Used to show the success message on connect only.
+  let localProxyConnected = false
+  let localProxyPollTimeoutId = null
+  // Opening the page is not a connection event, so the state it starts
+  // with is the baseline and never produces a success message.
+  let initialized = false
+  let pendingRefresh = Promise.resolve()
+
+  const readState = async () => {
+    const [mode, enabled, defaultProxyAlive] = await Promise.all([
+      ProxyManager.getMode(),
+      ProxyManager.isEnabled(),
+      ProxyManager.alive(),
+    ])
+    const { localProxyAlive } =
+      await browser.storage.local.get({ localProxyAlive: false })
+
+    return { mode, enabled, defaultProxyAlive, localProxyAlive }
+  }
+
+  const render = ({ mode, enabled, defaultProxyAlive, localProxyAlive }) => {
+    const radioButton = radioButtons[mode]
+
+    if (radioButton) {
+      radioButton.checked = true
+    }
+
+    useProxyCheckbox.checked = enabled
+    proxyCustomOptions.hidden = !enabled
+
+    // The warning about the failing proxy server is only about ours.
+    proxyIsDown.hidden = !(
+      enabled && mode === ProxyMode.DEFAULT && !defaultProxyAlive
+    )
+
+    proxyOptionsInputs.classList.toggle('hidden', mode !== ProxyMode.CUSTOM)
+    localProxyOptions.classList.toggle(
+      'hidden',
+      !(enabled && mode === ProxyMode.LOCAL && !localProxyAlive),
+    )
+  }
+
+  const applyState = async () => {
+    const state = await readState()
+
+    render(state)
+
+    const connected = (
+      state.enabled &&
+      state.mode === ProxyMode.LOCAL &&
+      state.localProxyAlive
+    )
+
+    if (initialized && connected && !localProxyConnected) {
+      notyf.success(i18nGetMessage('successLocalProxySet'))
+    }
+
+    localProxyConnected = connected
+  }
+
+  /**
+   * Renders the current state and notifies the user once the connection
+   * to the Amnezia local proxy is established, no matter what caused it:
+   * the checkbox, the radio button or «Local system proxy» in AmneziaVPN.
+   * Calls are queued, otherwise two changes arriving at once could both
+   * observe the same «not connected yet» state and notify twice.
+   */
+  const refresh = () => {
+    pendingRefresh = pendingRefresh
+      .then(applyState)
+      .catch((error) => {
+        console.error(`Failed to render proxy options: ${error}`)
+      })
+
+    return pendingRefresh
+  }
+
+  const pollLocalProxy = () => {
+    if (localProxyPollTimeoutId !== null) {
+      clearTimeout(localProxyPollTimeoutId)
+      localProxyPollTimeoutId = null
+    }
+
+    // Nothing to poll for while the page is in the background.
+    if (document.visibilityState !== 'visible') {
+      return
+    }
+
+    localProxyPollTimeoutId = setTimeout(async () => {
+      localProxyPollTimeoutId = null
+      // Returns immediately unless the local proxy is the current mode.
+      // Changes are picked up by the storage listener below.
+      await ProxyManager.syncLocalProxy()
+      pollLocalProxy()
+    }, LOCAL_PROXY_POLL_INTERVAL)
+  }
+
+  browser.storage.onChanged.addListener(async (changes, areaName) => {
+    if (areaName && areaName !== 'local') {
+      return
+    }
+
+    const changed = [
+      'proxyMode',
+      'useProxy',
+      'localProxyAlive',
+      'proxyIsAlive',
+    ].some((key) => key in changes)
+
+    if (changed) {
+      await refresh()
+    }
   })
 
-  ProxyManager.alive().then((alive) => {
-    proxyIsDown.hidden = alive
+  document.addEventListener('visibilitychange', async () => {
+    if (document.visibilityState === 'visible') {
+      await refresh()
+    }
+    pollLocalProxy()
   })
-
-  proxyCustomOptions.hidden = !proxyingEnabled
 
   moreAboutAmneziaPremiumLink.addEventListener('click', (e) => {
     e.preventDefault()
@@ -58,94 +179,14 @@ import { Notyf } from 'notyf'
     window.open(i18nGetMessage('whereToFindAddressLink'), '_blank')
   })
 
-  const {
-    useOwnProxy,
-    useLocalProxy,
-    customProxyProtocol,
-    customProxyServerURI,
-  } = await browser.storage.local.get([
-    'useOwnProxy',
-    'useLocalProxy',
-    'customProxyProtocol',
-    'customProxyServerURI',
-  ])
-
-  const showLocalProxyWarning = () => {
-    localProxyOptions.style.display = 'block'
-    localProxyClientNotFound.classList.remove('hidden')
-    localProxyLinksContainer.classList.remove('hidden')
-  }
-
-  const hideLocalProxyWarning = () => {
-    localProxyOptions.style.display = 'none'
-    localProxyClientNotFound.classList.add('hidden')
-    localProxyLinksContainer.classList.add('hidden')
-  }
-
-  const syncLocalProxyState = async ({
-    showSuccess = false,
-    startIfMissing = false,
-    forceApplyProxy = false,
-  } = {}) => {
-    if (!useLocalProxyRadioButton.checked) {
-      return false
-    }
-
-    const isProxyEnabled = await ProxyManager.isEnabled()
-
-    proxyOptionsInputs.classList.add('hidden')
-
-    if (!isProxyEnabled) {
-      return false
-    }
-
-    let proxyPort = await ProxyClient.ping(2500)
-
-    if (!proxyPort && startIfMissing) {
-      console.log('Trying to start AmneziaVPN in local proxy mode...')
-      proxyPort = await ProxyClient.start(3000)
-    }
-
-    if (!proxyPort) {
-      showLocalProxyWarning()
-      return false
-    }
-
-    const nextLocalProxyURI = `127.0.0.1:${proxyPort || '10808'}`
-    const { localProxyURI } = await browser.storage.local.get(['localProxyURI'])
-    const shouldApplyProxy =
-      forceApplyProxy || localProxyURI !== nextLocalProxyURI
-
-    hideLocalProxyWarning()
-    await ProxyClient.setLocalProxyURI(proxyPort)
-    await ProxyManager.removeCustomProxy()
-    await browser.storage.local.set({ useLocalProxy: true })
-
-    if (shouldApplyProxy) {
-      await ProxyManager.setProxy()
-    }
-
-    if (showSuccess) {
-      notyf.success(i18nGetMessage('successLocalProxySet'))
-    }
-
-    return true
-  }
+  const { customProxyProtocol, customProxyServerURI } =
+    await browser.storage.local.get([
+      'customProxyProtocol',
+      'customProxyServerURI',
+    ])
 
   if (customProxyProtocol) {
     currentProxyProtocol.textContent = customProxyProtocol
-  }
-
-  if (useLocalProxy) {
-    useLocalProxyRadioButton.checked = true
-    await syncLocalProxyState({ forceApplyProxy: true })
-  } else if (useOwnProxy) {
-    proxyOptionsInputs.hidden = false
-    useCustomProxyRadioButton.checked = true
-    proxyOptionsInputs.classList.remove('hidden')
-  } else {
-    proxyOptionsInputs.classList.add('hidden')
-    useDefaultProxyRadioButton.checked = true
   }
 
   if (customProxyServerURI) {
@@ -181,17 +222,8 @@ import { Notyf } from 'notyf'
       return
     }
 
-    const { useLocalProxy: usingLocalProxy } =
-      await browser.storage.local.get({ useLocalProxy: false })
-
-    await ProxyManager.removeLocalProxy()
-
-    if (usingLocalProxy) {
-      await ProxyClient.stop()
-    }
-
+    await ProxyManager.setMode(ProxyMode.CUSTOM)
     await browser.storage.local.set({
-      useOwnProxy: true,
       customProxyProtocol: proxyProtocol,
       customProxyServerURI: customProxyServer,
     })
@@ -205,40 +237,36 @@ import { Notyf } from 'notyf'
     }))
 
     console.log(`Proxy host changed to: ${customProxyServer}`)
+    await refresh()
   })
 
   proxyCustomOptionsRadioGroup.addEventListener('change', async (event) => {
-    const value = event.target.value
+    const mode = event.target.value
+    const previousMode = await ProxyManager.getMode()
 
-    if (value === 'default') {
-      proxyOptionsInputs.classList.add('hidden')
-      proxyServerInput.value = ''
-      hideLocalProxyWarning()
-      await server.synchronize({ syncRegistry: true, syncProxy: true })
-      await ProxyManager.removeCustomProxy()
-      await ProxyManager.removeLocalProxy()
-      await ProxyManager.setProxy()
+    // The mode is stored before anything else: a local proxy check which
+    // is already in flight re-reads it before writing and bails out, so
+    // it can no longer overwrite the mode the user has just chosen.
+    await ProxyManager.setMode(mode)
+    // Everything below may take seconds, the UI shouldn't wait for it.
+    await refresh()
+
+    if (previousMode === ProxyMode.LOCAL && mode !== ProxyMode.LOCAL) {
       await ProxyClient.stop()
-      notyf.success(i18nGetMessage('successDefaultProxySet'))
-    } else if (value === 'custom') {
-      proxyOptionsInputs.classList.remove('hidden')
-      hideLocalProxyWarning()
-    } else if (value === 'local') {
-      await syncLocalProxyState({
-        showSuccess: true,
-        startIfMissing: true,
-        forceApplyProxy: true,
-      })
     }
-  })
 
-  ProxyManager.controlledByThisExtension()
-    .then(async (controlledByThisExtension) => {
-      if (controlledByThisExtension) {
-        useProxyCheckbox.checked = await ProxyManager.isEnabled()
-        useProxyCheckbox.disabled = false
-      }
-    })
+    if (mode === ProxyMode.DEFAULT) {
+      await server.synchronize({ syncRegistry: true, syncProxy: true })
+      await ProxyManager.setProxy()
+      notyf.success(i18nGetMessage('successDefaultProxySet'))
+    } else if (mode === ProxyMode.CUSTOM) {
+      await ProxyManager.setProxy()
+    } else if (mode === ProxyMode.LOCAL) {
+      await ProxyManager.syncLocalProxy({ startIfMissing: true })
+    }
+
+    await refresh()
+  })
 
   ProxyManager.controlledByOtherExtensions()
     .then(async (controlledByOtherExtensions) => {
@@ -250,23 +278,18 @@ import { Notyf } from 'notyf'
     })
 
   useProxyCheckbox.addEventListener('change', async () => {
-    if (useProxyCheckbox.checked) {
-      proxyCustomOptions.hidden = false
-      useProxyCheckbox.checked = true
-      await ProxyManager.enableProxy()
-
-      if (useLocalProxyRadioButton.checked) {
-        await syncLocalProxyState({
-          showSuccess: true,
-          startIfMissing: true,
-          forceApplyProxy: true,
-        })
-      }
-    } else {
-      proxyCustomOptions.hidden = true
-      useProxyCheckbox.checked = false
-      proxyIsDown.hidden = true
+    if (!useProxyCheckbox.checked) {
       await ProxyManager.disableProxy()
+      await refresh()
+      return
+    }
+
+    await ProxyManager.enableProxy()
+    await refresh()
+
+    if (await ProxyManager.getMode() === ProxyMode.LOCAL) {
+      await ProxyManager.syncLocalProxy({ startIfMissing: true })
+      await refresh()
     }
   }, false)
 
@@ -291,7 +314,11 @@ import { Notyf } from 'notyf'
     })
   }
 
-  setInterval(() => {
-    syncLocalProxyState()
-  }, 5000)
+  await refresh()
+  // Whatever is stored may be outdated, so the local proxy is checked
+  // once before the state of the page is taken as the baseline.
+  await ProxyManager.syncLocalProxy()
+  await refresh()
+  initialized = true
+  pollLocalProxy()
 })()

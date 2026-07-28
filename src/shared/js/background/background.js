@@ -6,6 +6,7 @@ import {
   handleOnAlarm,
   handleOnUpdateAvailable,
   handleProxyError,
+  handleProxyModeChange,
   handleStartup,
   handleStorageChanged,
   handleTabCreate,
@@ -27,6 +28,7 @@ browser.tabs.onCreated.addListener(handleTabCreate)
 browser.storage.onChanged.addListener(handleStorageChanged)
 browser.storage.onChanged.addListener(handleIgnoredHostsChange)
 browser.storage.onChanged.addListener(handleCustomProxiedDomainsChange)
+browser.storage.onChanged.addListener(handleProxyModeChange)
 
 if (browser.isFirefox) {
   // Firefox-specific handlers
@@ -62,5 +64,8 @@ if (browser.isFirefox) {
       ],
     },
   )
+  // «onProxyError» only fires for errors of the PAC script itself, so
+  // failures to reach the proxy server are taken from webNavigation.
   browser.proxy.onProxyError.addListener(handleProxyError)
+  browser.webNavigation.onErrorOccurred.addListener(handleProxyError)
 }

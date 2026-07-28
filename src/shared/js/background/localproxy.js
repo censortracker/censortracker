@@ -1,5 +1,4 @@
 import axios from 'axios'
-import browser from 'Background/browser-api'
 
 /**
  * ProxyClient handles API communication with the proxy server.
@@ -122,18 +121,6 @@ class ProxyClient {
       return proxyPort
     }
     return null
-  }
-
-  async setLocalProxyURI (port) {
-    let defaultPort = '10808'
-
-    if (port && port !== defaultPort) {
-      defaultPort = port
-    }
-
-    const localProxyURI = `127.0.0.1:${defaultPort}`
-
-    await browser.storage.local.set({ localProxyURI })
   }
 }
 

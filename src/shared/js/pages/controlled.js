@@ -43,6 +43,7 @@ import { translateDocument } from 'Background/utilities'
       const currentPage = window.location.pathname.split('/').pop()
 
       await ProxyManager.takeControl()
+      await ProxyManager.enableProxy()
       await ProxyManager.setProxy()
 
       if (currentPage.startsWith('controlled')) {

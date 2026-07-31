@@ -135,6 +135,7 @@ import Settings from 'Background/settings'
     await Settings.enableNotifications()
     await Settings.disableParentalControl()
     await ProxyManager.removeBadProxies()
+    await ProxyManager.enableProxy()
     await ProxyManager.setProxy()
     await ProxyManager.ping()
     console.warn('Censor Tracker has been reset to default settings.')
@@ -174,8 +175,12 @@ import Settings from 'Background/settings'
       window.location.reload()
 
       await server.synchronize({ syncRegistry: true })
-      await ProxyManager.setProxy()
-      await ProxyManager.ping()
+      if (await ProxyManager.isEnabled()) {
+        await ProxyManager.setProxy()
+        await ProxyManager.ping()
+      } else {
+        await ProxyManager.removeProxy()
+      }
     })
     fileReader.readAsText(file)
   })

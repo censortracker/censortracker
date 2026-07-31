@@ -12,6 +12,15 @@ class Task {
   }
 
   /**
+   * Cancels a scheduled task.
+   * @param name Task name.
+   */
+  async cancel (name) {
+    await browser.alarms.clear(name)
+    console.log(`Task.cancel('${name}')`)
+  }
+
+  /**
    * Creates a task and schedules it to run every X minutes.
    * @param tasks Array of tasks.
    * @type tasks Array<{ name: string, minutes: number }>.

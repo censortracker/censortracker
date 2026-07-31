@@ -1,10 +1,72 @@
 import { getPacScript } from 'Background/pac'
 
 import browser from './browser-api'
+import { ProxyMode } from './constants'
+import ProxyClient from './localproxy'
 import registry from './registry'
+import Settings from './settings'
 
 class ProxyManager {
+  /**
+   * Returns the currently selected proxy mode.
+   * Installations made before «proxyMode» was introduced keep the mode
+   * in a pair of booleans, so the value is derived once and stored.
+   * @returns {Promise<string>} One of the ProxyMode values.
+   */
+  async getMode () {
+    const {
+      proxyMode,
+      useOwnProxy,
+      useLocalProxy,
+    } = await browser.storage.local.get({
+      proxyMode: '',
+      useOwnProxy: false,
+      useLocalProxy: false,
+    })
+
+    if (proxyMode) {
+      return proxyMode
+    }
+
+    let mode = ProxyMode.DEFAULT
+
+    if (useLocalProxy) {
+      mode = ProxyMode.LOCAL
+    } else if (useOwnProxy) {
+      mode = ProxyMode.CUSTOM
+    }
+
+    await browser.storage.local.set({ proxyMode: mode })
+    console.log(`Proxy mode migrated to: ${mode}`)
+    return mode
+  }
+
+  /**
+   * Switches the proxy mode. Modes are mutually exclusive, so everything
+   * is written at once to make sure no one ever observes two active modes.
+   * @param mode One of the ProxyMode values.
+   */
+  async setMode (mode) {
+    await browser.storage.local.set({
+      proxyMode: mode,
+      useOwnProxy: mode === ProxyMode.CUSTOM,
+      useLocalProxy: mode === ProxyMode.LOCAL,
+    })
+
+    if (mode !== ProxyMode.LOCAL) {
+      await browser.storage.local.remove(['localProxyURI', 'localProxyAlive'])
+      // Leaving the local proxy behind stops it on purpose, so a check
+      // which is already in flight must not report that as a failure.
+      await browser.storage.local.set({ localProxyStoppedByUs: true })
+    } else {
+      await browser.storage.local.remove(['localProxyStoppedByUs'])
+    }
+
+    console.warn(`Proxy mode changed to: ${mode}`)
+  }
+
   async getProxyingRules () {
+    const mode = await this.getMode()
     const {
       proxyServerURI,
       customProxyProtocol,
@@ -17,8 +79,8 @@ class ProxyManager {
       'localProxyURI',
     ])
 
-    // When Censor Tracker Proxy Server is used
-    if (localProxyURI) {
+    // When local proxy server is used
+    if (mode === ProxyMode.LOCAL && localProxyURI) {
       console.log(`Using local proxy server: ${localProxyURI}`)
       return {
         proxyServerProtocol: 'SOCKS5',
@@ -27,6 +89,7 @@ class ProxyManager {
     }
 
     if (
+      mode === ProxyMode.CUSTOM &&
       customProxyServerURI &&
       customProxyProtocol
     ) {
@@ -39,6 +102,112 @@ class ProxyManager {
       proxyServerProtocol: 'HTTPS',
       proxyServerURI,
     }
+  }
+
+  /**
+   * Checks whether the Amnezia local proxy is up and keeps the stored
+   * state in sync with it. Never enables proxying on its own and never
+   * writes anything if the user switched the mode while we were waiting
+   * for the local proxy client to respond.
+   * @param startIfMissing Ask the client to start the proxy if it's down.
+   * @returns {Promise<{alive: boolean}>} State of the local proxy.
+   */
+  async syncLocalProxy ({ startIfMissing = false } = {}) {
+    if (!await this.usingLocalProxy()) {
+      return { alive: false }
+    }
+
+    let proxyPort = await ProxyClient.ping(2500)
+
+    if (!proxyPort && startIfMissing) {
+      console.log('Trying to start AmneziaVPN in local proxy mode...')
+      proxyPort = await ProxyClient.start(3000)
+    }
+
+    if (!await this.usingLocalProxy()) {
+      console.warn('Proxy mode changed while checking the local proxy.')
+      return { alive: false }
+    }
+
+    // Nothing is written unless it really changed: pages listen to these
+    // keys to render themselves and to report a new connection.
+    const { localProxyURI, localProxyAlive } =
+      await browser.storage.local.get({
+        localProxyURI: '',
+        localProxyAlive: false,
+      })
+
+    // The local proxy is gone. Proxying has to stop, otherwise every
+    // domain from the list keeps being routed to a port nobody listens
+    // on and stays unreachable until the user repairs it by hand.
+    if (!proxyPort) {
+      if (localProxyAlive) {
+        await browser.storage.local.set({ localProxyAlive: false })
+        await this.removeProxy()
+        await this.notifyLocalProxyIsDown()
+      }
+      return { alive: false }
+    }
+
+    const nextLocalProxyURI = `127.0.0.1:${proxyPort}`
+    const portChanged = localProxyURI !== nextLocalProxyURI
+
+    if (portChanged) {
+      await browser.storage.local.set({ localProxyURI: nextLocalProxyURI })
+    }
+
+    if (!localProxyAlive) {
+      await browser.storage.local.set({ localProxyAlive: true })
+    }
+
+    // The PAC is removed while the local proxy is down, so proxying has
+    // to be restored once it's back, even on the very same port.
+    if (portChanged || !localProxyAlive) {
+      await this.setProxy()
+    }
+    return { alive: true }
+  }
+
+  /**
+   * Tells the user that proxying is suspended, so that websites silently
+   * going direct doesn't look like the extension is doing nothing.
+   * @returns {Promise<void>}
+   */
+  async notifyLocalProxyIsDown () {
+    const { showNotifications, localProxyStoppedByUs } =
+      await browser.storage.local.get({
+        showNotifications: true,
+        localProxyStoppedByUs: false,
+      })
+
+    if (!showNotifications || localProxyStoppedByUs) {
+      return
+    }
+
+    try {
+      await browser.notifications.create('localProxyIsDown', {
+        type: 'basic',
+        title: Settings.getName(),
+        iconUrl: Settings.getDangerIcon(),
+        message: browser.i18n.getMessage('localProxyNotFoundDesc'),
+      })
+    } catch (error) {
+      console.error(`Failed to notify about the local proxy: ${error}`)
+    }
+  }
+
+  /**
+   * Tells whether the local proxy is the mode the user asked for
+   * and proxying is turned on.
+   * @returns {Promise<boolean>}
+   */
+  async usingLocalProxy () {
+    const mode = await this.getMode()
+
+    if (mode !== ProxyMode.LOCAL) {
+      return false
+    }
+    return this.isEnabled()
   }
 
   async requestIncognitoAccess () {
@@ -67,6 +236,27 @@ class ProxyManager {
 
   async setProxy () {
     const config = {}
+
+    // Applying the PAC must never turn proxying on behalf of the user:
+    // «useProxy» is a user setting, callers enable it explicitly.
+    if (!await this.isEnabled()) {
+      console.warn('Proxying is disabled by user, skipping PAC setup...')
+      return false
+    }
+
+    // The browser must never be pointed to a local proxy which is known
+    // to be down, no matter which of the callers is asking for the PAC.
+    if (await this.getMode() === ProxyMode.LOCAL) {
+      const { localProxyAlive } =
+        await browser.storage.local.get({ localProxyAlive: false })
+
+      if (!localProxyAlive) {
+        console.warn('Local proxy is down, proxying is suspended...')
+        await this.removeProxy()
+        return false
+      }
+    }
+
     const domains = await registry.getDomains()
 
     if (domains.length === 0) {
@@ -79,6 +269,14 @@ class ProxyManager {
       proxyServerURI,
       proxyServerProtocol,
     } = await this.getProxyingRules()
+
+    // Without a proxy server the PAC would send every domain from the
+    // list to a host named «undefined» and break them all.
+    if (!proxyServerURI) {
+      console.error('No proxy server to use, aborting...')
+      await this.removeProxy()
+      return false
+    }
 
     const pacData = getPacScript({
       domains,
@@ -108,7 +306,19 @@ class ProxyManager {
 
     try {
       await browser.proxy.settings.set(config)
-      await this.enableProxy()
+
+      // Setting a proxy resolves even when another extension owns the
+      // setting, in which case nothing was applied at all.
+      if (!await this.controlledByThisExtension()) {
+        console.error('Proxy settings are controlled by another extension!')
+        await browser.storage.local.set({ proxyControlledByOther: true })
+        return false
+      }
+
+      await browser.storage.local.set({
+        proxyIsAlive: true,
+        proxyControlledByOther: false,
+      })
       await this.grantIncognitoAccess()
       console.warn('PAC has been set successfully!')
       return true
@@ -121,8 +331,14 @@ class ProxyManager {
   }
 
   async removeProxy () {
-    await browser.proxy.settings.clear({})
-    console.warn('Proxy settings removed.')
+    try {
+      await browser.proxy.settings.clear({})
+      console.warn('Proxy settings removed.')
+      return true
+    } catch (error) {
+      console.error(`Proxy settings could not be removed: ${error}`)
+      return false
+    }
   }
 
   async alive () {
@@ -133,9 +349,9 @@ class ProxyManager {
   }
 
   async ping () {
-    const usingCustomProxy = await this.usingCustomProxy()
+    const mode = await this.getMode()
 
-    if (!usingCustomProxy) {
+    if (mode === ProxyMode.DEFAULT) {
       const { proxyPingURI } = await browser.storage.local.get('proxyPingURI')
 
       fetch(`https://${proxyPingURI}`, {
@@ -153,15 +369,6 @@ class ProxyManager {
     }
   }
 
-  async usingCustomProxy () {
-    const { useOwnProxy } =
-      await browser.storage.local.get({
-        useOwnProxy: false,
-      })
-
-    return useOwnProxy
-  }
-
   async isEnabled () {
     const { useProxy } = await browser.storage.local.get({ useProxy: true })
 
@@ -176,6 +383,10 @@ class ProxyManager {
   async disableProxy () {
     console.warn('Proxying disabled.')
     await browser.storage.local.set({ useProxy: false })
+    // Tearing the PAC down right here, in the same context which turned
+    // proxying off: relying on the storage listener in the background
+    // means the browser keeps proxying whenever it doesn't run.
+    await this.removeProxy()
   }
 
   async controlledByOtherExtensions () {
@@ -200,21 +411,6 @@ class ProxyManager {
         await browser.management.setEnabled(id, false)
       }
     }
-  }
-
-  async removeCustomProxy () {
-    await browser.storage.local.set({
-      useOwnProxy: false,
-    })
-    await browser.storage.local.remove([
-      'customProxyProtocol',
-      'customProxyServerURI',
-    ])
-  }
-
-  async removeLocalProxy () {
-    await browser.storage.local.set({ useLocalProxy: false })
-    await browser.storage.local.remove(['localProxyURI'])
   }
 
   async removeBadProxies () {

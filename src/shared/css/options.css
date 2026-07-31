@@ -685,20 +685,39 @@ a {
 }
 
 .block_custom-local-proxy {
-  display: none;
+  display: block;
 }
 
 .block_custom-local-proxy .censortracker-not-found__wrapper {
   background-color: #f7eded;
-  padding: 20px 30px;
+  padding: 20px 30px 20px 20px;
   border-radius: 4px;
-  margin-left: 35px;
-  margin-bottom: 30px;
-  margin-top: 15px;
+  margin-left: 15px;
   font-size: 14px;
   font-weight: 400;
 }
 
+.block_custom-local-proxy .local-proxy-links-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+  gap: 10px;
+  margin-left: 19px;
+  margin-top: 15px;
+}
+
+.block_custom-local-proxy .local-proxy-link {
+  color: #5173d3;
+  font-size: 14px;
+  font-weight: normal !important;
+  text-decoration: none;
+  line-height: 20px;
+}
+
+.block_custom-local-proxy .local-proxy-link:hover {
+  text-decoration: underline;
+}
 
 .block_custom-local-proxy .btn__censortracker-not-found {
   margin-top: 15px;
@@ -1338,8 +1357,15 @@ kbd {
   }
 
   .block_custom-local-proxy .censortracker-not-found__wrapper {
-    border: 1px solid #f7eded;
-    background-color: transparent;
+    background-color: #242728;
+  }
+
+  .block_custom-local-proxy .local-proxy-link {
+    color: #8ba3d7;
+  }
+
+  .block_custom-local-proxy .local-proxy-link:hover {
+    color: #a3b8e3;
   }
 
   .block_custom-local-proxy .btn__censortracker-not-found {
@@ -1596,7 +1622,7 @@ kbd {
 }
 
 #localProxyOptions {
-  padding: 20px;
+  padding: 2px 20px 18px 20px;
 }
 
 #localProxyOptions p {
@@ -1710,5 +1736,103 @@ kbd {
   to {
     transform: scale(1.5);
     opacity: 0.3;
+  }
+}
+
+/* Notyf Notifications - Custom Dark Theme Styling */
+.notyf {
+  z-index: 999999;
+}
+
+.notyf__toast {
+  border-radius: 6px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  padding: 16px 20px;
+  max-width: 400px;
+  font-family: 'IBM Plex Sans', Arial, sans-serif;
+}
+
+.notyf__wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.notyf__message {
+  font-size: 13px;
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+/* Success notification - Green accent matching extension */
+.notyf--success .notyf__toast {
+  background-color: #2B3B2D;
+  border-left: 4px solid #6c9e2c;
+}
+
+.notyf--success .notyf__message {
+  color: #F4F1F1;
+}
+
+.notyf--success .notyf__icon {
+  background-color: #6c9e2c;
+}
+
+/* Error notification - Red accent */
+.notyf--error .notyf__toast {
+  background-color: #3d2626;
+  border-left: 4px solid #ff6b6b;
+}
+
+.notyf--error .notyf__message {
+  color: #F4F1F1;
+}
+
+.notyf--error .notyf__icon {
+  background-color: #ff6b6b;
+}
+
+/* Dismiss button styling */
+.notyf__dismiss {
+  opacity: 0.6;
+}
+
+.notyf__dismiss:hover {
+  opacity: 1;
+}
+
+.notyf__dismiss-btn {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  color: #F4F1F1;
+  font-size: 16px;
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Ripple effect removed for cleaner look */
+.notyf__ripple {
+  display: none;
+}
+
+/* Dark mode specific adjustments */
+@media (prefers-color-scheme: dark) {
+  .notyf--success .notyf__toast {
+    background-color: #2B3B2D;
+    border-left: 4px solid #6c9e2c;
+  }
+
+  .notyf--error .notyf__toast {
+    background-color: #3d2626;
+    border-left: 4px solid #ff6b6b;
+  }
+
+  .notyf__message {
+    color: #F4F1F1;
   }
 }

@@ -1,4 +1,5 @@
 import browser from 'Background/browser-api'
+import { ProxyMode } from 'Background/constants'
 import Ignore from 'Background/ignore'
 import ProxyManager from 'Background/proxy'
 import Registry from 'Background/registry'
@@ -39,6 +40,16 @@ import { extractHostnameFromUrl, i18nGetMessage, isI2PUrl, isOnionUrl, isValidUR
   const openOptionsPage = document.getElementById('openOptionsPage')
   const highlightOptionsIcon = document.getElementById('highlightOptionsIcon')
   const popupLocalProxyName = document.getElementById('popupLocalProxyName')
+  const proxyMode = await ProxyManager.getMode()
+
+  browser.storage.onChanged.addListener(({ proxyMode: changedProxyMode }) => {
+    if (
+      changedProxyMode &&
+      changedProxyMode.newValue !== changedProxyMode.oldValue
+    ) {
+      window.location.reload()
+    }
+  })
 
   document.addEventListener('click', async (event) => {
     const targetId = event.target.id
@@ -50,6 +61,7 @@ import { extractHostnameFromUrl, i18nGetMessage, isI2PUrl, isOnionUrl, isValidUR
       window.location.reload()
     } else if (targetId === 'disableExtension') {
       await Settings.disableExtension()
+      await ProxyManager.removeProxy()
       mainPageInfoBlocks.forEach((element) => {
         element.hidden = true
       })
@@ -104,7 +116,6 @@ import { extractHostnameFromUrl, i18nGetMessage, isI2PUrl, isOnionUrl, isValidUR
     'proxyServerURI',
     'customProxyServerURI',
     'proxyLastFetchTs',
-    'localProxyURI',
     'activeProxyConfigName',
   ]).then(async (
     {
@@ -112,16 +123,21 @@ import { extractHostnameFromUrl, i18nGetMessage, isI2PUrl, isOnionUrl, isValidUR
       proxyServerURI,
       customProxyServerURI,
       proxyLastFetchTs,
-      localProxyURI,
       activeProxyConfigName,
     },
   ) => {
-    if (localProxyURI) {
+    if (proxyMode === ProxyMode.LOCAL) {
+      const { localProxyAlive } =
+        await browser.storage.local.get({ localProxyAlive: false })
+
       proxyingInfo.hidden = true
       popupProxyStatusOk.hidden = true
-      popupProxyStatusError.hidden = true
-      popupLocalProxyName.textContent = activeProxyConfigName
-      popupLocalProxyName.hidden = false
+      popupProxyStatusError.hidden = localProxyAlive
+      popupLocalProxyName.hidden = !localProxyAlive
+
+      if (localProxyAlive && activeProxyConfigName) {
+        popupLocalProxyName.textContent = activeProxyConfigName
+      }
       return
     }
 
@@ -134,7 +150,7 @@ import { extractHostnameFromUrl, i18nGetMessage, isI2PUrl, isOnionUrl, isValidUR
       const popupYourRegion = i18nGetMessage('popupYourRegion')
       const popupTotalBlocked = i18nGetMessage('popupTotalBlocked')
 
-      if (customProxyServerURI) {
+      if (proxyMode === ProxyMode.CUSTOM && customProxyServerURI) {
         proxyingDetailsText.innerHTML = `<code><b>${popupServerMsg}:</b> — </code>`
       } else {
         proxyingDetailsText.innerHTML = `<code><b>${popupServerMsg}:</b> ${proxyServerId}</code>`
@@ -174,10 +190,8 @@ import { extractHostnameFromUrl, i18nGetMessage, isI2PUrl, isOnionUrl, isValidUR
       const extensionEnabled = await Settings.extensionEnabled()
       const currentHostname = extractHostnameFromUrl(currentUrl)
 
-      const { useLocalProxy } = await browser.storage.local.get(['useLocalProxy'])
-
       ProxyManager.alive().then((alive) => {
-        if (useLocalProxy) {
+        if (proxyMode === ProxyMode.LOCAL) {
           return
         }
 
@@ -240,13 +254,11 @@ import { extractHostnameFromUrl, i18nGetMessage, isI2PUrl, isOnionUrl, isValidUR
               siteActionDescription.textContent = i18nGetMessage(
                 'siteActionAlwaysDesc',
               )
-              Ignore.remove(currentUrl).then((removed) => {
-                if (removed) {
-                  Registry.add(currentUrl).then((added) => {
-                    console.warn('Proxying strategy was changed to: "always"')
-                  })
-                }
-              })
+              // Awaited: setProxy() below builds the PAC out of the very
+              // list which is being written here.
+              await Ignore.remove(currentUrl)
+              await Registry.add(currentUrl)
+              console.warn('Proxying strategy was changed to: "always"')
             } else if (event.target.value === 'never') {
               await Ignore.add(currentUrl)
               await Registry.remove(currentUrl)
@@ -261,7 +273,9 @@ import { extractHostnameFromUrl, i18nGetMessage, isI2PUrl, isOnionUrl, isValidUR
               )
             }
 
-            await ProxyManager.setProxy()
+            if (await ProxyManager.isEnabled()) {
+              await ProxyManager.setProxy()
+            }
 
             event.target.checked = true
           })

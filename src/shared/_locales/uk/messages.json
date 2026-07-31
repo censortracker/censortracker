@@ -143,8 +143,17 @@
   "doneDescription": {
     "message": "Операцію виконано успішно."
   },
-  "downloadAppButton": {
-    "message": "Завантажити"
+  "moreAboutLocalProxy": {
+    "message": "Детальніше про Amnezia Premium VPN"
+  },
+  "whereToFindAddressAndPort": {
+    "message": "Де знайти адресу і порт"
+  },
+  "moreAboutAmneziaPremium": {
+    "message": "https://amnezia.org/premium"
+  },
+  "whereToFindAddressLink": {
+    "message": "https://docs.amnezia.org/documentation/instructions/local-proxy/"
   },
   "emptyFileError": {
     "message": "Файл порожній або пошкоджений. Будь ласка, перевірте його та спробуйте ще раз."
@@ -238,9 +247,6 @@
   "installedPageTitle": {
     "message": "Censor Tracker Встановлено"
   },
-  "invalidLocalProxyConfig": {
-    "message": "Некоректна конфігурація. Будь ласка, вкажіть Subscription URL, сумісний із V2ray (V2RayNG, SingBox, Nekoray тощо), Clash або ClashMeta, або пряму адресу сервера у форматі vless://, vmess:// чи ss://."
-  },
   "invalidURLError": {
     "message": "Неправильний URL. Будь ласка, перевірте його і спробуйте ще раз."
   },
@@ -254,19 +260,7 @@
     "message": "Додаток Censor Tracker Proxy не знайдено на пристрої. Скачайте та запустіть додаток Censor Tracker Proxy. Він працюватиме у фоновому режимі та підтримуватиме роботу локального проксі."
   },
   "localProxyNotFoundDesc": {
-    "message": "Завантажте або запустіть додаток Censor Tracker Proxy. Він працюватиме у фоновому режимі та підтримуватиме локальний проксі."
-  },
-  "localProxyNotFoundTitle": {
-    "message": "Додаток Censor Tracker Proxy не знайдено"
-  },
-  "localProxyPopupCode": {
-    "message": "URL-адреса підписки або конфігурація"
-  },
-  "localProxyPopupText": {
-    "message": "Рекомендуємо <img src=\"../images/settings/rks_logo.svg\" width=\"86\" height=\"auto\" alt=\"Логотип RKS VPN\"/> як локальний проксі. <a href=\"https://storage.googleapis.com/plmrph/ee5cbfj0\" target=\"_blank\">Детальніше</a>"
-  },
-  "localProxyPopupTitle": {
-    "message": "Додавання проксі"
+    "message": "Не вдалося підключитися до локального проксі Amnezia Premium. Відкрийте AmneziaVPN і увімкніть «Локальний системний проксі»."
   },
   "localRegistryUpdated": {
     "message": "Локальну базу даних заблокованих сайтів оновлено!"
@@ -311,7 +305,7 @@
     "message": "Мій список сайтів, які проксуються"
   },
   "optionsProxyDesc": {
-    "message": "Якщо сайт заблокований - Censor Tracker надасть до нього доступ. Вимкніть це налаштування, якщо ви користуєтеся іншим сервісом для обходу блокувань (наприклад, VPN), щоб збільшити швидкість з'єднання."
+    "message": "Якщо сайт заблокований, CensorTracker зможе відкрити його через проксі. Виберіть джерело проксі нижче. Для більшої швидкості можна використовувати свій проксі або локальний проксі Amnezia Premium."
   },
   "optionsProxyPageTitle": {
     "message": "Налаштування Проксі"
@@ -462,21 +456,6 @@
   "resetToDefaultTitle": {
     "message": "Скинути всі налаштування"
   },
-  "rksVPNBannerDesc": {
-    "message": "Рекомендуємо RKS VPN як локальний проксі"
-  },
-  "rksVPNBannerDesc2": {
-    "message": "Стійкий до блокувань VPN"
-  },
-  "rksVPNBannerDesc3": {
-    "message": "Працює як у Censor Tracker, так і в інших додатках, зокрема на телефоні"
-  },
-  "rksVPNBannerLinkTitle": {
-    "message": "Детальніше про RKS VPN"
-  },
-  "rksVPNBannerTitle": {
-    "message": "Додайте проксі для підключення"
-  },
   "saveChanges": {
     "message": "Зберегти зміни"
   },
@@ -550,7 +529,7 @@
     "message": "Проксі Censor Tracker"
   },
   "useLocalProxy": {
-    "message": "Використовувати локальний проксі"
+    "message": "Місцевий проксі-сервер Amnezia Premium."
   },
   "useOwnProxy": {
     "message": "Свій проксі"
@@ -572,5 +551,36 @@
   },
   "youCanCloseThisWindow": {
     "message": "Можна закрити це вікно"
+  },
+  "errorProxyAddressEmpty": {
+    "message": "Будь ласка, введіть коректну адресу проксі-сервера"
+  },
+  "errorProxyPortMissing": {
+    "message": "Адреса проксі повинна включати номер порту (наприклад, hostname:8080)"
+  },
+  "errorProxyPortInvalid": {
+    "message": "Недопустимий номер порту: $PORT$. Порт повинен бути в діапазоні від 1 до 65535",
+    "placeholders": {
+      "port": {
+        "content": "$1"
+      }
+    }
+  },
+  "successProxySaved": {
+    "message": "Налаштування проксі успішно збережено! Використовується $PROTOCOL$ проксі на $SERVER$",
+    "placeholders": {
+      "protocol": {
+        "content": "$1"
+      },
+      "server": {
+        "content": "$2"
+      }
+    }
+  },
+  "successDefaultProxySet": {
+    "message": "Успішно перемкнено на стандартний проксі!"
+  },
+  "successLocalProxySet": {
+    "message": "З'єднання встановлено! Використовується локальний проксі Amnezia Premium."
   }
 }

@@ -143,8 +143,17 @@
   "doneDescription": {
     "message": "Операция выполнена успешно."
   },
-  "downloadAppButton": {
-    "message": "Скачать"
+  "moreAboutLocalProxy": {
+    "message": "Подробнее об Amnezia Premium VPN"
+  },
+  "whereToFindAddressAndPort": {
+    "message": "Где найти адрес и порт"
+  },
+  "moreAboutAmneziaPremium": {
+    "message": "https://storage.googleapis.com/amnezia/amnezia.org?m-path=premium"
+  },
+  "whereToFindAddressLink": {
+    "message": "https://storage.googleapis.com/amnezia/docs?m-path=/documentation/instructions/local-proxy"
   },
   "emptyFileError": {
     "message": "Файл пустой или повреждён. Пожалуйста, проверьте его и попробуйте ещё раз."
@@ -238,9 +247,6 @@
   "installedPageTitle": {
     "message": "Censor Tracker Установлен"
   },
-  "invalidLocalProxyConfig": {
-    "message": "Некорректная конфигурация. Пожалуйста, укажите Subscription URL, совместимый с V2ray (V2RayNG, SingBox, Nekoray и др.), Clash или ClashMeta, либо ссылку на конкретный сервер в формате vless://, vmess:// или ss://."
-  },
   "invalidURLError": {
     "message": "Неверный URL. Пожалуйста, проверьте его и попробуйте ещё раз."
   },
@@ -254,19 +260,7 @@
     "message": "Приложение Censor Tracker Proxy не найдено на устройстве. Скачайте и запустите приложение Censor Tracker Proxy. Оно будет работать в фоновом режиме и поддерживать работу локального прокси."
   },
   "localProxyNotFoundDesc": {
-    "message": "Скачайте или запустите приложение Censor Tracker Proxy. Оно будет работать в фоне и поддерживать работу локального прокси."
-  },
-  "localProxyNotFoundTitle": {
-    "message": "Приложение Censor Tracker Proxy не найдено"
-  },
-  "localProxyPopupCode": {
-    "message": "URL Подписки или конфигурация"
-  },
-  "localProxyPopupText": {
-    "message": "Рекомендуем <img src=\"../images/settings/rks_logo.svg\" width=\"86\" height=\"auto\" alt=\"RKS VPN logo\"/> в качестве локального прокси. <a href=\"https://storage.googleapis.com/plmrph/ee5cbfj0\" target=\"_blank\">Подробнее</a>"
-  },
-  "localProxyPopupTitle": {
-    "message": "Добавление прокси"
+    "message": "Не удалось подключиться к локальному прокси Amnezia Premium. Откройте AmneziaVPN и включите «Локальный системный прокси»"
   },
   "localRegistryUpdated": {
     "message": "Локальная база данных заблокированных сайтов обновлена!"
@@ -311,7 +305,7 @@
     "message": "Мой список проксируемых сайтов"
   },
   "optionsProxyDesc": {
-    "message": "Если сайт заблокирован - Censor Tracker предоставит к нему доступ. Отключите эту настройку, если вы пользуетесь другим сервисом для обхода блокировок (например, VPN), чтобы увеличить скорость соединения."
+    "message": "Если сайт заблокирован, CensorTracker сможет открыть его через прокси. Выберите источник прокси ниже. Для большей скорости можно использовать свой прокси или локальный прокси Amnezia Premium."
   },
   "optionsProxyPageTitle": {
     "message": "Настройки Прокси"
@@ -462,21 +456,6 @@
   "resetToDefaultTitle": {
     "message": "Сбросить все настройки"
   },
-  "rksVPNBannerDesc": {
-    "message": "Рекомендуем RKS VPN в качестве локального прокси"
-  },
-  "rksVPNBannerDesc2": {
-    "message": "Устойчивый к блокировкам VPN"
-  },
-  "rksVPNBannerDesc3": {
-    "message": "Работает как в Censor Tracker, так и в других приложениях, в том числе на телефоне"
-  },
-  "rksVPNBannerLinkTitle": {
-    "message": "Подробнее об RKS VPN"
-  },
-  "rksVPNBannerTitle": {
-    "message": "Добавьте прокси для подключения"
-  },
   "saveChanges": {
     "message": "Сохранить изменения"
   },
@@ -550,7 +529,7 @@
     "message": "Прокси Censor Tracker"
   },
   "useLocalProxy": {
-    "message": "Использовать локальный прокси"
+    "message": "Локальный прокси Amnezia Premium"
   },
   "useOwnProxy": {
     "message": "Свой прокси"
@@ -572,5 +551,36 @@
   },
   "youCanCloseThisWindow": {
     "message": "Можно закрыть это окно"
+  },
+  "errorProxyAddressEmpty": {
+    "message": "Пожалуйста, введите корректный адрес прокси-сервера"
+  },
+  "errorProxyPortMissing": {
+    "message": "Адрес прокси должен включать номер порта (например, hostname:8080)"
+  },
+  "errorProxyPortInvalid": {
+    "message": "Недопустимый номер порта: $PORT$. Порт должен быть в диапазоне от 1 до 65535",
+    "placeholders": {
+      "port": {
+        "content": "$1"
+      }
+    }
+  },
+  "successProxySaved": {
+    "message": "Настройки прокси успешно сохранены! Используется $PROTOCOL$ прокси на $SERVER$",
+    "placeholders": {
+      "protocol": {
+        "content": "$1"
+      },
+      "server": {
+        "content": "$2"
+      }
+    }
+  },
+  "successDefaultProxySet": {
+    "message": "Используется стандартный прокси CensorTracker!"
+  },
+  "successLocalProxySet": {
+    "message": "Соединение установлено! Используется локальный прокси Amnezia Premium."
   }
 }

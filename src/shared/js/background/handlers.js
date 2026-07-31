@@ -1,5 +1,5 @@
 import browser from './browser-api'
-import { TaskType } from './constants'
+import { ProxyMode, TaskType } from './constants'
 import Ignore from './ignore'
 import ProxyManager from './proxy'
 import Registry from './registry'
@@ -49,6 +49,8 @@ export const handleOnAlarm = async ({ name }) => {
       await server.synchronize()
       await ProxyManager.setProxy()
     }
+  } else if (name === TaskType.CHECK_LOCAL_PROXY) {
+    await ProxyManager.syncLocalProxy()
   } else {
     console.warn(`Unknown task: ${name}`)
   }
@@ -61,6 +63,12 @@ export const handleBeforeRequest = async (_details) => {
 
 export const handleStartup = async () => {
   console.groupCollapsed('onStartup')
+
+  await scheduleLocalProxyCheck()
+  // Refreshes «localProxyAlive» before the PAC is built out of it, so
+  // that a proxy which died while the browser was closed is not used.
+  // Does nothing unless the local proxy is the selected mode.
+  await ProxyManager.syncLocalProxy()
 
   const proxyingEnabled = await ProxyManager.isEnabled()
 
@@ -76,17 +84,54 @@ export const handleStartup = async () => {
   console.groupEnd()
 }
 
+/**
+ * Keeps the local proxy watcher running only while the local proxy
+ * is the selected mode, so that localhost is not polled otherwise.
+ * @returns {Promise<void>}
+ */
+export const scheduleLocalProxyCheck = async () => {
+  const mode = await ProxyManager.getMode()
+
+  if (mode === ProxyMode.LOCAL) {
+    await Task.schedule([
+      { name: TaskType.CHECK_LOCAL_PROXY, minutes: 1 },
+    ])
+  } else {
+    await Task.cancel(TaskType.CHECK_LOCAL_PROXY)
+  }
+}
+
+/**
+ * Fired when the user switches between default, custom and local proxy.
+ * @param proxyMode Object describing the change of the «proxyMode» key.
+ * @param _areaName The name of the storage area.
+ */
+export const handleProxyModeChange = async (
+  { proxyMode } = {},
+  _areaName,
+) => {
+  if (!proxyMode || !('newValue' in proxyMode)) {
+    return
+  }
+
+  console.log(`proxyMode: ${proxyMode.oldValue} -> ${proxyMode.newValue}`)
+  await scheduleLocalProxyCheck()
+}
+
+// Both listeners below are awaited from top to bottom on purpose: an
+// async listener which returns before its own chain is done may be cut
+// short by the service worker shutting down, and then the change never
+// reaches the PAC.
 export const handleIgnoredHostsChange = async (
   { ignoredHosts = {} } = {},
   _areaName,
 ) => {
-  if ('newValue' in ignoredHosts) {
-    ProxyManager.isEnabled().then((enabled) => {
-      if (enabled) {
-        ProxyManager.setProxy().then((proxySet) => {
-        })
-      }
-    })
+  if (!('newValue' in ignoredHosts)) {
+    return
+  }
+
+  if (await ProxyManager.isEnabled()) {
+    await ProxyManager.setProxy()
   }
 }
 
@@ -94,15 +139,15 @@ export const handleCustomProxiedDomainsChange = async (
   { customProxiedDomains: { newValue } = {} } = {},
   _areaName,
 ) => {
-  Settings.extensionEnabled().then((enableExtension) => {
-    if (enableExtension && newValue) {
-      ProxyManager.isEnabled().then(async (proxyingEnabled) => {
-        if (proxyingEnabled) {
-          await ProxyManager.setProxy()
-        }
-      })
-    }
-  })
+  if (!newValue) {
+    return
+  }
+
+  const extensionEnabled = await Settings.extensionEnabled()
+
+  if (extensionEnabled && await ProxyManager.isEnabled()) {
+    await ProxyManager.setProxy()
+  }
 }
 
 /**
@@ -114,57 +159,53 @@ export const handleStorageChanged = async (
   { enableExtension, useProxy },
   _areaName,
 ) => {
-  if (enableExtension || useProxy) {
-    if (enableExtension) {
-      const enableExtensionNewValue = enableExtension.newValue
-      const enableExtensionOldValue = enableExtension.oldValue
+  if (!enableExtension && !useProxy) {
+    return
+  }
 
-      console.log(
-        `enableExtension: ${enableExtensionOldValue} -> ${enableExtensionNewValue}`,
-      )
+  if (enableExtension) {
+    const enableExtensionNewValue = enableExtension.newValue
 
-      browser.tabs.query({}).then((tabs) => {
-        for (const { id } of tabs) {
-          if (enableExtensionNewValue) {
-            Settings.setDefaultIcon(id)
-          } else {
-            Settings.setDisableIcon(id)
-          }
+    console.log(
+      `enableExtension: ${enableExtension.oldValue} -> ${enableExtensionNewValue}`,
+    )
+
+    browser.tabs.query({}).then((tabs) => {
+      for (const { id } of tabs) {
+        if (enableExtensionNewValue) {
+          Settings.setDefaultIcon(id)
+        } else {
+          Settings.setDisableIcon(id)
         }
-      })
-
-      if (
-        enableExtensionNewValue === true &&
-        enableExtensionOldValue === false
-      ) {
-        await ProxyManager.setProxy()
       }
+    })
+  }
 
-      if (
-        enableExtensionNewValue === false &&
-        enableExtensionOldValue === true
-      ) {
-        await ProxyManager.disableProxy()
-        await ProxyManager.removeProxy()
-      }
+  const extensionTurnedOff =
+    enableExtension && enableExtension.newValue === false
+  const proxyingTurnedOff = useProxy && useProxy.newValue === false
+
+  // Tearing proxying down must not depend on anything else: whenever
+  // either switch goes off, the browser has to stop using our PAC. Both
+  // may arrive in a single change, hence one branch for the two.
+  if (extensionTurnedOff || proxyingTurnedOff) {
+    if (extensionTurnedOff) {
+      await ProxyManager.disableProxy()
     }
+    await ProxyManager.removeProxy()
+    return
+  }
 
-    if (useProxy && enableExtension === undefined) {
-      const useProxyNewValue = useProxy.newValue
-      const useProxyOldValue = useProxy.oldValue
-      const extensionEnabled = await Settings.extensionEnabled()
+  const turnedOn =
+    (enableExtension && enableExtension.newValue === true) ||
+    (useProxy && useProxy.newValue === true)
 
-      if (extensionEnabled) {
-        if (useProxyNewValue === true && useProxyOldValue === false) {
-          await ProxyManager.setProxy()
-        }
-
-        if (useProxyNewValue === false && useProxyOldValue === true) {
-          await ProxyManager.disableProxy()
-          await ProxyManager.removeProxy()
-        }
-      }
-    }
+  if (
+    turnedOn &&
+    await Settings.extensionEnabled() &&
+    await ProxyManager.isEnabled()
+  ) {
+    await ProxyManager.setProxy()
   }
 }
 
@@ -188,8 +229,16 @@ export const handleInstalled = async ({ reason }) => {
     await Settings.enableNotifications()
 
     await server.synchronize()
-    await ProxyManager.enableProxy()
+
+    // Updating the extension must not turn proxying back on for those
+    // who turned it off: it's a user setting, not an install-time default.
+    if (INSTALLED) {
+      await ProxyManager.enableProxy()
+    }
+
     await ProxyManager.requestIncognitoAccess()
+    await scheduleLocalProxyCheck()
+    await ProxyManager.syncLocalProxy()
     await ProxyManager.setProxy()
     await ProxyManager.ping()
 
@@ -248,10 +297,7 @@ export const handleTabCreate = async (tab) => {
 }
 
 export const handleProxyError = async ({ error }) => {
-  const usingCustomProxy = await ProxyManager.usingCustomProxy()
-
-  // Custom proxy is used, so we don't need to handle this error
-  if (usingCustomProxy) {
+  if (!error) {
     return
   }
 
@@ -260,11 +306,38 @@ export const handleProxyError = async ({ error }) => {
   const proxyErrors = [
     // Firefox
     'NS_ERROR_UNKNOWN_PROXY_HOST',
+    'NS_ERROR_PROXY_CONNECTION_REFUSED',
     // Chrome
+    'ERR_PROXY_CONNECTION_FAILED',
+    'ERR_SOCKS_CONNECTION_FAILED',
+    'ERR_TUNNEL_CONNECTION_FAILED',
+  ]
+
+  // Errors which mean the proxy server itself is unusable and another
+  // one has to be requested. Kept narrow on purpose: a single website
+  // failing must not get our proxy server blacklisted.
+  const unusableProxyErrors = [
+    'NS_ERROR_UNKNOWN_PROXY_HOST',
     'ERR_PROXY_CONNECTION_FAILED',
   ]
 
   if (proxyErrors.includes(error)) {
+    const mode = await ProxyManager.getMode()
+
+    // The Amnezia local proxy is not ours: it either moved to another
+    // port or is gone. Rechecking it either picks up the new port or
+    // removes the PAC, so the very next request goes through.
+    if (mode === ProxyMode.LOCAL) {
+      console.warn(`Local proxy is not reachable (${error}), rechecking...`)
+      await ProxyManager.syncLocalProxy()
+      return
+    }
+
+    // A custom proxy belongs to the user, there's nothing to fail over to.
+    if (mode !== ProxyMode.DEFAULT || !unusableProxyErrors.includes(error)) {
+      return
+    }
+
     const {
       currentProxyServer,
       fallbackProxyInUse,

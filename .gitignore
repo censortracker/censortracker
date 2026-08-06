@@ -120,4 +120,5 @@ key.pem
 dist.crx
 dist/
 releases/
+release-assets/
 mock/

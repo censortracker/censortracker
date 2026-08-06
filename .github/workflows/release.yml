@@ -1,7 +1,13 @@
 name: Release
 
 # Builds the extension for every supported browser engine and attaches the
-# packages to a GitHub Release.
+# packages to a GitHub Release — all in a single job.
+#
+# Everything happens on one runner on purpose: a split build/publish pair has
+# to hand packages over through upload-artifact/download-artifact and a
+# `needs:` edge, which means a transient runner hiccup in the build job leaves
+# the publish job silently `skipped` and no release gets created. One job has
+# one outcome, and re-running it re-runs the whole thing.
 #
 # Firefox note: a raw ZIP is NOT installable in release/stable Firefox — it
 # refuses unsigned add-ons with the misleading error "this add-on appears to
@@ -15,32 +21,23 @@ name: Release
 # ZIP (useful for AMO upload or about:debugging), but signing is skipped.
 #
 # Triggers:
-#   * pushing a tag like `v20.1.0`  -> builds + publishes a release
-#   * manual run (workflow_dispatch) -> builds + uploads artifacts only
+#   * pushing a tag like `v20.1.0`   -> builds + publishes a release
+#   * manual run on a tag            -> same, useful to retry a failed release
+#   * manual run on a branch         -> builds + uploads artifacts only
 
 on:
   push:
     tags:
       - 'v*'
   workflow_dispatch:
-    inputs:
-      release_name:
-        description: 'Optional release name (manual runs only)'
-        required: false
-        default: ''
 
 permissions:
   contents: write
 
 jobs:
-  build:
-    name: Build (${{ matrix.browser }})
+  release:
+    name: Build & publish
     runs-on: ubuntu-latest
-
-    strategy:
-      fail-fast: false
-      matrix:
-        browser: [chrome, firefox]
 
     steps:
       - name: Checkout
@@ -58,33 +55,31 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      - name: Build extension
-        run: npm run build:${{ matrix.browser }}:prod
-
-      - name: Package extension
-        run: npm run release:${{ matrix.browser }}
-
-      - name: Normalize artifact names
+      - name: Build & package every browser
         run: |
-          mkdir -p artifacts
+          set -euo pipefail
           VERSION=$(node -p "require('./package.json').version")
-          for f in releases/${{ matrix.browser }}/*.zip; do
-            [ -e "$f" ] || continue
-            cp "$f" "artifacts/censortracker-${{ matrix.browser }}-v${VERSION}.zip"
+          mkdir -p release-assets
+          for browser in chrome firefox; do
+            npm run "build:${browser}:prod"
+            npm run "release:${browser}"
+            for f in "releases/${browser}"/*.zip; do
+              [ -e "$f" ] || continue
+              cp "$f" "release-assets/censortracker-${browser}-v${VERSION}.zip"
+            done
           done
-          ls -la artifacts
+          ls -la release-assets
 
       # Submit the Firefox build to Mozilla for signing so the released file can
       # actually be installed in stable Firefox. Skipped (without failing the
       # run) when AMO credentials are not configured.
       - name: Sign Firefox add-on (Mozilla, unlisted)
-        if: matrix.browser == 'firefox'
         env:
           WEB_EXT_API_KEY: ${{ secrets.WEB_EXT_API_KEY }}
           WEB_EXT_API_SECRET: ${{ secrets.WEB_EXT_API_SECRET }}
         run: |
-          mkdir -p artifacts
-          if [ -z "$WEB_EXT_API_KEY" ] || [ -z "$WEB_EXT_API_SECRET" ]; then
+          set -euo pipefail
+          if [ -z "${WEB_EXT_API_KEY:-}" ] || [ -z "${WEB_EXT_API_SECRET:-}" ]; then
             echo "::warning title=Firefox add-on not signed::WEB_EXT_API_KEY / WEB_EXT_API_SECRET secrets are not set. Shipping the unsigned .zip only — it cannot be installed in release Firefox. See https://addons.mozilla.org/developers/addon/api/key/"
             exit 0
           fi
@@ -93,41 +88,25 @@ jobs:
             --source-dir=./dist/firefox/prod \
             --artifacts-dir=./releases/firefox \
             --channel=unlisted \
-            --api-key="$WEB_EXT_API_KEY" \
-            --api-secret="$WEB_EXT_API_SECRET"
+            --api-key="${WEB_EXT_API_KEY}" \
+            --api-secret="${WEB_EXT_API_SECRET}"
           for f in releases/firefox/*.xpi; do
             [ -e "$f" ] || continue
-            cp "$f" "artifacts/censortracker-firefox-v${VERSION}.xpi"
+            cp "$f" "release-assets/censortracker-firefox-v${VERSION}.xpi"
           done
-          ls -la artifacts
-
-      - name: Upload build artifact
-        uses: actions/upload-artifact@v7
-        with:
-          name: censortracker-${{ matrix.browser }}
-          path: artifacts/*
-          if-no-files-found: error
-
-  release:
-    name: Publish GitHub Release
-    needs: build
-    runs-on: ubuntu-latest
-    # Only publish a release when the run was triggered by a version tag.
-    if: startsWith(github.ref, 'refs/tags/v')
-
-    steps:
-      - name: Download all artifacts
-        uses: actions/download-artifact@v8
-        with:
-          path: dist-artifacts
-
-      - name: Collect packages
-        run: |
-          mkdir -p release-assets
-          find dist-artifacts \( -name '*.zip' -o -name '*.xpi' \) -exec cp {} release-assets/ \;
           ls -la release-assets
 
+      # Keeps the packages downloadable from the run itself, which is the only
+      # way to get them out of a manual run on a branch (no tag -> no release).
+      - name: Upload packages as run artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: censortracker-packages
+          path: release-assets/*
+          if-no-files-found: error
+
       - name: Create / update GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v3
         with:
           name: ${{ github.ref_name }}

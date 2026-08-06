@@ -29,6 +29,9 @@
   "appName": {
     "message": "Censor Tracker - Обхід блокувань"
   },
+  "applyCountryFilterButton": {
+    "message": "Застосувати фільтр"
+  },
   "applyLocalProxyButton": {
     "message": "Застосувати"
   },
@@ -125,6 +128,9 @@
   "copyDomainsButton": {
     "message": "Скопіювати список"
   },
+  "countriesDetectedLabel": {
+    "message": "Знайдено країн"
+  },
   "countryAUTO": {
     "message": "Визначити автоматично"
   },
@@ -133,6 +139,48 @@
   },
   "countryBY": {
     "message": "Білорусь"
+  },
+  "countryDetectionFailed": {
+    "message": "Не вдалося визначити країни."
+  },
+  "countryFilterAutoLabel": {
+    "message": "Застосовувати до завантажених та імпортованих проксі"
+  },
+  "countryFilterConfirm": {
+    "message": "Видалити всі проксі, що не відповідають фільтру країн?"
+  },
+  "countryFilterHint": {
+    "message": "Країна проксі визначається за його IP-адресою, тому відома ще до сканування. Проксі з непотрібних країн видаляються одразу й не перевіряються."
+  },
+  "countryFilterKeptLabel": {
+    "message": "Залишено"
+  },
+  "countryFilterListLabel": {
+    "message": "Країни"
+  },
+  "countryFilterModeAllow": {
+    "message": "Залишати лише вказані країни"
+  },
+  "countryFilterModeBlock": {
+    "message": "Видаляти вказані країни"
+  },
+  "countryFilterModeLabel": {
+    "message": "Режим"
+  },
+  "countryFilterModeOff": {
+    "message": "Вимкнено"
+  },
+  "countryFilterNotConfigured": {
+    "message": "Спочатку оберіть режим і принаймні одну країну."
+  },
+  "countryFilterRemovedLabel": {
+    "message": "Видалено"
+  },
+  "countryFilterTitle": {
+    "message": "Фільтр проксі за країнами"
+  },
+  "countryFilterUnknownLabel": {
+    "message": "Видаляти також проксі з невідомою країною"
   },
   "countryKG": {
     "message": "Киргизстан"
@@ -148,6 +196,9 @@
   },
   "countryUZ": {
     "message": "Узбекистан"
+  },
+  "countryUnknownShort": {
+    "message": "невідомо"
   },
   "currentProxyLabel": {
     "message": "Поточний проксі:"
@@ -178,6 +229,12 @@
   },
   "deleteProxyButton": {
     "message": "Видалити"
+  },
+  "detectCountriesButton": {
+    "message": "Визначити країни"
+  },
+  "detectingCountriesLabel": {
+    "message": "Визначення країн…"
   },
   "disableAll": {
     "message": "Вимкнути все"
@@ -318,6 +375,15 @@
   },
   "invalidURLError": {
     "message": "Неправильний URL. Будь ласка, перевірте його і спробуйте ще раз."
+  },
+  "keepOnlyCountryButton": {
+    "message": "Залишити лише цю країну"
+  },
+  "keepOnlyCountryConfirm": {
+    "message": "Видалити всі проксі, крім обраної країни?"
+  },
+  "keepOnlyCountryLabel": {
+    "message": "Залишити лише"
   },
   "localProxyConfigValueDescr": {
     "message": "Вставте конфігурацію vless://, vmess:// або ss://."

@@ -1,3 +1,37 @@
+# 20.8.0
+
+- New country pre-filter for the proxy list. A proxy's country is resolved from
+  its IP address, so it is known *before* anything connects to it:
+  - "Determine countries" resolves the country of every proxy that doesn't have
+    one yet (batched, cached, with progress)
+  - a blocklist mode removes proxies from the listed countries immediately —
+    they are never checked at all
+  - an allowlist mode keeps only the listed countries
+  - "Keep only this country" picks from the countries actually present in the
+    list (flag + proxy count) and removes everything else
+  - the filter can run automatically on proxies fetched from subscriptions and
+    pasted from the clipboard, and runs first when "Test all" is pressed
+  - proxies whose country can't be resolved are kept unless explicitly opted in
+- Fixed a dead custom proxy leaving the browser unable to load anything: the
+  proxy-error handler used to bail out whenever a custom proxy was in use, so a
+  failing hop (especially with "proxy all traffic" on) was never acted upon. The
+  chain is now re-probed, dead hops are unticked and the proxies stay in the list
+- Fixed `Error on connection to null`: the failing server is derived from the
+  configured address when storage doesn't have it, and the config re-sync now
+  runs even when no server can be blamed
+- Proxy recovery is rate-limited to once every 30 seconds. An unreachable proxy
+  makes the browser report an error for every request, and each one used to
+  trigger a full re-sync round
+- Fixed the proxy-error handler throwing on Firefox, where `proxy.onError` hands
+  over an `Error` object instead of `{ error }`
+- Informational messages are no longer logged at warn/error level. Chromium (and
+  Opera, which surfaces the "Errors" button prominently) collects those into the
+  extension's error list, which made ordinary events like "PAC has been set
+  successfully!" look like failures
+- Chromium listener registration is guarded, so a missing API can no longer throw
+  while the service worker is evaluating and take every other listener with it
+
+
 # 20.7.1
 
 - Added a "Proxy ALL traffic" toggle in the proxy settings: route every

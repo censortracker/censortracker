@@ -1,5 +1,6 @@
 import browser from './browser-api'
 import { TaskType } from './constants'
+import { hostFromUri } from './geoip'
 import Ignore from './ignore'
 import ProxyManager from './proxy'
 import Registry from './registry'
@@ -266,69 +267,128 @@ export const handleTabCreate = async (tab) => {
     })
 }
 
-export const handleProxyError = async ({ error }) => {
-  const usingCustomProxy = await ProxyManager.usingCustomProxy()
+/**
+ * Proxy failures the extension knows how to recover from. Chromium-based
+ * browsers (Chrome, Opera, Edge, Yandex…) report `net::`-prefixed names,
+ * Firefox reports `NS_ERROR_*` ones.
+ */
+const RECOVERABLE_PROXY_ERRORS = [
+  // Firefox
+  'NS_ERROR_UNKNOWN_PROXY_HOST',
+  'NS_ERROR_PROXY_CONNECTION_REFUSED',
+  // Chromium
+  'ERR_PROXY_CONNECTION_FAILED',
+  'ERR_TUNNEL_CONNECTION_FAILED',
+  'ERR_SOCKS_CONNECTION_FAILED',
+]
 
-  // Custom proxy is used, so we don't need to handle this error
-  if (usingCustomProxy) {
+// An unreachable proxy makes the browser report a proxy error for EVERY
+// request that tries to use it — with "proxy all traffic" on, that is the
+// entire browsing session. Recovery (re-sync, re-probe, re-apply the PAC) is
+// therefore rate-limited: without this, each failing request queued another
+// full recovery round and the extension spent its time thrashing instead of
+// reconnecting.
+const PROXY_RECOVERY_COOLDOWN_MS = 30 * 1000
+let lastProxyRecoveryAt = 0
+
+/**
+ * Normalizes what the various proxy-error events hand us into a bare error
+ * name. Chromium's `proxy.onProxyError` passes `{ error, details, fatal }`,
+ * Firefox's `webRequest.onErrorOccurred` passes `{ error }`, and Firefox's
+ * `proxy.onError` passes a plain `Error` — reading `.error` off that one
+ * yields `undefined` and used to throw inside the listener.
+ * @param {Object|Error|string} event
+ * @returns {string}
+ */
+const extractProxyError = (event) => {
+  if (!event) {
+    return ''
+  }
+
+  const raw = typeof event === 'string'
+    ? event
+    : (event.error || event.message || '')
+
+  return String(raw).replace('net::', '').trim()
+}
+
+export const handleProxyError = async (event) => {
+  const error = extractProxyError(event)
+
+  if (!RECOVERABLE_PROXY_ERRORS.includes(error)) {
     return
   }
 
-  error = error.replace('net::', '')
+  const now = Date.now()
 
-  const proxyErrors = [
-    // Firefox
-    'NS_ERROR_UNKNOWN_PROXY_HOST',
-    // Chrome
-    'ERR_PROXY_CONNECTION_FAILED',
-  ]
+  if (now - lastProxyRecoveryAt < PROXY_RECOVERY_COOLDOWN_MS) {
+    return
+  }
+  lastProxyRecoveryAt = now
 
-  if (proxyErrors.includes(error)) {
-    const {
-      currentProxyServer,
-      fallbackProxyInUse,
-    } = await browser.storage.local.get({
-      fallbackProxyInUse: false,
-      currentProxyServer: null,
+  // Which proxies is the PAC actually routing through right now? When the user
+  // is on their own proxies that's the chain — and it used to be ignored
+  // entirely, so a dead custom proxy left the browser unable to load anything
+  // with the extension doing nothing about it.
+  const chain = await ProxyManager.getChainProxyConfigs()
+
+  if (chain.length > 0) {
+    console.error(`Proxy connection failed (${error}), re-checking the chain...`)
+    await ProxyManager.recoverProxyChain()
+    return
+  }
+
+  const {
+    currentProxyServer,
+    proxyServerURI,
+    fallbackProxyInUse,
+  } = await browser.storage.local.get({
+    fallbackProxyInUse: false,
+    currentProxyServer: null,
+    proxyServerURI: '',
+  })
+
+  if (fallbackProxyInUse) {
+    await browser.storage.local.set({
+      proxyIsAlive: false,
+      fallbackProxyError: error,
     })
+    console.warn('Fallback proxy is intermittent, interrupting auto fetch...')
+    return
+  }
 
-    if (fallbackProxyInUse) {
-      await browser.storage.local.set({
-        proxyIsAlive: false,
-        fallbackProxyError: error,
-      })
-      console.warn('Fallback proxy is intermittent, interrupting auto fetch...')
-      return
-    }
+  // `currentProxyServer` is only stored by a successful config sync, so it can
+  // be missing while a proxy fetched earlier is still in the PAC. Fall back to
+  // the host of the configured URI instead of blaming (and logging) `null`.
+  const failedProxy = currentProxyServer || hostFromUri(proxyServerURI)
 
-    console.error(`Error on connection to ${currentProxyServer}: ${error}`)
+  console.error(
+    `Proxy connection failed (${error}) on ` +
+    `${failedProxy || 'an unconfigured proxy'}, requesting a new server...`,
+  )
+  await browser.storage.local.set({ proxyIsAlive: false })
 
-    if (currentProxyServer) {
-      const badProxies = await ProxyManager.getBadProxies()
+  if (failedProxy) {
+    const badProxies = await ProxyManager.getBadProxies()
 
-      if (!badProxies.includes(currentProxyServer)) {
-        badProxies.push(currentProxyServer)
-        await browser.storage.local.set({ badProxies })
-      }
-
-      browser.tabs.query({
-        active: true,
-        lastFocusedWindow: true,
-      }).then(async (tab) => {
-        console.warn('Requesting new proxy server...')
-        await server.synchronize({
-          syncIgnore: false,
-          syncRegistry: false,
-          syncProxy: true,
-        })
-        await ProxyManager.setProxy()
-        await ProxyManager.ping()
-      })
+    if (!badProxies.includes(failedProxy)) {
+      badProxies.push(failedProxy)
+      await browser.storage.local.set({ badProxies })
     }
   }
+
+  // Re-sync even when no server could be blamed: an empty/stale proxy config
+  // is exactly the state a fresh fetch fixes.
+  await server.synchronize({
+    syncIgnore: false,
+    syncRegistry: false,
+    syncProxy: true,
+  })
+  await ProxyManager.setProxy()
+  await ProxyManager.ping()
 }
 
 export const handleOnUpdateAvailable = async ({ version }) => {
   await browser.storage.local.set({ updateAvailable: true })
-  console.warn(`Update available: ${version}`)
+  console.log(`Update available: ${version}`)
 }

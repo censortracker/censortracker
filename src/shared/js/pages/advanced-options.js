@@ -130,7 +130,7 @@ import Settings from 'Background/settings'
         await ProxyManager.setProxy()
         await ProxyManager.ping()
       } else {
-        console.warn('Registry updated, but proxying is disabled.')
+        console.log('Registry updated, but proxying is disabled.')
       }
     })
   })
@@ -195,7 +195,7 @@ import Settings from 'Background/settings'
     await ProxyManager.removeBadProxies()
     await ProxyManager.setProxy()
     await ProxyManager.ping()
-    console.warn('Censor Tracker has been reset to default settings.')
+    console.log('Censor Tracker has been reset to default settings.')
   })
 
   exportSettingsBtn.addEventListener('click', (event) => {

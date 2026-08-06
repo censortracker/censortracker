@@ -130,6 +130,69 @@
               <div class="cproxy-import-msg" id="proxyImportMsg" hidden></div>
 
               <div class="cproxy-sources">
+                <button type="button" class="cproxy-section__head" id="countryFilterToggle" aria-expanded="false">
+                  <svg class="cproxy-chevron" width="14" height="14" viewBox="0 0 24 24"
+                       fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2"
+                          stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <span class="cproxy-section__title" data-i18n-key="countryFilterTitle"></span>
+                  <span class="cproxy-count" id="countryFilterSummary"></span>
+                </button>
+                <div id="countryFilterBody" class="hidden">
+                  <div class="cproxy-hint" data-i18n-key="countryFilterHint"></div>
+
+                  <div class="cproxy-sources__row">
+                    <button type="button" class="btn btn-dark cproxy-toolbar__btn" id="detectCountriesButton">
+                      <span class="btn__text" data-i18n-key="detectCountriesButton"></span>
+                    </button>
+                    <span class="cproxy-sources__status" id="countryDetectStatus"></span>
+                  </div>
+
+                  <div class="cproxy-sources__row">
+                    <label class="cproxy-toolbar__field">
+                      <span data-i18n-key="countryFilterModeLabel"></span>
+                      <select id="countryFilterMode" class="cproxy-select">
+                        <option value="off" data-i18n-key="countryFilterModeOff"></option>
+                        <option value="block" data-i18n-key="countryFilterModeBlock"></option>
+                        <option value="allow" data-i18n-key="countryFilterModeAllow"></option>
+                      </select>
+                    </label>
+                    <label class="cproxy-toolbar__field cproxy-country-filter__field">
+                      <span data-i18n-key="countryFilterListLabel"></span>
+                      <input type="text" id="countryFilterList" class="cproxy-country-filter__input"
+                             list="detectedCountriesList" placeholder="RU, CN, IR" autocomplete="off"/>
+                    </label>
+                    <datalist id="detectedCountriesList"></datalist>
+                  </div>
+
+                  <div class="cproxy-sources__row">
+                    <label class="cproxy-toolbar__check">
+                      <input type="checkbox" id="countryFilterAuto"/>
+                      <span data-i18n-key="countryFilterAutoLabel"></span>
+                    </label>
+                    <label class="cproxy-toolbar__check">
+                      <input type="checkbox" id="countryFilterUnknown"/>
+                      <span data-i18n-key="countryFilterUnknownLabel"></span>
+                    </label>
+                    <button type="button" class="btn cproxy-toolbar__btn" id="applyCountryFilterButton">
+                      <span class="btn__text" data-i18n-key="applyCountryFilterButton"></span>
+                    </button>
+                  </div>
+
+                  <div class="cproxy-sources__row">
+                    <label class="cproxy-toolbar__field">
+                      <span data-i18n-key="keepOnlyCountryLabel"></span>
+                      <select id="keepOnlyCountry" class="cproxy-select"></select>
+                    </label>
+                    <button type="button" class="btn cproxy-toolbar__btn" id="keepOnlyCountryButton">
+                      <span class="btn__text" data-i18n-key="keepOnlyCountryButton"></span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="cproxy-sources">
                 <button type="button" class="cproxy-section__head" id="proxySourcesToggle" aria-expanded="false">
                   <svg class="cproxy-chevron" width="14" height="14" viewBox="0 0 24 24"
                        fill="none" xmlns="http://www.w3.org/2000/svg">

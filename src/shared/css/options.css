@@ -773,6 +773,24 @@ a {
   color: #3b332b;
 }
 
+/* Country pre-filter block. */
+.cproxy-country-filter__field {
+  flex: 1 1 220px;
+}
+
+.cproxy-country-filter__input {
+  flex: 1 1 auto;
+  min-width: 120px;
+  height: 32px;
+  padding: 0 8px;
+  border: 1px solid #c4c2bf;
+  border-radius: 4px;
+  background: #fff;
+  color: #3b332b;
+  font-family: 'IBM Plex Mono', monospace;
+  text-transform: uppercase;
+}
+
 /* Auto-fetch proxy sources block. */
 .cproxy-sources {
   display: flex;

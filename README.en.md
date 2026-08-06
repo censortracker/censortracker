@@ -86,6 +86,35 @@ Vivaldi and other Chromium browsers, as well as Firefox and Safari**.
   ignored-hosts sync, plus a crash when the configured country wasn't present
   in the remote config.
 
+### Recovery when a proxy becomes unreachable
+
+- **A failing custom proxy is no longer ignored.** The proxy-error handler used
+  to return immediately whenever a custom proxy was in use, so a dead proxy in
+  the chain (especially together with "proxy all traffic") left the browser
+  unable to load anything while the extension did nothing about it. The chain is
+  now re-probed, dead hops are unticked and traffic keeps flowing through
+  whatever still answers. The proxies themselves stay in the list.
+- **No more `Error on connection to null`.** When the failing server wasn't
+  recorded in storage it is now derived from the configured address, and the
+  config re-sync runs either way — that re-sync is exactly what fixes the
+  "no proxy configured" state.
+- **Recovery is rate-limited.** An unreachable proxy makes the browser report an
+  error for *every* request; each one used to trigger a full re-sync round, so
+  the extension thrashed instead of reconnecting. It now runs at most once every
+  30 seconds.
+- **The handler no longer throws on Firefox.** `proxy.onError` hands over an
+  `Error` object rather than `{ error }`, and reading the missing field crashed
+  the listener. Every browser's event shape is normalized now.
+- **A clean extension error console.** Chromium — and Opera in particular, where
+  the "Errors" button is right there — collects every `console.warn` and
+  `console.error` into the extension's error list. That made ordinary messages
+  like "PAC has been set successfully!" or "telegra.ph added to the custom
+  registry" look like failures. Informational messages are `console.log` now, so
+  only genuine errors are left in that list.
+- **Chromium listener registration is guarded.** A missing API no longer throws
+  while the service worker is still evaluating, which used to take down every
+  other listener with it.
+
 ### Use any proxy, easily — now with a managed list
 
 The custom-proxy field accepts almost any common format and auto-detects the
@@ -123,6 +152,29 @@ Testing proxies for connectivity:
   ~5 minutes; TheSpeedX — daily).
 - **Collapsible lists.** The "My proxies" and "Sources" blocks can be collapsed
   so they don't take up half the screen; the state is remembered.
+
+### Country filter — applied before the scan
+
+A proxy's country comes from a geo-IP lookup of its address, so it is **known
+before anything connects to the proxy**. That makes it possible to throw away
+whole countries up front, without spending a probe slot or a timeout on them:
+
+- **"Determine countries" button.** One click resolves the country of every
+  proxy that doesn't have one yet (batched requests, cached results) and reports
+  progress as it goes.
+- **Country blocklist.** Name the countries you don't want (`RU, CN, IR`) —
+  proxies from them are removed immediately and **never checked at all**.
+- **Country allowlist.** The inverse mode: keep only the listed countries and
+  drop everything else.
+- **"Keep only this country".** A dedicated picker lists the countries actually
+  present in your list (with flag and proxy count); pick one and every proxy
+  outside it is removed.
+- **Applied automatically.** The filter can run on proxies arriving from
+  subscriptions and pasted from the clipboard, discarding unwanted countries
+  before the liveness check. "Test all" runs it first, too.
+- **Proxies with an unresolved country** are kept by default (so "keep only NL"
+  can't wipe out entries the geo-IP lookup simply missed) — removing them is a
+  separate opt-in checkbox.
 
 ### One-click helper for adding related domains
 

@@ -103,13 +103,39 @@ const chunk = (array, size) => {
 }
 
 /**
+ * Turns free-form country input ("ru, CN; 🇮🇷 IR") into a de-duplicated list of
+ * upper-case ISO-3166 alpha-2 codes. Anything that isn't a two-letter token is
+ * dropped, so a typo can never silently widen or narrow a filter.
+ * @param {string|Array<string>} value
+ * @returns {Array<string>}
+ */
+export const normalizeCountryCodes = (value) => {
+  const raw = Array.isArray(value) ? value.join(',') : String(value || '')
+
+  return [...new Set(
+    raw
+      .split(/[\s,;|]+/)
+      .map((token) => token.trim().toUpperCase())
+      .filter((token) => /^[A-Z]{2}$/.test(token)),
+  )]
+}
+
+/**
  * Looks up the countries of the given hosts, using (and updating) the local
  * cache so each IP is only fetched once. Non-IPv4 hosts and lookup failures are
  * skipped silently. Returns the merged host -> { code, name } map.
+ *
+ * The lookup talks to a geo-IP service, NOT to the proxies themselves: it is
+ * how the country of a proxy is known *before* anything is connected to or
+ * scanned.
  * @param {Array<string>} hosts
+ * @param {{onProgress?: Function, signal?: AbortSignal}} [options] -
+ *   `onProgress(done, total)` fires after each batch so a long list can be
+ *   reported live; `signal` stops the run between batches (an in-flight batch
+ *   is bounded by its own timeout).
  * @returns {Promise<Object>}
  */
-export const lookupCountries = async (hosts) => {
+export const lookupCountries = async (hosts, { onProgress, signal } = {}) => {
   const cache = await getCachedGeo()
   const pending = [...new Set(
     hosts.filter((host) => isIpv4(host) && !(host in cache)),
@@ -120,29 +146,41 @@ export const lookupCountries = async (hosts) => {
   }
 
   let changed = false
+  let done = 0
 
   for (const batch of chunk(pending, BATCH_SIZE)) {
+    if (signal && signal.aborted) {
+      break
+    }
+
     try {
       const response = await fetchWithTimeout(GEOJS_BATCH_URL + batch.join(','), {
         timeout: 15000,
         cache: 'no-store',
       })
 
-      if (!response.ok) {
-        continue
-      }
+      if (response.ok) {
+        const entries = await response.json()
 
-      const entries = await response.json()
-
-      for (const entry of Array.isArray(entries) ? entries : []) {
-        if (entry && entry.ip) {
-          // Cache the result (even when empty) so a geo-less IP isn't re-queried.
-          cache[entry.ip] = { code: entry.country || '', name: entry.name || '' }
-          changed = true
+        for (const entry of Array.isArray(entries) ? entries : []) {
+          if (entry && entry.ip) {
+            // Cache the result (even when empty) so a geo-less IP isn't
+            // re-queried.
+            cache[entry.ip] = {
+              code: entry.country || '',
+              name: entry.name || '',
+            }
+            changed = true
+          }
         }
       }
     } catch (error) {
       console.warn(`Geo-IP lookup failed for a batch: ${error}`)
+    }
+
+    done += batch.length
+    if (typeof onProgress === 'function') {
+      onProgress(Math.min(done, pending.length), pending.length)
     }
   }
 

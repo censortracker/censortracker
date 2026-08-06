@@ -50,17 +50,26 @@ if (browser.isFirefox) {
     },
   )
 } else {
-  // Chrome-specific handlers
-  browser.webNavigation.onBeforeNavigate.addListener(
-    handleBeforeRequest, {
-      urls: [
-        'http://*/*',
-        'https://*/*',
-      ],
-      types: [
-        'main_frame',
-      ],
-    },
-  )
-  browser.proxy.onProxyError.addListener(handleProxyError)
+  // Chromium-specific handlers (Chrome, Opera, Edge, Yandex, …). Each
+  // registration is guarded: these run while the service worker is still being
+  // evaluated, so an API a given Chromium build doesn't expose used to throw
+  // here and silently drop EVERY listener registered above — leaving the
+  // extension looking completely dead instead of merely missing one feature.
+  if (browser.webNavigation) {
+    browser.webNavigation.onBeforeNavigate.addListener(
+      handleBeforeRequest, {
+        urls: [
+          'http://*/*',
+          'https://*/*',
+        ],
+        types: [
+          'main_frame',
+        ],
+      },
+    )
+  }
+
+  if (browser.proxy && browser.proxy.onProxyError) {
+    browser.proxy.onProxyError.addListener(handleProxyError)
+  }
 }

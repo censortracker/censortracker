@@ -29,6 +29,9 @@
   "appName": {
     "message": "Censor Tracker – Proxy for Privacy & Security"
   },
+  "applyCountryFilterButton": {
+    "message": "Apply filter"
+  },
   "applyLocalProxyButton": {
     "message": "Apply"
   },
@@ -125,6 +128,9 @@
   "copyDomainsButton": {
     "message": "Copy list"
   },
+  "countriesDetectedLabel": {
+    "message": "Countries found"
+  },
   "countryAUTO": {
     "message": "Auto"
   },
@@ -133,6 +139,48 @@
   },
   "countryBY": {
     "message": "Belarus"
+  },
+  "countryDetectionFailed": {
+    "message": "Could not determine the countries."
+  },
+  "countryFilterAutoLabel": {
+    "message": "Apply to fetched and imported proxies"
+  },
+  "countryFilterConfirm": {
+    "message": "Remove every proxy that does not match the country filter?"
+  },
+  "countryFilterHint": {
+    "message": "The country of a proxy is resolved from its IP address, so it is known before any scan. Proxies from unwanted countries are removed straight away and are never checked."
+  },
+  "countryFilterKeptLabel": {
+    "message": "Kept"
+  },
+  "countryFilterListLabel": {
+    "message": "Countries"
+  },
+  "countryFilterModeAllow": {
+    "message": "Keep only the listed countries"
+  },
+  "countryFilterModeBlock": {
+    "message": "Remove the listed countries"
+  },
+  "countryFilterModeLabel": {
+    "message": "Mode"
+  },
+  "countryFilterModeOff": {
+    "message": "Off"
+  },
+  "countryFilterNotConfigured": {
+    "message": "Choose a mode and at least one country first."
+  },
+  "countryFilterRemovedLabel": {
+    "message": "Removed"
+  },
+  "countryFilterTitle": {
+    "message": "Filter proxies by country"
+  },
+  "countryFilterUnknownLabel": {
+    "message": "Also remove proxies with an unknown country"
   },
   "countryKG": {
     "message": "Kyrgyzstan"
@@ -148,6 +196,9 @@
   },
   "countryUZ": {
     "message": "Uzbekistan"
+  },
+  "countryUnknownShort": {
+    "message": "unknown"
   },
   "currentProxyLabel": {
     "message": "Current proxy:"
@@ -178,6 +229,12 @@
   },
   "deleteProxyButton": {
     "message": "Delete"
+  },
+  "detectCountriesButton": {
+    "message": "Determine countries"
+  },
+  "detectingCountriesLabel": {
+    "message": "Determining countries…"
   },
   "disableAll": {
     "message": "Disable all"
@@ -318,6 +375,15 @@
   },
   "invalidURLError": {
     "message": "The URL you entered is invalid. Please check it and try again."
+  },
+  "keepOnlyCountryButton": {
+    "message": "Keep only this country"
+  },
+  "keepOnlyCountryConfirm": {
+    "message": "Remove every proxy outside the selected country?"
+  },
+  "keepOnlyCountryLabel": {
+    "message": "Keep only"
   },
   "localProxyConfigValueDescr": {
     "message": "Enter your vless://, vmess:// or ss:// config."

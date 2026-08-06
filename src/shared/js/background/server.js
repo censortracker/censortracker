@@ -54,7 +54,7 @@ const fetchConfig = async () => {
         const { meta = {}, data = [] } = await response.json()
 
         if (!Array.isArray(data) || data.length === 0) {
-          console.warn(`[Config] Skipping ${endpointName}...`)
+          console.log(`[Config] Skipping ${endpointName}...`)
           continue
         }
 
@@ -144,7 +144,7 @@ const fetchProxy = async ({ proxyUrl } = {}) => {
 
     const fallbackProxyInUse = !!fallbackReason
 
-    console.warn(`Status: ${response.status}`)
+    console.log(`Status: ${response.status}`)
 
     const proxyPingURI = `${pingHost}:${pingPort}`
     const proxyServerURI = `${server}:${port}`
@@ -254,7 +254,7 @@ const fetchRegistry = async ({ registryUrl, specifics = {} } = {}) => {
     return
   }
 
-  console.warn(`[Registry] Fetching registry from ${effectiveRegistryUrl}...`)
+  console.log(`[Registry] Fetching registry from ${effectiveRegistryUrl}...`)
 
   // Fetch the blocklist itself, tolerating multiple response formats.
   try {

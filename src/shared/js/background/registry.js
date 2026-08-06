@@ -110,7 +110,7 @@ class Registry {
     if (!customProxiedDomains.includes(domain)) {
       customProxiedDomains.push(domain)
       await browser.storage.local.set({ customProxiedDomains })
-      console.warn(`${domain} added to the custom registry.`)
+      console.log(`${domain} added to the custom registry.`)
     }
     return true
   }
@@ -125,7 +125,7 @@ class Registry {
 
       customProxiedDomains.splice(index, 1)
       await browser.storage.local.set({ customProxiedDomains })
-      console.warn(`${domain} removed from custom registry`)
+      console.log(`${domain} removed from custom registry`)
     }
     return true
   }

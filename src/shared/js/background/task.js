@@ -22,7 +22,7 @@ class Task {
       const alarm = await browser.alarms.get(name)
 
       if (alarm) {
-        console.warn(`Task «${name}» already scheduled!`)
+        console.log(`Task «${name}» already scheduled!`)
       } else {
         browser.alarms.create(name, { periodInMinutes: minutes })
         console.log(`Scheduled «${name}» to run every ${minutes} minutes`)

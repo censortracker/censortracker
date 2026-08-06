@@ -29,6 +29,9 @@
   "appName": {
     "message": "Censor Tracker — Обход блокировок"
   },
+  "applyCountryFilterButton": {
+    "message": "Применить фильтр"
+  },
   "applyLocalProxyButton": {
     "message": "Применить"
   },
@@ -125,6 +128,9 @@
   "copyDomainsButton": {
     "message": "Скопировать список"
   },
+  "countriesDetectedLabel": {
+    "message": "Найдено стран"
+  },
   "countryAUTO": {
     "message": "Определить автоматически"
   },
@@ -133,6 +139,48 @@
   },
   "countryBY": {
     "message": "Беларусь"
+  },
+  "countryDetectionFailed": {
+    "message": "Не удалось определить страны."
+  },
+  "countryFilterAutoLabel": {
+    "message": "Применять к загруженным и импортированным прокси"
+  },
+  "countryFilterConfirm": {
+    "message": "Удалить все прокси, не подходящие под фильтр стран?"
+  },
+  "countryFilterHint": {
+    "message": "Страна прокси определяется по его IP-адресу, поэтому известна ещё до сканирования. Прокси из ненужных стран удаляются сразу и не проверяются."
+  },
+  "countryFilterKeptLabel": {
+    "message": "Оставлено"
+  },
+  "countryFilterListLabel": {
+    "message": "Страны"
+  },
+  "countryFilterModeAllow": {
+    "message": "Оставлять только указанные страны"
+  },
+  "countryFilterModeBlock": {
+    "message": "Удалять указанные страны"
+  },
+  "countryFilterModeLabel": {
+    "message": "Режим"
+  },
+  "countryFilterModeOff": {
+    "message": "Выключен"
+  },
+  "countryFilterNotConfigured": {
+    "message": "Сначала выберите режим и хотя бы одну страну."
+  },
+  "countryFilterRemovedLabel": {
+    "message": "Удалено"
+  },
+  "countryFilterTitle": {
+    "message": "Фильтр прокси по странам"
+  },
+  "countryFilterUnknownLabel": {
+    "message": "Удалять также прокси с неизвестной страной"
   },
   "countryKG": {
     "message": "Кыргызстан"
@@ -148,6 +196,9 @@
   },
   "countryUZ": {
     "message": "Узбекистан"
+  },
+  "countryUnknownShort": {
+    "message": "неизвестно"
   },
   "currentProxyLabel": {
     "message": "Текущий прокси:"
@@ -178,6 +229,12 @@
   },
   "deleteProxyButton": {
     "message": "Удалить"
+  },
+  "detectCountriesButton": {
+    "message": "Определить страны"
+  },
+  "detectingCountriesLabel": {
+    "message": "Определение стран…"
   },
   "disableAll": {
     "message": "Отключить все"
@@ -318,6 +375,15 @@
   },
   "invalidURLError": {
     "message": "Неверный URL. Пожалуйста, проверьте его и попробуйте ещё раз."
+  },
+  "keepOnlyCountryButton": {
+    "message": "Оставить только эту страну"
+  },
+  "keepOnlyCountryConfirm": {
+    "message": "Удалить все прокси, кроме выбранной страны?"
+  },
+  "keepOnlyCountryLabel": {
+    "message": "Оставить только"
   },
   "localProxyConfigValueDescr": {
     "message": "Вставьте конфигурацию vless://, vmess:// или ss://."

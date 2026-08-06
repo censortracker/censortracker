@@ -83,9 +83,27 @@ import {
   const checkProgress = document.getElementById('checkProgress')
   const checkProgressFill = document.getElementById('checkProgressFill')
   const checkProgressText = document.getElementById('checkProgressText')
+  const countryFilterToggle = document.getElementById('countryFilterToggle')
+  const countryFilterBody = document.getElementById('countryFilterBody')
+  const countryFilterSummary = document.getElementById('countryFilterSummary')
+  const countryFilterMode = document.getElementById('countryFilterMode')
+  const countryFilterListInput = document.getElementById('countryFilterList')
+  const countryFilterAuto = document.getElementById('countryFilterAuto')
+  const countryFilterUnknown = document.getElementById('countryFilterUnknown')
+  const applyCountryFilterButton = document.getElementById('applyCountryFilterButton')
+  const detectCountriesButton = document.getElementById('detectCountriesButton')
+  const countryDetectStatus = document.getElementById('countryDetectStatus')
+  const detectedCountriesList = document.getElementById('detectedCountriesList')
+  const keepOnlyCountrySelect = document.getElementById('keepOnlyCountry')
+  const keepOnlyCountryButton = document.getElementById('keepOnlyCountryButton')
 
   // Holds the AbortController of an in-flight "test all" run (null when idle).
   let checkController = null
+
+  // Refreshes the country picker. Assigned by the country-filter block further
+  // down; declared here so the list renderer can call it without depending on
+  // definition order.
+  let refreshCountryPicker = async () => {}
 
   if (proxyNameInput) {
     proxyNameInput.placeholder = i18nGetMessage('customProxyNamePlaceholder')
@@ -142,7 +160,7 @@ import {
       const { status, message } = await ProxyClient.deleteConfig(configId, 250)
 
       if (status === 'success') {
-        console.warn(`Config ${configId} has been deleted`)
+        console.log(`Config ${configId} has been deleted`)
 
         if (proxyBlock) {
           proxyBlock.remove()
@@ -528,6 +546,7 @@ import {
     try {
       await lookupCountries(missing)
       await renderCustomProxies()
+      await refreshCountryPicker()
     } catch (error) {
       console.warn(`Country detection failed: ${error}`)
     } finally {
@@ -843,6 +862,32 @@ import {
         return
       }
 
+      // Drop the unwanted countries first: a proxy removed here never costs a
+      // probe slot or a connection timeout during the scan.
+      const countryFilter = await ProxyManager.getCountryFilterSettings()
+
+      if (countryFilter.auto && countryFilter.mode !== 'off') {
+        const { removed } = await ProxyManager.applyCountryFilter(null, {
+          settings: countryFilter,
+          onProgress: (done, total) => {
+            setCountryDetectStatus(
+              `${i18nGetMessage('detectingCountriesLabel')} ${done}/${total}`,
+            )
+          },
+        })
+
+        if (removed > 0) {
+          await ProxyManager.restoreProxy()
+          await renderCustomProxies()
+          await renderDetectedCountries()
+          setCountryDetectStatus(
+            `${i18nGetMessage('countryFilterRemovedLabel')}: ${removed}`,
+          )
+        } else {
+          setCountryDetectStatus('')
+        }
+      }
+
       const list = await collectTestableProxies()
 
       if (list.length === 0) {
@@ -977,6 +1022,240 @@ import {
     { confirmKey: 'removeAllProxiesConfirm' },
   )
 
+  // ---------------------------------------------------------------------------
+  // Country pre-filter
+  //
+  // A proxy's country comes from a geo-IP lookup of its entry address, so it is
+  // known without connecting to anything. That lets the user throw away whole
+  // countries BEFORE a scan is started — the discarded proxies never cost a
+  // probe slot or a timeout.
+  // ---------------------------------------------------------------------------
+
+  const setCountryDetectStatus = (text) => {
+    if (countryDetectStatus) {
+      countryDetectStatus.textContent = text || ''
+    }
+  }
+
+  // Fills the "keep only" picker and the free-text datalist from the countries
+  // actually present in the list, so the user picks from what they have.
+  const renderDetectedCountries = async () => {
+    if (!keepOnlyCountrySelect && !detectedCountriesList) {
+      return
+    }
+
+    const proxies = await ProxyManager.getCustomProxies()
+    const geo = await getCachedGeo()
+    const counts = new Map()
+
+    for (const proxy of proxies) {
+      const info = geo[hostFromUri(proxy.uri)]
+      const code = info && info.code ? info.code.toUpperCase() : ''
+
+      if (!code) {
+        continue
+      }
+
+      const entry = counts.get(code) ||
+        { code, name: info.name || code, count: 0 }
+
+      entry.count += 1
+      counts.set(code, entry)
+    }
+
+    const detected = [...counts.values()].sort((first, second) =>
+      second.count - first.count || first.code.localeCompare(second.code))
+
+    if (keepOnlyCountrySelect) {
+      const previous = keepOnlyCountrySelect.value
+
+      keepOnlyCountrySelect.innerHTML = detected
+        .map(({ code, name, count }) => {
+          const flag = countryFlagEmoji(code)
+          const label = `${flag ? `${flag} ` : ''}${code} — ${name} (${count})`
+
+          return `<option value="${escapeHtml(code)}">${escapeHtml(label)}</option>`
+        })
+        .join('')
+      if (previous && counts.has(previous)) {
+        keepOnlyCountrySelect.value = previous
+      }
+    }
+
+    if (detectedCountriesList) {
+      detectedCountriesList.innerHTML = detected
+        .map(({ code, name, count }) =>
+          `<option value="${escapeHtml(code)}">${escapeHtml(`${name} (${count})`)}</option>`)
+        .join('')
+    }
+
+    if (countryFilterSummary) {
+      const unknown = proxies.length - detected.reduce(
+        (total, entry) => total + entry.count, 0,
+      )
+
+      countryFilterSummary.textContent = proxies.length === 0
+        ? ''
+        : `${detected.length} · ${i18nGetMessage('countryUnknownShort')}: ${unknown}`
+    }
+  }
+
+  // Resolves the country of every proxy whose address hasn't been looked up
+  // yet. This is the "know the country before scanning" step.
+  const detectCountries = async () => {
+    if (checkController) {
+      return
+    }
+
+    if (detectCountriesButton) {
+      detectCountriesButton.disabled = true
+    }
+    setCountryDetectStatus(i18nGetMessage('detectingCountriesLabel'))
+
+    try {
+      const summary = await ProxyManager.detectProxyCountries(null, {
+        onProgress: (done, total) => {
+          setCountryDetectStatus(
+            `${i18nGetMessage('detectingCountriesLabel')} ${done}/${total}`,
+          )
+        },
+      })
+
+      await renderCustomProxies()
+      await renderDetectedCountries()
+      setCountryDetectStatus(
+        `${i18nGetMessage('countriesDetectedLabel')}: ${summary.countries.length} · ` +
+        `${i18nGetMessage('countryUnknownShort')}: ${summary.unknown}`,
+      )
+    } catch (error) {
+      setCountryDetectStatus(i18nGetMessage('countryDetectionFailed'))
+      console.error(`Country detection failed: ${error}`)
+    } finally {
+      if (detectCountriesButton) {
+        detectCountriesButton.disabled = false
+      }
+    }
+  }
+
+  refreshCountryPicker = renderDetectedCountries
+
+  if (detectCountriesButton) {
+    detectCountriesButton.addEventListener('click', detectCountries)
+  }
+
+  const persistCountryFilter = async () => {
+    await ProxyManager.setCountryFilterSettings({
+      mode: countryFilterMode ? countryFilterMode.value : undefined,
+      countries: countryFilterListInput
+        ? countryFilterListInput.value
+        : undefined,
+      auto: countryFilterAuto ? countryFilterAuto.checked : undefined,
+      removeUnknown: countryFilterUnknown
+        ? countryFilterUnknown.checked
+        : undefined,
+    })
+  }
+
+  // Runs the stored filter over the whole list and reports what went away.
+  const runCountryFilter = async (action, { confirmKey } = {}) => {
+    if (checkController) {
+      return
+    }
+
+    if (confirmKey && !window.confirm(i18nGetMessage(confirmKey))) {
+      return
+    }
+
+    setCountryDetectStatus(i18nGetMessage('detectingCountriesLabel'))
+
+    try {
+      const { removed, kept, unknown } = await action({
+        onProgress: (done, total) => {
+          setCountryDetectStatus(
+            `${i18nGetMessage('detectingCountriesLabel')} ${done}/${total}`,
+          )
+        },
+      })
+
+      await ProxyManager.restoreProxy()
+      await renderCustomProxies()
+      await renderDetectedCountries()
+      setCountryDetectStatus(
+        `${i18nGetMessage('countryFilterRemovedLabel')}: ${removed} · ` +
+        `${i18nGetMessage('countryFilterKeptLabel')}: ${kept} · ` +
+        `${i18nGetMessage('countryUnknownShort')}: ${unknown}`,
+      )
+    } catch (error) {
+      setCountryDetectStatus(i18nGetMessage('countryDetectionFailed'))
+      console.error(`Country filter failed: ${error}`)
+    }
+  }
+
+  if (applyCountryFilterButton) {
+    applyCountryFilterButton.addEventListener('click', async () => {
+      await persistCountryFilter()
+
+      const { mode, countries } = await ProxyManager.getCountryFilterSettings()
+
+      if (mode === 'off' || countries.length === 0) {
+        setCountryDetectStatus(i18nGetMessage('countryFilterNotConfigured'))
+        return
+      }
+
+      await runCountryFilter(
+        (options) => ProxyManager.applyCountryFilter(null, options),
+        { confirmKey: 'countryFilterConfirm' },
+      )
+    })
+  }
+
+  // "I only need proxies from this country" — keeps the picked country and
+  // removes everything else in one go.
+  if (keepOnlyCountryButton && keepOnlyCountrySelect) {
+    keepOnlyCountryButton.addEventListener('click', async () => {
+      const code = keepOnlyCountrySelect.value
+
+      if (!code) {
+        setCountryDetectStatus(i18nGetMessage('countryFilterNotConfigured'))
+        return
+      }
+
+      await runCountryFilter(
+        (options) => ProxyManager.keepOnlyCountries(code, {
+          ...options,
+          removeUnknown: countryFilterUnknown
+            ? countryFilterUnknown.checked
+            : true,
+        }),
+        { confirmKey: 'keepOnlyCountryConfirm' },
+      )
+    })
+  }
+
+  // Restore the stored filter into the controls, then keep them in sync.
+  {
+    const filter = await ProxyManager.getCountryFilterSettings()
+
+    if (countryFilterMode) {
+      countryFilterMode.value = filter.mode
+      countryFilterMode.addEventListener('change', persistCountryFilter)
+    }
+    if (countryFilterListInput) {
+      countryFilterListInput.value = filter.countries.join(', ')
+      countryFilterListInput.addEventListener('change', persistCountryFilter)
+    }
+    if (countryFilterAuto) {
+      countryFilterAuto.checked = filter.auto
+      countryFilterAuto.addEventListener('change', persistCountryFilter)
+    }
+    if (countryFilterUnknown) {
+      countryFilterUnknown.checked = filter.removeUnknown
+      countryFilterUnknown.addEventListener('change', persistCountryFilter)
+    }
+  }
+
+  await renderDetectedCountries()
+
   // Remember which cloud endpoint to probe against.
   if (proxyTestTargetSelect) {
     proxyTestTargetSelect.value = await ProxyManager.getProxyTestTarget()
@@ -995,12 +1274,39 @@ import {
       return
     }
 
-    const added = await ProxyManager.addCustomProxies(parsed)
+    let added = await ProxyManager.addCustomProxies(parsed)
 
     await renderCustomProxies()
 
     if (added.length === 0) {
       showImportMsg(i18nGetMessage('noProxiesInClipboard'))
+      return
+    }
+
+    // Apply the country pre-filter to the freshly imported batch before any of
+    // it is tested, so unwanted countries are never probed.
+    const countryFilter = await ProxyManager.getCountryFilterSettings()
+    let filteredOut = 0
+
+    if (countryFilter.auto && countryFilter.mode !== 'off') {
+      const { removedIds } = await ProxyManager.applyCountryFilter(added, {
+        settings: countryFilter,
+      })
+      const dropped = new Set(removedIds)
+
+      filteredOut = removedIds.length
+      added = added.filter((proxy) => !dropped.has(proxy.id))
+
+      if (filteredOut > 0) {
+        await renderCustomProxies()
+        await renderDetectedCountries()
+      }
+    }
+
+    if (added.length === 0) {
+      showImportMsg(
+        `${i18nGetMessage('countryFilterRemovedLabel')}: ${filteredOut}`,
+      )
       return
     }
 
@@ -1039,6 +1345,9 @@ import {
 
     if (removedCount > 0) {
       summary += `  ✗${removedCount}`
+    }
+    if (filteredOut > 0) {
+      summary += `  ${i18nGetMessage('countryFilterRemovedLabel')}: ${filteredOut}`
     }
     showImportMsg(summary)
   }
@@ -1251,10 +1560,12 @@ import {
 
     apply(proxyListToggle, proxyListBody, proxyUiCollapsed.list)
     apply(proxySourcesToggle, proxySourcesBody, proxyUiCollapsed.sources)
+    apply(countryFilterToggle, countryFilterBody, proxyUiCollapsed.countries)
   }
 
   wireCollapsible(proxyListToggle, proxyListBody, 'list')
   wireCollapsible(proxySourcesToggle, proxySourcesBody, 'sources')
+  wireCollapsible(countryFilterToggle, countryFilterBody, 'countries')
   await restoreCollapsible()
 
   // Ready-made subscription presets: pick one and append it to the sources.

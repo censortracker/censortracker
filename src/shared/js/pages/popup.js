@@ -375,7 +375,7 @@ import { extractHostnameFromUrl, i18nGetMessage, isI2PUrl, isOnionUrl, isValidUR
               Ignore.remove(currentUrl).then((removed) => {
                 if (removed) {
                   Registry.add(currentUrl).then((added) => {
-                    console.warn('Proxying strategy was changed to: "always"')
+                    console.log('Proxying strategy was changed to: "always"')
                   })
                 }
               })

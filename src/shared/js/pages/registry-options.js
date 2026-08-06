@@ -75,7 +75,7 @@ import * as server from 'Background/server'
         if (proxyingEnabled) {
           await server.synchronize()
           await ProxyManager.setProxy()
-          console.warn(`Region changed to ${countryName}`)
+          console.log(`Region changed to ${countryName}`)
         }
       })
     })

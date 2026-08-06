@@ -8,7 +8,12 @@ import {
   PROXY_TEST_TARGETS,
   TaskType,
 } from './constants'
-import { lookupCountries, parseExitInfo } from './geoip'
+import {
+  hostFromUri,
+  lookupCountries,
+  normalizeCountryCodes,
+  parseExitInfo,
+} from './geoip'
 import registry from './registry'
 import {
   fetchWithTimeout,
@@ -175,7 +180,7 @@ class ProxyManager {
     // Without proxy-all, an empty domain list means there is nothing to
     // route; with it, the PAC proxies everything regardless of the list.
     if (domains.length === 0 && !proxyAll) {
-      console.error('No domains to proxy, aborting...')
+      console.log('No domains to proxy, aborting...')
       await this.removeProxy()
       return false
     }
@@ -207,13 +212,94 @@ class ProxyManager {
       await this.applyPacData(pacData)
       await this.enableProxy()
       await this.grantIncognitoAccess()
-      console.warn('PAC has been set successfully!')
+      console.log('PAC has been set successfully!')
       return true
     } catch (error) {
       console.error(`PAC could not be set: ${error}`)
       await this.disableProxy()
       await this.requestIncognitoAccess()
       return false
+    }
+  }
+
+  /**
+   * Recovery path for "the proxy we route through is unreachable" while the
+   * user is on their own proxies. The browser's proxy-error event does not say
+   * WHICH hop failed, so every hop of the chain is probed and the dead ones are
+   * unticked — traffic then keeps flowing through whatever still answers. The
+   * proxies stay in the list (only the chain shrinks), so nothing the user
+   * entered is thrown away behind their back.
+   *
+   * When the whole chain is dead the routing is left alone on purpose: for a
+   * censorship-circumvention tool, silently falling back to direct connections
+   * is worse than a failing request. The popup and settings page show the
+   * "proxy is down" state instead.
+   * @returns {Promise<{alive: number, dropped: number}>}
+   */
+  async recoverProxyChain () {
+    // Probing is bounded so a long chain can't outlive the service worker.
+    const MAX_RECOVERY_HOPS = 10
+
+    if (this._chainRecoveryInFlight) {
+      return { alive: 0, dropped: 0 }
+    }
+    this._chainRecoveryInFlight = true
+
+    try {
+      const chain = await this.getProxyChain()
+      const customProxies = await this.getCustomProxies()
+      const builtin = await this.getBuiltinProxy()
+      const hops = []
+
+      for (const id of chain.slice(0, MAX_RECOVERY_HOPS)) {
+        if (id === 'builtin') {
+          if (builtin) {
+            hops.push({ id, protocol: builtin.protocol, uri: builtin.uri })
+          }
+        } else {
+          const proxy = customProxies.find((item) => item.id === id)
+
+          if (proxy) {
+            hops.push({ id, protocol: proxy.protocol, uri: proxy.uri })
+          }
+        }
+      }
+
+      if (hops.length === 0) {
+        return { alive: 0, dropped: 0 }
+      }
+
+      const results = await this.testProxies(hops, { timeout: 5000 })
+      const aliveIds = new Set(
+        hops
+          .filter((hop) => results[hop.id] && results[hop.id].alive)
+          .map((hop) => hop.id),
+      )
+
+      if (aliveIds.size === 0) {
+        await browser.storage.local.set({ proxyIsAlive: false })
+        console.error(
+          `Every proxy in the chain is unreachable (${hops.length} checked).`,
+        )
+        return { alive: 0, dropped: 0 }
+      }
+
+      // Keep the hops that answered plus any the bound above left untested.
+      const probed = new Set(hops.map((hop) => hop.id))
+      const nextChain =
+        chain.filter((id) => aliveIds.has(id) || !probed.has(id))
+      const dropped = chain.length - nextChain.length
+
+      if (dropped > 0) {
+        console.log(`Dropping ${dropped} dead proxies from the chain.`)
+        await this.setProxyChain(nextChain)
+      }
+
+      await browser.storage.local.set({ proxyIsAlive: true })
+      await this.setProxy()
+      return { alive: aliveIds.size, dropped }
+    } finally {
+      this._chainRecoveryInFlight = false
     }
   }
 
@@ -232,7 +318,7 @@ class ProxyManager {
   async removeProxy () {
     try {
       await browser.proxy.settings.clear({})
-      console.warn('Proxy settings removed.')
+      console.log('Proxy settings removed.')
     } catch (error) {
       console.error(`Failed to clear proxy settings: ${error}`)
     }
@@ -294,7 +380,7 @@ class ProxyManager {
   }
 
   async disableProxy () {
-    console.warn('Proxying disabled.')
+    console.log('Proxying disabled.')
     await browser.storage.local.set({ useProxy: false })
   }
 
@@ -326,7 +412,7 @@ class ProxyManager {
 
     for (const { id, name, permissions } of extensions) {
       if (permissions.includes('proxy') && name !== self.name) {
-        console.warn(`Disabling ${name}...`)
+        console.log(`Disabling ${name}...`)
         await browser.management.setEnabled(id, false)
       }
     }
@@ -690,6 +776,210 @@ class ProxyManager {
       return null
     }
     return { protocol: 'HTTPS', uri: proxyServerURI }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Country pre-filter
+  //
+  // A proxy's country is resolved from its entry IP through a geo-IP service,
+  // so it is known BEFORE anything connects to the proxy. That makes it usable
+  // as a pre-filter: unwanted countries are dropped from the list without ever
+  // spending a scan slot (or a timeout) on them.
+  // ---------------------------------------------------------------------------
+
+  /**
+   * @returns {Promise<{mode: string, countries: Array<string>, auto: boolean,
+   *   removeUnknown: boolean}>} `mode` is 'off', 'block' (remove proxies FROM
+   *   the listed countries) or 'allow' (keep ONLY proxies from them).
+   */
+  async getCountryFilterSettings () {
+    const {
+      proxyCountryFilterMode,
+      proxyCountryFilterList,
+      proxyCountryFilterAuto,
+      proxyCountryFilterRemoveUnknown,
+    } = await browser.storage.local.get({
+      proxyCountryFilterMode: 'off',
+      proxyCountryFilterList: [],
+      proxyCountryFilterAuto: true,
+      proxyCountryFilterRemoveUnknown: false,
+    })
+
+    const mode = ['off', 'block', 'allow'].includes(proxyCountryFilterMode)
+      ? proxyCountryFilterMode
+      : 'off'
+
+    return {
+      mode,
+      countries: normalizeCountryCodes(proxyCountryFilterList),
+      auto: proxyCountryFilterAuto,
+      removeUnknown: proxyCountryFilterRemoveUnknown,
+    }
+  }
+
+  async setCountryFilterSettings (
+    { mode, countries, auto, removeUnknown } = {},
+  ) {
+    const updates = {}
+
+    if (['off', 'block', 'allow'].includes(mode)) {
+      updates.proxyCountryFilterMode = mode
+    }
+    if (countries !== undefined) {
+      updates.proxyCountryFilterList = normalizeCountryCodes(countries)
+    }
+    if (typeof auto === 'boolean') {
+      updates.proxyCountryFilterAuto = auto
+    }
+    if (typeof removeUnknown === 'boolean') {
+      updates.proxyCountryFilterRemoveUnknown = removeUnknown
+    }
+
+    await browser.storage.local.set(updates)
+  }
+
+  /**
+   * Resolves (and caches) the country of every proxy in the list from its entry
+   * IP. No proxy is connected to — this is the "know the country before
+   * scanning" step, and it is what the country columns and the filter both read
+   * from afterwards.
+   * @param {Array} [proxies] - Defaults to the whole list (plus the built-in).
+   * @param {{onProgress?: Function, signal?: AbortSignal}} [options]
+   * @returns {Promise<{resolved: number, unknown: number,
+   *   countries: Array<{code: string, name: string, count: number}>}>}
+   *   `countries` is sorted by descending proxy count, ready for a picker.
+   */
+  async detectProxyCountries (proxies, { onProgress, signal } = {}) {
+    const list = proxies || await this.getCustomProxies()
+    const hosts = list.map((proxy) => hostFromUri(proxy.uri))
+    const builtin = await this.getBuiltinProxy()
+
+    if (!proxies && builtin) {
+      hosts.push(hostFromUri(builtin.uri))
+    }
+
+    const geo = await lookupCountries(hosts, { onProgress, signal })
+    const counts = new Map()
+    let resolved = 0
+    let unknown = 0
+
+    for (const proxy of list) {
+      const info = geo[hostFromUri(proxy.uri)]
+      const code = info && info.code ? info.code.toUpperCase() : ''
+
+      if (!code) {
+        unknown += 1
+        continue
+      }
+      resolved += 1
+
+      const entry = counts.get(code) ||
+        { code, name: info.name || code, count: 0 }
+
+      entry.count += 1
+      counts.set(code, entry)
+    }
+
+    return {
+      resolved,
+      unknown,
+      countries: [...counts.values()].sort((first, second) =>
+        second.count - first.count || first.code.localeCompare(second.code)),
+    }
+  }
+
+  /**
+   * Removes the proxies the user doesn't want, judged purely by the country of
+   * their entry IP — no connection is made, so filtered-out proxies never reach
+   * the scanner.
+   * @param {Array} [proxies] - Restrict the filter to these proxies (e.g. a
+   *   freshly fetched batch); defaults to the whole list.
+   * @param {{onProgress?: Function, signal?: AbortSignal, settings?: Object}}
+   *   [options] - `settings` overrides the stored filter (used by the one-off
+   *   "keep only this country" action).
+   * @returns {Promise<{removed: number, removedIds: Array<string>,
+   *   kept: number, unknown: number}>}
+   */
+  async applyCountryFilter (proxies, { onProgress, signal, settings } = {}) {
+    const filter = settings || await this.getCountryFilterSettings()
+    const empty = { removed: 0, removedIds: [], kept: 0, unknown: 0 }
+
+    if (filter.mode === 'off' || filter.countries.length === 0) {
+      return empty
+    }
+
+    const list = proxies || await this.getCustomProxies()
+
+    if (list.length === 0) {
+      return empty
+    }
+
+    const geo = await lookupCountries(
+      list.map((proxy) => hostFromUri(proxy.uri)),
+      { onProgress, signal },
+    )
+    const wanted = new Set(filter.countries)
+    const doomedIds = []
+    let unknown = 0
+
+    for (const proxy of list) {
+      const info = geo[hostFromUri(proxy.uri)]
+      const code = info && info.code ? info.code.toUpperCase() : ''
+
+      // A country that couldn't be resolved (hostname instead of an IP, or a
+      // geo service that doesn't know it) is only removed when the user asked
+      // for it — otherwise "keep only NL" would wipe out every entry the
+      // lookup happened to miss.
+      if (!code) {
+        unknown += 1
+        if (filter.removeUnknown) {
+          doomedIds.push(proxy.id)
+        }
+        continue
+      }
+
+      const matches = wanted.has(code)
+
+      if (filter.mode === 'block' ? matches : !matches) {
+        doomedIds.push(proxy.id)
+      }
+    }
+
+    const removed = await this.removeCustomProxiesByIds(doomedIds)
+
+    return {
+      removed,
+      removedIds: doomedIds,
+      kept: list.length - removed,
+      unknown,
+    }
+  }
+
+  /**
+   * One-off "I only need proxies from this country" action: keeps the given
+   * country (or countries) and removes everything else, regardless of the
+   * stored filter mode.
+   * @param {string|Array<string>} code
+   * @param {{onProgress?: Function, signal?: AbortSignal,
+   *   removeUnknown?: boolean}} [options]
+   * @returns {Promise<{removed: number, removedIds: Array<string>,
+   *   kept: number, unknown: number}>}
+   */
+  async keepOnlyCountries (
+    code,
+    { onProgress, signal, removeUnknown = true } = {},
+  ) {
+    const countries = normalizeCountryCodes(code)
+
+    if (countries.length === 0) {
+      return { removed: 0, removedIds: [], kept: 0, unknown: 0 }
+    }
+
+    return this.applyCountryFilter(null, {
+      onProgress,
+      signal,
+      settings: { mode: 'allow', countries, removeUnknown },
+    })
   }
 
   // ---------------------------------------------------------------------------
@@ -1412,9 +1702,10 @@ class ProxyManager {
 
   /**
    * Background job: fetch proxies from the configured sources, add the new
-   * ones, then (optionally) test them, drop the dead ones and sort the list by
-   * latency.
-   * @returns {Promise<{added: number, alive: number, removed: number}>}
+   * ones, drop the ones from unwanted countries, then (optionally) test what is
+   * left, drop the dead ones and sort the list by latency.
+   * @returns {Promise<{added: number, alive: number, removed: number,
+   *   filteredOut: number}>}
    */
   async fetchProxySources ({ force = false } = {}) {
     const settings = await this.getProxySourcesSettings()
@@ -1437,10 +1728,27 @@ class ProxyManager {
     const added = await this.addCustomProxies(collected)
     let alive = 0
     let removed = 0
+    let filteredOut = 0
+    let survivors = added
 
-    if (settings.autoTest && added.length > 0) {
+    // Country pre-filter: drop proxies from unwanted countries straight away,
+    // BEFORE the liveness scan, so no scan slot is spent on a proxy that would
+    // be deleted anyway.
+    const countryFilter = await this.getCountryFilterSettings()
+
+    if (countryFilter.auto && countryFilter.mode !== 'off' && added.length > 0) {
+      const { removedIds } = await this.applyCountryFilter(added, {
+        settings: countryFilter,
+      })
+      const dropped = new Set(removedIds)
+
+      filteredOut = removedIds.length
+      survivors = added.filter((proxy) => !dropped.has(proxy.id))
+    }
+
+    if (settings.autoTest && survivors.length > 0) {
       // Bound the work so a long list can't outlive the service worker.
-      const toTest = added.slice(0, 40)
+      const toTest = survivors.slice(0, 40)
       const results = await this.testProxies(toTest, { timeout: 5000 })
       const deadIds = []
 
@@ -1459,10 +1767,11 @@ class ProxyManager {
     }
 
     await browser.storage.local.set({ proxySourcesLastRun: Date.now() })
-    console.warn(
-      `Proxy sources: +${added.length}, alive ${alive}, removed ${removed}`,
+    console.log(
+      `Proxy sources: +${added.length}, alive ${alive}, removed ${removed}, ` +
+      `filtered by country ${filteredOut}`,
     )
-    return { added: added.length, alive, removed }
+    return { added: added.length, alive, removed, filteredOut }
   }
 
   async removeLocalProxy () {

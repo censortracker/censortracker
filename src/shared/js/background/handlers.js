@@ -7,6 +7,11 @@ import Registry from './registry'
 import * as server from './server'
 import Settings from './settings'
 import Task from './task'
+import {
+  checkForUpdate,
+  restoreUpdateBadge,
+  UPDATE_CHECK_INTERVAL_MINUTES,
+} from './update'
 import * as utilities from './utilities'
 
 export const showDisseminatorWarning = async (url) => {
@@ -45,6 +50,8 @@ export const handleOnAlarm = async ({ name }) => {
     await ProxyManager.removeBadProxies()
   } else if (name === TaskType.FETCH_PROXY_SOURCES) {
     await ProxyManager.fetchProxySources()
+  } else if (name === TaskType.CHECK_FOR_UPDATE) {
+    await checkForUpdate()
   } else if (name === TaskType.SET_PROXY) {
     const proxyingEnabled = await ProxyManager.isEnabled()
 
@@ -90,8 +97,13 @@ export const handleStartup = async () => {
     { name: TaskType.PING, minutes: 10 },
     { name: TaskType.SET_PROXY, minutes: 15 },
     { name: TaskType.REMOVE_BAD_PROXIES, minutes: 20 },
+    { name: TaskType.CHECK_FOR_UPDATE, minutes: UPDATE_CHECK_INTERVAL_MINUTES },
   ])
   await ProxyManager.applyProxySourcesSchedule()
+
+  // A badge does not survive a browser restart, but the stored flag does.
+  await restoreUpdateBadge()
+  await checkForUpdate()
   console.groupEnd()
 }
 
@@ -216,8 +228,17 @@ export const handleInstalled = async ({ reason }) => {
     await Task.schedule([
       { name: TaskType.SET_PROXY, minutes: 15 },
       { name: TaskType.REMOVE_BAD_PROXIES, minutes: 5 },
+      {
+        name: TaskType.CHECK_FOR_UPDATE,
+        minutes: UPDATE_CHECK_INTERVAL_MINUTES,
+      },
     ])
     await ProxyManager.applyProxySourcesSchedule()
+
+    // The build that just landed is by definition current: clear any badge
+    // left over from the version it replaced, then re-check.
+    await browser.storage.local.set({ updateAvailable: false })
+    await checkForUpdate()
   }
 }
 

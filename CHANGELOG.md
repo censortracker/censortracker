@@ -1,3 +1,39 @@
+# 20.10.0
+
+- **The extension now tells you when a new version is out.** This build is
+  installed from GitHub rather than a web store, so the browser never
+  announces a release on its own — `runtime.onUpdateAvailable` only fires when
+  a *store* has an update staged, which meant the existing "update available"
+  banner could never appear. The release feed is polled instead, every six
+  hours and at browser start, and the result shows up in three places:
+  - a small **↑ badge on the toolbar icon** — ambient, always visible, and
+    nothing to dismiss
+  - a **strip at the top of the popup** naming the new version, linking
+    straight to its release page
+  - the existing alert on the settings page, whose button now opens the
+    release instead of restarting the extension (restarting only ever
+    relaunched the version already installed)
+
+  Following any of those links clears the badge. Deliberately not a system
+  notification: a patch release does not warrant interrupting whatever the
+  user is doing. A failed or rate-limited check changes nothing and is retried
+  on the next tick, so an unreachable GitHub can never raise a false alarm.
+- Fixed the settings-button dot in the popup being decided by whichever of two
+  independent checks ran last, so an available update was silently
+  un-highlighted whenever the registry was non-empty
+
+- **The proxy list refreshes itself again.** The list is not only edited from
+  the settings page — the scheduled source fetch, the dead-hop recovery and
+  the bad-proxy cleanup all run in the background and write to storage
+  directly. The page was not listening for that, so whatever those jobs added
+  or removed stayed invisible until the page was reloaded by hand. It now
+  repaints on any outside change (and holds off while a check of its own is
+  running, so live per-row updates are not interrupted)
+- **"Fetch now" no longer leaves a stale grid when a source fails.** An
+  unreachable source threw past the re-render, so the grid kept showing the
+  list from before the click while the status sat on "Fetching…" forever. The
+  grid is now repainted whatever happens, and a failure says so
+
 # 20.9.4
 
 - **Proxies given as hostnames now get a country too.** Geo-IP only maps

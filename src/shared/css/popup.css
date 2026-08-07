@@ -26,6 +26,35 @@ a {
     margin: 20px;
 }
 
+/* "New version available" strip, pinned above everything else in the popup. */
+.update-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 9px 14px;
+    background: #2e7d32;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.update-banner:hover {
+    background: #276b2b;
+}
+
+.update-banner__text {
+    flex: 1;
+}
+
+.update-banner__arrow {
+    flex-shrink: 0;
+    font-size: 14px;
+    opacity: 0.9;
+}
+
 .main-page__image {
     padding: 10px 0;
     text-align: center;

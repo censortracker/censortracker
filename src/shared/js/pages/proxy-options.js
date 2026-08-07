@@ -1687,14 +1687,25 @@ import {
         const { added, alive, removed } =
           await ProxyManager.fetchProxySources({ force: true })
 
-        await renderCustomProxies()
         if (proxySourcesStatus) {
           proxySourcesStatus.textContent =
             `${i18nGetMessage('proxiesImportedLabel')}: +${added}  ✓${alive}  ✗${removed}`
         }
+      } catch (error) {
+        // A source that times out used to leave the status stuck on
+        // "Fetching…" and skip the re-render below, so the grid kept showing
+        // the list from before the click.
+        console.error(`Proxy source fetch failed: ${error}`)
+        if (proxySourcesStatus) {
+          proxySourcesStatus.textContent =
+            i18nGetMessage('proxySourcesFetchFailed')
+        }
       } finally {
         proxyTestingInProgress = false
         fetchProxySourcesButton.disabled = false
+        // Repaint whatever did land, even on a partial failure.
+        await renderCustomProxies()
+        await refreshCountryPicker()
       }
     })
   }
@@ -1829,6 +1840,44 @@ import {
 
   // Always show the address of the proxy currently in use.
   await refreshCurrentProxyAddress()
+
+  // The proxy list is not only edited from this page. The scheduled source
+  // fetch, the dead-hop recovery and the bad-proxy cleanup all run in the
+  // background service worker and write straight to storage — without this the
+  // grid would keep showing a stale list until the page was reloaded by hand.
+  const EXTERNAL_CHANGE_KEYS = [
+    'customProxies',
+    'proxyChain',
+    'proxyStatuses',
+  ]
+  let externalRefreshTimer = null
+
+  if (browser.storage && browser.storage.onChanged) {
+    browser.storage.onChanged.addListener((changes, areaName) => {
+      if (areaName !== 'local') {
+        return
+      }
+      if (!EXTERNAL_CHANGE_KEYS.some((key) => key in changes)) {
+        return
+      }
+      // While this page is running a check it repaints rows itself, one result
+      // at a time; a full re-render would fight those live updates.
+      if (checkController || proxyTestingInProgress) {
+        return
+      }
+
+      // A single fetch writes several of these keys in a row — coalesce them
+      // into one repaint.
+      clearTimeout(externalRefreshTimer)
+      externalRefreshTimer = setTimeout(() => {
+        renderCustomProxies()
+          .then(() => refreshCountryPicker())
+          .catch((error) => {
+            console.warn(`Proxy list refresh failed: ${error}`)
+          })
+      }, 250)
+    })
+  }
 
   const flashInvalidCustomProxy = () => {
     proxyServerInput.classList.add('invalid-input')

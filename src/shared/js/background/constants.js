@@ -3,6 +3,7 @@ export const TaskType = {
   REMOVE_BAD_PROXIES: 'removeBadProxies',
   SET_PROXY: 'setProxy',
   FETCH_PROXY_SOURCES: 'fetchProxySources',
+  CHECK_FOR_UPDATE: 'checkForUpdate',
 }
 
 /**

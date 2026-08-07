@@ -660,6 +660,9 @@
   "proxySourcesEnabledLabel": {
     "message": "Auto-fetch on a timer"
   },
+  "proxySourcesFetchFailed": {
+    "message": "Could not load the sources"
+  },
   "proxySourcesFetching": {
     "message": "Fetching…"
   },
@@ -857,6 +860,9 @@
   },
   "updateAvailableTitle": {
     "message": "Update available"
+  },
+  "updateBannerTitle": {
+    "message": "New version available:"
   },
   "updateLocalRegistryDesc": {
     "message": "Update the local database of the blocked websites for your region."

@@ -1,10 +1,8 @@
 import browser from 'Background/browser-api'
 import { RECOMMENDED_PROXY_SOURCES } from 'Background/constants'
 import {
-  countryFlagEmoji,
   getCachedGeo,
   hostFromUri,
-  isIpv4,
   lookupCountries,
 } from 'Background/geoip'
 import ProxyClient from 'Background/localproxy'
@@ -362,6 +360,10 @@ import {
   }
 
   // Builds the country flag/code badge from a cached geo entry.
+  // Only the country code, deliberately. A flag emoji is built from regional
+  // indicator pairs, and Windows ships no glyphs for them — Chrome there falls
+  // back to drawing the letters, so "🇳🇱 NL" renders as "NL NL". The full
+  // country name lives in the tooltip.
   const countryBadgeHtml = (uri, geo) => {
     const info = geo[hostFromUri(uri)]
 
@@ -369,10 +371,8 @@ import {
       return EMPTY_CELL
     }
 
-    const flag = countryFlagEmoji(info.code)
-
     return `<span class="cproxy-country" title="${escapeHtml(info.name || info.code)}">` +
-      `${flag ? `${flag} ` : ''}${escapeHtml(info.code)}</span>`
+      `${escapeHtml(info.code)}</span>`
   }
 
   // Exit-country cell: the country seen by websites when going through the
@@ -384,9 +384,8 @@ import {
     }
 
     const code = status.exitCountry || ''
-    const flag = code ? countryFlagEmoji(code) : ''
     const title = [code, status.exitIp].filter(Boolean).join(' · ')
-    const label = code ? `${flag ? `${flag} ` : ''}${escapeHtml(code)}` : 'IP'
+    const label = code ? escapeHtml(code) : 'IP'
 
     return `<span class="cproxy-country" title="${escapeHtml(title)}">${label}</span>`
   }
@@ -636,7 +635,8 @@ import {
     }
 
     const cache = await getCachedGeo()
-    const missing = hosts.filter((host) => isIpv4(host) && !(host in cache))
+    // Hostnames are included: lookupCountries() resolves them over DNS first.
+    const missing = hosts.filter((host) => host && !(host in cache))
 
     if (missing.length === 0) {
       return
@@ -1251,8 +1251,7 @@ import {
         keepOnlyCountrySelect.disabled = false
         keepOnlyCountrySelect.innerHTML = detected
           .map(({ code, name, count }) => {
-            const flag = countryFlagEmoji(code)
-            const label = `${flag ? `${flag} ` : ''}${code} — ${name} (${count})`
+            const label = `${code} — ${name} (${count})`
 
             return `<option value="${escapeHtml(code)}">${escapeHtml(label)}</option>`
           })

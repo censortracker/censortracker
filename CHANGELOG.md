@@ -1,5 +1,18 @@
 # 20.9.3
 
+- **Proxies given as hostnames now get a country too.** Geo-IP only maps
+  addresses, so until now a proxy written as `proxy.example.com` stayed
+  "unknown" no matter how often detection ran. Hostnames are resolved over
+  DNS-over-HTTPS first (Cloudflare, falling back to Google — extensions get no
+  DNS API on Chromium), then geo-located as before. Names sharing an address
+  cost a single geo lookup, and results are cached per hostname so nothing is
+  resolved twice. Note that resolving a name discloses it to the resolver —
+  the same class of exposure as the geo-IP lookup it feeds, and only for
+  hostname proxies
+- **Fixed country codes rendering as "NL NL".** The flag emoji was built from
+  regional indicator pairs, and Windows ships no glyphs for those, so Chrome
+  drew the letters instead — right next to the code. Flags are gone; the cells
+  show the code, with the full country name in the tooltip
 - **Sortable columns in the proxy list.** Click a column header to sort by it,
   click again to reverse; an arrow marks the active column. Name, address,
   country, exit country, ping, site-open latency and status are all sortable,

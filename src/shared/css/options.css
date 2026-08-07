@@ -570,6 +570,32 @@ a {
   white-space: nowrap;
 }
 
+/* Clickable column headers. */
+.cproxy-col--sortable {
+  cursor: pointer;
+  user-select: none;
+  border-radius: 3px;
+}
+
+.cproxy-col--sortable:hover {
+  color: #3b332b;
+  text-decoration: underline;
+}
+
+.cproxy-col--sortable:focus-visible {
+  outline: 2px solid #5173d3;
+  outline-offset: 1px;
+}
+
+.cproxy-col--sorted {
+  color: #3b332b;
+}
+
+.cproxy-sort-arrow {
+  font-size: 9px;
+  vertical-align: middle;
+}
+
 .cproxy-country-cell,
 .cproxy-exit-cell,
 .cproxy-ping-cell,

@@ -1,10 +1,8 @@
 import browser from 'Background/browser-api'
 import { RECOMMENDED_PROXY_SOURCES } from 'Background/constants'
 import {
-  countryFlagEmoji,
   getCachedGeo,
   hostFromUri,
-  isIpv4,
   lookupCountries,
 } from 'Background/geoip'
 import ProxyClient from 'Background/localproxy'
@@ -362,6 +360,10 @@ import {
   }
 
   // Builds the country flag/code badge from a cached geo entry.
+  // Only the country code, deliberately. A flag emoji is built from regional
+  // indicator pairs, and Windows ships no glyphs for them — Chrome there falls
+  // back to drawing the letters, so "🇳🇱 NL" renders as "NL NL". The full
+  // country name lives in the tooltip.
   const countryBadgeHtml = (uri, geo) => {
     const info = geo[hostFromUri(uri)]
 
@@ -369,10 +371,8 @@ import {
       return EMPTY_CELL
     }
 
-    const flag = countryFlagEmoji(info.code)
-
     return `<span class="cproxy-country" title="${escapeHtml(info.name || info.code)}">` +
-      `${flag ? `${flag} ` : ''}${escapeHtml(info.code)}</span>`
+      `${escapeHtml(info.code)}</span>`
   }
 
   // Exit-country cell: the country seen by websites when going through the
@@ -384,35 +384,118 @@ import {
     }
 
     const code = status.exitCountry || ''
-    const flag = code ? countryFlagEmoji(code) : ''
     const title = [code, status.exitIp].filter(Boolean).join(' · ')
-    const label = code ? `${flag ? `${flag} ` : ''}${escapeHtml(code)}` : 'IP'
+    const label = code ? escapeHtml(code) : 'IP'
 
     return `<span class="cproxy-country" title="${escapeHtml(title)}">${label}</span>`
   }
 
   // Header row of the proxy datagrid: one labelled column per parameter.
   const renderGridHeader = () => {
-    const col = (key, titleKey) => {
-      const title = titleKey
-        ? ` title="${escapeHtml(i18nGetMessage(titleKey))}"`
+    // `sortKey` makes the column clickable; the arrow marks the active one.
+    const col = (key, sortKey, titleKey) => {
+      const hint = titleKey ? i18nGetMessage(titleKey) : ''
+      const active = currentSort.key === sortKey
+      const arrow = active
+        ? ` <span class="cproxy-sort-arrow">${currentSort.dir === 'asc' ? '▲' : '▼'}</span>`
         : ''
+      const title = [hint, i18nGetMessage('proxySortHint')]
+        .filter(Boolean)
+        .join(' · ')
 
-      return `<span${title}>${escapeHtml(i18nGetMessage(key))}</span>`
+      return `<span class="cproxy-col--sortable${active ? ' cproxy-col--sorted' : ''}"
+        data-sort="${escapeHtml(sortKey)}" role="button" tabindex="0"
+        title="${escapeHtml(title)}">${escapeHtml(i18nGetMessage(key))}${arrow}</span>`
     }
 
     return `
-     <div class="cproxy-row cproxy-grid__header" aria-hidden="true">
+     <div class="cproxy-row cproxy-grid__header">
        <span></span>
-       ${col('proxyColName')}
-       ${col('proxyColAddress')}
-       ${col('proxyColCountry', 'proxyColCountryTitle')}
-       ${col('proxyColExit', 'proxyColExitTitle')}
-       ${col('proxyColPing', 'proxyColPingTitle')}
-       ${col('proxyColSite', 'proxyColSiteTitle')}
-       ${col('proxyColStatus')}
+       ${col('proxyColName', 'name')}
+       ${col('proxyColAddress', 'address')}
+       ${col('proxyColCountry', 'country', 'proxyColCountryTitle')}
+       ${col('proxyColExit', 'exit', 'proxyColExitTitle')}
+       ${col('proxyColPing', 'ping', 'proxyColPingTitle')}
+       ${col('proxyColSite', 'site', 'proxyColSiteTitle')}
+       ${col('proxyColStatus', 'status')}
        <span></span>
      </div>`
+  }
+
+  // Which column the datagrid is sorted by. This is a *view* preference: the
+  // stored list order is left alone, so sorting never disturbs the chain or
+  // the order the checker walks the list in.
+  const currentSort = { key: null, dir: 'asc' }
+
+  // Comparable value per column. Rows with nothing to compare sort last in
+  // both directions, so "sort by ping" never buries the tested proxies under
+  // a wall of untested ones.
+  const LAST = Number.MAX_SAFE_INTEGER
+  const sortValue = (proxy, key, { chain, statuses, geo }) => {
+    const status = statuses[proxy.id]
+
+    switch (key) {
+      case 'name':
+        return (proxy.name || proxy.uri || '').toLowerCase()
+      case 'address':
+        return `${proxy.protocol || ''} ${proxy.uri || ''}`.toLowerCase()
+      case 'country': {
+        const info = geo[hostFromUri(proxy.uri)]
+
+        return info && info.code ? info.code.toUpperCase() : ''
+      }
+      case 'exit':
+        return (status && status.exitCountry) || ''
+      case 'ping':
+        return status && typeof status.ping === 'number' ? status.ping : LAST
+      case 'site':
+        return status && status.alive && typeof status.latency === 'number'
+          ? status.latency
+          : LAST
+      case 'status':
+        // alive, then auth-required, then dead, then untested.
+        if (!status) {
+          return 3
+        }
+        if (status.alive) {
+          return 0
+        }
+        return status.needsAuth ? 1 : 2
+      default:
+        return 0
+    }
+  }
+
+  const sortProxiesForView = (proxies, context) => {
+    if (!currentSort.key) {
+      return proxies
+    }
+
+    const direction = currentSort.dir === 'asc' ? 1 : -1
+
+    return proxies
+      .map((proxy, index) => ({ proxy, index }))
+      .sort((first, second) => {
+        const left = sortValue(first.proxy, currentSort.key, context)
+        const right = sortValue(second.proxy, currentSort.key, context)
+
+        // Empty strings behave like the numeric sentinel: always last.
+        if (left === '' && right !== '') {
+          return 1
+        }
+        if (right === '' && left !== '') {
+          return -1
+        }
+        if (left < right) {
+          return -direction
+        }
+        if (left > right) {
+          return direction
+        }
+        // Stable: equal values keep their original order.
+        return first.index - second.index
+      })
+      .map((entry) => entry.proxy)
   }
 
   // Renders one row (built-in or user) of the proxy datagrid. A checked row
@@ -514,7 +597,9 @@ import {
       }, chain, statuses, geo)
     }
 
-    for (const proxy of proxies) {
+    // The built-in proxy stays pinned at the top; only the user's own entries
+    // are reordered.
+    for (const proxy of sortProxiesForView(proxies, { chain, statuses, geo })) {
       html += renderProxyRow(proxy, chain, statuses, geo)
     }
 
@@ -550,7 +635,8 @@ import {
     }
 
     const cache = await getCachedGeo()
-    const missing = hosts.filter((host) => isIpv4(host) && !(host in cache))
+    // Hostnames are included: lookupCountries() resolves them over DNS first.
+    const missing = hosts.filter((host) => host && !(host in cache))
 
     if (missing.length === 0) {
       return
@@ -753,6 +839,20 @@ import {
 
   // Toggle a proxy's membership in the chain (built-in or user). Marked
   // proxies are tried one after another, in the order they were marked.
+  // Keyboard parity for the sortable headers (they are role="button").
+  customProxyList.addEventListener('keydown', async (event) => {
+    if (event.key !== 'Enter' && event.key !== ' ') {
+      return
+    }
+
+    const header = event.target.closest('.cproxy-col--sortable')
+
+    if (header) {
+      event.preventDefault()
+      await applySort(header)
+    }
+  })
+
   customProxyList.addEventListener('change', async (event) => {
     if (event.target.name !== 'chain-proxy') {
       return
@@ -781,7 +881,32 @@ import {
   })
 
   // Handle copy / test / edit / delete actions on rows.
+  // Column sorting. Handled before the check guard: reordering rows is a view
+  // change, so it stays available while a check is running.
+  const applySort = async (header) => {
+    const key = header.dataset.sort
+
+    if (!key) {
+      return
+    }
+
+    if (currentSort.key === key) {
+      currentSort.dir = currentSort.dir === 'asc' ? 'desc' : 'asc'
+    } else {
+      currentSort.key = key
+      currentSort.dir = 'asc'
+    }
+    await renderCustomProxies()
+  }
+
   customProxyList.addEventListener('click', async (event) => {
+    const header = event.target.closest('.cproxy-col--sortable')
+
+    if (header) {
+      await applySort(header)
+      return
+    }
+
     // Don't run single-row actions while a full check owns the proxy PAC.
     if (checkController) {
       return
@@ -1111,17 +1236,34 @@ import {
     if (keepOnlyCountrySelect) {
       const previous = keepOnlyCountrySelect.value
 
-      keepOnlyCountrySelect.innerHTML = detected
-        .map(({ code, name, count }) => {
-          const flag = countryFlagEmoji(code)
-          const label = `${flag ? `${flag} ` : ''}${code} — ${name} (${count})`
+      // An empty picker is a dead end: nothing to choose and no hint why.
+      // Countries are only known once they have been resolved, and only IPv4
+      // addresses can be resolved at all, so say which of those applies.
+      if (detected.length === 0) {
+        const reasonKey = proxies.length === 0
+          ? 'countryPickerNoProxies'
+          : 'countryPickerNotDetected'
 
-          return `<option value="${escapeHtml(code)}">${escapeHtml(label)}</option>`
-        })
-        .join('')
-      if (previous && counts.has(previous)) {
-        keepOnlyCountrySelect.value = previous
+        keepOnlyCountrySelect.innerHTML =
+          `<option value="">${escapeHtml(i18nGetMessage(reasonKey))}</option>`
+        keepOnlyCountrySelect.disabled = true
+      } else {
+        keepOnlyCountrySelect.disabled = false
+        keepOnlyCountrySelect.innerHTML = detected
+          .map(({ code, name, count }) => {
+            const label = `${code} — ${name} (${count})`
+
+            return `<option value="${escapeHtml(code)}">${escapeHtml(label)}</option>`
+          })
+          .join('')
+        if (previous && counts.has(previous)) {
+          keepOnlyCountrySelect.value = previous
+        }
       }
+    }
+
+    if (keepOnlyCountryButton) {
+      keepOnlyCountryButton.disabled = detected.length === 0
     }
 
     if (detectedCountriesList) {

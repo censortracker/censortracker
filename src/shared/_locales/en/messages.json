@@ -188,6 +188,12 @@
   "countryKZ": {
     "message": "Kazakhstan"
   },
+  "countryPickerNoProxies": {
+    "message": "The proxy list is empty"
+  },
+  "countryPickerNotDetected": {
+    "message": "Press \"Determine countries\" first"
+  },
   "countryRU": {
     "message": "Russia"
   },
@@ -644,6 +650,9 @@
   },
   "proxySettings": {
     "message": "Proxy Settings"
+  },
+  "proxySortHint": {
+    "message": "Click to sort by this column"
   },
   "proxySourcesAutoTestLabel": {
     "message": "Test, remove dead, sort by latency"

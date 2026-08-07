@@ -223,17 +223,25 @@ import Settings from 'Background/settings'
     const fileReader = new FileReader()
 
     fileReader.addEventListener('load', async (e) => {
-      const contents = e.target.result
-      const data = JSON.parse(contents)
+      // A hand-edited or truncated file must not leave the extension
+      // half-imported, so both parsing and validation are guarded.
+      try {
+        const data = JSON.parse(e.target.result)
 
-      await Settings.importSettings(data)
+        await Settings.importSettings(data)
+      } catch (error) {
+        console.error(`[Settings] Import failed: ${error}`)
+        return
+      }
 
-      // Render new state
-      window.location.reload()
-
+      // The import only restored user settings; everything derived from them
+      // has to be re-fetched before the page shows the new state.
       await server.synchronize({ syncRegistry: true })
       await ProxyManager.setProxy()
       await ProxyManager.ping()
+
+      // Render new state
+      window.location.reload()
     })
     fileReader.readAsText(file)
   })

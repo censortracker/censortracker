@@ -145,7 +145,25 @@ export const getPacScript = (
             shExpMatch(host, '127.*') ||
             shExpMatch(host, '10.*') ||
             shExpMatch(host, '192.168.*') ||
-            host === '::1'
+            // 172.16.0.0/12. Only '*' and '?' are portable across PAC
+            // engines, so the range is spelled out rather than written as a
+            // character class: '172.2?.' matches exactly 172.20-172.29 and
+            // never the public 172.2.x.x.
+            shExpMatch(host, '172.16.*') ||
+            shExpMatch(host, '172.17.*') ||
+            shExpMatch(host, '172.18.*') ||
+            shExpMatch(host, '172.19.*') ||
+            shExpMatch(host, '172.2?.*') ||
+            shExpMatch(host, '172.30.*') ||
+            shExpMatch(host, '172.31.*') ||
+            // Link-local (169.254.0.0/16) — DHCP failure and cloud metadata.
+            shExpMatch(host, '169.254.*') ||
+            host === '0.0.0.0' ||
+            host === '::1' ||
+            // IPv6 unique-local (fc00::/7) and link-local (fe80::/10).
+            shExpMatch(host, 'fc??:*') ||
+            shExpMatch(host, 'fd??:*') ||
+            shExpMatch(host, 'fe80:*')
           ) {
             return 'DIRECT';
           }

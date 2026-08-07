@@ -4,14 +4,11 @@
   <meta charset="UTF-8"/>
   <title data-i18n-key="incognitoRequiredPageTitle"></title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <link rel="stylesheet" href="css/unavailable.css"/>
+  <link rel="stylesheet" href="css/options.css"/>
 </head>
 
 <body>
 <div class="main-container">
-  <div class="page-header" data-i18n-key="unavailablePageTitle">
-    <%= htmlWebpackPlugin.options.title %>
-  </div>
   <div class="main-page">
     <div class="main-page__image">
       <img src="images/icons/512x512/blocked.png"
@@ -19,7 +16,7 @@
     </div>
     <div class="main-page__info">
       <div class="main-page__title" data-i18n-key="incognitoAccessRequiredTitle"></div>
-      <div class="main-page__text" data-i18n-key="incognitoAccessRequiredDescription" data-i18n-render-prop="url"></div>
+      <div class="main-page__content" data-i18n-key="incognitoAccessRequiredDescription" data-i18n-render-prop="url"></div>
       <div class="main-page__btn">
         <button class="btn btn-dark" id="howToGrantIncognitoAccess">
           <span class="btn__text" data-i18n-key="howToGrantIncognitoAccessBtnTitle"></span>

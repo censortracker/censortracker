@@ -649,6 +649,12 @@ a {
   color: #6d675f;
 }
 
+/* Waiting for its batch — deliberately dimmer than "checking". */
+.cproxy-status--queued {
+  color: #9a948c;
+  font-style: italic;
+}
+
 .cproxy-status--alive {
   color: #2e7d32;
 }
@@ -657,8 +663,14 @@ a {
   color: #c0392b;
 }
 
+/* Reachable but refused us without credentials: a warning, not a failure. */
+.cproxy-status--needsauth {
+  color: #e65100;
+}
+
 .cproxy-status--alive::before,
-.cproxy-status--dead::before {
+.cproxy-status--dead::before,
+.cproxy-status--needsauth::before {
   content: "\25cf\00a0";
 }
 

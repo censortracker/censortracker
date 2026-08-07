@@ -1,6 +1,6 @@
 {
   "root": true,
-  "parser": "babel-eslint",
+  "parser": "@babel/eslint-parser",
   "extends": [
     "@atomix",
     "standard"
@@ -18,7 +18,8 @@
       "globalReturn": false,
       "modules": true,
       "experimentalObjectRestSpread": true
-    }
+    },
+    "requireConfigFile": false
   },
   "globals": {
     "chrome": true,

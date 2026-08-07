@@ -72,6 +72,7 @@ import {
   const removeDeadProxiesButton = document.getElementById('removeDeadProxiesButton')
   const removeUntestedProxiesButton = document.getElementById('removeUntestedProxiesButton')
   const removeUncheckedProxiesButton = document.getElementById('removeUncheckedProxiesButton')
+  const removeDuplicateProxiesButton = document.getElementById('removeDuplicateProxiesButton')
   const removeAllProxiesButton = document.getElementById('removeAllProxiesButton')
   const proxyListToggle = document.getElementById('proxyListToggle')
   const proxyListBody = document.getElementById('proxyListBody')
@@ -214,12 +215,17 @@ import {
       }
       div.id = `proxyconf-${id}`
       div.className = 'proxy-list__block'
+      // The config id and name come from the local proxy daemon's HTTP API,
+      // i.e. across a trust boundary, so neither goes into markup unescaped.
+      const safeId = escapeHtml(id)
+      const safeName = escapeHtml(name)
+
       div.innerHTML = `
        <div class="radio-button proxy-list__block-item">
-        <input class="radio-button-input" type="radio" name="local-proxy" id="${id}" value="${id}"
-          ${isActive ? 'checked' : ''} data-config-name="${name}"/>
-        <label class="radio-button-label" for="${id}">${name}</label>
-        <div class="proxy-list__block-item__btn delete-config" data-id="${id}">
+        <input class="radio-button-input" type="radio" name="local-proxy" id="${safeId}" value="${safeId}"
+          ${isActive ? 'checked' : ''} data-config-name="${safeName}"/>
+        <label class="radio-button-label" for="${safeId}">${safeName}</label>
+        <div class="proxy-list__block-item__btn delete-config" data-id="${safeId}">
           <svg class="close-icon" width="24" height="24" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg">
             <path d="M10 10L34 34M34 10L10 34" stroke="currentColor" stroke-opacity="0.8" stroke-width="2"/>
           </svg>
@@ -337,6 +343,11 @@ import {
     if (status.alive) {
       return `<span class="cproxy-status cproxy-status--alive">${escapeHtml(i18nGetMessage('proxyStatusAlive'))}</span>`
     }
+    // Reachable but rejected us for lack of credentials — worth telling apart
+    // from "dead", since the fix is to edit the proxy, not to delete it.
+    if (status.needsAuth) {
+      return `<span class="cproxy-status cproxy-status--needsauth">${escapeHtml(i18nGetMessage('proxyStatusNeedsAuth'))}</span>`
+    }
     return `<span class="cproxy-status cproxy-status--dead">${escapeHtml(i18nGetMessage('proxyStatusDead'))}</span>`
   }
 
@@ -426,9 +437,12 @@ import {
     const badge = builtin
       ? ` <span class="cproxy-badge">${escapeHtml(i18nGetMessage('builtinProxyBadge'))}</span>`
       : ''
+    // Ids are generated internally, but they also survive a settings import,
+    // so they are escaped like any other value reaching the markup.
+    const safeId = escapeHtml(id)
     const deleteBtn = builtin
       ? ''
-      : `<button type="button" class="cproxy-icon-btn cproxy-del" data-id="${id}"
+      : `<button type="button" class="cproxy-icon-btn cproxy-del" data-id="${safeId}"
             title="${escapeHtml(i18nGetMessage('deleteProxyButton'))}">
           <svg width="20" height="20" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg">
             <path d="M10 10L34 34M34 10L10 34" stroke="currentColor" stroke-width="3"/>
@@ -436,9 +450,9 @@ import {
         </button>`
 
     return `
-     <div class="cproxy-row${inChain ? ' cproxy-row--active' : ''}" data-id="${id}">
+     <div class="cproxy-row${inChain ? ' cproxy-row--active' : ''}" data-id="${safeId}">
        <label class="cproxy-row__main">
-         <input type="checkbox" name="chain-proxy" value="${id}" ${inChain ? 'checked' : ''}/>
+         <input type="checkbox" name="chain-proxy" value="${safeId}" ${inChain ? 'checked' : ''}/>
          ${order}
        </label>
        <span class="cproxy-row__name" title="${escapeHtml(name)}">${escapeHtml(name)}${badge}</span>
@@ -450,21 +464,21 @@ import {
        <span class="cproxy-status-cell">${statusBadgeHtml(status)}</span>
        <div class="cproxy-row__actions">
          <button type="button" class="cproxy-icon-btn cproxy-copy"
-                 data-id="${id}" title="${escapeHtml(i18nGetMessage('shareProxyButton'))}">
+                 data-id="${safeId}" title="${escapeHtml(i18nGetMessage('shareProxyButton'))}">
            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
              <rect x="9" y="9" width="11" height="11" rx="2" stroke="currentColor" stroke-width="2"/>
              <path d="M5 15V5a2 2 0 0 1 2-2h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
            </svg>
          </button>
          <button type="button" class="cproxy-icon-btn cproxy-test"
-                 data-id="${id}" title="${escapeHtml(i18nGetMessage('testProxyButton'))}">
+                 data-id="${safeId}" title="${escapeHtml(i18nGetMessage('testProxyButton'))}">
            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
              <path d="M20 12a8 8 0 1 1-2.34-5.66" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
              <path d="M20 4v4h-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
            </svg>
          </button>
          <button type="button" class="cproxy-icon-btn cproxy-edit"
-                 data-id="${id}" data-builtin="${builtin}" title="${escapeHtml(editTitle)}">
+                 data-id="${safeId}" data-builtin="${builtin}" title="${escapeHtml(editTitle)}">
            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
              <path d="M4 20h4L18.5 9.5a2 2 0 0 0-2.83-2.83L5 17.17V20z"
                    stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
@@ -664,7 +678,19 @@ import {
 
     if (cell) {
       cell.innerHTML =
-        `<span class="cproxy-status cproxy-status--checking">${i18nGetMessage('proxyStatusChecking')}</span>`
+        `<span class="cproxy-status cproxy-status--checking">${escapeHtml(i18nGetMessage('proxyStatusChecking'))}</span>`
+    }
+  }
+
+  // Rows are marked "queued" up front and flipped to "checking" only when
+  // their batch actually starts, so a 200-proxy run no longer claims to be
+  // probing all 200 at once.
+  const setRowQueued = (id) => {
+    const cell = rowStatusCell(id)
+
+    if (cell) {
+      cell.innerHTML =
+        `<span class="cproxy-status cproxy-status--queued">${escapeHtml(i18nGetMessage('proxyStatusQueued'))}</span>`
     }
   }
 
@@ -907,7 +933,7 @@ import {
       }
 
       for (const proxy of list) {
-        setRowChecking(proxy.id)
+        setRowQueued(proxy.id)
       }
 
       const total = list.length
@@ -924,15 +950,26 @@ import {
         // removal happens once, after the run, via removeDeadCustomProxies().
         await ProxyManager.testProxies(list, {
           signal: checkController.signal,
+          onBatchStart: (ids) => {
+            for (const id of ids) {
+              setRowChecking(id)
+            }
+          },
           onResult: (id, status) => {
             done += 1
             if (status.alive) {
               alive += 1
               setRowStatus(id, status)
             } else {
-              dead += 1
+              // A proxy that answered 407 is reachable and is kept by
+              // removeDeadCustomProxies(), so it is neither counted as dead
+              // nor hidden — otherwise the row would vanish from a list it is
+              // still in.
+              if (!status.needsAuth) {
+                dead += 1
+              }
               // Instant visual feedback; the built-in proxy is never removable.
-              if (autoDelete && id !== 'builtin') {
+              if (autoDelete && !status.needsAuth && id !== 'builtin') {
                 removeRowFromList(id)
               } else {
                 setRowStatus(id, status)
@@ -1009,6 +1046,11 @@ import {
   setupBulkRemoveButton(
     removeUntestedProxiesButton,
     () => ProxyManager.removeUntestedCustomProxies(),
+  )
+  // Collapse proxies pointing at the same endpoint, keeping the first of each.
+  setupBulkRemoveButton(
+    removeDuplicateProxiesButton,
+    () => ProxyManager.removeDuplicateCustomProxies(),
   )
   // Remove every proxy that is not ticked into the chain.
   setupBulkRemoveButton(

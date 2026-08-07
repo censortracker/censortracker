@@ -1,3 +1,83 @@
+# 20.9.0
+
+Hardening and proxy-list quality-of-life, ported from the `jimdi/censortracker`
+fork and reworked to fit this tree.
+
+Security:
+
+- **PAC injection fixed.** `fetchSourceText()` interpolated the proxy chain
+  into a single-quoted PAC string literal without escaping. A quote inside a
+  proxy URI — routinely fetched from third-party subscription feeds — closed
+  the literal and ran arbitrary code inside the PAC sandbox. The directive is
+  now emitted via `JSON.stringify()`
+- **Private ranges no longer leak through the proxy** in proxy-all mode. The
+  bypass list covered only `127.*`, `10.*`, `192.168.*` and `::1`; it now also
+  covers `172.16.0.0/12`, link-local `169.254.0.0/16`, `0.0.0.0`, IPv6
+  unique-local (`fc00::/7`) and IPv6 link-local (`fe80::/10`)
+- **Settings import is allow-listed and shape-checked.** `importSettings()`
+  wrote an arbitrary JSON file straight into `storage.local`, which let a
+  shared settings file pin a chosen proxy server or forge the blocklist. Only
+  user-owned settings are restored now; everything derived is re-synced.
+  Unlike the fork's version the allow-list includes `customProxies`/
+  `proxyChain`, so exporting settings remains a usable backup of the proxy
+  list — and because that makes proxy ids reachable from a file, the imported
+  list is validated: ids must look like ones the extension issues, entries
+  without a protocol or URI are dropped, duplicate ids are collapsed, and
+  chain entries pointing at nothing are removed
+- **Markup escaping in the proxy list.** Proxy ids went into `data-id="…"`
+  unescaped, as did the id and name of every local-proxy config — the latter
+  arriving from the local daemon's HTTP API. Both are escaped now
+- Server responses are validated before use: a malformed proxy payload can no
+  longer be stored as the literal URI `undefined:undefined`, the ignore feed is
+  rejected unless it is an array of real domains, and config mirrors returning
+  a non-object are skipped
+- `atob()` on the `loadFor` parameter is guarded and the result must be an
+  http(s) URL; local-proxy config UUIDs are URL-encoded; the options page no
+  longer publishes the `server` module as `window.server`
+
+Fixes:
+
+- `setProxy()` calls are serialized. Storage changes, tab events and the
+  options page can all trigger a PAC rebuild at once, and overlapping runs
+  raced — the slower one won and could install a PAC built from an already
+  stale domain list or chain
+- Config mirrors are now fetched in parallel instead of one-at-a-time, so an
+  unreachable mirror no longer costs a full 8s timeout before the next is
+  tried. The winner is still chosen by mirror *priority*, not by whoever
+  answers first, and the GeoIP lookup and storage writes happen once, for the
+  winner only
+- A reachable GeoIP service that answers without a country code now falls back
+  to the default region instead of returning `undefined`, which matched no
+  config entry and flagged a supported country as unsupported
+- A malformed disseminators (ORI) payload is no longer stored. The registry
+  calls `.find()` on that value for every tab load, so one bad sync used to
+  break disseminator warnings for the rest of the session
+- Fixed the Firefox "incognito required" tab page, which linked a stylesheet
+  that does not exist and rendered completely unstyled. It also carried the
+  only i18n key in the tree with no translation; every key referenced anywhere
+  now resolves in all three locales
+
+Proxy list:
+
+- Adding a proxy that is already in the list no longer creates a duplicate
+  (the bulk paste/subscription path already de-duplicated; the single-add form
+  did not)
+- New **"Remove duplicates"** toolbar button. A chain slot held by a removed
+  duplicate is handed over to the surviving entry instead of being dropped
+- Proxies answering **407 Proxy Authentication Required** get their own
+  "auth required" status instead of being reported as dead — and are no longer
+  deleted by dead-proxy auto-removal, since they work once credentials are set
+- During a check, rows now show "queued" until their batch actually starts, so
+  a large run no longer claims to be probing every proxy at once
+
+Build:
+
+- Replaced the deprecated `eslint-loader` with `eslint-webpack-plugin` and
+  moved from ESLint 6.8 to 8.57 (`babel-eslint` → `@babel/eslint-parser`). The
+  rule set was preserved rather than reset — verified by diffing
+  `eslint --print-config`, 229 enabled rules became 238 with nothing weakened.
+  Dropped five devDependencies nothing referenced any more
+
 # 20.8.0
 
 - New country pre-filter for the proxy list. A proxy's country is resolved from

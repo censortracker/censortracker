@@ -678,6 +678,12 @@
   "proxyStatusDead": {
     "message": "dead"
   },
+  "proxyStatusNeedsAuth": {
+    "message": "auth required"
+  },
+  "proxyStatusQueued": {
+    "message": "queued"
+  },
   "proxyStatusUntested": {
     "message": "not tested"
   },
@@ -728,6 +734,9 @@
   },
   "removeDeadProxiesButton": {
     "message": "Remove dead"
+  },
+  "removeDuplicateProxiesButton": {
+    "message": "Remove duplicates"
   },
   "removeUncheckedProxiesButton": {
     "message": "Remove unchecked"

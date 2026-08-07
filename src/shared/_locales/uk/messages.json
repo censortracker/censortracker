@@ -660,6 +660,9 @@
   "proxySourcesEnabledLabel": {
     "message": "Автозавантаження за таймером"
   },
+  "proxySourcesFetchFailed": {
+    "message": "Не вдалося завантажити джерела"
+  },
   "proxySourcesFetching": {
     "message": "Завантаження…"
   },

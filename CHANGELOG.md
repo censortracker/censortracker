@@ -1,3 +1,17 @@
+# 20.9.5
+
+- **The proxy list refreshes itself again.** The list is not only edited from
+  the settings page — the scheduled source fetch, the dead-hop recovery and
+  the bad-proxy cleanup all run in the background and write to storage
+  directly. The page was not listening for that, so whatever those jobs added
+  or removed stayed invisible until the page was reloaded by hand. It now
+  repaints on any outside change (and holds off while a check of its own is
+  running, so live per-row updates are not interrupted)
+- **"Fetch now" no longer leaves a stale grid when a source fails.** An
+  unreachable source threw past the re-render, so the grid kept showing the
+  list from before the click while the status sat on "Fetching…" forever. The
+  grid is now repainted whatever happens, and a failure says so
+
 # 20.9.4
 
 - **Proxies given as hostnames now get a country too.** Geo-IP only maps

@@ -1,6 +1,8 @@
 import browser from 'Background/browser-api'
 import ProxyManager from 'Background/proxy'
 import Registry from 'Background/registry'
+import { dismissUpdate, getReleasesPageUrl } from 'Background/update'
+import { i18nGetMessage } from 'Background/utilities'
 
 (async () => {
   const proxyingEnabled = await ProxyManager.isEnabled()
@@ -33,11 +35,27 @@ import Registry from 'Background/registry'
 
   browser.storage.local.get({
     updateAvailable: false,
+    latestVersion: '',
+    latestReleaseUrl: '',
     backendIsIntermittent: false,
-    botDetection: false,
-  }).then(({ updateAvailable, backendIsIntermittent, botDetection }) => {
+  }).then(({
+    updateAvailable,
+    latestVersion,
+    latestReleaseUrl,
+    backendIsIntermittent,
+  }) => {
     if (updateAvailable) {
       updateAvailableAlert.classList.remove('hidden')
+      // This build comes from GitHub, so "update" means "go and download the
+      // new package" — reloading the extension would only restart the version
+      // that is already installed.
+      updateExtensionButton.href = latestReleaseUrl || getReleasesPageUrl()
+      updateExtensionButton.target = '_blank'
+      updateExtensionButton.rel = 'noopener noreferrer'
+      if (latestVersion) {
+        updateExtensionButton.textContent =
+          `${i18nGetMessage('updateAvailableButtonTitle')} — ${latestVersion}`
+      }
     }
 
     if (backendIsIntermittentAlert) {
@@ -45,11 +63,10 @@ import Registry from 'Background/registry'
     }
   })
 
-  updateExtensionButton.addEventListener('click', async (event) => {
-    browser.storage.local.set({ updateAvailable: false })
-      .then(() => {
-        browser.runtime.reload()
-      })
+  updateExtensionButton.addEventListener('click', () => {
+    dismissUpdate().catch((error) => {
+      console.warn(`Could not clear the update badge: ${error}`)
+    })
   })
 
   Registry.isEmpty().then((isEmpty) => {

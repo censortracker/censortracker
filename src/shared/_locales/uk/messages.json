@@ -861,6 +861,9 @@
   "updateAvailableTitle": {
     "message": "Доступне оновлення"
   },
+  "updateBannerTitle": {
+    "message": "Доступна нова версія:"
+  },
   "updateLocalRegistryDesc": {
     "message": "Оновити локальну базу даних для вашого регіону."
   },

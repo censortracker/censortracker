@@ -4,6 +4,7 @@ import Ignore from 'Background/ignore'
 import ProxyManager from 'Background/proxy'
 import Registry from 'Background/registry'
 import Settings from 'Background/settings'
+import { dismissUpdate, getReleasesPageUrl } from 'Background/update'
 import { extractHostnameFromUrl, i18nGetMessage, isI2PUrl, isOnionUrl, isValidURL, withTimeout } from 'Background/utilities';
 
 (async () => {
@@ -39,6 +40,12 @@ import { extractHostnameFromUrl, i18nGetMessage, isI2PUrl, isOnionUrl, isValidUR
   const i2pNetwork = document.getElementById('i2pNetwork')
   const openOptionsPage = document.getElementById('openOptionsPage')
   const highlightOptionsIcon = document.getElementById('highlightOptionsIcon')
+  const updateAvailableBanner = document.getElementById(
+    'updateAvailableBanner',
+  )
+  const updateAvailableBannerText = document.getElementById(
+    'updateAvailableBannerText',
+  )
   const popupLocalProxyName = document.getElementById('popupLocalProxyName')
   const relatedDomainsHelper = document.getElementById('relatedDomainsHelper')
   const relatedDomainsList = document.getElementById('relatedDomainsList')
@@ -72,24 +79,54 @@ import { extractHostnameFromUrl, i18nGetMessage, isI2PUrl, isOnionUrl, isValidUR
     await browser.runtime.openOptionsPage()
   })
 
-  // Highlight settings button when update is available.
-  browser.storage.local.get({ updateAvailable: false })
-    .then(({ updateAvailable }) => {
-      if (updateAvailable) {
-        highlightOptionsIcon.classList.remove('hidden')
-      } else {
-        highlightOptionsIcon.classList.add('hidden')
-      }
-    })
+  // "New version" banner. This build is installed from GitHub, so the browser
+  // never announces a release on its own — the popup is where the user is most
+  // likely to see it, and the link goes straight to the release page.
+  browser.storage.local.get({
+    updateAvailable: false,
+    latestVersion: '',
+    latestReleaseUrl: '',
+  }).then(({ updateAvailable, latestVersion, latestReleaseUrl }) => {
+    if (!updateAvailableBanner || !updateAvailable) {
+      return
+    }
 
-  // Highlight settings button when there are nothing to proxy.
-  Registry.isEmpty().then((isEmpty) => {
-    if (isEmpty) {
+    updateAvailableBannerText.textContent = latestVersion
+      ? `${i18nGetMessage('updateBannerTitle')} ${latestVersion}`
+      : i18nGetMessage('updateBannerTitle')
+    updateAvailableBanner.href = latestReleaseUrl || getReleasesPageUrl()
+    updateAvailableBanner.classList.remove('hidden')
+  })
+
+  if (updateAvailableBanner) {
+    // Following the link counts as having seen it: drop the badge so it does
+    // not nag afterwards. The next check re-raises it only for a newer
+    // release than the one just opened.
+    updateAvailableBanner.addEventListener('click', () => {
+      dismissUpdate().catch((error) => {
+        console.warn(`Could not clear the update badge: ${error}`)
+      })
+    })
+  }
+
+  // The settings button gets a dot when the update banner is showing OR when
+  // there is nothing to proxy. These used to be two independent writes to the
+  // same element, so whichever ran second decided — and an available update
+  // was silently un-highlighted whenever the registry was non-empty.
+  const refreshOptionsHighlight = async () => {
+    const [{ updateAvailable }, registryIsEmpty] = await Promise.all([
+      browser.storage.local.get({ updateAvailable: false }),
+      Registry.isEmpty(),
+    ])
+
+    if (updateAvailable || registryIsEmpty) {
       highlightOptionsIcon.classList.remove('hidden')
     } else {
       highlightOptionsIcon.classList.add('hidden')
     }
-  })
+  }
+
+  refreshOptionsHighlight()
 
   // Show page with instructions about how to grand incognito access
   privateBrowsingPermissionsRequiredButton.addEventListener('click', () => {

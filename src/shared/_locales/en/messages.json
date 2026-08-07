@@ -861,6 +861,9 @@
   "updateAvailableTitle": {
     "message": "Update available"
   },
+  "updateBannerTitle": {
+    "message": "New version available:"
+  },
   "updateLocalRegistryDesc": {
     "message": "Update the local database of the blocked websites for your region."
   },

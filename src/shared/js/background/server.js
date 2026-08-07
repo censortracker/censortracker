@@ -48,6 +48,14 @@ const inquireCountryCode = async (geoIPServiceURL) => {
     const response = await fetchWithTimeout(geoIPServiceURL, { timeout: 5000 })
     const { countryCode } = await response.json()
 
+    // A reachable service answering without a country code used to return
+    // `undefined`, which matches no config entry and made the caller flag a
+    // perfectly supported country as unsupported. Treat it as a failure.
+    if (!isNonEmptyString(countryCode)) {
+      console.warn('[GeoIP] No country code in the response. Using fallback.')
+      return FALLBACK_COUNTRY_CODE
+    }
+
     return countryCode
   } catch (error) {
     console.error('[GeoIP] Error on fetching country code. Using fallback.')
@@ -354,6 +362,14 @@ const fetchRegistry = async ({ registryUrl, specifics = {} } = {}) => {
         timeout: 15000,
       })
       const data = await response.json()
+
+      // Registry.retrieveDisseminator() calls .find() on this, and it runs on
+      // every tab load — storing a non-array (an error object, say) would
+      // throw there for the rest of the session.
+      if (!Array.isArray(data)) {
+        console.warn('[Registry] Disseminators response is not an array.')
+        return
+      }
 
       await browser.storage.local.set({ disseminators: data })
     } catch (error) {

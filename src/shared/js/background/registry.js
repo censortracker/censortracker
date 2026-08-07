@@ -39,7 +39,10 @@ const getRegistryState = () => {
       customProxiedDomains,
     }) => ({
       useRegistry,
-      disseminators,
+      // Storage can still hold a non-array from a sync that predates the
+      // validation in server.js, and retrieveDisseminator() calls .find() on
+      // this for every tab load.
+      disseminators: Array.isArray(disseminators) ? disseminators : [],
       domains: new Set(domains),
       ignoredHosts: new Set(ignoredHosts),
       customProxiedDomains: new Set(customProxiedDomains),

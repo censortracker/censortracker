@@ -1,3 +1,20 @@
+# 20.9.3
+
+- **Sortable columns in the proxy list.** Click a column header to sort by it,
+  click again to reverse; an arrow marks the active column. Name, address,
+  country, exit country, ping, site-open latency and status are all sortable,
+  and the headers are keyboard-operable. Sorting is a view preference — the
+  stored order is left alone, so it never disturbs the chain or the order the
+  checker walks the list in. Rows with nothing to compare (an untested proxy
+  under "ping", say) always sort last, in both directions
+- **The "keep only" country picker no longer looks broken when it is empty.**
+  It is filled from countries that have already been resolved, so before a
+  detection run there was simply nothing to choose and no hint why. It now
+  says which case applies — the proxy list is empty, or the countries have not
+  been determined yet — and the button next to it is disabled until there is
+  something to pick. Note that only proxies given as IPv4 addresses can have
+  their country resolved; ones given as hostnames stay unknown
+
 # 20.9.2
 
 - **Fixed proxying refusing to switch on whenever the site list was not

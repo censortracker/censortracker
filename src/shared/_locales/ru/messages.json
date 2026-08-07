@@ -188,6 +188,12 @@
   "countryKZ": {
     "message": "Казахстан"
   },
+  "countryPickerNoProxies": {
+    "message": "Список прокси пуст"
+  },
+  "countryPickerNotDetected": {
+    "message": "Сначала нажмите «Определить страны»"
+  },
   "countryRU": {
     "message": "Россия"
   },
@@ -644,6 +650,9 @@
   },
   "proxySettings": {
     "message": "Настройки прокси"
+  },
+  "proxySortHint": {
+    "message": "Нажмите, чтобы отсортировать по этому столбцу"
   },
   "proxySourcesAutoTestLabel": {
     "message": "Проверять, удалять нерабочие, сортировать по задержке"

@@ -1,4 +1,4 @@
-# 20.9.3
+# 20.9.4
 
 - **Proxies given as hostnames now get a country too.** Geo-IP only maps
   addresses, so until now a proxy written as `proxy.example.com` stayed
@@ -25,8 +25,7 @@
   detection run there was simply nothing to choose and no hint why. It now
   says which case applies — the proxy list is empty, or the countries have not
   been determined yet — and the button next to it is disabled until there is
-  something to pick. Note that only proxies given as IPv4 addresses can have
-  their country resolved; ones given as hostnames stay unknown
+  something to pick
 
 # 20.9.2
 

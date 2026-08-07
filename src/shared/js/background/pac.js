@@ -1,6 +1,57 @@
 import { proxyToPacToken } from './utilities'
 
 /**
+ * Converts an internationalized host to its Punycode (ASCII) form.
+ *
+ * The URL parser does the IDNA work, so no punycode dependency is needed. A
+ * value the parser rejects is returned unchanged when it is already ASCII, and
+ * dropped when it is not — an unconvertible Unicode entry could only poison
+ * the PAC.
+ * @param domain {string} Host, possibly internationalized.
+ * @returns {string} ASCII host, or '' when the value is unusable.
+ */
+const toPunycode = (domain) => {
+  if (typeof domain !== 'string' || !domain) {
+    return ''
+  }
+
+  if (isAscii(domain)) {
+    return domain
+  }
+
+  try {
+    const { hostname } = new URL(`http://${domain}`)
+
+    return isAscii(hostname) ? hostname : ''
+  } catch (error) {
+    return ''
+  }
+}
+
+const isAscii = (value) => {
+  // eslint-disable-next-line no-control-regex
+  return !/[^\u0000-\u007F]/.test(value)
+}
+
+/**
+ * Escapes every non-ASCII character as a \uXXXX sequence.
+ *
+ * Chromium refuses a PAC script that is not pure ASCII. Domains are already
+ * converted, but a proxy address or a checker route could still carry a
+ * non-ASCII character, and a rejected PAC disables proxying entirely — so the
+ * finished script gets one last pass. The escapes are valid inside the JS
+ * string literals they appear in, so behaviour is unchanged.
+ * @param source {string} PAC script source.
+ * @returns {string} The same script, ASCII-only.
+ */
+const toAsciiSource = (source) => {
+  // eslint-disable-next-line no-control-regex
+  return source.replace(/[^\u0000-\u007F]/g, (char) => {
+    return `\\u${char.charCodeAt(0).toString(16).padStart(4, '0')}`
+  })
+}
+
+/**
  * Return PAC Script data.
  *
  * When several proxies are selected they are *load-balanced*, not merely listed
@@ -39,8 +90,18 @@ export const getPacScript = (
     proxyAll = false,
   },
 ) => {
-  // Sort domains alphabetically to make binary search work.
-  domains.sort()
+  // Chromium rejects a PAC containing non-ASCII outright ("'pacScript.data'
+  // supports only ASCII code"), which fails the whole setProxy() call. It also
+  // hands FindProxyForURL the Punycode form of an internationalized host, so a
+  // Unicode entry in the blocklist could never match one anyway. Converting
+  // here fixes both at once.
+  const asciiDomains = domains
+    .map((domain) => toPunycode(domain))
+    .filter(Boolean)
+
+  // Sort AFTER conversion: the PAC looks entries up with a binary search, so
+  // the array has to be ordered by the values actually compared at runtime.
+  asciiDomains.sort()
 
   // Accept either an explicit list of proxies or a single legacy pair.
   let list = []
@@ -77,9 +138,9 @@ export const getPacScript = (
   // lives at the top level of the PAC script: it is evaluated ONCE when the
   // browser loads the script. Only FindProxyForURL runs per request — keeping
   // per-request work down to a hash and a binary search, with no allocations.
-  return `
+  return toAsciiSource(`
       // Domains, which are blocked.
-      var domains = ${JSON.stringify(domains)};
+      var domains = ${JSON.stringify(asciiDomains)};
 
       // Load-balanced proxy orders: one failover string per rotation. The host
       // hash picks a primary (stable per site), the rest follow as fallbacks.
@@ -190,5 +251,5 @@ export const getPacScript = (
         } else {
           return 'DIRECT';
         }
-      }`
+      }`)
 }

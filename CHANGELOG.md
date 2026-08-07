@@ -1,3 +1,19 @@
+# 20.9.2
+
+- **Fixed proxying refusing to switch on whenever the site list was not
+  empty.** Chromium rejects a PAC script containing any non-ASCII character
+  (`'pacScript.data' supports only ASCII code`), and the blocklist was
+  embedded verbatim — so a single internationalized domain (`пример.рф`)
+  failed the whole `setProxy()` call. The extension then caught that failure
+  and turned proxying back off, which is why the toggle would not stick and
+  traffic kept going direct. It also explains why an empty list appeared to
+  work: with no domains there was no non-ASCII to reject.
+- Domains are now converted to their Punycode form before going into the PAC,
+  and the finished script is escaped to ASCII as a safety net. This also fixes
+  internationalized domains never matching in the first place: the browser
+  hands the PAC the Punycode host, so a Unicode entry in the list could never
+  have matched it
+
 # 20.9.1
 
 Fixes a regression in 20.9.0 that could stop proxying entirely.

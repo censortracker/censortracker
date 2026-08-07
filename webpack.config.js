@@ -9,6 +9,7 @@ const HTMLWebpackPlugin = require('html-webpack-plugin')
 const MergeJsonWebpackPlugin = require('merge-jsons-webpack-plugin')
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+const ESLintPlugin = require('eslint-webpack-plugin')
 
 const extensionName = 'Censor Tracker'
 
@@ -57,12 +58,6 @@ const webWorkerConfig = {
     rules: [
       {
         test: /\.js$/,
-        use: 'eslint-loader',
-        exclude: /node_modules/,
-        enforce: 'pre',
-      },
-      {
-        test: /\.js$/,
         use: 'babel-loader',
         exclude: /node_modules/,
         include: [
@@ -77,6 +72,12 @@ const webWorkerConfig = {
     ],
   },
 
+  plugins: [
+    new ESLintPlugin({
+      files: 'src/shared/js/background/**/*.js',
+      exclude: 'node_modules',
+    }),
+  ],
 }
 
 const webConfig = {
@@ -121,12 +122,6 @@ const webConfig = {
         ],
       },
       {
-        test: /\.js$/,
-        use: 'eslint-loader',
-        exclude: /node_modules/,
-        enforce: 'pre',
-      },
-      {
         test: /\.(js|jsx)$/,
         use: [
           {
@@ -163,6 +158,10 @@ const webConfig = {
   },
 
   plugins: [
+    new ESLintPlugin({
+      files: 'src/**/*.js',
+      exclude: 'node_modules',
+    }),
     new webpack.HotModuleReplacementPlugin(),
     new CopyWebpackPlugin({
       patterns: [

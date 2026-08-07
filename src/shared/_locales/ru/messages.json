@@ -678,6 +678,12 @@
   "proxyStatusDead": {
     "message": "недоступна"
   },
+  "proxyStatusNeedsAuth": {
+    "message": "требуется авторизация"
+  },
+  "proxyStatusQueued": {
+    "message": "в очереди"
+  },
   "proxyStatusUntested": {
     "message": "не проверено"
   },
@@ -728,6 +734,9 @@
   },
   "removeDeadProxiesButton": {
     "message": "Удалить нерабочие"
+  },
+  "removeDuplicateProxiesButton": {
+    "message": "Удалить дубликаты"
   },
   "removeUncheckedProxiesButton": {
     "message": "Удалить неотмеченные"

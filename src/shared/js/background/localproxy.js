@@ -105,7 +105,7 @@ class ProxyClient {
   async deleteConfig (uuid, timeout = 3000) {
     return this.handleRequest(
       'DELETE',
-      `/configs?uuid=${uuid}`,
+      `/configs?uuid=${encodeURIComponent(uuid)}`,
       null,
       (data) => data,
       timeout,
@@ -121,7 +121,7 @@ class ProxyClient {
   async activateConfig (uuid, timeout = 5000) {
     return this.handleRequest(
       'PUT',
-      `/configs/activate?uuid=${uuid}`,
+      `/configs/activate?uuid=${encodeURIComponent(uuid)}`,
       null,
       (data) => data,
       timeout,

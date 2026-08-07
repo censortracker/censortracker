@@ -1,3 +1,5 @@
+import { getDomain } from 'tldts'
+
 import browser from './browser-api'
 import { fetchWithTimeout, removeDuplicates } from './utilities'
 
@@ -20,6 +22,22 @@ const getConfigAPIEndpoints = () => {
 
 const FALLBACK_COUNTRY_CODE = 'RU'
 
+const isNonEmptyString = (value) => {
+  return typeof value === 'string' && value.trim().length > 0
+}
+
+/**
+ * Accepts both `8080` and `"8080"` — mirrors differ on whether ports are
+ * serialized as numbers or strings.
+ * @param value {*} Candidate port.
+ * @returns {boolean} True when the value is a valid TCP port.
+ */
+const isUsablePort = (value) => {
+  const port = Number(value)
+
+  return Number.isInteger(port) && port > 0 && port <= 65535
+}
+
 /**
  * Fetches the country code from the given GeoIP API Endpoint.
  * @param geoIPServiceURL {string} API endpoint for fetching country code.
@@ -38,7 +56,61 @@ const inquireCountryCode = async (geoIPServiceURL) => {
 }
 
 /**
+ * Downloads and validates the config from a single mirror.
+ * @param endpointName {string} Human-readable mirror name.
+ * @param endpointUrl {string} Mirror URL.
+ * @returns {Promise<{}|null>} Parsed payload, or `null` when the mirror is
+ *   unreachable or answered with something unusable.
+ */
+const fetchConfigFromEndpoint = async ({ endpointName, endpointUrl }) => {
+  try {
+    const response = await fetchWithTimeout(endpointUrl, { timeout: 8000 })
+
+    if (!response.ok) {
+      console.error(`[Config] Error on fetching config from: ${endpointName}`)
+      return null
+    }
+
+    const payload = await response.json()
+
+    if (!payload || typeof payload !== 'object') {
+      console.warn(`[Config] Invalid config shape from ${endpointName}.`)
+      return null
+    }
+
+    const { meta = {}, data = [] } = payload
+
+    // Only object entries are usable: the caller reads `countryCode` off them
+    // and stamps debug fields onto the winner.
+    const entries = Array.isArray(data)
+      ? data.filter((cfg) => cfg && typeof cfg === 'object')
+      : []
+
+    if (entries.length === 0) {
+      console.log(`[Config] Skipping ${endpointName}...`)
+      return null
+    }
+
+    return { meta, data: entries, endpointName, endpointUrl }
+  } catch (error) {
+    console.error(
+      `[Config] Failed to fetch config from ${endpointName}: ${error}`,
+    )
+    return null
+  }
+}
+
+/**
  * Fetches config from the server.
+ *
+ * Every mirror is probed in parallel, so one unreachable endpoint no longer
+ * costs a full 8s timeout before the next one is even tried. The winner is
+ * still picked by endpoint *priority* rather than by whoever answers first —
+ * a slow GitHub beats a fast Google, exactly as in the sequential version.
+ *
+ * Side effects (the GeoIP lookup and every storage write) are deferred until
+ * a winner is known, so the losing mirrors can neither race each other into
+ * storage nor trigger a GeoIP request each.
  * @returns {Promise<{}|*>} Resolves with the config.
  */
 const fetchConfig = async () => {
@@ -46,62 +118,47 @@ const fetchConfig = async () => {
     currentRegionCode: '',
   })
 
-  for (const { endpointName, endpointUrl } of getConfigAPIEndpoints()) {
-    try {
-      const response = await fetchWithTimeout(endpointUrl, { timeout: 8000 })
+  const settled = await Promise.allSettled(
+    getConfigAPIEndpoints().map(fetchConfigFromEndpoint),
+  )
 
-      if (response.ok) {
-        const { meta = {}, data = [] } = await response.json()
+  // `Promise.allSettled` preserves input order, so the first fulfilled,
+  // non-null entry is the highest-priority mirror that actually worked.
+  const winner = settled.find(
+    (result) => result.status === 'fulfilled' && result.value,
+  )
 
-        if (!Array.isArray(data) || data.length === 0) {
-          console.log(`[Config] Skipping ${endpointName}...`)
-          continue
-        }
-
-        let countryCode = FALLBACK_COUNTRY_CODE
-
-        if (currentRegionCode) {
-          countryCode = currentRegionCode
-        } else if (meta.geoIPServiceURL) {
-          countryCode = await inquireCountryCode(meta.geoIPServiceURL)
-        }
-
-        let config = data.find((cfg) => {
-          return cfg.countryCode === countryCode
-        })
-
-        if (!config) {
-          // The selected country isn't supported by this config: fall back to
-          // the first available entry instead of crashing on `undefined`.
-          await browser.storage.local.set({ unsupportedCountry: true })
-          config = data[0]
-        } else {
-          await browser.storage.local.set({ unsupportedCountry: false })
-        }
-
-        if (!config) {
-          continue
-        }
-
-        // For debugging purposes
-        config.configEndpointUrl = endpointUrl
-        config.configEndpointSource = endpointName
-
-        await browser.storage.local.set({
-          localConfig: config,
-          backendIsIntermittent: false,
-        })
-
-        return config
-      }
-      console.error(
-        `[Config] Error on fetching config from: ${endpointName}`,
-      )
-    } catch (error) {
-      console.error(`[Config] Failed to fetch config from ${endpointName}: ${error}`)
-    }
+  if (!winner) {
+    return {}
   }
-  return {}
+
+  const { meta, data, endpointName, endpointUrl } = winner.value
+
+  let countryCode = FALLBACK_COUNTRY_CODE
+
+  if (currentRegionCode) {
+    countryCode = currentRegionCode
+  } else if (meta.geoIPServiceURL) {
+    countryCode = await inquireCountryCode(meta.geoIPServiceURL)
+  }
+
+  const matched = data.find((cfg) => cfg.countryCode === countryCode)
+  // The selected country isn't supported by this config: fall back to the
+  // first available entry instead of crashing on `undefined`.
+  const config = matched || data[0]
+
+  await browser.storage.local.set({ unsupportedCountry: !matched })
+
+  // For debugging purposes
+  config.configEndpointUrl = endpointUrl
+  config.configEndpointSource = endpointName
+
+  await browser.storage.local.set({
+    localConfig: config,
+    backendIsIntermittent: false,
+  })
+
+  return config
 }
 
 /**
@@ -134,19 +191,36 @@ const fetchProxy = async ({ proxyUrl } = {}) => {
     }
 
     const response = await fetchWithTimeout(proxyUrl, { timeout: 8000 })
+    const payload = await response.json()
+
+    if (!payload || typeof payload !== 'object') {
+      throw new Error('response is not a JSON object')
+    }
+
     const {
       server,
       port,
       pingHost,
       pingPort,
       fallbackReason,
-    } = await response.json()
+    } = payload
+
+    // Without this an error payload (or an HTML captive-portal page) would be
+    // happily stored as the literal proxy URI "undefined:undefined" and then
+    // handed to the PAC script.
+    if (!isNonEmptyString(server) || !isUsablePort(port)) {
+      throw new Error(`unusable proxy config: ${server}:${port}`)
+    }
 
     const fallbackProxyInUse = !!fallbackReason
 
     console.log(`Status: ${response.status}`)
 
-    const proxyPingURI = `${pingHost}:${pingPort}`
+    // The ping endpoint is optional: when it is missing or malformed we keep
+    // the URI empty rather than storing "undefined:undefined".
+    const proxyPingURI = isNonEmptyString(pingHost) && isUsablePort(pingPort)
+      ? `${pingHost}:${pingPort}`
+      : ''
     const proxyServerURI = `${server}:${port}`
 
     console.log(`Proxy server fetched: ${proxyServerURI}!`)
@@ -302,9 +376,20 @@ const fetchIgnore = async ({ ignoreUrl } = {}) => {
   fetchWithTimeout(ignoreUrl, { timeout: 8000 })
     .then((response) => response.json())
     .then((domains) => {
+      if (!Array.isArray(domains)) {
+        console.warn('[Ignore] Response is not an array, skipping.')
+        return
+      }
+
       browser.storage.local.get({ ignoredHosts: [] })
         .then(({ ignoredHosts }) => {
           for (const domain of domains) {
+            // Anything that isn't a real domain would end up permanently
+            // exempted from proxying, so drop it instead of trusting the feed.
+            if (!isNonEmptyString(domain) || !getDomain(domain)) {
+              continue
+            }
+
             if (!ignoredHosts.includes(domain)) {
               ignoredHosts.push(domain)
             }

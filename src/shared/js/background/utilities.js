@@ -252,7 +252,18 @@ export const extractDomainFromUrl = (url) => {
     const encodedUrl = searchParams.get('loadFor')
 
     if (encodedUrl) {
-      url = atob(encodedUrl)
+      try {
+        const decoded = atob(encodedUrl)
+
+        // `atob` throws on malformed input, and the decoded value only makes
+        // sense as an http(s) URL — anything else is a crafted parameter and
+        // is ignored rather than parsed as a domain.
+        if (/^https?:\/\//i.test(decoded)) {
+          url = decoded
+        }
+      } catch (error) {
+        console.warn('[URL] Ignoring malformed «loadFor» parameter.')
+      }
     }
   }
   return getDomain(url)

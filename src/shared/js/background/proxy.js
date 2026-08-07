@@ -173,7 +173,27 @@ class ProxyManager {
     await this.applyPacData(pacData, { mandatory: true })
   }
 
+  /**
+   * Rebuilds and installs the PAC script.
+   *
+   * Calls are serialized: storage changes, tab events and the options page can
+   * all trigger a rebuild at once, and two overlapping runs race on
+   * `applyPacData`/`enableProxy` — the slower one wins and can install a PAC
+   * built from an already-stale domain list or chain. Queueing keeps the last
+   * caller authoritative.
+   * @returns {Promise<boolean>} True when the PAC was installed.
+   */
   async setProxy () {
+    const run = () => this._setProxy()
+
+    // `.then(run, run)` rather than `.finally` so a rejected predecessor does
+    // not poison the queue for everyone behind it.
+    this._proxyQueue = (this._proxyQueue || Promise.resolve()).then(run, run)
+
+    return this._proxyQueue
+  }
+
+  async _setProxy () {
     const domains = await registry.getDomains()
     const proxyAll = await this.getProxyAllTraffic()
 
@@ -482,12 +502,33 @@ class ProxyManager {
   }
 
   /**
-   * Adds a new proxy to the list and makes it the active one.
+   * Identity of a proxy for de-duplication purposes. Credentials are
+   * deliberately excluded: the same endpoint reached with two different
+   * logins is still one endpoint, and keeping both would double-probe it.
+   * @param proxy {{protocol: string, uri: string}}
+   * @returns {string} Normalized key.
+   */
+  proxyDedupKey ({ protocol, uri }) {
+    return `${protocol || ''}|${(uri || '').trim()}`.toLowerCase()
+  }
+
+  /**
+   * Adds a new proxy to the list and makes it the active one. Adding a proxy
+   * that is already in the list is a no-op that returns the existing entry.
    * @returns {Promise<{id: string, name: string, protocol: string,
    *   uri: string}>}
    */
   async addCustomProxy ({ name, protocol, uri, credentials = '' }) {
     const customProxies = await this.getCustomProxies()
+    const key = this.proxyDedupKey({ protocol, uri })
+    const existing = customProxies.find(
+      (candidate) => this.proxyDedupKey(candidate) === key,
+    )
+
+    if (existing) {
+      return existing
+    }
+
     const proxy = {
       id: this.generateProxyId(),
       name: (name && name.trim()) || uri,
@@ -516,7 +557,7 @@ class ProxyManager {
   async addCustomProxies (list) {
     const customProxies = await this.getCustomProxies()
     const existing = new Set(
-      customProxies.map((proxy) => `${proxy.protocol}|${proxy.uri}`.toLowerCase()),
+      customProxies.map((proxy) => this.proxyDedupKey(proxy)),
     )
     const added = []
 
@@ -525,7 +566,7 @@ class ProxyManager {
         continue
       }
 
-      const key = `${item.protocol}|${item.uri}`.toLowerCase()
+      const key = this.proxyDedupKey(item)
 
       if (existing.has(key)) {
         continue
@@ -1085,9 +1126,9 @@ class ProxyManager {
           // An unreadable body (opaque redirect etc.) is not a failed probe.
         }
       }
-      return { ok: true, latency, body }
+      return { ok: true, latency, body, status: response.status }
     } catch (error) {
-      return { ok: false, latency: null, body: null }
+      return { ok: false, latency: null, body: null, status: 0 }
     } finally {
       clearTimeout(timer)
       if (signal) {
@@ -1320,16 +1361,19 @@ class ProxyManager {
    * `PROXY_TEST_POOL.length` proxies are probed at once. The user's real
    * traffic keeps flowing through the active proxy for the whole run, and the
    * run can be aborted via `signal`. `onResult(id, result)` fires the moment
-   * each result is known so the UI can update live. Restores routing at the
+   * each result is known so the UI can update live, and `onBatchStart(ids)`
+   * fires when a batch begins probing so the UI can tell "queued" rows apart
+   * from the handful actually being checked right now. Restores routing at the
    * end.
    * @param {Array<{id: string, protocol: string, uri: string}>} proxies
-   * @param {{onResult?: Function, signal?: AbortSignal, timeout?: number,
+   * @param {{onResult?: Function, onBatchStart?: Function,
+   *   signal?: AbortSignal, timeout?: number,
    *   concurrency?: number}} [options]
    * @returns {Promise<Object>} Map of proxy id -> result.
    */
   async testProxies (
     proxies,
-    { onResult, signal, timeout = 8000, concurrency } = {},
+    { onResult, onBatchStart, signal, timeout = 8000, concurrency } = {},
   ) {
     const results = {}
 
@@ -1368,6 +1412,10 @@ class ProxyManager {
           }
         })
 
+        if (typeof onBatchStart === 'function') {
+          onBatchStart(assignments.map(({ proxy }) => proxy.id))
+        }
+
         await this.applyCheckerPac(testRoutes)
         // Let the browser pick up the temporary PAC before probing.
         await new Promise((resolve) => setTimeout(resolve, 200))
@@ -1393,12 +1441,19 @@ class ProxyManager {
               return null
             }
 
-            const exit = probe.ok && exitTarget
+            // 407 means the proxy answered but rejected us for lack of
+            // credentials. It relayed nothing, so it is not "alive" — but it
+            // is not dead either, and auto-removal must not eat it.
+            const needsAuth = probe.ok && probe.status === 407
+            const alive = probe.ok && !needsAuth
+
+            const exit = alive && exitTarget
               ? await this.probeExitInfo(exitTarget, { timeout, signal })
               : { exitIp: null, exitCountry: '' }
 
             const result = {
-              alive: probe.ok,
+              alive,
+              needsAuth,
               latency: probe.latency,
               ping,
               exitIp: exit.exitIp,
@@ -1537,6 +1592,10 @@ class ProxyManager {
   /**
    * Removes every proxy whose last check marked it dead. Falls back to a still
    * working proxy (or disables custom proxying) if a removed one was active.
+   *
+   * Proxies that answered 407 are kept: they are reachable and only need
+   * credentials, so deleting them would throw away a working endpoint the user
+   * just has to finish configuring.
    * @returns {Promise<{removed: number}>}
    */
   async removeDeadCustomProxies () {
@@ -1546,11 +1605,63 @@ class ProxyManager {
       .filter((proxy) => {
         const status = statuses[proxy.id]
 
-        return status && status.alive === false
+        return status && status.alive === false && !status.needsAuth
       })
       .map((proxy) => proxy.id)
 
     return { removed: await this.removeCustomProxiesByIds(deadIds) }
+  }
+
+  /**
+   * Collapses proxies that point at the same endpoint, keeping the first
+   * occurrence of each protocol+uri pair.
+   *
+   * A chain slot held by a removed duplicate is handed over to the surviving
+   * entry rather than dropped, so de-duplicating never silently shortens the
+   * user's chain.
+   * @returns {Promise<{removed: number}>}
+   */
+  async removeDuplicateCustomProxies () {
+    const customProxies = await this.getCustomProxies()
+    const keptByKey = new Map()
+    const duplicateIds = []
+    const survivorOf = new Map()
+
+    for (const proxy of customProxies) {
+      const key = this.proxyDedupKey(proxy)
+      const kept = keptByKey.get(key)
+
+      if (kept) {
+        duplicateIds.push(proxy.id)
+        survivorOf.set(proxy.id, kept.id)
+      } else {
+        keptByKey.set(key, proxy)
+      }
+    }
+
+    if (duplicateIds.length === 0) {
+      return { removed: 0 }
+    }
+
+    const chain = await this.getProxyChain()
+    const nextChain = []
+
+    for (const id of chain) {
+      const survivor = survivorOf.get(id) || id
+
+      if (!nextChain.includes(survivor)) {
+        nextChain.push(survivor)
+      }
+    }
+
+    const chainChanged = nextChain.length !== chain.length ||
+      nextChain.some((id, index) => id !== chain[index])
+
+    if (chainChanged) {
+      await this.setProxyChain(nextChain)
+    }
+
+    return { removed: await this.removeCustomProxiesByIds(duplicateIds) }
   }
 
   // ---------------------------------------------------------------------------
@@ -1653,8 +1764,12 @@ class ProxyManager {
         .map(({ protocol, uri }) => `${protocol} ${uri}`)
         .join('; ')
 
+      // `directive` is built from proxy URIs, which routinely arrive from
+      // untrusted subscription feeds. Interpolating it into a quoted PAC
+      // string literal would let a quote in a URI break out and run arbitrary
+      // code inside the PAC sandbox, so let JSON.stringify do the quoting.
       await this.applyPacData(`function FindProxyForURL(url, h) {
-        if (h === ${JSON.stringify(host)}) { return '${directive};'; }
+        if (h === ${JSON.stringify(host)}) { return ${JSON.stringify(`${directive};`)}; }
         return 'DIRECT';
       }`)
     }

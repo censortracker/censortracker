@@ -10,7 +10,7 @@ import { proxyToPacToken } from './utilities'
  * @param domain {string} Host, possibly internationalized.
  * @returns {string} ASCII host, or '' when the value is unusable.
  */
-const toPunycode = (domain) => {
+export const toPunycode = (domain) => {
   if (typeof domain !== 'string' || !domain) {
     return ''
   }
@@ -80,6 +80,53 @@ const toAsciiSource = (source) => {
  *   from the registry/custom list.
  * @returns {string} PAC script
  */
+/**
+ * Second-level form of a host — the same truncation FindProxyForURL applies
+ * before matching the blocklist, so rules key off exactly what the PAC does.
+ * @param host {string}
+ * @returns {string}
+ */
+export const toSecondLevel = (host) => {
+  const value = String(host || '').replace(/\.$/, '')
+  let lastDot = value.lastIndexOf('.')
+
+  if (lastDot === -1) {
+    return value
+  }
+  lastDot = value.lastIndexOf('.', lastDot - 1)
+
+  return lastDot === -1 ? value : value.slice(lastDot + 1)
+}
+
+/**
+ * The host hash FindProxyForURL uses to pick a primary proxy. Kept identical
+ * to the copy inside the generated script — `pac.test` asserts the two agree,
+ * because the popup tells the user which proxy a site goes through and a
+ * drifting copy would make it lie.
+ * @param target {string}
+ * @returns {number}
+ */
+export const hashHost = (target) => {
+  let sum = 0
+
+  for (let index = 0; index < target.length; index += 1) {
+    sum = (sum * 31 + target.charCodeAt(index)) % 2147483647
+  }
+  return sum
+}
+
+/**
+ * Every rotation of a proxy list: entry i starts at proxy i and wraps around,
+ * so the host hash picks a primary and the rest follow as fallbacks.
+ * @param tokens {Array<string>}
+ * @returns {Array<string>}
+ */
+const buildRotations = (tokens) => {
+  return tokens.map((token, index) => {
+    return `${tokens.slice(index).concat(tokens.slice(0, index)).join('; ')};`
+  })
+}
+
 export const getPacScript = (
   {
     domains = [],
@@ -88,6 +135,8 @@ export const getPacScript = (
     proxyServerProtocol,
     testRoutes = null,
     proxyAll = false,
+    proxyCountries = [],
+    siteCountryRules = {},
   },
 ) => {
   // Chromium rejects a PAC containing non-ASCII outright ("'pacScript.data'
@@ -120,14 +169,39 @@ export const getPacScript = (
   // generation time. There are only N of them, and it saves FindProxyForURL
   // from rebuilding the failover string (two slices, a concat and a join) on
   // every single request.
-  const proxyRotations = proxyTokens.map((token, index) => {
-    const rotation = proxyTokens
-      .slice(index)
-      .concat(proxyTokens.slice(0, index))
-      .join('; ')
+  const proxyRotations = buildRotations(proxyTokens)
 
-    return `${rotation};`
+  // Per-site country rules ("never open this site through a NL proxy"). The
+  // filtered rotations are precomputed per site too, so enforcing a rule costs
+  // FindProxyForURL one property lookup rather than a filter per request.
+  //
+  // Only proxies whose country is *known* to match are excluded. Treating an
+  // unknown country as a match would be the stricter reading, but it would
+  // also empty the list for anyone who has not run a check — and an empty list
+  // means the site opens directly, i.e. does not open at all when it is
+  // blocked. The popup surfaces how many proxies are still unknown instead.
+  const countries = list.map((proxy, index) => {
+    return String(proxyCountries[index] || '').toUpperCase()
   })
+  const siteRotations = {}
+
+  for (const [site, codes] of Object.entries(siteCountryRules || {})) {
+    const key = toPunycode(toSecondLevel(site))
+
+    if (!key || !Array.isArray(codes) || codes.length === 0) {
+      continue
+    }
+
+    const blocked = new Set(codes.map((code) => String(code).toUpperCase()))
+    const allowed = proxyTokens.filter((token, index) => {
+      return !countries[index] || !blocked.has(countries[index])
+    })
+
+    // Only worth embedding when it actually changes the outcome.
+    if (allowed.length !== proxyTokens.length) {
+      siteRotations[key] = buildRotations(allowed)
+    }
+  }
 
   const testRoutesLiteral =
     testRoutes && Object.keys(testRoutes).length > 0
@@ -145,6 +219,10 @@ export const getPacScript = (
       // Load-balanced proxy orders: one failover string per rotation. The host
       // hash picks a primary (stable per site), the rest follow as fallbacks.
       var proxyRotations = ${JSON.stringify(proxyRotations)};
+
+      // Per-site overrides: second-level domain -> rotations with the
+      // countries that site refuses filtered out. Absent = no rule.
+      var siteRotations = ${JSON.stringify(siteRotations)};
 
       // Proxy-checker test routes: full host -> PAC return token.
       var testRoutes = ${testRoutesLiteral};
@@ -172,15 +250,35 @@ export const getPacScript = (
         return false;
       }
 
-      function pickProxy(target) {
-        if (proxyRotations.length === 0) {
+      function secondLevel(host) {
+        var lastDot = host.lastIndexOf('.');
+        if (lastDot === -1) {
+          return host;
+        }
+        lastDot = host.lastIndexOf('.', lastDot - 1);
+        return lastDot === -1 ? host : host.substr(lastDot + 1);
+      }
+
+      // \`target\` is hashed to pick the primary proxy; \`site\` selects the
+      // rule set. They differ in proxy-all mode, where routing is per full
+      // host but a country rule still applies to the whole site.
+      function pickProxy(target, site) {
+        var rotations = proxyRotations;
+
+        if (Object.prototype.hasOwnProperty.call(siteRotations, site)) {
+          rotations = siteRotations[site];
+        }
+
+        // Every proxy is from a country this site refuses: going direct is the
+        // only answer that honours the rule.
+        if (rotations.length === 0) {
           return 'DIRECT';
         }
         var sum = 0;
         for (var i = 0; i < target.length; i++) {
           sum = (sum * 31 + target.charCodeAt(i)) % 2147483647;
         }
-        return proxyRotations[sum % proxyRotations.length];
+        return rotations[sum % rotations.length];
       }
 
       function FindProxyForURL(url, host) {
@@ -228,26 +326,21 @@ export const getPacScript = (
           ) {
             return 'DIRECT';
           }
-          return pickProxy(host);
+          // Routing stays per full host here; the rule is looked up by site.
+          return pickProxy(host, secondLevel(host));
         }
 
         // Make domain second-level.
-        var lastDot = host.lastIndexOf('.');
-        if (lastDot !== -1) {
-          lastDot = host.lastIndexOf('.', lastDot - 1);
-          if (lastDot !== -1) {
-            host = host.substr(lastDot + 1);
-          }
-        }
+        host = secondLevel(host);
 
         // Proxy *.onion and *.i2p domains.
         if (shExpMatch(host, '*.onion') || shExpMatch(host, '*.i2p')) {
-          return pickProxy(host);
+          return pickProxy(host, host);
         }
 
         // Return result
         if (isHostBlocked(domains, host)) {
-          return pickProxy(host);
+          return pickProxy(host, host);
         } else {
           return 'DIRECT';
         }

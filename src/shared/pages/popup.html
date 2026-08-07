@@ -120,6 +120,24 @@
         </div>
       </div>
 
+      <div class="main-page__block main-page-info" id="siteRoute">
+        <div class="site-route__line">
+          <span class="site-route__label" data-i18n-key="siteRouteTitle"></span>
+          <span class="site-route__value" id="siteRouteValue"></span>
+        </div>
+        <div class="site-route__hint" id="siteRouteHint"></div>
+
+        <div class="site-route__rule" id="siteRouteRule" hidden>
+          <label class="site-route__rule-row">
+            <input type="checkbox" id="blockCountryForSite">
+            <span id="blockCountryForSiteLabel"></span>
+          </label>
+          <div class="site-route__blocked" id="siteBlockedCountries" hidden></div>
+          <button type="button" class="site-route__clear hidden" id="clearSiteCountryRule"
+                  data-i18n-key="siteRouteClearRule"></button>
+        </div>
+      </div>
+
       <div class="main-page__block main-page-info" id="proxying-info">
         <div class="block__title">
           <span class="unselectable" data-i18n-key="popupProxyInfoTitle"></span>

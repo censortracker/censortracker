@@ -828,6 +828,36 @@
   "siteActionTitle": {
     "message": "Коли слід використовувати проксі для відкриття цього сайту?"
   },
+  "siteRouteAllBlocked": {
+    "message": "напряму — усі проксі із заборонених країн"
+  },
+  "siteRouteBlockCountry": {
+    "message": "Не відкривати цей сайт через"
+  },
+  "siteRouteBlockedList": {
+    "message": "Заборонені для цього сайту:"
+  },
+  "siteRouteClearRule": {
+    "message": "Скинути правило"
+  },
+  "siteRouteDirect": {
+    "message": "напряму, без проксі"
+  },
+  "siteRouteLocal": {
+    "message": "локальна адреса, завжди напряму"
+  },
+  "siteRouteNoProxies": {
+    "message": "проксі не вибрано"
+  },
+  "siteRouteNotChecked": {
+    "message": "Адреса виходу невідома — запустіть перевірку проксі."
+  },
+  "siteRouteTitle": {
+    "message": "Відкрито через:"
+  },
+  "siteRouteUnknownCountries": {
+    "message": "Проксі з невідомою країною (правило до них не застосовується):"
+  },
   "sourceAddedLabel": {
     "message": "Джерело додано"
   },

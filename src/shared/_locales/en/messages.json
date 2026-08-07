@@ -828,6 +828,36 @@
   "siteActionTitle": {
     "message": "How should a proxy be used to for this website?"
   },
+  "siteRouteAllBlocked": {
+    "message": "direct — every proxy is from a blocked country"
+  },
+  "siteRouteBlockCountry": {
+    "message": "Never open this site through"
+  },
+  "siteRouteBlockedList": {
+    "message": "Blocked for this site:"
+  },
+  "siteRouteClearRule": {
+    "message": "Clear the rule"
+  },
+  "siteRouteDirect": {
+    "message": "directly, without a proxy"
+  },
+  "siteRouteLocal": {
+    "message": "local address, always direct"
+  },
+  "siteRouteNoProxies": {
+    "message": "no proxy selected"
+  },
+  "siteRouteNotChecked": {
+    "message": "Exit address unknown — run a check to see it."
+  },
+  "siteRouteTitle": {
+    "message": "Opened through:"
+  },
+  "siteRouteUnknownCountries": {
+    "message": "Proxies with an unknown country (a rule cannot apply to them):"
+  },
   "sourceAddedLabel": {
     "message": "Source added"
   },

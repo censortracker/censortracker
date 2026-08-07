@@ -1,3 +1,20 @@
+# 20.9.1
+
+Fixes a regression in 20.9.0 that could stop proxying entirely.
+
+- **Proxying no longer silently falls back to a direct connection.** The
+  response validation added in 20.9.0 was too strict about the shape of the
+  proxy config, and failing it is worse than not checking at all: the address
+  never reaches storage, the PAC is then built without a proxy, and every
+  request goes direct while the interface still shows proxying as enabled.
+  The address is now derived from anything a usable `host:port` can be formed
+  from — a `server` field that already carries its port is accepted, and a
+  scheme prefix or trailing slash is stripped instead of being passed through.
+  Only a payload with no usable address at all is refused
+- Fixed a related bug that predates 20.9.0: a `server` value carrying a scheme
+  produced the PAC directive `HTTPS https://host:443`, which is not valid and
+  silently disabled routing. The ping endpoint is built the same way now
+
 # 20.9.0
 
 Hardening and proxy-list quality-of-life, ported from the `jimdi/censortracker`
@@ -30,11 +47,7 @@ Security:
 - Server responses are validated before use: a malformed proxy payload can no
   longer be stored as the literal URI `undefined:undefined`, the ignore feed is
   rejected unless it is an array of real domains, and config mirrors returning
-  a non-object are skipped. The proxy address itself is built forgivingly —
-  rejecting a payload disables proxying silently, so a `server` that already
-  carries its port is accepted and a scheme prefix is stripped instead of
-  being passed through (`HTTPS https://host:443` was never a valid PAC
-  directive), and only a payload with no usable address at all is refused
+  a non-object are skipped
 - `atob()` on the `loadFor` parameter is guarded and the result must be an
   http(s) URL; local-proxy config UUIDs are URL-encoded; the options page no
   longer publishes the `server` module as `window.server`

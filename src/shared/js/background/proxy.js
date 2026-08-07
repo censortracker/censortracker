@@ -1,4 +1,4 @@
-import { getPacScript } from 'Background/pac'
+import { getPacScript, toPunycode, toSecondLevel } from 'Background/pac'
 
 import browser from './browser-api'
 import {
@@ -9,12 +9,18 @@ import {
   TaskType,
 } from './constants'
 import {
+  getCachedGeo,
   hostFromUri,
   lookupCountries,
   normalizeCountryCodes,
   parseExitInfo,
 } from './geoip'
 import registry from './registry'
+import {
+  countryOfProxy,
+  getSiteCountryRules,
+  resolveProxyForHost,
+} from './site-rules'
 import {
   fetchWithTimeout,
   parseProxyList,
@@ -135,6 +141,76 @@ class ProxyManager {
    * @param {Object<string, string>} testRoutes - host -> PAC return token.
    * @returns {Promise<void>}
    */
+  /**
+   * The country of each proxy in a chain, in chain order — what the per-site
+   * country rules are matched against.
+   * @param {Array<{id: string, uri: string}>} chain
+   * @returns {Promise<Array<string>>}
+   */
+  async getChainCountries (chain) {
+    const statuses = await this.getProxyStatuses()
+    const geo = await getCachedGeo()
+
+    return chain.map((proxy) => {
+      return countryOfProxy(proxy, statuses, geo, hostFromUri)
+    })
+  }
+
+  /**
+   * Answers "where does this site actually come out?" for the popup: the
+   * proxy the PAC would pick, and the exit address seen through it.
+   * @param {string} host - Destination host.
+   * @returns {Promise<Object>} `{ proxied, reason, proxy, exitIp, exitCountry,
+   *   entryCountry, blockedCountries, unknownCountries }`.
+   */
+  async describeRouteFor (host) {
+    const [chain, proxyAll, statuses, geo, rules, domains] = await Promise.all([
+      this.getChainProxyConfigs(),
+      this.getProxyAllTraffic(),
+      this.getProxyStatuses(),
+      getCachedGeo(),
+      getSiteCountryRules(),
+      registry.getDomains(),
+    ])
+    const countries = chain.map((proxy) => {
+      return countryOfProxy(proxy, statuses, geo, hostFromUri)
+    })
+    // Same list, in the same Punycode form, that the PAC is built from.
+    const blocklist = new Set(domains.map((domain) => toPunycode(domain)))
+    const site = toSecondLevel(host)
+    const outcome = resolveProxyForHost(host, {
+      proxies: chain,
+      proxyAll,
+      countries,
+      rules,
+      isBlocked: (candidate) => blocklist.has(toPunycode(candidate)),
+    })
+
+    const base = {
+      ...outcome,
+      site,
+      blockedCountries: rules[site] || [],
+      unknownCountries: countries.filter((code) => !code).length,
+      exitIp: '',
+      exitCountry: '',
+      entryCountry: '',
+    }
+
+    if (!outcome.proxy) {
+      return base
+    }
+
+    const status = statuses[outcome.proxy.id] || {}
+    const entry = geo[hostFromUri(outcome.proxy.uri)] || {}
+
+    return {
+      ...base,
+      exitIp: status.exitIp || '',
+      exitCountry: status.exitCountry || '',
+      entryCountry: entry.code || '',
+    }
+  }
+
   async applyCheckerPac (testRoutes) {
     const enabled = await this.isEnabled()
 
@@ -213,7 +289,13 @@ class ProxyManager {
     let pacData
 
     if (chain.length > 0) {
-      pacData = getPacScript({ domains, proxies: chain, proxyAll })
+      pacData = getPacScript({
+        domains,
+        proxies: chain,
+        proxyAll,
+        proxyCountries: await this.getChainCountries(chain),
+        siteCountryRules: await getSiteCountryRules(),
+      })
     } else {
       const {
         proxyServerURI,
@@ -742,16 +824,19 @@ class ProxyManager {
     const builtin = await this.getBuiltinProxy()
     const configs = []
 
+    // The id travels with each hop: the country rules and the popup's
+    // "opened through" line both look the proxy's stored check result up by
+    // it, and without it the exit address is never found.
     for (const id of chain) {
       if (id === 'builtin') {
         if (builtin) {
-          configs.push({ protocol: builtin.protocol, uri: builtin.uri })
+          configs.push({ id, protocol: builtin.protocol, uri: builtin.uri })
         }
       } else {
         const proxy = customProxies.find((item) => item.id === id)
 
         if (proxy) {
-          configs.push({ protocol: proxy.protocol, uri: proxy.uri })
+          configs.push({ id, protocol: proxy.protocol, uri: proxy.uri })
         }
       }
     }

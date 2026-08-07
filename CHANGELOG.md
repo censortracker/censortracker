@@ -1,3 +1,25 @@
+# 20.11.0
+
+- **The popup now says where the current site comes out.** A line at the top
+  reports the exit address and country the site is actually reached through —
+  or that it is going direct, and why (not on the blocklist, a local address,
+  no proxy selected). The answer is not a guess: it comes from the same
+  blocklist, the same host hash and the same rules the PAC uses, so it matches
+  what traffic really does. A proxy that has not been checked yet has no known
+  exit address, so its entry country is shown instead and the popup says so.
+- **A site can be told never to use proxies from a given country.** The popup
+  offers "never open this site through <country>" for the country in use;
+  ticking it re-routes the site to a proxy from somewhere else immediately.
+  Rules are per site (a subdomain follows its parent) and several countries
+  can be blocked for the same site.
+
+  Two behaviours worth knowing. If every selected proxy turns out to be from a
+  blocked country the site goes **direct** rather than through one anyway —
+  the rule is treated as binding, and the popup says that is what happened.
+  And a proxy whose country is unknown is *not* excluded, since blocking on a
+  guess would empty the list for anyone who has not run a check; the popup
+  shows how many such proxies there are.
+
 # 20.10.0
 
 - **The extension now tells you when a new version is out.** This build is

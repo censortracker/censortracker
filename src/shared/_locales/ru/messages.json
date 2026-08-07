@@ -828,6 +828,36 @@
   "siteActionTitle": {
     "message": "Когда следует использовать прокси для открытия этого сайта?"
   },
+  "siteRouteAllBlocked": {
+    "message": "напрямую — все прокси из запрещённых стран"
+  },
+  "siteRouteBlockCountry": {
+    "message": "Не открывать этот сайт через"
+  },
+  "siteRouteBlockedList": {
+    "message": "Запрещены для этого сайта:"
+  },
+  "siteRouteClearRule": {
+    "message": "Сбросить правило"
+  },
+  "siteRouteDirect": {
+    "message": "напрямую, без прокси"
+  },
+  "siteRouteLocal": {
+    "message": "локальный адрес, всегда напрямую"
+  },
+  "siteRouteNoProxies": {
+    "message": "прокси не выбран"
+  },
+  "siteRouteNotChecked": {
+    "message": "Адрес выхода неизвестен — запустите проверку прокси."
+  },
+  "siteRouteTitle": {
+    "message": "Открыт через:"
+  },
+  "siteRouteUnknownCountries": {
+    "message": "Прокси с неизвестной страной (правило к ним не применяется):"
+  },
   "sourceAddedLabel": {
     "message": "Источник добавлен"
   },

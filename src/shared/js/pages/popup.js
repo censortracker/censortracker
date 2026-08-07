@@ -4,6 +4,7 @@ import Ignore from 'Background/ignore'
 import ProxyManager from 'Background/proxy'
 import Registry from 'Background/registry'
 import Settings from 'Background/settings'
+import { setSiteCountryRule } from 'Background/site-rules'
 import { dismissUpdate, getReleasesPageUrl } from 'Background/update'
 import { extractHostnameFromUrl, i18nGetMessage, isI2PUrl, isOnionUrl, isValidURL, withTimeout } from 'Background/utilities';
 
@@ -127,6 +128,137 @@ import { extractHostnameFromUrl, i18nGetMessage, isI2PUrl, isOnionUrl, isValidUR
   }
 
   refreshOptionsHighlight()
+
+  // ── Where does this site actually come out? ────────────────────────────────
+  //
+  // The answer comes from ProxyManager.describeRouteFor(), which mirrors the
+  // PAC rather than guessing: same blocklist, same host hash, same per-site
+  // country rules. So the address shown here is the one traffic really uses.
+  const siteRouteBlock = document.getElementById('siteRoute')
+  const siteRouteValue = document.getElementById('siteRouteValue')
+  const siteRouteHint = document.getElementById('siteRouteHint')
+  const siteRouteRule = document.getElementById('siteRouteRule')
+  const blockCountryForSite = document.getElementById('blockCountryForSite')
+  const blockCountryForSiteLabel = document.getElementById(
+    'blockCountryForSiteLabel',
+  )
+  const siteBlockedCountries = document.getElementById('siteBlockedCountries')
+  const clearSiteCountryRule = document.getElementById('clearSiteCountryRule')
+
+  let siteRuleState = { hostname: '', country: '', blocked: [] }
+
+  const DIRECT_REASONS = {
+    private: 'siteRouteLocal',
+    'not-blocked': 'siteRouteDirect',
+    'no-proxies': 'siteRouteNoProxies',
+    'all-countries-blocked': 'siteRouteAllBlocked',
+  }
+
+  const renderSiteRoute = async (hostname) => {
+    if (!siteRouteBlock || !hostname) {
+      return
+    }
+
+    const route = await ProxyManager.describeRouteFor(hostname)
+
+    siteRouteBlock.hidden = false
+    siteRouteHint.textContent = ''
+    siteRouteRule.hidden = true
+
+    if (!route.proxied) {
+      siteRouteValue.textContent =
+        i18nGetMessage(DIRECT_REASONS[route.reason] || 'siteRouteDirect')
+      siteRouteValue.className = 'site-route__value site-route__value--direct'
+
+      // The rule is still worth showing when it is what forced the site
+      // direct — otherwise the user cannot undo it from here.
+      if (route.reason === 'all-countries-blocked') {
+        renderSiteRule(hostname, route)
+      }
+      return
+    }
+
+    // Exit address is what the site sees; the entry country is the fallback
+    // for a proxy that has not been checked yet.
+    const country = route.exitCountry || route.entryCountry
+    const parts = [route.exitIp || route.proxy.uri, country].filter(Boolean)
+
+    siteRouteValue.textContent = parts.join(' · ')
+    siteRouteValue.className = 'site-route__value site-route__value--proxied'
+    siteRouteValue.title = `${route.proxy.protocol} ${route.proxy.uri}`
+
+    if (!route.exitIp) {
+      siteRouteHint.textContent = i18nGetMessage('siteRouteNotChecked')
+    }
+
+    renderSiteRule(hostname, route)
+  }
+
+  // "Never open this site through a proxy in <country>."
+  function renderSiteRule (hostname, route) {
+    const country = route.exitCountry || route.entryCountry
+    const blocked = route.blockedCountries || []
+
+    siteRouteRule.hidden = false
+
+    if (country) {
+      blockCountryForSiteLabel.textContent =
+        `${i18nGetMessage('siteRouteBlockCountry')} ${country}`
+      blockCountryForSite.checked = blocked.includes(country)
+      blockCountryForSite.disabled = false
+      blockCountryForSite.dataset.country = country
+      blockCountryForSite.parentElement.hidden = false
+    } else {
+      // Nothing to name, so nothing to tick.
+      blockCountryForSite.parentElement.hidden = true
+    }
+
+    if (blocked.length > 0) {
+      siteBlockedCountries.hidden = false
+      siteBlockedCountries.textContent =
+        `${i18nGetMessage('siteRouteBlockedList')} ${blocked.join(', ')}`
+      clearSiteCountryRule.classList.remove('hidden')
+    } else {
+      siteBlockedCountries.hidden = true
+      clearSiteCountryRule.classList.add('hidden')
+    }
+
+    if (route.unknownCountries > 0) {
+      siteRouteHint.textContent =
+        `${i18nGetMessage('siteRouteUnknownCountries')} ${route.unknownCountries}`
+    }
+
+    // Listeners are attached once, below; they read the live state from here
+    // so re-rendering never stacks another copy on the same element.
+    siteRuleState = { hostname, country, blocked }
+  }
+
+  // Applies a rule change, rebuilds the PAC so it takes effect immediately,
+  // then repaints from what the PAC would now do.
+  const applySiteRule = async (codes) => {
+    if (!siteRuleState.hostname) {
+      return
+    }
+    await setSiteCountryRule(siteRuleState.hostname, codes)
+    await ProxyManager.setProxy()
+    await renderSiteRoute(siteRuleState.hostname)
+  }
+
+  if (blockCountryForSite) {
+    blockCountryForSite.addEventListener('change', async () => {
+      const { country, blocked } = siteRuleState
+
+      await applySiteRule(blockCountryForSite.checked
+        ? [...blocked, country]
+        : blocked.filter((entry) => entry !== country))
+    })
+  }
+
+  if (clearSiteCountryRule) {
+    clearSiteCountryRule.addEventListener('click', async () => {
+      await applySiteRule([])
+    })
+  }
 
   // Show page with instructions about how to grand incognito access
   privateBrowsingPermissionsRequiredButton.addEventListener('click', () => {
@@ -365,6 +497,7 @@ import { extractHostnameFromUrl, i18nGetMessage, isI2PUrl, isOnionUrl, isValidUR
       })
 
       if (isValidURL(currentUrl)) {
+        await renderSiteRoute(currentHostname)
         currentDomainHeader.innerText = currentHostname
         toggleSiteActionsButton.classList.remove('hidden')
         siteActionDescription.textContent = i18nGetMessage(

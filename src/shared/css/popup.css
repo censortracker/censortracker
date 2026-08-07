@@ -26,6 +26,67 @@ a {
     margin: 20px;
 }
 
+/* "Opened through <exit ip> · <country>" block and its per-site country rule. */
+.site-route__line {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.site-route__label {
+    font-size: 13px;
+    color: #625c55;
+}
+
+.site-route__value {
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'IBM Plex Mono', Consolas, monospace;
+    word-break: break-all;
+}
+
+.site-route__value--proxied {
+    color: #2e7d32;
+}
+
+.site-route__value--direct {
+    color: #8a8580;
+    font-family: inherit;
+    font-weight: 400;
+}
+
+.site-route__hint,
+.site-route__blocked {
+    font-size: 12px;
+    color: #8a8580;
+    margin-top: 4px;
+}
+
+.site-route__rule {
+    margin-top: 8px;
+}
+
+.site-route__rule-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #625c55;
+    cursor: pointer;
+}
+
+.site-route__clear {
+    margin-top: 6px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: #5173d3;
+    font-size: 12px;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
 /* "New version available" strip, pinned above everything else in the popup. */
 .update-banner {
     display: flex;

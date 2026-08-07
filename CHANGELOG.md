@@ -30,7 +30,11 @@ Security:
 - Server responses are validated before use: a malformed proxy payload can no
   longer be stored as the literal URI `undefined:undefined`, the ignore feed is
   rejected unless it is an array of real domains, and config mirrors returning
-  a non-object are skipped
+  a non-object are skipped. The proxy address itself is built forgivingly —
+  rejecting a payload disables proxying silently, so a `server` that already
+  carries its port is accepted and a scheme prefix is stripped instead of
+  being passed through (`HTTPS https://host:443` was never a valid PAC
+  directive), and only a payload with no usable address at all is refused
 - `atob()` on the `loadFor` parameter is guarded and the result must be an
   http(s) URL; local-proxy config UUIDs are URL-encoded; the options page no
   longer publishes the `server` module as `window.server`

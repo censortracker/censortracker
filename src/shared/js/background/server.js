@@ -39,6 +39,39 @@ const isUsablePort = (value) => {
 }
 
 /**
+ * Builds the `host:port` string the PAC script expects.
+ *
+ * Deliberately forgiving about the response shape, because rejecting a
+ * payload here silently disables proxying altogether: the URI never reaches
+ * storage, the PAC is built without a proxy and every request goes DIRECT
+ * while the UI still shows proxying as enabled. So a `server` that already
+ * carries the port is accepted, and a scheme prefix is stripped rather than
+ * passed through — `HTTPS https://host:443` is not a valid PAC directive.
+ * @param server {*} Host, `host:port`, or a full URL.
+ * @param port {*} Port, as a number or a string.
+ * @returns {string} `host:port`, or '' when no usable pair can be formed.
+ */
+const buildProxyServerURI = (server, port) => {
+  if (!isNonEmptyString(server)) {
+    return ''
+  }
+
+  const host = server
+    .trim()
+    .replace(/^[a-z][a-z0-9+.-]*:\/\//i, '')
+    .replace(/\/+$/, '')
+
+  if (isUsablePort(port)) {
+    // Drop a port already present on the host so it is not doubled.
+    return `${host.replace(/:\d+$/, '')}:${Number(port)}`
+  }
+
+  const trailingPort = host.split(':').pop()
+
+  return host.includes(':') && isUsablePort(trailingPort) ? host : ''
+}
+
+/**
  * Fetches the country code from the given GeoIP API Endpoint.
  * @param geoIPServiceURL {string} API endpoint for fetching country code.
  * @returns {Promise<string|*>} Resolves with the country code.
@@ -213,11 +246,15 @@ const fetchProxy = async ({ proxyUrl } = {}) => {
       fallbackReason,
     } = payload
 
-    // Without this an error payload (or an HTML captive-portal page) would be
-    // happily stored as the literal proxy URI "undefined:undefined" and then
-    // handed to the PAC script.
-    if (!isNonEmptyString(server) || !isUsablePort(port)) {
-      throw new Error(`unusable proxy config: ${server}:${port}`)
+    const proxyServerURI = buildProxyServerURI(server, port)
+
+    // Only bail when no usable address can be formed at all. Without this an
+    // error payload (or an HTML captive-portal page) would be stored as the
+    // literal URI "undefined:undefined" and handed to the PAC script.
+    if (!proxyServerURI) {
+      throw new Error(
+        `unusable proxy config: ${JSON.stringify({ server, port })}`,
+      )
     }
 
     const fallbackProxyInUse = !!fallbackReason
@@ -226,10 +263,7 @@ const fetchProxy = async ({ proxyUrl } = {}) => {
 
     // The ping endpoint is optional: when it is missing or malformed we keep
     // the URI empty rather than storing "undefined:undefined".
-    const proxyPingURI = isNonEmptyString(pingHost) && isUsablePort(pingPort)
-      ? `${pingHost}:${pingPort}`
-      : ''
-    const proxyServerURI = `${server}:${port}`
+    const proxyPingURI = buildProxyServerURI(pingHost, pingPort)
 
     console.log(`Proxy server fetched: ${proxyServerURI}!`)
 

@@ -7,11 +7,13 @@ import {
 } from 'Background/geoip'
 import ProxyClient from 'Background/localproxy'
 import ProxyManager from 'Background/proxy'
+import { supportsSocksAuth } from 'Background/proxy-auth'
 import Registry from 'Background/registry'
 import * as server from 'Background/server'
 import {
   formatProxyForShare,
   i18nGetMessage,
+  needsSocksAuth,
   parseProxyList,
   parseProxyString,
 } from 'Background/utilities'
@@ -47,6 +49,7 @@ import {
   const proxyNameInput = document.getElementById('proxyNameInput')
   const customProxyList = document.getElementById('customProxyList')
   const invalidCustomProxy = document.getElementById('invalidCustomProxy')
+  const socksAuthUnsupported = document.getElementById('socksAuthUnsupported')
   const currentProxyAddress = document.getElementById('currentProxyAddress')
   const currentProxyAddressValue = document.getElementById('currentProxyAddressValue')
   const customProxyFormTitle = document.getElementById('customProxyFormTitle')
@@ -695,6 +698,9 @@ import {
       proxyNameInput.value = ''
     }
     proxyServerInput.classList.remove('invalid-input')
+    if (socksAuthUnsupported) {
+      socksAuthUnsupported.classList.add('hidden')
+    }
     saveCustomProxyButton.querySelector('.btn__text').textContent =
       i18nGetMessage('addCustomProxyButton')
     if (customProxyFormTitle) {
@@ -1887,6 +1893,21 @@ import {
     }
   }
 
+  // Chromium exposes no hook into the SOCKS handshake, so a SOCKS login can
+  // never be delivered there however correct it is. Saying so the moment the
+  // proxy is saved beats letting the user wonder why the password changes
+  // nothing. The proxy is still saved: it stays valid, and it works as soon as
+  // the same profile is opened in Firefox.
+  const warnIfSocksAuthUnsupported = (proxy) => {
+    if (!socksAuthUnsupported) {
+      return
+    }
+
+    socksAuthUnsupported.classList.toggle(
+      'hidden', !(needsSocksAuth(proxy) && !supportsSocksAuth()),
+    )
+  }
+
   if (cancelEditProxyButton) {
     cancelEditProxyButton.addEventListener('click', resetProxyForm)
   }
@@ -1927,6 +1948,8 @@ import {
 
     await ProxyManager.setProxy()
     resetProxyForm()
+    // After the reset, which clears any warning left from the previous edit.
+    warnIfSocksAuthUnsupported(parsed)
     await renderCustomProxies()
   })
 

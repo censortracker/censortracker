@@ -543,12 +543,19 @@ a {
   display: grid;
   /* Every track is either fixed or fr — identical resolution in every row
      (a max-content track would size per-row and skew the columns). */
+  /* The name carries the most meaning and is the only free-text column, so it
+     gets the largest share; the measurement columns hold two letters or
+     "000 ms" and were wider than anything they ever display. */
   grid-template-columns:
-    40px minmax(120px, 1.3fr) minmax(150px, 1.6fr)
-    56px 56px 64px 64px 96px 132px;
+    36px minmax(150px, 2fr) minmax(172px, 1.4fr)
+    52px 52px 60px 60px 100px 120px;
   align-items: center;
   gap: 8px;
   padding: 8px 12px;
+  /* Smaller than the surrounding page on purpose: this is a dense table of
+     addresses and measurements, and the extra room is what lets a proxy's
+     name be read in full instead of ellipsed after a few characters. */
+  font-size: 13px;
   border-bottom: 1px solid #e0ddd8;
   background: #fff;
 }
@@ -645,6 +652,9 @@ a {
   justify-content: center;
   min-width: 20px;
   height: 20px;
+  /* Explicit, rather than relying on the row's gap: the badge sits next to the
+     name inside the name cell, where that gap does not reach. */
+  margin-right: 6px;
   padding: 0 5px;
   border-radius: 10px;
   background: #6c9e2c;
@@ -888,6 +898,7 @@ a {
 }
 
 .cproxy-row__name {
+  font-size: 13px;
   font-weight: 600;
   color: #3b332b;
   overflow: hidden;
@@ -897,7 +908,7 @@ a {
 
 .cproxy-row__addr {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 12px;
+  font-size: 11px;
   color: #6d675f;
   word-break: break-all;
 }
@@ -973,6 +984,13 @@ a {
 .invalid-proxy-msg {
   color: #c0392b;
   font-size: 13px;
+}
+
+/* The proxy was saved, but this browser cannot use part of it. */
+.proxy-warning-msg {
+  color: #e65100;
+  font-size: 13px;
+  line-height: 1.4;
 }
 
 /* Ignore Editor Page */

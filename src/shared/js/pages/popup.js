@@ -154,7 +154,7 @@ import { extractHostnameFromUrl, i18nGetMessage, isI2PUrl, isOnionUrl, isValidUR
     'all-countries-blocked': 'siteRouteAllBlocked',
   }
 
-  const renderSiteRoute = async (hostname) => {
+  const renderSiteRoute = async (hostname, pinnedCountry = '') => {
     if (!siteRouteBlock || !hostname) {
       return
     }
@@ -173,15 +173,20 @@ import { extractHostnameFromUrl, i18nGetMessage, isI2PUrl, isOnionUrl, isValidUR
       // The rule is still worth showing when it is what forced the site
       // direct — otherwise the user cannot undo it from here.
       if (route.reason === 'all-countries-blocked') {
-        renderSiteRule(hostname, route)
+        renderSiteRule(hostname, route, pinnedCountry)
       }
       return
     }
 
-    // Exit address is what the site sees; the entry country is the fallback
-    // for a proxy that has not been checked yet.
+    // Name the proxy the way the user named it in their list. The exit address
+    // alone answered "where does this come out" but not "which of my proxies
+    // is this", which is the question you actually have in front of a rule
+    // about that proxy's country.
     const country = route.exitCountry || route.entryCountry
-    const parts = [route.exitIp || route.proxy.uri, country].filter(Boolean)
+    const label = route.proxy.id === 'builtin'
+      ? i18nGetMessage('builtinProxyName')
+      : (route.proxy.name || route.proxy.uri)
+    const parts = [label, route.exitIp, country].filter(Boolean)
 
     siteRouteValue.textContent = parts.join(' · ')
     siteRouteValue.className = 'site-route__value site-route__value--proxied'
@@ -191,12 +196,18 @@ import { extractHostnameFromUrl, i18nGetMessage, isI2PUrl, isOnionUrl, isValidUR
       siteRouteHint.textContent = i18nGetMessage('siteRouteNotChecked')
     }
 
-    renderSiteRule(hostname, route)
+    renderSiteRule(hostname, route, pinnedCountry)
   }
 
   // "Never open this site through a proxy in <country>."
-  function renderSiteRule (hostname, route) {
-    const country = route.exitCountry || route.entryCountry
+  //
+  // `pinnedCountry` holds the box on the country the user just acted on.
+  // Without it the box re-reads the country of wherever the site goes NOW —
+  // which is precisely what the rule just changed — so ticking "never through
+  // NL" moved the site to a DE proxy and the box came back unticked and
+  // relabelled, exactly as if the setting had been forgotten.
+  function renderSiteRule (hostname, route, pinnedCountry = '') {
+    const country = pinnedCountry || route.exitCountry || route.entryCountry
     const blocked = route.blockedCountries || []
 
     siteRouteRule.hidden = false
@@ -210,6 +221,7 @@ import { extractHostnameFromUrl, i18nGetMessage, isI2PUrl, isOnionUrl, isValidUR
       blockCountryForSite.parentElement.hidden = false
     } else {
       // Nothing to name, so nothing to tick.
+      blockCountryForSite.checked = false
       blockCountryForSite.parentElement.hidden = true
     }
 
@@ -235,22 +247,27 @@ import { extractHostnameFromUrl, i18nGetMessage, isI2PUrl, isOnionUrl, isValidUR
 
   // Applies a rule change, rebuilds the PAC so it takes effect immediately,
   // then repaints from what the PAC would now do.
-  const applySiteRule = async (codes) => {
+  const applySiteRule = async (codes, pinnedCountry = '') => {
     if (!siteRuleState.hostname) {
       return
     }
     await setSiteCountryRule(siteRuleState.hostname, codes)
     await ProxyManager.setProxy()
-    await renderSiteRoute(siteRuleState.hostname)
+    await renderSiteRoute(siteRuleState.hostname, pinnedCountry)
   }
 
   if (blockCountryForSite) {
     blockCountryForSite.addEventListener('change', async () => {
       const { country, blocked } = siteRuleState
 
-      await applySiteRule(blockCountryForSite.checked
-        ? [...blocked, country]
-        : blocked.filter((entry) => entry !== country))
+      await applySiteRule(
+        blockCountryForSite.checked
+          ? [...blocked, country]
+          : blocked.filter((entry) => entry !== country),
+        // Stay on this country so the box reflects the rule just set, not the
+        // country of the proxy the site was moved to as a result.
+        country,
+      )
     })
   }
 

@@ -117,9 +117,11 @@ export const countryOfProxy = (proxy, statuses, geo, hostFromUri) => {
  * @param host {string} Destination host.
  * @param context {{proxies: Array, chainIds: Array<string>, proxyAll: boolean,
  *   isBlocked: Function, countries: Array<string>, rules: Object}}
- * @returns {{proxied: boolean, proxy: Object|null, reason: string}}
+ * @returns {{proxied: boolean, proxy: Object|null, chain: Array, reason: string}}
  *   `reason` is one of: 'private', 'not-blocked', 'no-proxies',
- *   'all-countries-blocked', 'proxied'.
+ *   'all-countries-blocked', 'proxied'. `chain` is the full failover order for
+ *   this host — the same rotation the PAC would return, primary first — which
+ *   is what Firefox's `proxy.onRequest` path hands to the browser.
  */
 export const resolveProxyForHost = (host, context) => {
   const {
@@ -131,7 +133,9 @@ export const resolveProxyForHost = (host, context) => {
   } = context || {}
 
   const clean = String(host || '').replace(/\.$/, '').toLowerCase()
-  const direct = (reason) => ({ proxied: false, proxy: null, reason })
+  const direct = (reason) => {
+    return { proxied: false, proxy: null, chain: [], reason }
+  }
 
   if (!clean) {
     return direct('private')
@@ -178,9 +182,16 @@ export const resolveProxyForHost = (host, context) => {
     return direct('all-countries-blocked')
   }
 
+  // The same rotation `buildRotations` precomputes for the PAC: start at the
+  // hashed primary and wrap around, so the remaining proxies stay available as
+  // failover in exactly the order the PAC would have tried them.
+  const primary = hashHost(target) % allowed.length
+  const chain = allowed.slice(primary).concat(allowed.slice(0, primary))
+
   return {
     proxied: true,
-    proxy: allowed[hashHost(target) % allowed.length],
+    proxy: chain[0],
+    chain,
     reason: 'proxied',
   }
 }

@@ -22,7 +22,9 @@
     "scripting",
     "storage",
     "unlimitedStorage",
-    "webNavigation"
+    "webNavigation",
+    "webRequest",
+    "webRequestAuthProvider"
   ],
   "content_security_policy": {
     "extension_pages": "object-src 'self'; script-src 'self';"

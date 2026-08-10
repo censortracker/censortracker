@@ -13,6 +13,10 @@ import {
 } from 'Background/handlers'
 
 import browser from './browser-api'
+import {
+  handleCredentialsChange,
+  registerProxyAuthHandler,
+} from './proxy-auth'
 
 // Handle alarms for async tasks
 browser.alarms.onAlarm.addListener(handleOnAlarm)
@@ -27,6 +31,13 @@ browser.tabs.onCreated.addListener(handleTabCreate)
 browser.storage.onChanged.addListener(handleStorageChanged)
 browser.storage.onChanged.addListener(handleIgnoredHostsChange)
 browser.storage.onChanged.addListener(handleCustomProxiedDomainsChange)
+browser.storage.onChanged.addListener(handleCredentialsChange)
+
+// Answer proxy login prompts with the stored credentials. Registered for both
+// browsers and before the vendor-specific blocks below, so a proxy that needs
+// a password works the moment the extension starts rather than only after the
+// first settings change.
+registerProxyAuthHandler()
 
 if (browser.isFirefox) {
   // Firefox-specific handlers

@@ -57,6 +57,112 @@ export const proxyToPacToken = (protocol, uri) => {
 }
 
 /**
+ * Builds a PAC return string that tries each proxy in turn (failover).
+ * @param {Array<{protocol: string, uri: string}>} proxies
+ * @returns {string} PAC token list, or '' when nothing usable was given.
+ */
+export const proxyListToPacToken = (proxies) => {
+  const tokens = (Array.isArray(proxies) ? proxies : [proxies])
+    .filter((proxy) => proxy && proxy.protocol && proxy.uri)
+    .map(({ protocol, uri }) => proxyToPacToken(protocol, uri))
+
+  return tokens.length > 0 ? `${tokens.join('; ')};` : ''
+}
+
+/**
+ * Splits a "host:port" proxy URI into its parts. IPv6 literals are accepted in
+ * their bracketed form ("[::1]:1080"), which is how they must be written for
+ * the port to be unambiguous.
+ * @param {string} uri - "host:port".
+ * @returns {{host: string, port: number}|null} Null when unparseable.
+ */
+export const splitHostPort = (uri) => {
+  if (!uri || typeof uri !== 'string') {
+    return null
+  }
+
+  const value = uri.trim()
+  const bracketed = value.match(/^\[(.+)\]:(\d{1,5})$/)
+  const host = bracketed ? bracketed[1] : value.slice(0, value.lastIndexOf(':'))
+  const port = bracketed ? bracketed[2] : value.slice(value.lastIndexOf(':') + 1)
+
+  if (!host || !/^\d{1,5}$/.test(port) || Number(port) > 65535) {
+    return null
+  }
+  return { host, port: Number(port) }
+}
+
+/**
+ * Percent-decodes one half of a credentials pair. Proxy lists routinely
+ * URL-encode logins (an e-mail login arrives as "user%40example.com"), and the
+ * browser expects the decoded value. A string that is not valid percent-encoding
+ * is passed through untouched rather than dropped — a literal '%' in a password
+ * is far more likely than a user meaning to encode something.
+ * @param {string} value
+ * @returns {string}
+ */
+const decodeCredentialPart = (value) => {
+  if (!value) {
+    return ''
+  }
+
+  try {
+    return decodeURIComponent(value)
+  } catch (error) {
+    return value
+  }
+}
+
+/**
+ * Splits the stored "user:password" blob into the pair the browser's
+ * authentication APIs expect.
+ *
+ * The split is on the FIRST colon: a colon is legal inside a password but not
+ * inside a login, so everything after the first one belongs to the password.
+ * Credentials are stored exactly as the user typed them (so sharing a proxy
+ * round-trips losslessly) and decoded only here, on the way to the browser.
+ * @param {string} credentials - Raw "user:password" (possibly percent-encoded).
+ * @returns {{username: string, password: string}|null} Null when there is no
+ *   usable login.
+ */
+export const splitProxyCredentials = (credentials) => {
+  if (!credentials || typeof credentials !== 'string') {
+    return null
+  }
+
+  const separator = credentials.indexOf(':')
+  const username = decodeCredentialPart(
+    separator === -1 ? credentials : credentials.slice(0, separator),
+  )
+
+  if (!username) {
+    return null
+  }
+
+  return {
+    username,
+    password: separator === -1
+      ? ''
+      : decodeCredentialPart(credentials.slice(separator + 1)),
+  }
+}
+
+/**
+ * True when a proxy carries credentials that can only be delivered inside the
+ * SOCKS handshake (as opposed to an HTTP 407 challenge).
+ * @param {{protocol: string, credentials?: string}} proxy
+ * @returns {boolean}
+ */
+export const needsSocksAuth = (proxy) => {
+  if (!proxy || !proxy.credentials) {
+    return false
+  }
+  const protocol = normalizeProxyProtocol(proxy.protocol)
+
+  return protocol === 'SOCKS5' || protocol === 'SOCKS4'
+}
+
+/**
  * Parses a free-form proxy string into a protocol + server URI pair so the
  * user can paste a proxy in almost any common format, e.g.:
  *   socks5://user:pass@1.2.3.4:1080
@@ -168,7 +274,10 @@ export const parseProxyList = (text, defaultProtocol = 'HTTPS') => {
       continue
     }
 
-    const key = `${parsed.protocol}|${parsed.uri}`.toLowerCase()
+    // Credentials are part of the key: the same address with a login is a
+    // different proxy from the same address without one.
+    const key =
+      `${parsed.protocol}|${parsed.uri}|${parsed.credentials}`.toLowerCase()
 
     if (seen.has(key)) {
       continue

@@ -1,3 +1,43 @@
+# 20.12.0
+
+- **Proxies that ask for a login and password now work.** The credentials were
+  already parsed, stored, exported and shown back in the edit form — and then
+  quietly dropped. A PAC script has no room for them and nothing delivered them
+  by any other route, so an authenticating proxy failed no matter what was
+  typed into the field. The extension now answers the proxy's authentication
+  challenge itself, with the credentials saved for that exact proxy.
+
+  Two refusals are what make this safe to switch on. A challenge that does not
+  come from a proxy is never answered, so a website replying `401` cannot
+  harvest the proxy login. And a challenge from an address that is not one of
+  the configured proxies is never answered either. If a proxy turns the
+  credentials down they are not resent in a loop: the proxy is reported as
+  needing authorization rather than as dead, so auto-removal leaves it alone
+  and the login can be corrected.
+
+- **SOCKS proxies with a login work in Firefox.** SOCKS credentials are
+  negotiated inside the SOCKS handshake instead of as an HTTP challenge, so
+  they need a different route altogether: Firefox is handed the routing
+  decisions directly rather than through the PAC. That only happens when a
+  selected proxy actually carries SOCKS credentials — every other setup stays
+  on the PAC path it has always used, and the two are built from one shared
+  description so they cannot disagree about where a site should go.
+
+  Chromium offers no hook into the SOCKS handshake and cannot pass such a login
+  at all. Rather than fail silently, the settings page now says so when a proxy
+  like that is saved.
+
+- **The same address with and without a login are no longer one proxy.**
+  Adding `user:pass@host:port` on top of an existing plain `host:port` used to
+  be dropped as a duplicate, leaving only the entry that cannot authenticate —
+  and no way to fix it.
+
+- Fetching a proxy subscription through an **HTTP** proxy was routed with an
+  invalid PAC directive and could never work; it now uses the same routing as
+  everything else. An entry with a missing protocol or address is no longer
+  reported as alive by the checker either — the probe used to fall through to a
+  direct connection and time the site instead of the proxy.
+
 # 20.11.0
 
 - **The popup now says where the current site comes out.** A line at the top

@@ -29,7 +29,9 @@ import {
 } from './site-rules'
 import {
   fetchWithTimeout,
+  looksLikePacScript,
   needsSocksAuth,
+  parsePacProxies,
   parseProxyList,
   proxyListToPacToken,
 } from './utilities'
@@ -2064,7 +2066,14 @@ class ProxyManager {
       const text = await this.fetchSourceText(url, settings.useProxy)
 
       if (text) {
-        collected.push(...parseProxyList(text))
+        // A PAC names its proxies in a grammar of its own. Splitting one on
+        // whitespace like a plain list harvests fragments of the program
+        // instead — and, since PAC providers routinely point at a proxy
+        // client running on the user's own machine, would fill the list with
+        // localhost entries that can never work.
+        collected.push(...(looksLikePacScript(text)
+          ? parsePacProxies(text)
+          : parseProxyList(text)))
       }
     }
 

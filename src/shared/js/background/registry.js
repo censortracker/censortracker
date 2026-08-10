@@ -11,6 +11,8 @@ const REGISTRY_STORAGE_KEYS = [
   'ignoredHosts',
   'disseminators',
   'customProxiedDomains',
+  'externalBlocklistDomains',
+  'useExternalBlocklist',
 ]
 
 // In-memory snapshot of the registry data. The blocklist can contain tens of
@@ -31,14 +33,25 @@ const getRegistryState = () => {
       ignoredHosts: [],
       disseminators: [],
       customProxiedDomains: [],
+      externalBlocklistDomains: [],
+      useExternalBlocklist: false,
     }).then(({
       domains,
       useRegistry,
       ignoredHosts,
       disseminators,
       customProxiedDomains,
+      externalBlocklistDomains,
+      useExternalBlocklist,
     }) => ({
       useRegistry,
+      useExternalBlocklist,
+      // Kept as its own set rather than folded into the user's own list: it
+      // runs to hundreds of thousands of entries, and mixing it in would bury
+      // the handful of domains they curated by hand with no way back.
+      externalBlocklist: useExternalBlocklist
+        ? new Set(externalBlocklistDomains)
+        : new Set(),
       // Storage can still hold a non-array from a sync that predates the
       // validation in server.js, and retrieveDisseminator() calls .find() on
       // this for every tab load.
@@ -78,23 +91,31 @@ class Registry {
       useRegistry,
       ignoredHosts,
       customProxiedDomains,
+      externalBlocklist,
     } = await getRegistryState()
 
-    if (!useRegistry) {
-      return [...customProxiedDomains]
+    const seen = new Set()
+    const allDomains = []
+    const push = (domain) => {
+      if (!ignoredHosts.has(domain) && !seen.has(domain)) {
+        seen.add(domain)
+        allDomains.push(domain)
+      }
     }
 
-    const allDomains = []
-
-    for (const domain of domains) {
-      if (!ignoredHosts.has(domain)) {
-        allDomains.push(domain)
+    if (useRegistry) {
+      for (const domain of domains) {
+        push(domain)
       }
     }
     for (const domain of customProxiedDomains) {
-      if (!domains.has(domain) && !ignoredHosts.has(domain)) {
-        allDomains.push(domain)
-      }
+      push(domain)
+    }
+    // The imported blocklist is additive and independent of `useRegistry`:
+    // it is the user's own choice to load it, and switching the official
+    // registry off is not a reason to discard it.
+    for (const domain of externalBlocklist) {
+      push(domain)
     }
     return allDomains
   }
@@ -103,6 +124,67 @@ class Registry {
     const domains = await this.getDomains()
 
     return domains.length === 0
+  }
+
+  /**
+   * Stores an imported third-party blocklist, replacing any previous one, and
+   * switches it on. Kept apart from the official registry and from the user's
+   * own list so it can be turned off or dropped without touching either.
+   * @param {Array<string>} domains
+   * @param {{source?: string}} [options]
+   * @returns {Promise<number>} How many distinct domains were stored.
+   */
+  async setExternalBlocklist (domains, { source = '' } = {}) {
+    const unique = [...new Set(
+      (Array.isArray(domains) ? domains : [])
+        .filter((domain) => typeof domain === 'string' && domain),
+    )]
+
+    await browser.storage.local.set({
+      externalBlocklistDomains: unique,
+      useExternalBlocklist: unique.length > 0,
+      externalBlocklistSource: source,
+      externalBlocklistUpdatedAt: unique.length > 0 ? Date.now() : 0,
+    })
+    return unique.length
+  }
+
+  /**
+   * @returns {Promise<{count: number, enabled: boolean, source: string,
+   *   updatedAt: number}>}
+   */
+  async getExternalBlocklistInfo () {
+    const {
+      externalBlocklistDomains,
+      useExternalBlocklist,
+      externalBlocklistSource,
+      externalBlocklistUpdatedAt,
+    } = await browser.storage.local.get({
+      externalBlocklistDomains: [],
+      useExternalBlocklist: false,
+      externalBlocklistSource: '',
+      externalBlocklistUpdatedAt: 0,
+    })
+
+    return {
+      count: externalBlocklistDomains.length,
+      enabled: useExternalBlocklist,
+      source: externalBlocklistSource,
+      updatedAt: externalBlocklistUpdatedAt,
+    }
+  }
+
+  async setExternalBlocklistEnabled (value) {
+    await browser.storage.local.set({ useExternalBlocklist: !!value })
+  }
+
+  async clearExternalBlocklist () {
+    await browser.storage.local.set({
+      externalBlocklistDomains: [],
+      useExternalBlocklist: false,
+      externalBlocklistSource: '',
+      externalBlocklistUpdatedAt: 0,
+    })
   }
 
   async add (url) {

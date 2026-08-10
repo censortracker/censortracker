@@ -937,6 +937,22 @@ a {
   color: #6d675f;
 }
 
+/* Two independent imports share this section, so the parts need visible air
+   between them; without it the button of one runs straight into the
+   explanation of the other. */
+.cproxy-external > * + * {
+  margin-top: 12px;
+}
+
+/* Marks a section that talks to a third-party service and may simply not
+   work — deliberately louder than the neutral "built-in" pill. */
+.cproxy-badge--experimental {
+  margin-left: 8px;
+  background: #fbe9d6;
+  color: #a34a00;
+  text-transform: lowercase;
+}
+
 .cproxy-country {
   flex: 0 0 auto;
   align-self: center;

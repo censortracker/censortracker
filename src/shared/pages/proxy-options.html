@@ -245,6 +245,44 @@
                 </div>
               </div>
 
+              <div class="cproxy-sources">
+                <button type="button" class="cproxy-section__head" id="antizapretToggle" aria-expanded="false">
+                  <svg class="cproxy-chevron" width="14" height="14" viewBox="0 0 24 24"
+                       fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2"
+                          stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <span class="cproxy-section__title" data-i18n-key="antizapretTitle"></span>
+                  <span class="cproxy-badge cproxy-badge--experimental"
+                        data-i18n-key="experimentalBadge"></span>
+                </button>
+                <div id="antizapretBody" class="hidden cproxy-external">
+                  <div class="cproxy-hint" data-i18n-key="antizapretHint"></div>
+
+                  <div class="cproxy-sources__row">
+                    <button type="button" class="btn btn-dark cproxy-toolbar__btn" id="importAntizapretButton">
+                      <span class="btn__text" data-i18n-key="importAntizapretButton"></span>
+                    </button>
+                    <span class="cproxy-sources__status" id="antizapretStatus"></span>
+                  </div>
+
+                  <div class="cproxy-hint" data-i18n-key="externalBlocklistHint"></div>
+                  <label class="cproxy-toolbar__check">
+                    <input type="checkbox" id="useExternalBlocklist"/>
+                    <span data-i18n-key="externalBlocklistEnabledLabel"></span>
+                  </label>
+                  <div class="cproxy-sources__row">
+                    <button type="button" class="btn cproxy-toolbar__btn" id="importBlocklistButton">
+                      <span class="btn__text" data-i18n-key="importBlocklistButton"></span>
+                    </button>
+                    <button type="button" class="btn cproxy-toolbar__btn hidden" id="clearBlocklistButton">
+                      <span class="btn__text" data-i18n-key="clearBlocklistButton"></span>
+                    </button>
+                    <span class="cproxy-sources__status" id="blocklistStatus"></span>
+                  </div>
+                </div>
+              </div>
+
               <div class="custom-proxy-form">
                 <div class="custom-proxy-form__title" id="customProxyFormTitle"
                      data-i18n-key="addCustomProxyTitle"></div>

@@ -20,6 +20,27 @@
   "advancedOptionsTitle": {
     "message": "Продвинутые Настройки"
   },
+  "antizapretEmpty": {
+    "message": "В скрипте не нашлось пригодных прокси."
+  },
+  "antizapretFetching": {
+    "message": "Загрузка…"
+  },
+  "antizapretHint": {
+    "message": "Сторонние сервисы, их развивают другие люди. Антизапрет публикует свои прокси внутри PAC-скрипта и отвечает только с российских IP-адресов — из других стран импорт сообщит, что сервис недоступен. Загруженные прокси попадают в список выше и проверяются наравне с остальными."
+  },
+  "antizapretImported": {
+    "message": "Добавлено:"
+  },
+  "antizapretTitle": {
+    "message": "Антизапрет и Антицензорити"
+  },
+  "antizapretUnavailable": {
+    "message": "Сервис не отдал список прокси. Он работает только с российских IP-адресов."
+  },
+  "antizapretUnreachable": {
+    "message": "Не удалось связаться с сервисом."
+  },
   "appAuthor": {
     "message": "Censor Tracker"
   },
@@ -59,6 +80,15 @@
   "blockedTitle": {
     "message": "Доступ запрещён"
   },
+  "blocklistFetching": {
+    "message": "Загрузка… это может занять время."
+  },
+  "blocklistLoaded": {
+    "message": "Доменов:"
+  },
+  "blocklistUnparsable": {
+    "message": "В загруженном файле нет списка в известном формате."
+  },
   "builtinProxyBadge": {
     "message": "встроенный"
   },
@@ -73,6 +103,9 @@
   },
   "chooseFileOnComputer": {
     "message": "Выберите файл на компьютере"
+  },
+  "clearBlocklistButton": {
+    "message": "Удалить блоклист"
   },
   "clipboardReadFailed": {
     "message": "Не удалось прочитать буфер обмена. Используйте Ctrl+V."
@@ -278,6 +311,9 @@
   "emptyRegistryHint": {
     "message": "Список сайтов для проксирования пуст — сейчас трафик не проксируется. Включите проксирование всего трафика выше или добавьте сайты в список."
   },
+  "experimentalBadge": {
+    "message": "тестовый"
+  },
   "exportSettingsDesc": {
     "message": "Вы можете экспортировать настройки Censor Tracker в файл JSON и импортировать их позже."
   },
@@ -292,6 +328,12 @@
   },
   "extensionInstalledDesc": {
     "message": "Закрепите расширение в панели браузера в два клика, чтобы всегда быть в курсе, какие сайты могут передавать ваши сообщения, личные данные и весь трафик третьим лицам."
+  },
+  "externalBlocklistEnabledLabel": {
+    "message": "Использовать загруженный блоклист"
+  },
+  "externalBlocklistHint": {
+    "message": "Блоклист Антицензорити — необязательный дополнительный список заблокированных доменов, несколько сотен тысяч записей. Он хранится отдельно от вашего списка, его можно выключить или удалить в любой момент."
   },
   "extraBlockTitle": {
     "message": "Дополнительно"
@@ -334,6 +376,12 @@
   },
   "ignoredSitesTitle": {
     "message": "Игнорируемые сайты"
+  },
+  "importAntizapretButton": {
+    "message": "Загрузить прокси Антизапрета"
+  },
+  "importBlocklistButton": {
+    "message": "Загрузить блоклист"
   },
   "importBuiltinProxyButton": {
     "message": "Импортировать встроенную"

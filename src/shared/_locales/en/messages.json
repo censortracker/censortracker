@@ -921,6 +921,12 @@
   "socksAuthUnsupported": {
     "message": "This browser cannot pass a login to a SOCKS proxy — only Firefox can. The proxy has been saved: remove the login and password to use it without authorization, or use an HTTP/HTTPS proxy instead."
   },
+  "socksAuthUnsupportedBadge": {
+    "message": "login not supported"
+  },
+  "socksAuthUnsupportedTitle": {
+    "message": "This browser cannot pass a login to a SOCKS proxy — Chromium never offers username/password during the SOCKS handshake, so the proxy is contacted without credentials and will refuse. Remove the login to use it anonymously, use an HTTP/HTTPS proxy, or open this profile in Firefox."
+  },
   "sourceAddedLabel": {
     "message": "Source added"
   },

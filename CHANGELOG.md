@@ -1,3 +1,13 @@
+# 20.14.3
+
+- **A SOCKS proxy with a login is now marked in the list itself.** Chromium
+  cannot deliver such a login — during the SOCKS handshake it offers only the
+  "no authentication" method, so the proxy is contacted without credentials and
+  refuses. The warning used to appear once, in the form, at the moment of
+  saving; now every affected row carries a mark explaining why that proxy will
+  never authenticate no matter how often it is checked. Rows without
+  credentials, and HTTP/HTTPS proxies with them, are untouched.
+
 # 20.14.2
 
 - **Proxy authentication actually works now.** The handler shipped in 20.12.0

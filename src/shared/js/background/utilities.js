@@ -254,7 +254,9 @@ export const formatProxyForShare = ({ protocol, uri, credentials = '' } = {}) =>
  * @returns {Array<{protocol: string, uri: string, host: string, port: string,
  *   credentials: string}>}
  */
-export const parseProxyList = (text, defaultProtocol = 'HTTPS') => {
+export const parseProxyList = (
+  text, defaultProtocol = 'HTTPS', { limit = Infinity } = {},
+) => {
   if (!text || typeof text !== 'string') {
     return []
   }
@@ -268,6 +270,13 @@ export const parseProxyList = (text, defaultProtocol = 'HTTPS') => {
   const result = []
 
   for (const token of tokens) {
+    // Stop as soon as the caller has what it asked for: a public list can hold
+    // hundreds of thousands of entries, and building objects for all of them
+    // when only a few thousand will be kept is pure waste.
+    if (result.length >= limit) {
+      break
+    }
+
     const parsed = parseProxyString(token, defaultProtocol)
 
     if (!parsed) {

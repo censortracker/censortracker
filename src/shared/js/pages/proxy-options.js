@@ -1716,12 +1716,18 @@ import {
         proxySourcesStatus.textContent = i18nGetMessage('proxySourcesFetching')
       }
       try {
-        const { added, alive, removed } =
+        const { added, alive, removed, truncated } =
           await ProxyManager.fetchProxySources({ force: true })
 
         if (proxySourcesStatus) {
+          // Say when a source was cut short, so a list that holds hundreds of
+          // thousands of entries does not look like it half-failed.
+          const limit = truncated
+            ? ` · ${i18nGetMessage('proxySourcesTruncated')}`
+            : ''
+
           proxySourcesStatus.textContent =
-            `${i18nGetMessage('proxiesImportedLabel')}: +${added}  ✓${alive}  ✗${removed}`
+            `${i18nGetMessage('proxiesImportedLabel')}: +${added}  ✓${alive}  ✗${removed}${limit}`
         }
       } catch (error) {
         // A source that times out used to leave the status stuck on

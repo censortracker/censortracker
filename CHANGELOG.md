@@ -1,3 +1,23 @@
+# 20.14.1
+
+- **Fixed "Could not load the sources" on large proxy lists.** A public list
+  can hold hundreds of thousands of entries, and every parsed proxy was passed
+  to `Array.push` as a separate argument — past the engine's argument limit,
+  which threw "Maximum call stack size exceeded" and failed the whole run.
+  Nothing was imported and the cause was invisible: the message blamed the
+  download, which had in fact succeeded.
+
+  Alongside the fix, a fetch now takes at most the first 5000 proxies and says
+  when it has cut a list short. Beyond a few thousand nothing good happens
+  anyway — the checker only ever probes a few dozen, the settings page renders
+  every row, and the whole list is written to storage on each change. Parsing
+  also stops at that point instead of building objects that would be thrown
+  away.
+
+- A source download is given 60 seconds rather than 15. The useful lists are
+  megabytes of text, and the old budget aborted them mid-download on an
+  ordinary connection, which looked exactly like an unreachable source.
+
 # 20.14.0
 
 - **A proxy can now be checked against a blocked site.** The existing targets

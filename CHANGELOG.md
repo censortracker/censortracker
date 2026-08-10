@@ -1,3 +1,31 @@
+# 20.13.0
+
+- **Antizapret and Anticensority can be imported, marked experimental.** Both
+  are third-party services run by other people, so nothing is fetched unless
+  you ask for it, and each outcome is named rather than reported as a generic
+  error.
+
+  Antizapret publishes its proxies inside a PAC script rather than as a list,
+  so the servers are read out of that script and added to your proxy list like
+  any other — checked, ordered, and subject to the same per-site rules. Their
+  addresses are resolved over DNS-over-HTTPS and pinned, because ordinary DNS
+  for those names is unreliable exactly where the service is meant to be used.
+  Note that the service answers only from Russian IP addresses; anywhere else
+  the import will say so instead of looking broken.
+
+  The Anticensority blocklist is an optional extra list of blocked domains —
+  around 660k hostnames, which fold to roughly 530k second-level domains, the
+  only form this extension's PAC can match. It is stored separately from your
+  own proxying list, so it can be switched off or removed without disturbing
+  anything you added by hand.
+
+- **A PAC script can now be used as a proxy source.** Feeding one to the
+  auto-fetch list used to split it on whitespace like a plain list, harvesting
+  fragments of the program — and, since PAC providers routinely point at a
+  proxy client running on your own machine, filling the list with `localhost`
+  entries that could never work. PAC content is now recognised and its proxy
+  declarations read properly, with local addresses left out.
+
 # 20.12.0
 
 - **Proxies that ask for a login and password now work.** The credentials were

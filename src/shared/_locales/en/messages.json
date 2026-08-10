@@ -20,6 +20,27 @@
   "advancedOptionsTitle": {
     "message": "Advanced Options"
   },
+  "antizapretEmpty": {
+    "message": "The script named no usable proxies."
+  },
+  "antizapretFetching": {
+    "message": "Fetching…"
+  },
+  "antizapretHint": {
+    "message": "Third-party services, run by other people. Antizapret publishes its proxies inside a PAC script and answers only from Russian IP addresses — anywhere else the import will report that it is unavailable. Imported proxies land in the list above and are checked like any other."
+  },
+  "antizapretImported": {
+    "message": "Added:"
+  },
+  "antizapretTitle": {
+    "message": "Antizapret and Anticensority"
+  },
+  "antizapretUnavailable": {
+    "message": "The service did not return a proxy list. It works only from Russian IP addresses."
+  },
+  "antizapretUnreachable": {
+    "message": "Could not reach the service."
+  },
   "appAuthor": {
     "message": "Censor Tracker"
   },
@@ -59,6 +80,15 @@
   "blockedTitle": {
     "message": "Blocked"
   },
+  "blocklistFetching": {
+    "message": "Downloading… this may take a while."
+  },
+  "blocklistLoaded": {
+    "message": "Domains:"
+  },
+  "blocklistUnparsable": {
+    "message": "The downloaded file holds no list in a known format."
+  },
   "builtinProxyBadge": {
     "message": "built-in"
   },
@@ -73,6 +103,9 @@
   },
   "chooseFileOnComputer": {
     "message": "Choose a file on your computer"
+  },
+  "clearBlocklistButton": {
+    "message": "Remove blocklist"
   },
   "clipboardReadFailed": {
     "message": "Couldn't read the clipboard. Use Ctrl+V instead."
@@ -278,6 +311,9 @@
   "emptyRegistryHint": {
     "message": "The list of websites to proxy is empty, so no traffic is proxied right now. Enable proxying all traffic above, or add websites to the proxying list."
   },
+  "experimentalBadge": {
+    "message": "experimental"
+  },
   "exportSettingsDesc": {
     "message": "You can export your settings to a JSON file and import them later."
   },
@@ -292,6 +328,12 @@
   },
   "extensionInstalledDesc": {
     "message": "Pin the Censor Tracker in the browser panel in two clicks to be always aware of websites that may transmit your personal data to third parties."
+  },
+  "externalBlocklistEnabledLabel": {
+    "message": "Use the imported blocklist"
+  },
+  "externalBlocklistHint": {
+    "message": "The Anticensority blocklist is an optional extra list of blocked domains — several hundred thousand of them. It is stored separately from your own list and can be switched off or removed at any time."
   },
   "extraBlockTitle": {
     "message": "Extra"
@@ -334,6 +376,12 @@
   },
   "ignoredSitesTitle": {
     "message": "Ignored Websites"
+  },
+  "importAntizapretButton": {
+    "message": "Import Antizapret proxies"
+  },
+  "importBlocklistButton": {
+    "message": "Import blocklist"
   },
   "importBuiltinProxyButton": {
     "message": "Import built-in proxy"

@@ -288,6 +288,91 @@ export const parseProxyList = (text, defaultProtocol = 'HTTPS') => {
   return result
 }
 
+// Addresses that only mean something on the machine that wrote the PAC. A PAC
+// published by a circumvention service routinely names a local client
+// ("SOCKS5 localhost:9050" for Tor), and importing those as if they were
+// servers would fill the list with entries that can never work here.
+const LOCAL_PROXY_HOST = [
+  /^localhost$/i,
+  /\.local$/i,
+  /^127\./,
+  /^0\.0\.0\.0$/,
+  /^10\./,
+  /^192\.168\./,
+  /^172\.(1[6-9]|2\d|3[01])\./,
+  /^169\.254\./,
+  /^::1$/,
+  /^f[cd][0-9a-f]{2}:/i,
+  /^fe80:/i,
+]
+
+const isLocalProxyHost = (host) => {
+  return LOCAL_PROXY_HOST.some((pattern) => pattern.test(host))
+}
+
+/**
+ * Extracts the proxy servers named by a PAC script.
+ *
+ * A PAC is a program, not a list, so this deliberately does not try to
+ * understand it: it scans for the return-token grammar every PAC shares
+ * ("SOCKS5 1.2.3.4:1080", "PROXY host:port", …) wherever it appears, including
+ * inside the string constants the script later returns. That is enough to
+ * learn which servers a provider routes through without executing anything —
+ * and executing it is not an option anyway, since the extension's content
+ * security policy bars `new Function`.
+ *
+ * Local addresses are dropped unless asked for; see {@link isLocalProxyHost}.
+ * @param {string} text - PAC script source.
+ * @param {{includeLocal?: boolean}} [options]
+ * @returns {Array<{protocol: string, uri: string, host: string, port: string,
+ *   credentials: string}>} De-duplicated proxies, in order of appearance.
+ */
+export const parsePacProxies = (text, { includeLocal = false } = {}) => {
+  if (!text || typeof text !== 'string') {
+    return []
+  }
+
+  // PAC keywords, longest first so "SOCKS5" is never truncated to "SOCKS".
+  const pattern =
+    /\b(PROXY|HTTPS|SOCKS5|SOCKS4|SOCKS)\s+([a-zA-Z0-9._-]+|\[[0-9a-fA-F:]+\]):(\d{1,5})\b/g
+  const seen = new Set()
+  const proxies = []
+
+  for (const [, keyword, host, port] of text.matchAll(pattern)) {
+    // PAC spells a plain HTTP proxy "PROXY"; everything else keeps its name.
+    const protocol =
+      normalizeProxyProtocol(keyword === 'PROXY' ? 'HTTP' : keyword)
+
+    if (!protocol || Number(port) > 65535 || Number(port) === 0) {
+      continue
+    }
+    if (!includeLocal && isLocalProxyHost(host.replace(/^\[|\]$/g, ''))) {
+      continue
+    }
+
+    const uri = `${host}:${port}`
+    const key = `${protocol}|${uri}`.toLowerCase()
+
+    if (seen.has(key)) {
+      continue
+    }
+    seen.add(key)
+    proxies.push({ protocol, uri, host, port, credentials: '' })
+  }
+
+  return proxies
+}
+
+/**
+ * True when a fetched source is a PAC script rather than a plain proxy list.
+ * The entry point is mandated by the format, which makes it a reliable marker.
+ * @param {string} text
+ * @returns {boolean}
+ */
+export const looksLikePacScript = (text) => {
+  return typeof text === 'string' && /function\s+FindProxyForURL/.test(text)
+}
+
 /**
  * Resolves a promise with a fallback value if it doesn't settle in time.
  * Useful to keep the UI responsive when a background check might hang.

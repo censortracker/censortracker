@@ -1,3 +1,5 @@
+import { fetchAnticensorityBlocklist } from 'Background/anticensority'
+import { getAntizapretProxies } from 'Background/antizapret'
 import browser from 'Background/browser-api'
 import { RECOMMENDED_PROXY_SOURCES } from 'Background/constants'
 import {
@@ -80,6 +82,15 @@ import {
   const proxyCount = document.getElementById('proxyCount')
   const proxySourcesToggle = document.getElementById('proxySourcesToggle')
   const proxySourcesBody = document.getElementById('proxySourcesBody')
+  const antizapretToggle = document.getElementById('antizapretToggle')
+  const antizapretBody = document.getElementById('antizapretBody')
+  const antizapretStatus = document.getElementById('antizapretStatus')
+  const importAntizapretButton = document.getElementById('importAntizapretButton')
+  const blocklistStatus = document.getElementById('blocklistStatus')
+  const importBlocklistButton = document.getElementById('importBlocklistButton')
+  const clearBlocklistButton = document.getElementById('clearBlocklistButton')
+  const useExternalBlocklistCheckbox =
+    document.getElementById('useExternalBlocklist')
   const proxySourcesPreset = document.getElementById('proxySourcesPreset')
   const addProxySourcePreset = document.getElementById('addProxySourcePreset')
   const checkProgress = document.getElementById('checkProgress')
@@ -1769,12 +1780,130 @@ import {
     apply(proxyListToggle, proxyListBody, proxyUiCollapsed.list)
     apply(proxySourcesToggle, proxySourcesBody, proxyUiCollapsed.sources)
     apply(countryFilterToggle, countryFilterBody, proxyUiCollapsed.countries)
+    apply(antizapretToggle, antizapretBody, proxyUiCollapsed.antizapret)
   }
 
   wireCollapsible(proxyListToggle, proxyListBody, 'list')
   wireCollapsible(proxySourcesToggle, proxySourcesBody, 'sources')
   wireCollapsible(countryFilterToggle, countryFilterBody, 'countries')
+  wireCollapsible(antizapretToggle, antizapretBody, 'antizapret')
   await restoreCollapsible()
+
+  // ---------------------------------------------------------------------------
+  // Third-party sources (experimental)
+  // ---------------------------------------------------------------------------
+
+  // Both services below are run by other people. Failures are therefore
+  // ordinary and expected — Antizapret in particular answers only from Russian
+  // IP addresses — so each outcome is named rather than reported as a generic
+  // error, and nothing is fetched unless the user asks for it.
+  const IMPORT_FAILURES = {
+    unavailable: 'antizapretUnavailable',
+    unreachable: 'antizapretUnreachable',
+    empty: 'antizapretEmpty',
+    unparsable: 'blocklistUnparsable',
+  }
+
+  const setBusy = (button, busy) => {
+    if (button) {
+      button.disabled = busy
+    }
+  }
+
+  if (importAntizapretButton) {
+    importAntizapretButton.addEventListener('click', async () => {
+      setBusy(importAntizapretButton, true)
+      antizapretStatus.textContent = i18nGetMessage('antizapretFetching')
+
+      try {
+        const { proxies, reason } = await getAntizapretProxies()
+
+        if (reason) {
+          antizapretStatus.textContent =
+            i18nGetMessage(IMPORT_FAILURES[reason] || 'antizapretUnreachable')
+          return
+        }
+
+        const added = await ProxyManager.addCustomProxies(proxies)
+
+        // A bulk import never re-routes traffic on its own, so the count of
+        // *new* entries is what the user needs to see: importing twice is a
+        // no-op, and saying "0 added" is the honest way to show that.
+        antizapretStatus.textContent =
+          `${i18nGetMessage('antizapretImported')} ${added.length} / ${proxies.length}`
+        await renderCustomProxies()
+      } catch (error) {
+        console.error(`Antizapret import failed: ${error}`)
+        antizapretStatus.textContent = i18nGetMessage('antizapretUnreachable')
+      } finally {
+        setBusy(importAntizapretButton, false)
+      }
+    })
+  }
+
+  const renderBlocklistState = async () => {
+    if (!blocklistStatus) {
+      return
+    }
+
+    const { count, enabled } = await Registry.getExternalBlocklistInfo()
+
+    if (useExternalBlocklistCheckbox) {
+      useExternalBlocklistCheckbox.checked = enabled
+      useExternalBlocklistCheckbox.disabled = count === 0
+    }
+    if (clearBlocklistButton) {
+      clearBlocklistButton.classList.toggle('hidden', count === 0)
+    }
+    blocklistStatus.textContent = count > 0
+      ? `${i18nGetMessage('blocklistLoaded')} ${count.toLocaleString()}`
+      : ''
+  }
+
+  if (importBlocklistButton) {
+    importBlocklistButton.addEventListener('click', async () => {
+      setBusy(importBlocklistButton, true)
+      blocklistStatus.textContent = i18nGetMessage('blocklistFetching')
+
+      try {
+        const { domains, source, reason } = await fetchAnticensorityBlocklist()
+
+        if (reason) {
+          blocklistStatus.textContent =
+            i18nGetMessage(IMPORT_FAILURES[reason] || 'antizapretUnreachable')
+          return
+        }
+
+        await Registry.setExternalBlocklist(domains, { source })
+        await ProxyManager.setProxy()
+        await renderBlocklistState()
+      } catch (error) {
+        console.error(`Blocklist import failed: ${error}`)
+        blocklistStatus.textContent = i18nGetMessage('antizapretUnreachable')
+      } finally {
+        setBusy(importBlocklistButton, false)
+      }
+    })
+  }
+
+  if (useExternalBlocklistCheckbox) {
+    useExternalBlocklistCheckbox.addEventListener('change', async () => {
+      await Registry.setExternalBlocklistEnabled(
+        useExternalBlocklistCheckbox.checked,
+      )
+      await ProxyManager.setProxy()
+    })
+  }
+
+  if (clearBlocklistButton) {
+    clearBlocklistButton.addEventListener('click', async () => {
+      await Registry.clearExternalBlocklist()
+      await ProxyManager.setProxy()
+      await renderBlocklistState()
+    })
+  }
+
+  await renderBlocklistState()
 
   // Ready-made subscription presets: pick one and append it to the sources.
   if (proxySourcesPreset) {

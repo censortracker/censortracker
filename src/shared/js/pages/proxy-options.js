@@ -533,7 +533,10 @@ import {
   // column: country (by proxy host IP), exit country (seen through the
   // proxy), ping, site-open latency and status.
   const renderProxyRow = (
-    { id, name, protocol, uri, builtin = false, restricted = false },
+    {
+      id, name, protocol, uri, credentials = '',
+      builtin = false, restricted = false,
+    },
     chain,
     statuses,
     geo,
@@ -556,6 +559,16 @@ import {
       badge += ` <span class="cproxy-badge cproxy-badge--restricted"
         title="${escapeHtml(i18nGetMessage('restrictedProxyTitle'))}"
         >${escapeHtml(i18nGetMessage('restrictedProxyBadge'))}</span>`
+    }
+
+    // A SOCKS login this browser cannot deliver. Marked on the row itself,
+    // not only in the form at the moment of saving: the proxy is otherwise
+    // indistinguishable from a working one, and it will never authenticate
+    // however many times it is checked.
+    if (needsSocksAuth({ protocol, credentials }) && !supportsSocksAuth()) {
+      badge += ` <span class="cproxy-badge cproxy-badge--nosocksauth"
+        title="${escapeHtml(i18nGetMessage('socksAuthUnsupportedTitle'))}"
+        >${escapeHtml(i18nGetMessage('socksAuthUnsupportedBadge'))}</span>`
     }
     // Ids are generated internally, but they also survive a settings import,
     // so they are escaped like any other value reaching the markup.

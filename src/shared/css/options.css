@@ -944,6 +944,14 @@ a {
   margin-top: 12px;
 }
 
+/* A login this browser physically cannot deliver: stronger than a warning,
+   because no amount of checking or waiting will make the proxy authenticate. */
+.cproxy-badge--nosocksauth {
+  background: #fbe0dd;
+  color: #a3200d;
+  cursor: help;
+}
+
 /* Serves only its publisher's sites, so an ordinary check calls it dead.
    Same warning colour as "needs authorization": both mean "not a failure,
    finish reading before you delete this". */

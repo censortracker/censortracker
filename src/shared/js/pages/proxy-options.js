@@ -520,7 +520,7 @@ import {
   // column: country (by proxy host IP), exit country (seen through the
   // proxy), ping, site-open latency and status.
   const renderProxyRow = (
-    { id, name, protocol, uri, builtin = false },
+    { id, name, protocol, uri, builtin = false, restricted = false },
     chain,
     statuses,
     geo,
@@ -533,9 +533,17 @@ import {
       ? `<span class="cproxy-order" title="${escapeHtml(i18nGetMessage('proxyChainPositionTitle'))}">${chainIndex + 1}</span>`
       : ''
     const status = statuses[id]
-    const badge = builtin
+    let badge = builtin
       ? ` <span class="cproxy-badge">${escapeHtml(i18nGetMessage('builtinProxyBadge'))}</span>`
       : ''
+
+    // Says why this proxy reads as unavailable against an ordinary check: it
+    // only relays to the sites its publisher runs it for.
+    if (restricted) {
+      badge += ` <span class="cproxy-badge cproxy-badge--restricted"
+        title="${escapeHtml(i18nGetMessage('restrictedProxyTitle'))}"
+        >${escapeHtml(i18nGetMessage('restrictedProxyBadge'))}</span>`
+    }
     // Ids are generated internally, but they also survive a settings import,
     // so they are escaped like any other value reaching the markup.
     const safeId = escapeHtml(id)

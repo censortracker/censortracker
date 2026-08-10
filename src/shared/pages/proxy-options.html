@@ -80,7 +80,6 @@
               </button>
               <div id="proxyListBody">
                 <div class="custom-proxy-list" id="customProxyList"></div>
-              </div>
 
               <div class="cproxy-toolbar">
                 <button type="button" class="btn btn-dark cproxy-toolbar__btn" id="testAllProxiesButton">
@@ -117,6 +116,7 @@
                     <option value="cloudflare">Cloudflare</option>
                     <option value="amazon">Amazon</option>
                     <option value="azure">Azure</option>
+                    <option value="blocked" data-i18n-key="proxyTestTargetBlocked"></option>
                   </select>
                 </label>
                 <label class="cproxy-toolbar__field cproxy-toolbar__check">
@@ -131,6 +131,7 @@
                 <div class="cproxy-progress__text" id="checkProgressText"></div>
               </div>
               <div class="cproxy-import-msg" id="proxyImportMsg" hidden></div>
+              </div>
 
               <div class="cproxy-sources">
                 <button type="button" class="cproxy-section__head" id="countryFilterToggle" aria-expanded="false">

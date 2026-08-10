@@ -858,6 +858,9 @@
   "siteRouteUnknownCountries": {
     "message": "Proxies with an unknown country (a rule cannot apply to them):"
   },
+  "socksAuthUnsupported": {
+    "message": "This browser cannot pass a login to a SOCKS proxy — only Firefox can. The proxy has been saved: remove the login and password to use it without authorization, or use an HTTP/HTTPS proxy instead."
+  },
   "sourceAddedLabel": {
     "message": "Source added"
   },

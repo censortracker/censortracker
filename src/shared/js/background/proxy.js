@@ -15,6 +15,12 @@ import {
   normalizeCountryCodes,
   parseExitInfo,
 } from './geoip'
+import {
+  clearAuthRejection,
+  setRoutingSnapshot,
+  setSocksAuthRouting,
+  wasAuthRejected,
+} from './proxy-auth'
 import registry from './registry'
 import {
   countryOfProxy,
@@ -23,8 +29,9 @@ import {
 } from './site-rules'
 import {
   fetchWithTimeout,
+  needsSocksAuth,
   parseProxyList,
-  proxyToPacToken,
+  proxyListToPacToken,
 } from './utilities'
 
 class ProxyManager {
@@ -133,12 +140,98 @@ class ProxyManager {
   }
 
   /**
+   * Installs a routing description: builds the PAC from it, records the same
+   * description for the SOCKS path, and decides which of the two drives the
+   * browser.
+   *
+   * Every routing change goes through here so the PAC and the snapshot the
+   * SOCKS listener resolves against are built from one object. They answer the
+   * same questions by different means, and letting two call sites assemble them
+   * separately is how they would drift.
+   *
+   * `testRoutes` maps a host to the proxies it must reach regardless of the
+   * rules (the checker sends one endpoint through the candidate; source
+   * fetching sends one host through the whole chain).
+   * @param {{domains?: Array<string>, proxies?: Array, proxyServerURI?: string,
+   *   proxyServerProtocol?: string, proxyAll?: boolean,
+   *   proxyCountries?: Array<string>, siteCountryRules?: Object,
+   *   testRoutes?: Object<string, Array>}} routing
+   * @param {{mandatory?: boolean}} [options]
+   * @returns {Promise<void>}
+   */
+  async applyRouting (routing, { mandatory = false } = {}) {
+    const {
+      domains = [],
+      proxies = [],
+      proxyServerURI = '',
+      proxyServerProtocol = 'HTTPS',
+      proxyAll = false,
+      proxyCountries = [],
+      siteCountryRules = {},
+      testRoutes = null,
+    } = routing
+
+    // The legacy single-proxy pair and the chain are the same thing to
+    // everything downstream, so collapse them once, here.
+    let chain = proxies
+
+    if (chain.length === 0 && proxyServerURI) {
+      chain = [{
+        protocol: proxyServerProtocol,
+        uri: proxyServerURI,
+        credentials: '',
+      }]
+    }
+
+    const pacTestRoutes = {}
+
+    for (const [host, list] of Object.entries(testRoutes || {})) {
+      const token = proxyListToPacToken(list)
+
+      if (token) {
+        pacTestRoutes[host] = token
+      }
+    }
+
+    const pacData = getPacScript({
+      domains,
+      proxies: chain,
+      proxyAll,
+      proxyCountries,
+      siteCountryRules,
+      testRoutes: Object.keys(pacTestRoutes).length > 0 ? pacTestRoutes : null,
+    })
+
+    setRoutingSnapshot({
+      domains,
+      proxies: chain,
+      proxyAll,
+      countries: proxyCountries,
+      rules: siteCountryRules,
+      testRoutes,
+    })
+
+    // Take routing over from the PAC only when a hop needs credentials the PAC
+    // cannot express. Everything else stays on the long-standing PAC path, so
+    // this can't regress users who never touch SOCKS authentication.
+    const forced = Object.values(testRoutes || {})
+
+    setSocksAuthRouting(
+      chain.some(needsSocksAuth) ||
+      forced.some((list) => list.some(needsSocksAuth)),
+    )
+
+    await this.applyPacData(pacData, { mandatory })
+  }
+
+  /**
    * Installs a temporary PAC used while checking proxies. Everything keeps
    * routing exactly as it does for the user right now (so browsing never drops
    * mid-check) except the hosts named in `testRoutes`, which are sent through
    * the proxy currently being tested. Applied as mandatory so a dead candidate
    * fails the probe instead of leaking to DIRECT.
-   * @param {Object<string, string>} testRoutes - host -> PAC return token.
+   * @param {Object<string, Array>} testRoutes - host -> proxies to reach it
+   *   through, in failover order.
    * @returns {Promise<void>}
    */
   /**
@@ -177,7 +270,10 @@ class ProxyManager {
     })
     // Same list, in the same Punycode form, that the PAC is built from.
     const blocklist = new Set(domains.map((domain) => toPunycode(domain)))
-    const site = toSecondLevel(host)
+    // Rules are keyed by the lower-case second-level host, which is also how
+    // resolveProxyForHost matches them. Looking them up under whatever case
+    // the tab's URL happened to carry would miss the rule.
+    const site = toSecondLevel(String(host || '').toLowerCase())
     const outcome = resolveProxyForHost(host, {
       proxies: chain,
       proxyAll,
@@ -203,50 +299,41 @@ class ProxyManager {
     const status = statuses[outcome.proxy.id] || {}
     const entry = geo[hostFromUri(outcome.proxy.uri)] || {}
 
+    // Upper-cased to match `blockedCountries`, which storage normalizes that
+    // way. Without this the popup compares "nl" against "NL": the rule is
+    // stored and enforced correctly, but the tick box that set it reads back
+    // as unticked, so the rule looks like it was forgotten.
     return {
       ...base,
       exitIp: status.exitIp || '',
-      exitCountry: status.exitCountry || '',
-      entryCountry: entry.code || '',
+      exitCountry: String(status.exitCountry || '').toUpperCase(),
+      entryCountry: String(entry.code || '').toUpperCase(),
     }
   }
 
   async applyCheckerPac (testRoutes) {
     const enabled = await this.isEnabled()
-
-    let domains = []
-    let proxies = []
-    let proxyServerURI = ''
-    let proxyServerProtocol = 'HTTPS'
-    let proxyAll = false
+    const routing = { testRoutes }
 
     // Preserve the user's real routing only when proxying is actually on;
     // otherwise non-test traffic must stay DIRECT just like it is now.
     if (enabled) {
-      domains = await registry.getDomains()
-      proxyAll = await this.getProxyAllTraffic()
+      routing.domains = await registry.getDomains()
+      routing.proxyAll = await this.getProxyAllTraffic()
+
       const chain = await this.getChainProxyConfigs()
 
       if (chain.length > 0) {
-        proxies = chain
+        routing.proxies = chain
       } else {
         const rules = await this.getProxyingRules()
 
-        proxyServerURI = rules.proxyServerURI
-        proxyServerProtocol = rules.proxyServerProtocol
+        routing.proxyServerURI = rules.proxyServerURI
+        routing.proxyServerProtocol = rules.proxyServerProtocol
       }
     }
 
-    const pacData = getPacScript({
-      domains,
-      proxies,
-      proxyServerURI,
-      proxyServerProtocol,
-      testRoutes,
-      proxyAll,
-    })
-
-    await this.applyPacData(pacData, { mandatory: true })
+    await this.applyRouting(routing, { mandatory: true })
   }
 
   /**
@@ -285,33 +372,24 @@ class ProxyManager {
     // takes precedence; otherwise fall back to the single default/built-in
     // proxy resolved from the legacy rules.
     const chain = await this.getChainProxyConfigs()
-
-    let pacData
+    const routing = { domains, proxyAll }
 
     if (chain.length > 0) {
-      pacData = getPacScript({
-        domains,
-        proxies: chain,
-        proxyAll,
-        proxyCountries: await this.getChainCountries(chain),
-        siteCountryRules: await getSiteCountryRules(),
-      })
+      routing.proxies = chain
+      routing.proxyCountries = await this.getChainCountries(chain)
+      routing.siteCountryRules = await getSiteCountryRules()
     } else {
       const {
         proxyServerURI,
         proxyServerProtocol,
       } = await this.getProxyingRules()
 
-      pacData = getPacScript({
-        domains,
-        proxyServerURI,
-        proxyServerProtocol,
-        proxyAll,
-      })
+      routing.proxyServerURI = proxyServerURI
+      routing.proxyServerProtocol = proxyServerProtocol
     }
 
     try {
-      await this.applyPacData(pacData)
+      await this.applyRouting(routing)
       await this.enableProxy()
       await this.grantIncognitoAccess()
       console.log('PAC has been set successfully!')
@@ -356,13 +434,23 @@ class ProxyManager {
       for (const id of chain.slice(0, MAX_RECOVERY_HOPS)) {
         if (id === 'builtin') {
           if (builtin) {
-            hops.push({ id, protocol: builtin.protocol, uri: builtin.uri })
+            hops.push({
+              id,
+              protocol: builtin.protocol,
+              uri: builtin.uri,
+              credentials: '',
+            })
           }
         } else {
           const proxy = customProxies.find((item) => item.id === id)
 
           if (proxy) {
-            hops.push({ id, protocol: proxy.protocol, uri: proxy.uri })
+            hops.push({
+              id,
+              protocol: proxy.protocol,
+              uri: proxy.uri,
+              credentials: proxy.credentials || '',
+            })
           }
         }
       }
@@ -418,6 +506,12 @@ class ProxyManager {
   }
 
   async removeProxy () {
+    // Detach the SOCKS listener before clearing the settings: it overrides
+    // them, so leaving it attached would keep proxying traffic that is
+    // supposed to be going direct from now on.
+    setSocksAuthRouting(false)
+    setRoutingSnapshot(null)
+
     try {
       await browser.proxy.settings.clear({})
       console.log('Proxy settings removed.')
@@ -584,14 +678,27 @@ class ProxyManager {
   }
 
   /**
-   * Identity of a proxy for de-duplication purposes. Credentials are
-   * deliberately excluded: the same endpoint reached with two different
-   * logins is still one endpoint, and keeping both would double-probe it.
-   * @param proxy {{protocol: string, uri: string}}
+   * Identity of a proxy for de-duplication purposes.
+   *
+   * Credentials are part of that identity. They used to be excluded on the
+   * grounds that one endpoint is one endpoint however you log into it — but
+   * now that a login actually gets used, the anonymous and the authenticated
+   * form of the same address behave completely differently. Excluding them
+   * meant that adding "user:pass@host:port" on top of an existing bare
+   * "host:port" was silently swallowed as a duplicate, leaving the user with
+   * the entry that cannot authenticate and no way to fix it.
+   *
+   * Note that for HTTP/HTTPS proxies only one login per endpoint can actually
+   * be honoured: a 407 challenge names the proxy and nothing else, so two
+   * entries differing only by credentials are indistinguishable at that point
+   * and the first is used. SOCKS proxies carry their own credentials per hop
+   * and have no such limit.
+   * @param proxy {{protocol: string, uri: string, credentials?: string}}
    * @returns {string} Normalized key.
    */
-  proxyDedupKey ({ protocol, uri }) {
-    return `${protocol || ''}|${(uri || '').trim()}`.toLowerCase()
+  proxyDedupKey ({ protocol, uri, credentials = '' }) {
+    return `${protocol || ''}|${(uri || '').trim()}|${credentials}`
+      .toLowerCase()
   }
 
   /**
@@ -801,10 +908,15 @@ class ProxyManager {
   }
 
   /**
-   * Resolves the chain ids into concrete {protocol, uri} pairs for the PAC.
+   * Resolves the chain ids into concrete proxy descriptors for the PAC.
    * Returns an empty array unless the user is on their own proxy, so the
    * default and local-proxy code paths stay untouched.
-   * @returns {Promise<Array<{protocol: string, uri: string}>>}
+   *
+   * Credentials travel with each hop even though the PAC itself cannot carry
+   * them: the authentication handlers match a challenge back to the proxy that
+   * issued it, and the SOCKS path hands them straight to the browser.
+   * @returns {Promise<Array<{id: string, name: string, protocol: string,
+   *   uri: string, credentials: string}>>}
    */
   async getChainProxyConfigs () {
     const { useOwnProxy, localProxyURI } =
@@ -830,13 +942,27 @@ class ProxyManager {
     for (const id of chain) {
       if (id === 'builtin') {
         if (builtin) {
-          configs.push({ id, protocol: builtin.protocol, uri: builtin.uri })
+          configs.push({
+            id,
+            name: '',
+            protocol: builtin.protocol,
+            uri: builtin.uri,
+            credentials: '',
+          })
         }
       } else {
         const proxy = customProxies.find((item) => item.id === id)
 
         if (proxy) {
-          configs.push({ id, protocol: proxy.protocol, uri: proxy.uri })
+          configs.push({
+            id,
+            // Carried so the popup can name the proxy the way the user did,
+            // rather than making them recognise it by address alone.
+            name: proxy.name || '',
+            protocol: proxy.protocol,
+            uri: proxy.uri,
+            credentials: proxy.credentials || '',
+          })
         }
       }
     }
@@ -855,6 +981,12 @@ class ProxyManager {
     if (!proxy) {
       return false
     }
+
+    // Editing a proxy is how a rejected login gets corrected, so forget the
+    // earlier refusal instead of holding it against the new credentials. Both
+    // addresses are cleared because the edit may have moved the proxy.
+    clearAuthRejection(proxy.uri)
+    clearAuthRejection(uri)
 
     proxy.name = (name && name.trim()) || uri
     proxy.protocol = protocol
@@ -1368,6 +1500,7 @@ class ProxyManager {
   async probeProxy (proxy, { timeout = 8000, testUrl, signal } = {}) {
     const failed = {
       alive: false,
+      needsAuth: false,
       latency: null,
       ping: null,
       exitIp: null,
@@ -1391,11 +1524,9 @@ class ProxyManager {
       return failed
     }
 
-    const token = proxyToPacToken(proxy.protocol, proxy.uri)
-
     await this.applyCheckerPac({
-      [testHost]: token,
-      [exitHost]: token,
+      [testHost]: [proxy],
+      [exitHost]: [proxy],
     })
 
     // The ping goes straight to the proxy host (no PAC involved), so it can
@@ -1405,12 +1536,20 @@ class ProxyManager {
       this.probeUrl(target, { timeout, signal }),
     ])
 
-    const exit = result.ok
+    // Reachable but unauthenticated: either it asked for credentials we do not
+    // have, or it refused the ones we do. Both are "finish configuring this
+    // proxy", not "this proxy is dead".
+    const needsAuth =
+      (result.ok && result.status === 407) || wasAuthRejected(proxy.uri)
+    const alive = result.ok && !needsAuth
+
+    const exit = alive
       ? await this.probeExitInfo(exitTarget, { timeout, signal })
       : { exitIp: null, exitCountry: '' }
 
     return {
-      alive: result.ok,
+      alive,
+      needsAuth,
       latency: result.latency,
       ping,
       exitIp: exit.exitIp,
@@ -1484,13 +1623,18 @@ class ProxyManager {
           const exitTarget = EXIT_INFO_POOL[index % EXIT_INFO_POOL.length]
 
           try {
-            const token = proxyToPacToken(proxy.protocol, proxy.uri)
+            // An incomplete entry cannot be routed, and leaving it out of
+            // testRoutes would send the probe DIRECT and report the proxy as
+            // working. Treat it as unroutable instead.
+            if (!proxy.protocol || !proxy.uri) {
+              throw new Error(`Incomplete proxy: ${proxy.id}`)
+            }
 
             // Route both this slot's connectivity endpoint and its IP-echo
             // endpoint through the candidate, so one PAC covers the site-open
             // timing AND the exit-IP check.
-            testRoutes[new URL(target).hostname] = token
-            testRoutes[new URL(exitTarget).hostname] = token
+            testRoutes[new URL(target).hostname] = [proxy]
+            testRoutes[new URL(exitTarget).hostname] = [proxy]
             assignments.push({ proxy, target, exitTarget })
           } catch (error) {
             assignments.push({ proxy, target: null, exitTarget: null })
@@ -1528,8 +1672,11 @@ class ProxyManager {
 
             // 407 means the proxy answered but rejected us for lack of
             // credentials. It relayed nothing, so it is not "alive" — but it
-            // is not dead either, and auto-removal must not eat it.
-            const needsAuth = probe.ok && probe.status === 407
+            // is not dead either, and auto-removal must not eat it. A proxy
+            // that refused the credentials we did send lands in the same
+            // bucket: the entry is fine, the login is wrong.
+            const needsAuth =
+              (probe.ok && probe.status === 407) || wasAuthRejected(proxy.uri)
             const alive = probe.ok && !needsAuth
 
             const exit = alive && exitTarget
@@ -1845,18 +1992,14 @@ class ProxyManager {
     const routedThroughProxy = chain.length > 0
 
     if (routedThroughProxy) {
-      const directive = chain
-        .map(({ protocol, uri }) => `${protocol} ${uri}`)
-        .join('; ')
-
-      // `directive` is built from proxy URIs, which routinely arrive from
-      // untrusted subscription feeds. Interpolating it into a quoted PAC
-      // string literal would let a quote in a URI break out and run arbitrary
-      // code inside the PAC sandbox, so let JSON.stringify do the quoting.
-      await this.applyPacData(`function FindProxyForURL(url, h) {
-        if (h === ${JSON.stringify(host)}) { return ${JSON.stringify(`${directive};`)}; }
-        return 'DIRECT';
-      }`)
+      // Only the source host is routed; everything else stays DIRECT because
+      // no domains and no proxy-all are given. Going through the normal
+      // routing path (rather than hand-rolling a PAC here) is what lets a
+      // chain that authenticates over SOCKS fetch a source at all, and it
+      // keeps the proxy URIs — which routinely arrive from untrusted
+      // subscription feeds — inside the generator's JSON quoting instead of
+      // interpolated into a PAC string literal.
+      await this.applyRouting({ testRoutes: { [host]: chain } })
     }
 
     try {

@@ -7,11 +7,13 @@ import {
 } from 'Background/geoip'
 import ProxyClient from 'Background/localproxy'
 import ProxyManager from 'Background/proxy'
+import { supportsSocksAuth } from 'Background/proxy-auth'
 import Registry from 'Background/registry'
 import * as server from 'Background/server'
 import {
   formatProxyForShare,
   i18nGetMessage,
+  needsSocksAuth,
   parseProxyList,
   parseProxyString,
 } from 'Background/utilities'
@@ -47,6 +49,7 @@ import {
   const proxyNameInput = document.getElementById('proxyNameInput')
   const customProxyList = document.getElementById('customProxyList')
   const invalidCustomProxy = document.getElementById('invalidCustomProxy')
+  const socksAuthUnsupported = document.getElementById('socksAuthUnsupported')
   const currentProxyAddress = document.getElementById('currentProxyAddress')
   const currentProxyAddressValue = document.getElementById('currentProxyAddressValue')
   const customProxyFormTitle = document.getElementById('customProxyFormTitle')
@@ -411,6 +414,7 @@ import {
     return `
      <div class="cproxy-row cproxy-grid__header">
        <span></span>
+       <span class="cproxy-col-num">#</span>
        ${col('proxyColName', 'name')}
        ${col('proxyColAddress', 'address')}
        ${col('proxyColCountry', 'country', 'proxyColCountryTitle')}
@@ -509,6 +513,7 @@ import {
     chain,
     statuses,
     geo,
+    position = 0,
   ) => {
     const editTitle = i18nGetMessage(builtin ? 'editBuiltinProxyButton' : 'editProxyButton')
     const chainIndex = chain.indexOf(id)
@@ -538,6 +543,7 @@ import {
          <input type="checkbox" name="chain-proxy" value="${safeId}" ${inChain ? 'checked' : ''}/>
          ${order}
        </label>
+       <span class="cproxy-row__num">${position > 0 ? position : EMPTY_CELL}</span>
        <span class="cproxy-row__name" title="${escapeHtml(name)}">${escapeHtml(name)}${badge}</span>
        <span class="cproxy-row__addr">${escapeHtml(protocol)} ${escapeHtml(uri)}</span>
        <span class="cproxy-country-cell">${countryBadgeHtml(uri, geo)}</span>
@@ -598,10 +604,14 @@ import {
     }
 
     // The built-in proxy stays pinned at the top; only the user's own entries
-    // are reordered.
-    for (const proxy of sortProxiesForView(proxies, { chain, statuses, geo })) {
-      html += renderProxyRow(proxy, chain, statuses, geo)
-    }
+    // are reordered. Numbering follows the order actually on screen, so it
+    // still reads 1..n after sorting by a column — and the pinned built-in
+    // row is left unnumbered so the numbers match the "N proxies" count.
+    const view = sortProxiesForView(proxies, { chain, statuses, geo })
+
+    view.forEach((proxy, index) => {
+      html += renderProxyRow(proxy, chain, statuses, geo, index + 1)
+    })
 
     customProxyList.innerHTML = html ? renderGridHeader() + html : ''
     if (proxyCount) {
@@ -695,6 +705,9 @@ import {
       proxyNameInput.value = ''
     }
     proxyServerInput.classList.remove('invalid-input')
+    if (socksAuthUnsupported) {
+      socksAuthUnsupported.classList.add('hidden')
+    }
     saveCustomProxyButton.querySelector('.btn__text').textContent =
       i18nGetMessage('addCustomProxyButton')
     if (customProxyFormTitle) {
@@ -1887,6 +1900,21 @@ import {
     }
   }
 
+  // Chromium exposes no hook into the SOCKS handshake, so a SOCKS login can
+  // never be delivered there however correct it is. Saying so the moment the
+  // proxy is saved beats letting the user wonder why the password changes
+  // nothing. The proxy is still saved: it stays valid, and it works as soon as
+  // the same profile is opened in Firefox.
+  const warnIfSocksAuthUnsupported = (proxy) => {
+    if (!socksAuthUnsupported) {
+      return
+    }
+
+    socksAuthUnsupported.classList.toggle(
+      'hidden', !(needsSocksAuth(proxy) && !supportsSocksAuth()),
+    )
+  }
+
   if (cancelEditProxyButton) {
     cancelEditProxyButton.addEventListener('click', resetProxyForm)
   }
@@ -1927,6 +1955,8 @@ import {
 
     await ProxyManager.setProxy()
     resetProxyForm()
+    // After the reset, which clears any warning left from the previous edit.
+    warnIfSocksAuthUnsupported(parsed)
     await renderCustomProxies()
   })
 

@@ -992,7 +992,12 @@ a {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding-top: 6px;
+  /* Each collapsible section above draws its own rule on top, so the last one
+     leaves nothing between it and this form. Separating the form the same way
+     closes that gap wherever the sections end. */
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid #e0ddd8;
 }
 
 .custom-proxy-form__title {

@@ -177,7 +177,11 @@ export const getAntizapretProxies = async ({
   for (const proxy of found) {
     const label = `Антизапрет — ${proxy.host}`
 
-    if (!resolve || IPV4.test(proxy.host)) {
+    // An HTTPS proxy is reached over TLS, and the certificate is issued for the
+    // name — swapping in the address would fail validation and break a proxy
+    // that works perfectly well by hostname. Pinning is for the protocols that
+    // do not authenticate the endpoint by name.
+    if (!resolve || proxy.protocol === 'HTTPS' || IPV4.test(proxy.host)) {
       add(proxy.protocol, proxy.uri, label)
       continue
     }

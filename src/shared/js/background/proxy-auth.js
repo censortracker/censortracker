@@ -187,20 +187,13 @@ const countAttempt = (requestId) => {
  * @returns {Promise<object>} `{authCredentials}` or `{}` to let the browser
  *   fall back to its own prompt.
  */
-export const handleProxyAuthRequired = async (details) => {
-  if (!details || !details.isProxy || !details.challenger) {
-    return {}
-  }
-
-  const key = endpointKey(details.challenger.host, details.challenger.port)
-  const credentials = (await getCredentials()).get(key)
-
+const answerWith = (key, credentials, requestId) => {
   if (!credentials) {
     return {}
   }
 
   // Second time round for the same request means what we sent was refused.
-  if (countAttempt(details.requestId) > 1) {
+  if (countAttempt(requestId) > 1) {
     rejectedEndpoints.add(key)
     console.warn(`Proxy rejected the stored credentials for ${key}.`)
     return {}
@@ -213,6 +206,40 @@ export const handleProxyAuthRequired = async (details) => {
       password: credentials.password,
     },
   }
+}
+
+/**
+ * Answers immediately, or returns null when the credentials are not in memory
+ * yet and the caller has to fall back to the asynchronous path.
+ *
+ * Answering without awaiting anything is what makes this work at all. A
+ * challenge is a blocking event: the browser holds the connection while the
+ * listener decides, and a reply that arrives after a trip to storage is late
+ * often enough to lose the request.
+ * @param {object} details
+ * @returns {object|null}
+ */
+export const answerProxyAuthSync = (details) => {
+  if (!details || !details.isProxy || !details.challenger) {
+    return {}
+  }
+  if (!credentialsByEndpoint) {
+    return null
+  }
+
+  const key = endpointKey(details.challenger.host, details.challenger.port)
+
+  return answerWith(key, credentialsByEndpoint.get(key), details.requestId)
+}
+
+export const handleProxyAuthRequired = async (details) => {
+  if (!details || !details.isProxy || !details.challenger) {
+    return {}
+  }
+
+  const key = endpointKey(details.challenger.host, details.challenger.port)
+
+  return answerWith(key, (await getCredentials()).get(key), details.requestId)
 }
 
 // ---------------------------------------------------------------------------
@@ -409,14 +436,27 @@ export const registerProxyAuthHandler = () => {
 
   const filter = { urls: ['<all_urls>'] }
 
+  // Start loading the credentials now, so a challenge that arrives later can
+  // be answered straight from memory rather than after a storage round-trip.
+  loadCredentials().catch(() => {})
+
   try {
     if (browser.isFirefox) {
       browser.webRequest.onAuthRequired.addListener(
-        handleProxyAuthRequired, filter, ['blocking'],
+        (details) => answerProxyAuthSync(details) ||
+          handleProxyAuthRequired(details),
+        filter,
+        ['blocking'],
       )
     } else {
       browser.webRequest.onAuthRequired.addListener(
         (details, callback) => {
+          const immediate = answerProxyAuthSync(details)
+
+          if (immediate) {
+            callback(immediate)
+            return
+          }
           handleProxyAuthRequired(details).then(callback, () => callback({}))
         },
         filter,

@@ -1,3 +1,24 @@
+# 20.14.2
+
+- **Proxy authentication actually works now.** The handler shipped in 20.12.0
+  never answered a single challenge: it lived only in the background service
+  worker, which is asleep almost all the time, and a login prompt blocks the
+  connection while it waits for a reply. By the time the worker woke, loaded
+  its script and read the credentials out of storage, the request was gone —
+  the proxy saw one attempt without credentials and nothing more.
+
+  Two changes fix it. The credentials are kept in memory and the reply is now
+  sent without awaiting anything, so no round-trip stands between the prompt
+  and the answer. And the handler is registered by the settings page as well
+  as the background, which is what makes *checking* an authenticating proxy
+  work — that page is open for the whole check, exactly when the prompts
+  arrive.
+
+  Verified against a proxy that demands a login: previously the request failed
+  with ERR_INVALID_AUTH_CREDENTIALS after a single unauthenticated attempt;
+  now the challenge is answered with the stored credentials and the page
+  loads. The same holds on the check path.
+
 # 20.14.1
 
 - **Fixed "Could not load the sources" on large proxy lists.** A public list

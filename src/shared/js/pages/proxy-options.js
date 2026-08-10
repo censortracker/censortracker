@@ -9,7 +9,10 @@ import {
 } from 'Background/geoip'
 import ProxyClient from 'Background/localproxy'
 import ProxyManager from 'Background/proxy'
-import { supportsSocksAuth } from 'Background/proxy-auth'
+import {
+  registerProxyAuthHandler,
+  supportsSocksAuth,
+} from 'Background/proxy-auth'
 import Registry from 'Background/registry'
 import * as server from 'Background/server'
 import {
@@ -21,6 +24,16 @@ import {
 } from 'Background/utilities'
 
 (async () => {
+  // Answer proxy login prompts from this page as well as from the background.
+  //
+  // A challenge blocks the connection until a listener replies, and the
+  // background service worker is asleep most of the time — by the time it
+  // wakes, re-evaluates and reads storage, the request is already lost. This
+  // page is alive for the whole of a proxy check, which is exactly when the
+  // challenges arrive, so registering here is what makes checking an
+  // authenticating proxy work at all.
+  registerProxyAuthHandler()
+
   const proxyingEnabled = await ProxyManager.isEnabled()
   const loading = document.getElementById('loading')
   const proxyIsDown = document.getElementById('proxyIsDown')

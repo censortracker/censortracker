@@ -547,8 +547,8 @@ a {
      gets the largest share; the measurement columns hold two letters or
      "000 ms" and were wider than anything they ever display. */
   grid-template-columns:
-    36px minmax(150px, 2fr) minmax(172px, 1.4fr)
-    52px 52px 60px 60px 100px 120px;
+    36px 30px minmax(140px, 2fr) minmax(160px, 1.4fr)
+    46px 46px 58px 58px 96px 112px;
   align-items: center;
   gap: 8px;
   padding: 8px 12px;
@@ -614,6 +614,19 @@ a {
 
 .cproxy-cell--empty {
   color: #b6b0a7;
+}
+
+/* Position in the list as shown. Tabular figures so the digits line up
+   between rows instead of jittering as the width of each numeral changes. */
+.cproxy-col-num,
+.cproxy-row__num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.cproxy-row__num {
+  font-size: 12px;
+  color: #918a80;
 }
 
 .cproxy-row__main {

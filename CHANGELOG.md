@@ -32,6 +32,18 @@
   be dropped as a duplicate, leaving only the entry that cannot authenticate —
   and no way to fix it.
 
+- **The popup names the proxy a site goes through**, the way you named it in
+  your list, instead of showing only an exit address you then had to recognise.
+  The proxy table gives that name room to be read: a wider name column, smaller
+  type, measurement columns trimmed to what they actually display, and a
+  position column so rows can be referred to by number.
+
+- **A site's "never open through <country>" tick box no longer forgets itself.**
+  It re-read the country of wherever the site went *now* — which is exactly what
+  the rule had just changed — so ticking "never through NL" moved the site to a
+  German proxy and the box came back unticked and relabelled. It now stays on
+  the country you acted on.
+
 - Fetching a proxy subscription through an **HTTP** proxy was routed with an
   invalid PAC directive and could never work; it now uses the same routing as
   everything else. An entry with a missing protocol or address is no longer

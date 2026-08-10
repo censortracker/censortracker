@@ -414,6 +414,7 @@ import {
     return `
      <div class="cproxy-row cproxy-grid__header">
        <span></span>
+       <span class="cproxy-col-num">#</span>
        ${col('proxyColName', 'name')}
        ${col('proxyColAddress', 'address')}
        ${col('proxyColCountry', 'country', 'proxyColCountryTitle')}
@@ -512,6 +513,7 @@ import {
     chain,
     statuses,
     geo,
+    position = 0,
   ) => {
     const editTitle = i18nGetMessage(builtin ? 'editBuiltinProxyButton' : 'editProxyButton')
     const chainIndex = chain.indexOf(id)
@@ -541,6 +543,7 @@ import {
          <input type="checkbox" name="chain-proxy" value="${safeId}" ${inChain ? 'checked' : ''}/>
          ${order}
        </label>
+       <span class="cproxy-row__num">${position > 0 ? position : EMPTY_CELL}</span>
        <span class="cproxy-row__name" title="${escapeHtml(name)}">${escapeHtml(name)}${badge}</span>
        <span class="cproxy-row__addr">${escapeHtml(protocol)} ${escapeHtml(uri)}</span>
        <span class="cproxy-country-cell">${countryBadgeHtml(uri, geo)}</span>
@@ -601,10 +604,14 @@ import {
     }
 
     // The built-in proxy stays pinned at the top; only the user's own entries
-    // are reordered.
-    for (const proxy of sortProxiesForView(proxies, { chain, statuses, geo })) {
-      html += renderProxyRow(proxy, chain, statuses, geo)
-    }
+    // are reordered. Numbering follows the order actually on screen, so it
+    // still reads 1..n after sorting by a column — and the pinned built-in
+    // row is left unnumbered so the numbers match the "N proxies" count.
+    const view = sortProxiesForView(proxies, { chain, statuses, geo })
+
+    view.forEach((proxy, index) => {
+      html += renderProxyRow(proxy, chain, statuses, geo, index + 1)
+    })
 
     customProxyList.innerHTML = html ? renderGridHeader() + html : ''
     if (proxyCount) {

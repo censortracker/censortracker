@@ -87,6 +87,23 @@ export const EXIT_INFO_POOL = [
  *   - proxifly/free-proxy-list — every ~5 minutes.
  *   - TheSpeedX/PROXY-List     — large raw dump, daily.
  */
+/**
+ * Ceiling on how many proxies one fetch may add.
+ *
+ * Public lists run to hundreds of thousands of entries. Past a few thousand
+ * nothing good happens: the checker only ever probes a few dozen of them, the
+ * settings page renders every row, and the whole list is serialized into
+ * storage on each change. Taking a bounded slice keeps the feature usable
+ * instead of quietly wedging the extension.
+ */
+export const MAX_PROXIES_PER_FETCH = 5000
+
+/**
+ * Ceiling on the download size of a single source, so a mistyped URL pointing
+ * at something enormous cannot exhaust memory.
+ */
+export const MAX_SOURCE_BYTES = 32 * 1024 * 1024
+
 export const RECOMMENDED_PROXY_SOURCES = [
   {
     name: 'monosans · SOCKS5 (validated, hourly)',

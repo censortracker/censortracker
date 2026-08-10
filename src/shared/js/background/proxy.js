@@ -5,6 +5,8 @@ import {
   BLOCKED_SITE_TEST_TARGET,
   DEFAULT_PROXY_TEST_TARGET,
   EXIT_INFO_POOL,
+  MAX_PROXIES_PER_FETCH,
+  MAX_SOURCE_BYTES,
   PROXY_TEST_POOL,
   PROXY_TEST_TARGETS,
   TaskType,
@@ -2066,10 +2068,18 @@ class ProxyManager {
     }
 
     try {
+      // Generous, because the useful public lists are megabytes of text and
+      // the old 15s budget aborted them mid-download on an ordinary link.
       const response = await fetchWithTimeout(url, {
-        timeout: 15000,
+        timeout: 60000,
         cache: 'no-store',
       })
+      const size = Number(response.headers.get('content-length'))
+
+      if (Number.isFinite(size) && size > MAX_SOURCE_BYTES) {
+        console.warn(`Proxy source ${url} is too large (${size} bytes).`)
+        return ''
+      }
 
       return await response.text()
     } catch (error) {
@@ -2122,8 +2132,14 @@ class ProxyManager {
     }
 
     const collected = []
+    let truncated = false
 
     for (const url of settings.sources) {
+      if (collected.length >= MAX_PROXIES_PER_FETCH) {
+        truncated = true
+        break
+      }
+
       const text = await this.fetchSourceText(url, settings.useProxy)
 
       if (text) {
@@ -2132,15 +2148,35 @@ class ProxyManager {
         // instead — and, since PAC providers routinely point at a proxy
         // client running on the user's own machine, would fill the list with
         // localhost entries that can never work.
-        collected.push(...(looksLikePacScript(text)
-          // A proxy read out of a PAC belongs to whichever service published
-          // it and generally relays only that service's sites, so it is
-          // marked as such and spared the auto-removal that judges proxies by
-          // an ordinary connectivity probe.
-          ? parsePacProxies(text).map((proxy) => {
-            return { ...proxy, restricted: true }
-          })
-          : parseProxyList(text)))
+        // A proxy read out of a PAC belongs to whichever service published it
+        // and generally relays only that service's sites, so it is marked as
+        // such and spared the auto-removal that judges proxies by an ordinary
+        // connectivity probe.
+        const fromPac = looksLikePacScript(text)
+        const room = MAX_PROXIES_PER_FETCH - collected.length
+        const parsed = fromPac
+          ? parsePacProxies(text)
+          : parseProxyList(text, 'HTTPS', { limit: room })
+
+        // Filling the remaining room exactly means the parser stopped at the
+        // cap rather than at the end of the source. The loop below only
+        // notices truncation when it has entries left over, which never
+        // happens once the parser itself has done the cutting.
+        if (!fromPac && parsed.length >= room) {
+          truncated = true
+        }
+
+        // Appended one at a time on purpose. `push(...parsed)` passes every
+        // entry as a separate argument, and a public list can hold hundreds of
+        // thousands of them — past the engine's argument limit, which threw
+        // "Maximum call stack size exceeded" and failed the whole run.
+        for (const proxy of parsed) {
+          if (collected.length >= MAX_PROXIES_PER_FETCH) {
+            truncated = true
+            break
+          }
+          collected.push(fromPac ? { ...proxy, restricted: true } : proxy)
+        }
       }
     }
 
@@ -2195,7 +2231,7 @@ class ProxyManager {
       `Proxy sources: +${added.length}, alive ${alive}, removed ${removed}, ` +
       `filtered by country ${filteredOut}`,
     )
-    return { added: added.length, alive, removed, filteredOut }
+    return { added: added.length, alive, removed, filteredOut, truncated }
   }
 
   async removeLocalProxy () {

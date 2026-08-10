@@ -723,6 +723,9 @@
   "proxySourcesTitle": {
     "message": "Auto-fetch proxy lists"
   },
+  "proxySourcesTruncated": {
+    "message": "list truncated to the first 5000"
+  },
   "proxySourcesUseProxyLabel": {
     "message": "Download via active proxy"
   },

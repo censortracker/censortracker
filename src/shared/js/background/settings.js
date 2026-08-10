@@ -84,7 +84,7 @@ const sanitizeCustomProxies = (value) => {
       continue
     }
 
-    const { id, name, protocol, uri, credentials } = item
+    const { id, name, protocol, uri, credentials, restricted } = item
 
     if (typeof id !== 'string' || !SAFE_PROXY_ID.test(id) || seen.has(id)) {
       continue
@@ -103,6 +103,7 @@ const sanitizeCustomProxies = (value) => {
       protocol,
       uri,
       credentials: typeof credentials === 'string' ? credentials : '',
+      restricted: !!restricted,
     })
   }
 

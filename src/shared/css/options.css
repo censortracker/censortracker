@@ -944,6 +944,15 @@ a {
   margin-top: 12px;
 }
 
+/* Serves only its publisher's sites, so an ordinary check calls it dead.
+   Same warning colour as "needs authorization": both mean "not a failure,
+   finish reading before you delete this". */
+.cproxy-badge--restricted {
+  background: #fbe9d6;
+  color: #a34a00;
+  cursor: help;
+}
+
 /* Marks a section that talks to a third-party service and may simply not
    work — deliberately louder than the neutral "built-in" pill. */
 .cproxy-badge--experimental {

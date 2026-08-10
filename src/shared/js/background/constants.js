@@ -21,6 +21,18 @@ export const PROXY_TEST_TARGETS = {
 export const DEFAULT_PROXY_TEST_TARGET = 'google'
 
 /**
+ * Special test target: instead of a fixed endpoint, probe a site drawn from
+ * the blocklist.
+ *
+ * Some proxies only relay to the sites they exist for — the ones published by
+ * circumvention services route their own blocklist and nothing else. Probing
+ * such a proxy with an unblocked endpoint asks it to do the one thing it
+ * refuses to do, so it reports as dead however well it works. This target
+ * sends the probe where the proxy is actually meant to go.
+ */
+export const BLOCKED_SITE_TEST_TARGET = 'blocked'
+
+/**
  * Pool of *distinct* connectivity endpoints used for parallel checking. Each
  * lives on its own host, so the checker can route one host through one proxy
  * and another host through another proxy in the same PAC — the number of

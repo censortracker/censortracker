@@ -170,7 +170,15 @@ export const getAntizapretProxies = async ({
 
     if (!seen.has(key)) {
       seen.add(key)
-      proxies.push({ name: label, protocol, uri, credentials: '' })
+      proxies.push({
+        name: label,
+        protocol,
+        uri,
+        credentials: '',
+        // These relay only to the sites Antizapret exists for, so an ordinary
+        // connectivity probe fails against them by design.
+        restricted: true,
+      })
     }
   }
 

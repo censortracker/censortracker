@@ -27,7 +27,7 @@
     "message": "Fetching…"
   },
   "antizapretHint": {
-    "message": "Third-party services, run by other people. Antizapret publishes its proxies inside a PAC script and answers only from Russian IP addresses — anywhere else the import will report that it is unavailable. Imported proxies land in the list above and are checked like any other."
+    "message": "Third-party services, run by other people. Antizapret publishes its proxies inside a PAC script and answers only from Russian IP addresses — anywhere else the import will report that it is unavailable. Imported proxies relay only to the sites the service exists for, so they are marked \"limited\": check them with the \"A blocked site\" test target, and auto-removal will leave them alone."
   },
   "antizapretImported": {
     "message": "Added:"
@@ -747,6 +747,9 @@
   "proxyStatusUntested": {
     "message": "not tested"
   },
+  "proxyTestTargetBlocked": {
+    "message": "A blocked site"
+  },
   "proxyTestTargetLabel": {
     "message": "Test via:"
   },
@@ -812,6 +815,12 @@
   },
   "resetToDefaultTitle": {
     "message": "Reset to default"
+  },
+  "restrictedProxyBadge": {
+    "message": "limited"
+  },
+  "restrictedProxyTitle": {
+    "message": "Relays only to the sites its publisher runs it for. An ordinary check reports it as unavailable — test it via a blocked site. Auto-removal leaves it alone."
   },
   "rksVPNBannerDesc": {
     "message": "We recommend RKS VPN as a local proxy"

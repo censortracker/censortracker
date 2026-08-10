@@ -2,6 +2,7 @@ import { getPacScript, toPunycode, toSecondLevel } from 'Background/pac'
 
 import browser from './browser-api'
 import {
+  BLOCKED_SITE_TEST_TARGET,
   DEFAULT_PROXY_TEST_TARGET,
   EXIT_INFO_POOL,
   PROXY_TEST_POOL,
@@ -770,6 +771,8 @@ class ProxyManager {
         protocol: item.protocol,
         uri: item.uri,
         credentials: item.credentials || '',
+        // Serves only the sites it exists for; see removeDeadCustomProxies.
+        restricted: !!item.restricted,
       }
 
       customProxies.push(proxy)
@@ -1255,15 +1258,67 @@ class ProxyManager {
       proxyTestTarget: DEFAULT_PROXY_TEST_TARGET,
     })
 
-    return PROXY_TEST_TARGETS[proxyTestTarget]
+    return (PROXY_TEST_TARGETS[proxyTestTarget] ||
+      proxyTestTarget === BLOCKED_SITE_TEST_TARGET)
       ? proxyTestTarget
       : DEFAULT_PROXY_TEST_TARGET
   }
 
   async setProxyTestTarget (key) {
-    if (PROXY_TEST_TARGETS[key]) {
+    if (PROXY_TEST_TARGETS[key] || key === BLOCKED_SITE_TEST_TARGET) {
       await browser.storage.local.set({ proxyTestTarget: key })
     }
+  }
+
+  /**
+   * Picks the endpoints a check should aim at.
+   *
+   * Every returned URL must sit on its own host: the checker routes one host
+   * through one candidate proxy in a single PAC, so a repeated host would make
+   * two candidates share a route and report each other's result.
+   *
+   * For the blocklist target the hosts are drawn at random from the blocked
+   * domains, which is the only way to exercise a proxy that serves nothing
+   * else. The trade-off is that an individual blocked site may be down on its
+   * own account, so a failure there is weaker evidence than a failure against
+   * a dedicated connectivity endpoint.
+   * @param {number} count - How many distinct endpoints are needed.
+   * @returns {Promise<Array<string>>}
+   */
+  async getTestTargets (count) {
+    const key = await this.getProxyTestTarget()
+
+    if (key !== BLOCKED_SITE_TEST_TARGET) {
+      // The single configured endpoint first, so a one-proxy check uses
+      // exactly what the user picked; the pool supplies the remaining slots.
+      const chosen = PROXY_TEST_TARGETS[key]
+      const rest = PROXY_TEST_POOL.filter((url) => url !== chosen)
+
+      return [chosen, ...rest].slice(0, count)
+    }
+
+    const domains = await registry.getDomains()
+
+    if (domains.length === 0) {
+      return PROXY_TEST_POOL.slice(0, count)
+    }
+
+    // Sample without replacement, without shuffling the whole list — it can
+    // hold hundreds of thousands of entries and only a handful are needed.
+    const picked = new Set()
+    const targets = []
+    const limit = Math.min(count, domains.length)
+
+    while (targets.length < limit) {
+      const index = Math.floor(Math.random() * domains.length)
+
+      if (picked.has(index)) {
+        continue
+      }
+      picked.add(index)
+      targets.push(`https://${domains[index]}/`)
+    }
+    return targets
   }
 
   /**
@@ -1513,8 +1568,7 @@ class ProxyManager {
       return failed
     }
 
-    const target =
-      testUrl || PROXY_TEST_TARGETS[await this.getProxyTestTarget()]
+    const target = testUrl || (await this.getTestTargets(1))[0]
     const exitTarget = EXIT_INFO_POOL[0]
     let testHost
     let exitHost
@@ -1607,7 +1661,7 @@ class ProxyManager {
       return results
     }
 
-    const pool = PROXY_TEST_POOL
+    const pool = await this.getTestTargets(PROXY_TEST_POOL.length)
     const slots = Math.max(1, Math.min(concurrency || pool.length, pool.length))
 
     try {
@@ -1830,6 +1884,12 @@ class ProxyManager {
    * Proxies that answered 407 are kept: they are reachable and only need
    * credentials, so deleting them would throw away a working endpoint the user
    * just has to finish configuring.
+   *
+   * Proxies marked `restricted` are kept for a related reason. They relay only
+   * to the sites they were published for, so a check aimed at an ordinary
+   * connectivity endpoint always fails against them — deleting on that basis
+   * would remove every such proxy the moment the list is tidied, however well
+   * they work for their purpose. Use the blocklist test target to judge them.
    * @returns {Promise<{removed: number}>}
    */
   async removeDeadCustomProxies () {
@@ -1839,7 +1899,8 @@ class ProxyManager {
       .filter((proxy) => {
         const status = statuses[proxy.id]
 
-        return status && status.alive === false && !status.needsAuth
+        return status && status.alive === false &&
+          !status.needsAuth && !proxy.restricted
       })
       .map((proxy) => proxy.id)
 
@@ -2072,7 +2133,13 @@ class ProxyManager {
         // client running on the user's own machine, would fill the list with
         // localhost entries that can never work.
         collected.push(...(looksLikePacScript(text)
-          ? parsePacProxies(text)
+          // A proxy read out of a PAC belongs to whichever service published
+          // it and generally relays only that service's sites, so it is
+          // marked as such and spared the auto-removal that judges proxies by
+          // an ordinary connectivity probe.
+          ? parsePacProxies(text).map((proxy) => {
+            return { ...proxy, restricted: true }
+          })
           : parseProxyList(text)))
       }
     }
@@ -2105,9 +2172,14 @@ class ProxyManager {
       const deadIds = []
 
       for (const proxy of toTest) {
-        if (results[proxy.id] && results[proxy.id].alive) {
+        const result = results[proxy.id]
+
+        if (result && result.alive) {
           alive += 1
-        } else {
+        } else if (!proxy.restricted && !(result && result.needsAuth)) {
+          // A proxy that only serves its own sites, or one that merely wants
+          // credentials, fails an ordinary probe by design. Neither is a
+          // reason to delete it behind the user's back.
           deadIds.push(proxy.id)
         }
       }

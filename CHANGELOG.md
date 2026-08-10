@@ -1,3 +1,21 @@
+# 20.14.0
+
+- **A proxy can now be checked against a blocked site.** The existing targets
+  are all sites nobody blocks, which quietly made a whole class of proxy
+  untestable: the ones published by circumvention services relay only to the
+  sites they exist for and refuse everything else, so probing them with Google
+  asked for the one thing they will not do and reported them as unavailable
+  however well they worked. Picking "A blocked site" draws the probe targets
+  at random from the blocklist instead. An individual blocked site can of
+  course be down on its own account, so a failure there is weaker evidence
+  than one against a dedicated endpoint.
+
+- **Proxies of that kind are marked "limited" and survive tidying up.** They
+  are imported that way from Antizapret and from any PAC used as a source, and
+  both "Remove dead" and the automatic removal now pass over them — as they
+  already did for proxies that only need a login. Without this, one press of
+  "Remove dead" deleted every proxy the previous point exists to make usable.
+
 # 20.13.0
 
 - **Antizapret and Anticensority can be imported, marked experimental.** Both

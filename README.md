@@ -276,8 +276,12 @@ Censor Tracker требует следующие разрешения:
 
 Censor Tracker работает со следующими версиями браузеров:
 
-- Mozilla Firefox 98 и выше
+- Mozilla Firefox 91.1 и выше
 - Chromium (Google Chrome, Brave, Edge, Opera и др.) 94 и выше
+
+Эти же числа записаны в манифестах (`browser_specific_settings.gecko.strict_min_version`
+и `minimum_chrome_version`) и в целях транспиляции (`.babelrc`), так что браузер не
+предложит установить сборку, которую не сможет выполнить. Меняя одно, меняйте все три.
 
 Разработка
 ==========

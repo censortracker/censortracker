@@ -541,6 +541,15 @@ class ProxyManager {
     setSocksAuthRouting(false)
     setRoutingSnapshot(null)
 
+    // Firefox has no way to hand `proxy.settings` a PAC as text, so the script
+    // is served from an object URL. Nothing revokes it once the settings are
+    // cleared, and the blob it pins is the whole blocklist — hundreds of
+    // kilobytes held for as long as the background page lives.
+    if (this._lastPacObjectUrl) {
+      URL.revokeObjectURL(this._lastPacObjectUrl)
+      this._lastPacObjectUrl = null
+    }
+
     try {
       await browser.proxy.settings.clear({})
       console.log('Proxy settings removed.')

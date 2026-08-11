@@ -79,14 +79,17 @@ export const toSecondLevel = (host) => {
 }
 
 /**
- * The host hash FindProxyForURL uses to pick a primary proxy. Kept identical
- * to the copy inside the generated script — `pac.test` asserts the two agree,
- * because the popup tells the user which proxy a site goes through and a
- * drifting copy would make it lie.
+ * The host hash FindProxyForURL uses to pick a primary proxy.
+ *
+ * The generated script does not restate it: `getPacScript()` embeds this exact
+ * source, the same way it embeds the host classification from host-rules.js.
+ * The popup tells the user which proxy a site goes through, and a second copy
+ * drifting from this one would make it lie. Self-contained for that reason —
+ * see the note at the top of host-rules.js.
  * @param target {string}
  * @returns {number}
  */
-export const hashHost = (target) => {
+export function hashHost (target) {
   let sum = 0
 
   for (let index = 0; index < target.length; index += 1) {
@@ -225,6 +228,8 @@ export const getPacScript = (
 
       var isIgnoredHost = ${String(isIgnoredHost)};
 
+      var hashHost = ${String(hashHost)};
+
       function isHostBlocked(array, target) {
         var left = 0;
         var right = array.length - 1;
@@ -269,11 +274,7 @@ export const getPacScript = (
         if (rotations.length === 0) {
           return 'DIRECT';
         }
-        var sum = 0;
-        for (var i = 0; i < target.length; i++) {
-          sum = (sum * 31 + target.charCodeAt(i)) % 2147483647;
-        }
-        return rotations[sum % rotations.length];
+        return rotations[hashHost(target) % rotations.length];
       }
 
       function FindProxyForURL(url, host) {

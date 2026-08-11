@@ -273,8 +273,13 @@ Requirements
 
 Censor Tracker works with following versions of browsers:
 
-- Mozilla Firefox 98 or higher
+- Mozilla Firefox 91.1 or higher
 - Chromium (Google Chrome, Brave, Edge, Opera etc.) 94 or higher
+
+The same numbers are written into the manifests
+(`browser_specific_settings.gecko.strict_min_version` and `minimum_chrome_version`) and
+into the transpilation targets (`.babelrc`), so a browser is never offered a build it
+cannot run. Change one, change all three.
 
 Development
 ===========

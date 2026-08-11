@@ -6,6 +6,7 @@
     "<all_urls>"
   ],
   "manifest_version": 3,
+  "minimum_chrome_version": "94",
   "action": {
     "default_name": "Censor Tracker",
     "default_popup": "popup.html",

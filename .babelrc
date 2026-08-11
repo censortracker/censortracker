@@ -5,7 +5,7 @@
       {
         "targets": {
           "chrome": "94",
-          "firefox": "98"
+          "firefox": "91"
         }
       }
     ],

@@ -37,6 +37,16 @@
   same way, rather than written out a second time inside the script; a comment
   claimed a test held the two copies together, and no such test exists.
 
+- **The minimum browser version now means something.** The Firefox manifest
+  promised 91.1 while the build transpiled for 98, so anyone on 91–97 was offered
+  an update that might not run; the Chromium manifest set no floor at all,
+  though the build assumes 94. Nothing in the code needs more than Firefox 91 —
+  `proxy.settings` and `proxy.onRequest` date to 60, `proxy.onError` to 68, and
+  `crypto.randomUUID`, `browser.scripting` and `browser.action` all sit behind
+  guards with a fallback — so the build was lowered to meet the promise rather
+  than the promise raised to cut those users off. `minimum_chrome_version: 94`
+  is declared, and the READMEs state both floors.
+
 - **Documentation.** `SKILL.md` collects what Chromium and Firefox actually do
   with extension proxying — PAC support and its limits, `mandatory`, the hosts
   each browser bypasses on its own (RFC 1918 is in neither), proxy

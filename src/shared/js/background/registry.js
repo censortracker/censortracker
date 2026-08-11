@@ -1,4 +1,5 @@
 import browser from './browser-api'
+import { normalizeHostList } from './host-rules'
 import {
   extractDomainFromUrl,
 } from './utilities'
@@ -149,10 +150,12 @@ class Registry {
    * @returns {Promise<number>} How many distinct domains were stored.
    */
   async setExternalBlocklist (domains, { source = '' } = {}) {
-    const unique = [...new Set(
-      (Array.isArray(domains) ? domains : [])
-        .filter((domain) => typeof domain === 'string' && domain),
-    )]
+    // Reduced to bare hosts, but NOT to registrable domains: an imported list
+    // is entitled to name `cdn.example.com` and have that mean what it says,
+    // which is why the PAC matches the list by suffix. What this does drop is
+    // the packaging around a host — a scheme, a path, a port, a leading `*.` —
+    // none of which could ever match a host the browser hands the PAC.
+    const unique = normalizeHostList(domains)
 
     await browser.storage.local.set({
       externalBlocklistDomains: unique,

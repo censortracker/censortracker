@@ -250,6 +250,53 @@ export function isIgnoredHost (host, index) {
 }
 
 /**
+ * The blocklist entry that covers this host, or '' when none does.
+ *
+ * The list is matched by suffix rather than by truncating the host to its last
+ * two labels, which is what the PAC used to do. That truncation quietly lost
+ * two whole classes of entry:
+ *
+ *   - Anything under a multi-label public suffix. The list stores what tldts
+ *     calls the registrable domain, so a blocked site is `example.co.uk`, while
+ *     truncation turned `www.example.co.uk` into `co.uk` and compared that —
+ *     never a match, for any site under .co.uk, .com.br, .org.uk and the rest.
+ *   - Any entry deeper than two labels. An imported list naming
+ *     `cdn.example.com` matched nothing at all, silently.
+ *
+ * The walk stops before a bare public suffix: an entry of `com` or `uk` could
+ * only come from a malformed list, and honouring it would put the whole
+ * internet through the proxy.
+ *
+ * SELF-CONTAINED — see the note at the top of this file before editing.
+ * @param host {string} Destination host.
+ * @param lookup {Function} Answers whether one exact name is on the list.
+ * @returns {string} The matching entry, or ''.
+ */
+export function matchBlockedSuffix (host, lookup) {
+  let candidate = String(host || '')
+
+  while (candidate) {
+    if (lookup(candidate)) {
+      return candidate
+    }
+
+    const dot = candidate.indexOf('.')
+
+    if (dot === -1) {
+      return ''
+    }
+
+    const rest = candidate.substring(dot + 1)
+
+    if (rest.indexOf('.') === -1) {
+      return ''
+    }
+    candidate = rest
+  }
+  return ''
+}
+
+/**
  * Reduces anything a user might type or paste into a bare host.
  *
  * The "Ignored sites" editor is a free-text box, so entries arrive as full

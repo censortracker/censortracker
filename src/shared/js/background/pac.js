@@ -199,8 +199,10 @@ export const getPacScript = (
 
   // Everything heavy (the blocklist array, the rotation strings, the helpers)
   // lives at the top level of the PAC script: it is evaluated ONCE when the
-  // browser loads the script. Only FindProxyForURL runs per request — keeping
-  // per-request work down to a hash and a binary search, with no allocations.
+  // browser loads the script. Only FindProxyForURL runs per request, and what
+  // it does there is string comparison, a hash and a binary search — no DNS,
+  // no regular expressions built per call, and nothing that grows with the
+  // length of the blocklist or of the ignore list.
   return toAsciiSource(`
       // Domains, which are blocked.
       var domains = ${JSON.stringify(asciiDomains)};

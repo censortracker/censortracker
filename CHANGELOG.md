@@ -37,6 +37,23 @@
   same way, rather than written out a second time inside the script; a comment
   claimed a test held the two copies together, and no such test exists.
 
+- **Firefox no longer resolved names locally for part of a proxy chain.** On the
+  SOCKS-authenticating path, `proxyDNS` was set alongside the username and
+  password — so only hops that carried a login asked the proxy to resolve the
+  destination. That path is taken as soon as *any one* proxy in the chain needs
+  a SOCKS login, and it then answers for every hop, so a proxy without
+  credentials looked up the destination on this machine: the lookups the proxy
+  exists to hide went to the local resolver, `.onion` and `.i2p` could not be
+  reached through it at all, and the very same proxy resolved remotely whenever
+  the PAC was driving instead. Every SOCKS5 hop now asks the proxy to resolve.
+  SOCKS4 deliberately still does not — it cannot carry a host name, and
+  requesting one turns the connection into SOCKS4a, which a plain SOCKS4 proxy
+  does not answer.
+
+- The PAC object URL is released when proxying is switched off. Firefox has no
+  way to be handed a PAC as text, so the script is served from a blob; clearing
+  the settings left the last one pinned, and it holds the whole blocklist.
+
 - **The minimum browser version now means something.** The Firefox manifest
   promised 91.1 while the build transpiled for 98, so anyone on 91–97 was offered
   an update that might not run; the Chromium manifest set no floor at all,

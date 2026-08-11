@@ -319,6 +319,23 @@ const toFirefoxProxyInfo = (proxy) => {
     port: endpoint.port,
   }
 
+  // Resolve names at the proxy: doing it locally would leak the very lookups
+  // the proxy is there to hide, and cannot resolve .onion/.i2p at all.
+  //
+  // This is set for EVERY SOCKS5 hop, not only the ones carrying a login. The
+  // listener is attached as soon as any one proxy in the chain needs SOCKS
+  // authentication, and from then on it answers for all of them — so a hop
+  // without credentials used to travel this path with `proxyDNS` left at its
+  // default of false and resolve names on this machine, while the very same
+  // proxy resolved them remotely whenever the PAC was driving instead.
+  //
+  // SOCKS4 is deliberately left alone: it cannot carry a hostname, and asking
+  // Firefox to send one turns the connection into SOCKS4a, which a plain
+  // SOCKS4 proxy does not answer.
+  if (protocol === 'SOCKS5') {
+    info.proxyDNS = true
+  }
+
   if (needsSocksAuth(proxy)) {
     const credentials = splitProxyCredentials(proxy.credentials)
 
@@ -326,9 +343,6 @@ const toFirefoxProxyInfo = (proxy) => {
       info.username = credentials.username
       info.password = credentials.password
     }
-    // Resolve names at the proxy: doing it locally would leak the very lookups
-    // the proxy is there to hide, and can't resolve .onion/.i2p at all.
-    info.proxyDNS = protocol === 'SOCKS5'
   }
   return info
 }

@@ -361,7 +361,21 @@ class ProxyManager {
       }
     }
 
-    await this.applyRouting(routing, { mandatory: true })
+    try {
+      await this.applyRouting(routing, { mandatory: true })
+    } catch (error) {
+      // Every probe is routed by this PAC and by nothing else. If it is not
+      // installed, each one travels DIRECT, succeeds, and reports the proxy it
+      // was supposed to be testing as working — the same trap the incomplete
+      // entries above are guarded against. Refusing to check is the only
+      // honest outcome, and the caller's `finally` puts the real routing back.
+      //
+      // On Firefox the usual cause is the extension not being allowed in
+      // private windows: `proxy.settings.set()` throws outright rather than
+      // warning, so raise the prompt that lets the user grant it.
+      await this.requestIncognitoAccess()
+      throw new Error(`Checker PAC could not be installed: ${error}`)
+    }
   }
 
   /**

@@ -1,6 +1,11 @@
 import browser from './browser-api'
 import { normalizeCountryCodes } from './geoip'
-import { isIgnoredHost, isPrivateHost, toPunycode } from './host-rules'
+import {
+  isIgnoredHost,
+  isPrivateHost,
+  matchBlockedSuffix,
+  toPunycode,
+} from './host-rules'
 import { hashHost, toSecondLevel } from './pac'
 
 /**
@@ -130,13 +135,17 @@ export const resolveProxyForHost = (host, context) => {
 
   if (proxyAll) {
     target = clean
+  } else if (/\.(onion|i2p)$/.test(site)) {
+    target = site
   } else {
-    const isDarknet = /\.(onion|i2p)$/.test(site)
+    // Matched by suffix, exactly as FindProxyForURL matches it, and the entry
+    // that matched is what picks the proxy.
+    const blocked = matchBlockedSuffix(clean, isBlocked)
 
-    if (!isDarknet && !isBlocked(site)) {
+    if (!blocked) {
       return direct('not-blocked')
     }
-    target = site
+    target = blocked
   }
 
   if (proxies.length === 0) {

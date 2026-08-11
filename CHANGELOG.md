@@ -37,6 +37,31 @@
   same way, rather than written out a second time inside the script; a comment
   claimed a test held the two copies together, and no such test exists.
 
+- **Sites under a multi-label suffix — .co.uk, .com.br, .org.uk — were never
+  proxied at all.** The blocklist stores what tldts calls the registrable
+  domain, so a blocked site is held as `example.co.uk`, while the PAC cut the
+  host down to its last two labels and compared that: `www.example.co.uk` became
+  `co.uk`, which is not in the list and never would be. Everything under every
+  such suffix went direct, silently. The same truncation threw away any imported
+  entry deeper than two labels: a list naming `cdn.example.com` matched nothing.
+
+  The list is now matched by suffix, the way the ignore list already was. One
+  entry still covers all of its subdomains — that has not changed and is the
+  point of it — and every host under one blocked site still goes through the
+  same proxy, because the hash that picks the proxy is taken from the matching
+  entry rather than from the host. The walk stops before a bare public suffix,
+  so a stray `com` in a malformed imported list cannot route the whole internet
+  through the proxy. An imported list is also reduced to bare hosts on the way
+  in, dropping the scheme, path or port that could never have matched anyway.
+
+- **A proxy check that cannot install its PAC now says so instead of passing
+  everything.** Each probe is routed by the checker's own PAC and by nothing
+  else, so if installing it failed, every probe travelled direct, succeeded, and
+  reported the proxy it was meant to be testing as working. It now fails the run
+  with a clear message — and on Firefox raises the private-windows prompt, since
+  a missing private-windows permission makes `proxy.settings.set()` throw rather
+  than warn, and that is the usual cause.
+
 - **Firefox no longer resolved names locally for part of a proxy chain.** On the
   SOCKS-authenticating path, `proxyDNS` was set alongside the username and
   password — so only hops that carried a login asked the proxy to resolve the

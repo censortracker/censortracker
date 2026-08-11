@@ -2,6 +2,7 @@ import {
   buildIgnoreIndex,
   isIgnoredHost,
   isPrivateHost,
+  matchBlockedSuffix,
   toPunycode,
 } from './host-rules'
 import { proxyToPacToken } from './utilities'
@@ -232,6 +233,8 @@ export const getPacScript = (
 
       var hashHost = ${String(hashHost)};
 
+      var matchBlockedSuffix = ${String(matchBlockedSuffix)};
+
       function isHostBlocked(array, target) {
         var left = 0;
         var right = array.length - 1;
@@ -250,6 +253,12 @@ export const getPacScript = (
           }
         }
         return false;
+      }
+
+      // Declared once, at the top level, so matchBlockedSuffix() can be handed
+      // a lookup by reference instead of a closure built on every request.
+      function lookupBlocked(name) {
+        return isHostBlocked(domains, name);
       }
 
       function secondLevel(host) {
@@ -316,19 +325,24 @@ export const getPacScript = (
           return pickProxy(host, secondLevel(host));
         }
 
-        // Make domain second-level.
-        host = secondLevel(host);
+        // The site a country rule is keyed by, and what a darknet address is
+        // recognized and routed by — unchanged, so every subdomain of a hidden
+        // service keeps going through the same proxy.
+        var site = secondLevel(host);
 
         // Proxy *.onion and *.i2p domains.
-        if (shExpMatch(host, '*.onion') || shExpMatch(host, '*.i2p')) {
-          return pickProxy(host, host);
+        if (shExpMatch(site, '*.onion') || shExpMatch(site, '*.i2p')) {
+          return pickProxy(site, site);
         }
 
-        // Return result
-        if (isHostBlocked(domains, host)) {
-          return pickProxy(host, host);
-        } else {
-          return 'DIRECT';
+        // Which blocklist entry covers this host, if any. The entry itself
+        // picks the proxy, so every host under one blocked site keeps using the
+        // same one and long-lived sessions survive.
+        var blocked = matchBlockedSuffix(host, lookupBlocked);
+
+        if (blocked) {
+          return pickProxy(blocked, site);
         }
+        return 'DIRECT';
       }`)
 }

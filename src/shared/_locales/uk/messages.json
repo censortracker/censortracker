@@ -903,6 +903,9 @@
   "siteRouteDirect": {
     "message": "напряму, без проксі"
   },
+  "siteRouteIgnored": {
+    "message": "напряму — сайт у списку ігнорованих"
+  },
   "siteRouteLocal": {
     "message": "локальна адреса, завжди напряму"
   },

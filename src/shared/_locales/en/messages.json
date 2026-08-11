@@ -903,6 +903,9 @@
   "siteRouteDirect": {
     "message": "directly, without a proxy"
   },
+  "siteRouteIgnored": {
+    "message": "direct — the site is on the ignored list"
+  },
   "siteRouteLocal": {
     "message": "local address, always direct"
   },

@@ -120,6 +120,20 @@ class Registry {
     return allDomains
   }
 
+  /**
+   * The user's "Ignored sites" list.
+   *
+   * Filtering it out of the blocklist above is not enough on its own: in
+   * proxy-all mode there is no blocklist to filter, so the routing code needs
+   * the list itself to keep these hosts off the proxy.
+   * @returns {Promise<Array<string>>}
+   */
+  async getIgnoredHosts () {
+    const { ignoredHosts } = await getRegistryState()
+
+    return [...ignoredHosts]
+  }
+
   async isEmpty () {
     const domains = await this.getDomains()
 

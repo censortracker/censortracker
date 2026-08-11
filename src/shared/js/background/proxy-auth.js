@@ -1,5 +1,10 @@
 import browser from './browser-api'
-import { toPunycode } from './pac'
+import {
+  buildIgnoreIndex,
+  isIgnoredHost,
+  isPrivateHost,
+  toPunycode,
+} from './host-rules'
 import { resolveProxyForHost } from './site-rules'
 import {
   needsSocksAuth,
@@ -256,7 +261,7 @@ let snapshot = null
  * reproduce it. `testRoutes` maps a host to the proxies it must go through
  * regardless of the rules (used by the checker and by source fetching).
  * @param {{proxies: Array, proxyAll: boolean, domains: Array<string>,
- *   countries: Array<string>, rules: Object,
+ *   countries: Array<string>, rules: Object, ignoredHosts: Array<string>,
  *   testRoutes: Object<string, Array>}} [next] - Null clears it.
  */
 export const setRoutingSnapshot = (next) => {
@@ -266,7 +271,9 @@ export const setRoutingSnapshot = (next) => {
   }
 
   const blocklist = new Set(
-    (next.domains || []).map((domain) => toPunycode(domain)).filter(Boolean),
+    (next.domains || [])
+      .map((domain) => toPunycode(domain).toLowerCase())
+      .filter(Boolean),
   )
 
   snapshot = {
@@ -275,7 +282,10 @@ export const setRoutingSnapshot = (next) => {
     countries: next.countries || [],
     rules: next.rules || {},
     testRoutes: next.testRoutes || null,
-    isBlocked: (candidate) => blocklist.has(toPunycode(candidate)),
+    ignoredHosts: buildIgnoreIndex(next.ignoredHosts),
+    isBlocked: (candidate) => {
+      return blocklist.has(toPunycode(candidate).toLowerCase())
+    },
   }
 }
 
@@ -349,6 +359,12 @@ export const handleProxyRequest = (details) => {
   const host = hostOfUrl(details.url)
 
   if (!host) {
+    return DIRECT
+  }
+
+  // Ahead of everything, as in the PAC: a local address is not reachable
+  // through a proxy, and an ignored one was asked to stay off it.
+  if (isPrivateHost(host) || isIgnoredHost(host, snapshot.ignoredHosts)) {
     return DIRECT
   }
 

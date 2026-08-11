@@ -444,32 +444,65 @@ export const isValidURL = (url) => {
 }
 
 /**
+ * The URL a decision should actually be made about.
+ *
+ * The extension's own pages stand in for the site that triggered them and carry
+ * it in a «loadFor» parameter, so the rules have to be applied to that site
+ * rather than to the extension page.
+ * @param url {string} URL string.
+ * @returns {string} The URL to classify.
+ */
+const resolveTargetUrl = (url) => {
+  if (!isExtensionUrl(url)) {
+    return url
+  }
+
+  const urlParams = url.split('?')[1]
+  const searchParams = new URLSearchParams(urlParams)
+  const encodedUrl = searchParams.get('loadFor')
+
+  if (encodedUrl) {
+    try {
+      const decoded = atob(encodedUrl)
+
+      // `atob` throws on malformed input, and the decoded value only makes
+      // sense as an http(s) URL — anything else is a crafted parameter and
+      // is ignored rather than parsed as a domain.
+      if (/^https?:\/\//i.test(decoded)) {
+        return decoded
+      }
+    } catch (error) {
+      console.warn('[URL] Ignoring malformed «loadFor» parameter.')
+    }
+  }
+  return url
+}
+
+/**
  * Extract domain from the URL address.
  * @param url URL string.
  * @returns {string} Extracted domain.
  */
 export const extractDomainFromUrl = (url) => {
-  if (isExtensionUrl(url)) {
-    const urlParams = url.split('?')[1]
-    const searchParams = new URLSearchParams(urlParams)
-    const encodedUrl = searchParams.get('loadFor')
+  return getDomain(resolveTargetUrl(url))
+}
 
-    if (encodedUrl) {
-      try {
-        const decoded = atob(encodedUrl)
+/**
+ * Like `extractDomainFromUrl`, but never gives up on an address that simply has
+ * no registrable domain.
+ *
+ * `getDomain` answers null for an IP literal and for a single-label host —
+ * 192.168.1.1, ::1, localhost, nas — because none of them has one. Those are
+ * precisely the addresses someone reaches for when they want a host kept off
+ * the proxy, and returning null there is how they used to be dropped on the way
+ * into the ignore list instead of being stored.
+ * @param url {string} URL string.
+ * @returns {string} A domain, or the bare host, or ''.
+ */
+export const extractHostFromUrl = (url) => {
+  const target = resolveTargetUrl(url)
 
-        // `atob` throws on malformed input, and the decoded value only makes
-        // sense as an http(s) URL — anything else is a crafted parameter and
-        // is ignored rather than parsed as a domain.
-        if (/^https?:\/\//i.test(decoded)) {
-          url = decoded
-        }
-      } catch (error) {
-        console.warn('[URL] Ignoring malformed «loadFor» parameter.')
-      }
-    }
-  }
-  return getDomain(url)
+  return getDomain(target) || getHostname(target) || ''
 }
 
 export const extractHostnameFromUrl = (url) => {

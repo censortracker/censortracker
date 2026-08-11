@@ -1,4 +1,4 @@
-import { getPacScript, toPunycode, toSecondLevel } from 'Background/pac'
+import { getPacScript, toSecondLevel } from 'Background/pac'
 
 import browser from './browser-api'
 import {
@@ -18,6 +18,7 @@ import {
   normalizeCountryCodes,
   parseExitInfo,
 } from './geoip'
+import { buildIgnoreIndex, toPunycode } from './host-rules'
 import {
   clearAuthRejection,
   setRoutingSnapshot,
@@ -160,7 +161,7 @@ class ProxyManager {
    * @param {{domains?: Array<string>, proxies?: Array, proxyServerURI?: string,
    *   proxyServerProtocol?: string, proxyAll?: boolean,
    *   proxyCountries?: Array<string>, siteCountryRules?: Object,
-   *   testRoutes?: Object<string, Array>}} routing
+   *   ignoredHosts?: Array<string>, testRoutes?: Object<string, Array>}} routing
    * @param {{mandatory?: boolean}} [options]
    * @returns {Promise<void>}
    */
@@ -173,6 +174,7 @@ class ProxyManager {
       proxyAll = false,
       proxyCountries = [],
       siteCountryRules = {},
+      ignoredHosts = [],
       testRoutes = null,
     } = routing
 
@@ -204,6 +206,7 @@ class ProxyManager {
       proxyAll,
       proxyCountries,
       siteCountryRules,
+      ignoredHosts,
       testRoutes: Object.keys(pacTestRoutes).length > 0 ? pacTestRoutes : null,
     })
 
@@ -213,6 +216,7 @@ class ProxyManager {
       proxyAll,
       countries: proxyCountries,
       rules: siteCountryRules,
+      ignoredHosts,
       testRoutes,
     })
 
@@ -262,19 +266,30 @@ class ProxyManager {
    *   entryCountry, blockedCountries, unknownCountries }`.
    */
   async describeRouteFor (host) {
-    const [chain, proxyAll, statuses, geo, rules, domains] = await Promise.all([
+    const [
+      chain,
+      proxyAll,
+      statuses,
+      geo,
+      rules,
+      domains,
+      ignoredHosts,
+    ] = await Promise.all([
       this.getChainProxyConfigs(),
       this.getProxyAllTraffic(),
       this.getProxyStatuses(),
       getCachedGeo(),
       getSiteCountryRules(),
       registry.getDomains(),
+      registry.getIgnoredHosts(),
     ])
     const countries = chain.map((proxy) => {
       return countryOfProxy(proxy, statuses, geo, hostFromUri)
     })
     // Same list, in the same Punycode form, that the PAC is built from.
-    const blocklist = new Set(domains.map((domain) => toPunycode(domain)))
+    const blocklist = new Set(
+      domains.map((domain) => toPunycode(domain).toLowerCase()),
+    )
     // Rules are keyed by the lower-case second-level host, which is also how
     // resolveProxyForHost matches them. Looking them up under whatever case
     // the tab's URL happened to carry would miss the rule.
@@ -284,7 +299,10 @@ class ProxyManager {
       proxyAll,
       countries,
       rules,
-      isBlocked: (candidate) => blocklist.has(toPunycode(candidate)),
+      ignoredHosts: buildIgnoreIndex(ignoredHosts),
+      isBlocked: (candidate) => {
+        return blocklist.has(toPunycode(candidate).toLowerCase())
+      },
     })
 
     const base = {
@@ -325,6 +343,7 @@ class ProxyManager {
     if (enabled) {
       routing.domains = await registry.getDomains()
       routing.proxyAll = await this.getProxyAllTraffic()
+      routing.ignoredHosts = await registry.getIgnoredHosts()
 
       const chain = await this.getChainProxyConfigs()
 
@@ -364,6 +383,7 @@ class ProxyManager {
   async _setProxy () {
     const domains = await registry.getDomains()
     const proxyAll = await this.getProxyAllTraffic()
+    const ignoredHosts = await registry.getIgnoredHosts()
 
     // Without proxy-all, an empty domain list means there is nothing to
     // route; with it, the PAC proxies everything regardless of the list.
@@ -377,7 +397,7 @@ class ProxyManager {
     // takes precedence; otherwise fall back to the single default/built-in
     // proxy resolved from the legacy rules.
     const chain = await this.getChainProxyConfigs()
-    const routing = { domains, proxyAll }
+    const routing = { domains, proxyAll, ignoredHosts }
 
     if (chain.length > 0) {
       routing.proxies = chain

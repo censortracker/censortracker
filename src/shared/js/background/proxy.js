@@ -107,10 +107,14 @@ class ProxyManager {
    * call shape across Firefox (autoConfig blob) and Chromium (pac_script).
    * @param {string} pacData - PAC script source.
    * @param {object} [options]
-   * @param {boolean} [options.mandatory=false] - On Chromium, when true a proxy
-   *   that can't be reached is NOT silently bypassed with a direct connection.
-   *   The checker needs this so a dead proxy fails the probe instead of falling
-   *   through to DIRECT and looking alive.
+   * @param {boolean} [options.mandatory=false] - Chromium's
+   *   `pacScript.mandatory`. It covers the SCRIPT, not the proxies: when the PAC
+   *   cannot be run, requests fail with ERR_MANDATORY_PROXY_CONFIGURATION_FAILED
+   *   instead of quietly reverting to direct connections. A proxy this script
+   *   names and the browser cannot reach already fails on its own — the returned
+   *   rotation contains no DIRECT to fall through to. The checker sets it so a
+   *   broken script cannot make a dead proxy look alive. Firefox has no
+   *   equivalent for `autoConfigUrl`, so the flag is Chromium-only.
    * @returns {Promise<void>}
    */
   async applyPacData (pacData, { mandatory = false } = {}) {

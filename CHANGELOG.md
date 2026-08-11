@@ -33,6 +33,18 @@
   One definition of "is this local?" drives the PAC, the popup's explanation of
   where a site comes out, and Firefox's SOCKS routing path — the PAC embeds the
   same function the rest of the extension calls, so the three cannot disagree.
+  The host hash that picks which proxy a site goes through is now embedded the
+  same way, rather than written out a second time inside the script; a comment
+  claimed a test held the two copies together, and no such test exists.
+
+- **Documentation.** `SKILL.md` collects what Chromium and Firefox actually do
+  with extension proxying — PAC support and its limits, `mandatory`, the hosts
+  each browser bypasses on its own (RFC 1918 is in neither), proxy
+  authentication and why SOCKS logins cannot work on Chromium, service-worker
+  lifetime — each point against the official source, with the traps this project
+  has already hit. Two claims that were wrong are corrected: `pacScript.mandatory`
+  governs a PAC that cannot be run, not a proxy that cannot be reached, and the
+  README's permission list had drifted from the manifests.
 
 # 20.14.3
 

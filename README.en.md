@@ -141,9 +141,10 @@ Testing proxies for connectivity:
   latency in ms) or dead — and a progress bar tracks the run.
 - **Browsing never drops.** While checking, all of your normal proxying **keeps
   flowing through the active proxy/chain** — only the connectivity-probe
-  endpoints are routed through the proxies under test. The checker PAC is
-  applied as mandatory, so a dead proxy fails the probe instead of leaking to a
-  direct connection.
+  endpoints are routed through the proxies under test. On Chromium the checker
+  PAC is applied as `mandatory`: if the script itself cannot be run, the browser
+  will not quietly revert to direct connections and pass a dead proxy off as a
+  live one.
 - **"Stop" and "Remove dead" buttons.** A running check can be interrupted at
   any time; dead proxies are removed manually with one button or dropped on the
   fly during the check.
@@ -198,6 +199,42 @@ objects, or a plain-text list separated by new lines/commas.
   <img width="520" alt="Alternative blocklist source" src="docs/media/custom-registry-source.png">
 </p>
 
+### Proxies that need a login and password
+
+A proxy that requires authorization is entered the usual way —
+`socks5://user:pass@1.2.3.4:1080` — and the extension answers the browser's
+challenge itself, without the system password prompt ever appearing. It answers
+only challenges **from a proxy**, and only from an address that is in your own
+list: a website replying `401` is never handed someone else's credentials.
+
+> ⚠️ **A Chromium limitation, not an extension one.** Chrome and other
+> Chromium-based browsers do not support SOCKS authentication **at all**: during
+> the handshake they offer only the "no authentication" method, so the proxy is
+> contacted without credentials and refuses. The extension cannot work around
+> that, so it marks every affected row in the list instead of letting the proxy
+> look merely "dead". SOCKS with a login works in Firefox. HTTP/HTTPS proxies
+> with a login work in both.
+
+### Ignored sites are honoured everywhere, local addresses are never proxied
+
+The "Ignored sites" list now **stores addresses, not just domains**. Everything
+typed into it used to go through the same filter as the blocklist, which keeps
+only registrable domains — so `192.168.1.1`, `localhost` and `nas` quietly
+disappeared on save.
+
+The list itself is now consulted **while routing**, rather than only being
+subtracted from the blocklist. It previously had no effect at all with "proxy
+ALL traffic" on — there is nothing to subtract it from there. An entry covers
+subdomains too: `example.com` also excludes `cdn.example.com`.
+
+Local and private addresses are not proxied **in any mode**: a remote proxy
+cannot reach your home network anyway, and trying leads to exactly one outcome —
+the router, the NAS or the printer stop opening until the extension is switched
+off. Browsers themselves bypass only `localhost` and loopback; RFC 1918 is not
+in their built-in exceptions, so the extension handles it: the private ranges,
+CGNAT `100.64.0.0/10` (what Tailscale hands out), the local suffixes `.lan`,
+`.internal`, `.home.arpa` and the rest, plus IPv6 ULA and link-local.
+
 ### Automated cross-browser release builds
 
 A GitHub Actions workflow (`.github/workflows/release.yml`) builds and packages
@@ -216,11 +253,19 @@ Censor Tracker requires the following permissions:
 - `management` — Identifies permission conflicts (e.g., with other extensions).
 - `notifications` — Displays notifications.
 - `proxy` — Configures and utilizes Censor Tracker proxy servers.
-- `scripting` — Scans the active tab (only when you click *Scan this page*) to discover related domains.
+- `scripting` *(Chromium)* — Scans the active tab (only when you click *Scan this page*) to discover
+  related domains.
 - `storage` — Saves user preferences.
+- `tabs` *(Firefox)* — Reads which site the current tab is on, for the popup.
 - `unlimitedStorage` — Stores the database of blocked websites (due to its large size).
-- `webNavigation` — Manages and monitors web requests.
-- `http://*/*` and `https://*/*` — Allows website proxying, retrieval of proxy server lists, and user country
+- `webNavigation` *(Chromium)* — Follows page navigations, so a warning can be shown in time and the
+  popup state refreshed.
+- `webRequest` — Answers a proxy's login prompt, and watches for the network errors that identify an
+  unreachable proxy.
+- `webRequestAuthProvider` *(Chromium)* — Without it, Manifest V3 does not allow subscribing to
+  `onAuthRequired`, so a proxy with a login cannot work.
+- `webRequestBlocking` *(Firefox)* — The same thing for Manifest V2.
+- `<all_urls>` — Allows website proxying, retrieval of proxy server lists, and user country
   detection (required for country-specific proxying).
 
 Requirements
@@ -233,6 +278,11 @@ Censor Tracker works with following versions of browsers:
 
 Development
 ===========
+
+> 📘 Before touching routing (the PAC generator, the proxied/ignored lists,
+> proxy authentication) read [`SKILL.md`](SKILL.md) — a reference on how
+> Chromium and Firefox actually apply extension proxying, with links to the
+> official documentation and the mistakes this project has already made.
 
 Make sure you have required versions of `node` and `npm`, which are:
 

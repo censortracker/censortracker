@@ -149,6 +149,7 @@ import { extractHostnameFromUrl, i18nGetMessage, isI2PUrl, isOnionUrl, isValidUR
 
   const DIRECT_REASONS = {
     private: 'siteRouteLocal',
+    ignored: 'siteRouteIgnored',
     'not-blocked': 'siteRouteDirect',
     'no-proxies': 'siteRouteNoProxies',
     'all-countries-blocked': 'siteRouteAllBlocked',

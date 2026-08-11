@@ -61,11 +61,17 @@ import CodeMirror from 'codemirror'
   saveChangesButton.addEventListener('click', async (event) => {
     const editorContent = editor.getValue().trim()
     const urls = editorContent.split('\n')
-    const domains = removeDuplicates(urls)
+    let domains
 
     if (isIgnorePage) {
-      await Ignore.set(domains)
+      // Not removeDuplicates(): it keeps only what tldts calls a registrable
+      // domain, and an IP address or a bare host name has none — so every
+      // "192.168.1.1" or "localhost" typed here used to vanish on save, with
+      // the editor reset to the surviving lines as the only hint.
+      await Ignore.set(urls)
+      domains = await Ignore.getAll()
     } else {
+      domains = removeDuplicates(urls)
       await browser.storage.local.set({
         customProxiedDomains: domains,
       })

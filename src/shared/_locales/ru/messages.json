@@ -903,6 +903,9 @@
   "siteRouteDirect": {
     "message": "напрямую, без прокси"
   },
+  "siteRouteIgnored": {
+    "message": "напрямую — сайт в списке игнорируемых"
+  },
   "siteRouteLocal": {
     "message": "локальный адрес, всегда напрямую"
   },

@@ -1,37 +1,14 @@
+import {
+  buildIgnoreIndex,
+  isIgnoredHost,
+  isPrivateHost,
+  toPunycode,
+} from './host-rules'
 import { proxyToPacToken } from './utilities'
 
-/**
- * Converts an internationalized host to its Punycode (ASCII) form.
- *
- * The URL parser does the IDNA work, so no punycode dependency is needed. A
- * value the parser rejects is returned unchanged when it is already ASCII, and
- * dropped when it is not — an unconvertible Unicode entry could only poison
- * the PAC.
- * @param domain {string} Host, possibly internationalized.
- * @returns {string} ASCII host, or '' when the value is unusable.
- */
-export const toPunycode = (domain) => {
-  if (typeof domain !== 'string' || !domain) {
-    return ''
-  }
-
-  if (isAscii(domain)) {
-    return domain
-  }
-
-  try {
-    const { hostname } = new URL(`http://${domain}`)
-
-    return isAscii(hostname) ? hostname : ''
-  } catch (error) {
-    return ''
-  }
-}
-
-const isAscii = (value) => {
-  // eslint-disable-next-line no-control-regex
-  return !/[^\u0000-\u007F]/.test(value)
-}
+// Re-exported because a good deal of the extension already reaches for it
+// here. The definition sits next to the rest of the host classification.
+export { toPunycode }
 
 /**
  * Escapes every non-ASCII character as a \uXXXX sequence.
@@ -78,6 +55,9 @@ const toAsciiSource = (source) => {
  * @param proxyAll {boolean} - When true, EVERY destination (except local and
  *   private ones) is sent through the selected proxies, not only the domains
  *   from the registry/custom list.
+ * @param ignoredHosts {Array<string>} - The user's "Ignored sites" list. These
+ *   never go through a proxy, in any mode — including proxy-all, where there is
+ *   no blocklist for them to be filtered out of.
  * @returns {string} PAC script
  */
 /**
@@ -137,15 +117,18 @@ export const getPacScript = (
     proxyAll = false,
     proxyCountries = [],
     siteCountryRules = {},
+    ignoredHosts = [],
   },
 ) => {
   // Chromium rejects a PAC containing non-ASCII outright ("'pacScript.data'
   // supports only ASCII code"), which fails the whole setProxy() call. It also
   // hands FindProxyForURL the Punycode form of an internationalized host, so a
   // Unicode entry in the blocklist could never match one anyway. Converting
-  // here fixes both at once.
+  // here fixes both at once. Lower-cased for the same reason FindProxyForURL
+  // lower-cases the host it is given: the lookup is an exact comparison, so a
+  // single odd-cased entry would sit in the list matching nothing.
   const asciiDomains = domains
-    .map((domain) => toPunycode(domain))
+    .map((domain) => toPunycode(domain).toLowerCase())
     .filter(Boolean)
 
   // Sort AFTER conversion: the PAC looks entries up with a binary search, so
@@ -208,6 +191,9 @@ export const getPacScript = (
       ? JSON.stringify(testRoutes)
       : 'null'
 
+  // The user's exemptions, reduced to the bare hosts the PAC compares against.
+  const ignoreIndex = buildIgnoreIndex(ignoredHosts)
+
   // Everything heavy (the blocklist array, the rotation strings, the helpers)
   // lives at the top level of the PAC script: it is evaluated ONCE when the
   // browser loads the script. Only FindProxyForURL runs per request — keeping
@@ -229,6 +215,15 @@ export const getPacScript = (
 
       // When true, everything except local/private destinations is proxied.
       var proxyAll = ${proxyAll ? 'true' : 'false'};
+
+      // "Ignored sites": hosts the user asked to keep off the proxy entirely.
+      var ignoredHosts = ${JSON.stringify(ignoreIndex)};
+
+      // Embedded from host-rules.js rather than written out again here, so the
+      // routing decision and the popup that explains it come from one function.
+      var isPrivateHost = ${String(isPrivateHost)};
+
+      var isIgnoredHost = ${String(isIgnoredHost)};
 
       function isHostBlocked(array, target) {
         var left = 0;
@@ -282,51 +277,39 @@ export const getPacScript = (
       }
 
       function FindProxyForURL(url, host) {
-        // Remove ending dot
-        if (host.endsWith('.')) {
+        // One spelling for everything below: browsers hand over the host in
+        // whatever case the URL carried, and a trailing dot names the same host.
+        host = host.toLowerCase();
+
+        if (host.charAt(host.length - 1) === '.') {
           host = host.substring(0, host.length - 1);
         }
 
-        // Proxy-checker test routes take precedence and are matched against the
-        // full host so each connectivity endpoint goes through the exact proxy
-        // currently being tested.
+        // Local and private destinations go out directly in EVERY mode, not
+        // only in proxy-all. A remote proxy cannot reach the machine's own
+        // network, so proxying 192.168.1.1 does not slow it down — it makes the
+        // address unreachable until the extension is turned off.
+        if (isPrivateHost(host)) {
+          return 'DIRECT';
+        }
+
+        // "Ignored sites" is a promise, and nothing below may override it. It
+        // used to be kept only by filtering the blocklist, which does nothing
+        // in proxy-all mode — there is no blocklist there to filter.
+        if (isIgnoredHost(host, ignoredHosts)) {
+          return 'DIRECT';
+        }
+
+        // Proxy-checker test routes take precedence over the rules and are
+        // matched against the full host so each connectivity endpoint goes
+        // through the exact proxy currently being tested.
         if (testRoutes && Object.prototype.hasOwnProperty.call(testRoutes, host)) {
           return testRoutes[host];
         }
 
-        // Proxy-all mode: send everything through the selected proxies,
-        // keeping local and private destinations direct.
+        // Proxy-all mode: send everything else through the selected proxies.
+        // Routing stays per full host here; the rule is looked up by site.
         if (proxyAll) {
-          if (
-            isPlainHostName(host) ||
-            shExpMatch(host, 'localhost') ||
-            shExpMatch(host, '*.local') ||
-            shExpMatch(host, '127.*') ||
-            shExpMatch(host, '10.*') ||
-            shExpMatch(host, '192.168.*') ||
-            // 172.16.0.0/12. Only '*' and '?' are portable across PAC
-            // engines, so the range is spelled out rather than written as a
-            // character class: '172.2?.' matches exactly 172.20-172.29 and
-            // never the public 172.2.x.x.
-            shExpMatch(host, '172.16.*') ||
-            shExpMatch(host, '172.17.*') ||
-            shExpMatch(host, '172.18.*') ||
-            shExpMatch(host, '172.19.*') ||
-            shExpMatch(host, '172.2?.*') ||
-            shExpMatch(host, '172.30.*') ||
-            shExpMatch(host, '172.31.*') ||
-            // Link-local (169.254.0.0/16) — DHCP failure and cloud metadata.
-            shExpMatch(host, '169.254.*') ||
-            host === '0.0.0.0' ||
-            host === '::1' ||
-            // IPv6 unique-local (fc00::/7) and link-local (fe80::/10).
-            shExpMatch(host, 'fc??:*') ||
-            shExpMatch(host, 'fd??:*') ||
-            shExpMatch(host, 'fe80:*')
-          ) {
-            return 'DIRECT';
-          }
-          // Routing stays per full host here; the rule is looked up by site.
           return pickProxy(host, secondLevel(host));
         }
 

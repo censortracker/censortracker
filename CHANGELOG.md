@@ -1,3 +1,39 @@
+# 20.14.4
+
+- **"Ignored sites" is honoured again, and local addresses are never proxied.**
+  A local address could not be reached at all while the extension was on: the
+  router's admin page, a NAS, anything on the home network. Three separate
+  faults added up to it.
+
+  A local address could not even be *stored*. Everything typed into "Ignored
+  sites" was run through the same filter as the blocklist, which keeps only what
+  is a registrable domain — and `192.168.1.1`, `::1`, `localhost` and `nas` have
+  none, so each of them was dropped the moment Save was pressed, with the line
+  disappearing from the editor as the only sign. Choosing "never proxy" for such
+  a site from the popup wrote an empty entry for the same reason. The list now
+  stores hosts, so an address, a bare name or a pasted URL all end up as the
+  host they name.
+
+  The list was then never consulted when routing. It only ever filtered the
+  blocklist, which is enough while just blocked sites are proxied and does
+  nothing at all with "proxy ALL traffic" switched on — there is no blocklist
+  there to filter, so every ignored site went through the proxy anyway. The
+  generated PAC now checks the list itself, in both modes, ahead of everything
+  else. An entry covers its subdomains, so ignoring `example.com` also ignores
+  `cdn.example.com`.
+
+  Finally, local and private destinations were bypassed only in proxy-all mode,
+  and the ranges were incomplete. They are now bypassed in every mode, and the
+  set covers what was missing: `100.64.0.0/10` (carrier-grade NAT, which is also
+  what Tailscale hands out), `.lan`, `.internal`, `.home.arpa` and the other
+  reserved local suffixes, IPv4-mapped IPv6 addresses, and broadcast/multicast.
+  `172.16.0.0/12` and `fe80::/10` are matched by value now rather than by
+  wildcard, so no public address can be caught by accident.
+
+  One definition of "is this local?" drives the PAC, the popup's explanation of
+  where a site comes out, and Firefox's SOCKS routing path — the PAC embeds the
+  same function the rest of the extension calls, so the three cannot disagree.
+
 # 20.14.3
 
 - **A SOCKS proxy with a login is now marked in the list itself.** Chromium

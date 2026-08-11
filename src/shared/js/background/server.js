@@ -1,6 +1,5 @@
-import { getDomain } from 'tldts'
-
 import browser from './browser-api'
+import { normalizeHostList } from './host-rules'
 import { fetchWithTimeout, removeDuplicates } from './utilities'
 
 const getConfigAPIEndpoints = () => {
@@ -433,18 +432,13 @@ const fetchIgnore = async ({ ignoreUrl } = {}) => {
 
       browser.storage.local.get({ ignoredHosts: [] })
         .then(({ ignoredHosts }) => {
-          for (const domain of domains) {
-            // Anything that isn't a real domain would end up permanently
-            // exempted from proxying, so drop it instead of trusting the feed.
-            if (!isNonEmptyString(domain) || !getDomain(domain)) {
-              continue
-            }
-
-            if (!ignoredHosts.includes(domain)) {
-              ignoredHosts.push(domain)
-            }
-          }
-          browser.storage.local.set({ ignoredHosts })
+          // normalizeHostList() drops anything that could not be a host, so a
+          // malformed feed cannot exempt junk from proxying — and it keeps the
+          // stored list in the one form the routing code compares against,
+          // cleaning up whatever older versions left behind.
+          browser.storage.local.set({
+            ignoredHosts: normalizeHostList(ignoredHosts.concat(domains)),
+          })
             .then(() => {
               console.log('[Ignore] Globally ignored domains fetched.')
             })

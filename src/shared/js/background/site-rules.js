@@ -1,35 +1,7 @@
 import browser from './browser-api'
 import { normalizeCountryCodes } from './geoip'
-import { hashHost, toPunycode, toSecondLevel } from './pac'
-
-// Private and local destinations the PAC sends straight out, mirrored here so
-// the popup does not claim a proxy for something that never goes through one.
-const PRIVATE_HOST = [
-  /^localhost$/i,
-  /\.local$/i,
-  /^127\./,
-  /^10\./,
-  /^192\.168\./,
-  /^172\.(1[6-9]|2\d|3[01])\./,
-  /^169\.254\./,
-  /^0\.0\.0\.0$/,
-  /^::1$/,
-  /^f[cd][0-9a-f]{2}:/i,
-  /^fe80:/i,
-]
-
-const isPrivateHost = (host) => {
-  if (!host) {
-    return true
-  }
-  // Patterns first: an IPv6 literal has no dot, so checking "is it a plain
-  // host name" ahead of them would let fe80:: and fc00:: through.
-  if (PRIVATE_HOST.some((pattern) => pattern.test(host))) {
-    return true
-  }
-  // isPlainHostName() in the PAC: a single-label host is local.
-  return !host.includes('.') && !host.includes(':')
-}
+import { isIgnoredHost, isPrivateHost, toPunycode } from './host-rules'
+import { hashHost, toSecondLevel } from './pac'
 
 /**
  * Reads the per-site country rules.
@@ -116,9 +88,10 @@ export const countryOfProxy = (proxy, statuses, geo, hostFromUri) => {
  *
  * @param host {string} Destination host.
  * @param context {{proxies: Array, chainIds: Array<string>, proxyAll: boolean,
- *   isBlocked: Function, countries: Array<string>, rules: Object}}
+ *   isBlocked: Function, countries: Array<string>, rules: Object,
+ *   ignoredHosts: Object|null}}
  * @returns {{proxied: boolean, proxy: Object|null, chain: Array, reason: string}}
- *   `reason` is one of: 'private', 'not-blocked', 'no-proxies',
+ *   `reason` is one of: 'private', 'ignored', 'not-blocked', 'no-proxies',
  *   'all-countries-blocked', 'proxied'. `chain` is the full failover order for
  *   this host — the same rotation the PAC would return, primary first — which
  *   is what Firefox's `proxy.onRequest` path hands to the browser.
@@ -130,6 +103,7 @@ export const resolveProxyForHost = (host, context) => {
     isBlocked = () => false,
     countries = [],
     rules = {},
+    ignoredHosts = null,
   } = context || {}
 
   const clean = String(host || '').replace(/\.$/, '').toLowerCase()
@@ -141,13 +115,20 @@ export const resolveProxyForHost = (host, context) => {
     return direct('private')
   }
 
+  // Both checks come first and apply to every mode, exactly as they do in
+  // FindProxyForURL — see the PAC for why they sit ahead of everything else.
+  if (isPrivateHost(clean)) {
+    return direct('private')
+  }
+
+  if (isIgnoredHost(clean, ignoredHosts)) {
+    return direct('ignored')
+  }
+
   const site = toSecondLevel(clean)
   let target
 
   if (proxyAll) {
-    if (isPrivateHost(clean)) {
-      return direct('private')
-    }
     target = clean
   } else {
     const isDarknet = /\.(onion|i2p)$/.test(site)

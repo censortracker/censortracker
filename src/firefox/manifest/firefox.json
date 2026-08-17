@@ -12,7 +12,10 @@
   "browser_specific_settings": {
     "gecko": {
       "id": "censortracker@avatardd",
-      "strict_min_version": "91.1.0"
+      "strict_min_version": "91.1.0",
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
     }
   },
   "content_security_policy": "script-src 'self'; object-src 'self';",

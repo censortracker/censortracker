@@ -1,3 +1,21 @@
+# 20.15.1
+
+A packaging release: nothing in the extension's behaviour changes, but the
+Firefox build can be signed again.
+
+- **The Firefox manifest now declares what data the extension collects.**
+  Mozilla has required `browser_specific_settings.gecko.data_collection_permissions`
+  of everything submitted to AMO since 3 November 2025, and a package without it
+  is refused at validation — which is where `web-ext sign` runs, so the release
+  workflow could produce only an unsigned ZIP, and an unsigned ZIP is what
+  release Firefox rejects as "corrupt". The declaration is `required: ["none"]`,
+  which is accurate: the extension downloads its configuration and proxy lists
+  and sends nothing back beyond a `{"type":"ping"}` warm-up carrying no
+  identifiers, and the DNS-over-HTTPS lookups resolve proxy hostnames on an
+  explicit action, never the sites being visited. Firefox older than 140 ignores
+  the key, so `strict_min_version` stays at 91.1.0 — with nothing collected there
+  is no consent to obtain and nothing for those versions to miss.
+
 # 20.15.0
 
 Routing corrections found by auditing the extension against what Chromium and

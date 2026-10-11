@@ -1,3 +1,5 @@
+import tseslint from 'typescript-eslint'
+import reactHooks from 'eslint-plugin-react-hooks'
 import js from '@eslint/js'
 import stylistic from '@stylistic/eslint-plugin'
 import imports from 'eslint-plugin-import-x'
@@ -11,7 +13,7 @@ import globals from 'globals'
 export default [
   { ignores: ['dist/**', 'releases/**', 'node_modules/**'] },
   {
-    files: ['src/**/*.js'],
+    files: ['src/**/*.{js,ts,tsx}'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
@@ -33,7 +35,7 @@ export default [
       unicorn,
     },
     settings: {
-      'import-x/resolver': { node: { extensions: ['.js', '.json'] } },
+      'import-x/resolver': { node: { extensions: ['.js', '.ts', '.tsx', '.json'] } },
       'import-x/ignore': ['node_modules', '\\.(css|svg|json)$'],
     },
     // Keep the existing checks; use maintained rules for deprecated checks.
@@ -353,14 +355,15 @@ export default [
       'import-x/no-named-as-default-member': 'error',
       'import-x/no-extraneous-dependencies': [
         'error',
-        { devDependencies: false, optionalDependencies: false },
+        { devDependencies: ['src/entrypoints/**', 'src/manifest.ts'],
+          optionalDependencies: false },
       ],
       'import-x/no-mutable-exports': 'error',
       'import-x/no-amd': 'error',
       'import-x/extensions': [
         'error',
         'ignorePackages',
-        { js: 'never', mjs: 'never', jsx: 'never' },
+        { js: 'never', mjs: 'never', jsx: 'never', ts: 'never', tsx: 'never' },
       ],
       'import-x/no-dynamic-require': 'error',
       'import-x/no-useless-path-segments': 'error',
@@ -454,6 +457,23 @@ export default [
       'no-unused-labels': 'error',
       'no-useless-concat': 'error',
       radix: 'error',
+    },
+  },
+  {
+    files: ['src/**/*.{ts,tsx}'],
+    languageOptions: { parser: tseslint.parser },
+    plugins: { '@typescript-eslint': tseslint.plugin, 'react-hooks': reactHooks },
+    rules: {
+      'no-undef': 'off',
+      'no-unused-vars': 'off',
+      'no-redeclare': 'off',
+      'no-use-before-define': 'off',
+      '@typescript-eslint/no-unused-vars': ['error', {
+        args: 'none', caughtErrors: 'none', ignoreRestSiblings: true,
+      }],
+      '@typescript-eslint/consistent-type-imports': 'error',
+      '@typescript-eslint/no-explicit-any': 'error',
+      'react-hooks/rules-of-hooks': 'error',
     },
   },
 ]

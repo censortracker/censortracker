@@ -1,6 +1,6 @@
 const fs = require('fs')
 
-const getLocalePath = (locale) => `./src/shared/_locales/${locale}/messages.json`
+const getLocalePath = (locale) => `./src/locales/${locale}/messages.json`
 
 const loadData = ({ locale }) => {
   try {

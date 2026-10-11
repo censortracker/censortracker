@@ -1,0 +1,46 @@
+@use '../styles/tokens';
+
+:global(body):where(.document) {
+    width: tokens.$popup-width;
+    display: block;
+    margin: 0;
+    font-family: tokens.$font;
+    color: tokens.$ink;
+    font-weight: 400;
+    font-size: 14px;
+    font-style: normal;
+    line-height: 20px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizelegibility;
+    text-shadow: rgba(0, 0, 0, 0.2) 0 0 1px;
+    overflow: hidden auto;
+}
+
+:where(:global(body).document) a {
+    text-decoration: none;
+}
+
+.main-page {
+    margin: tokens.$space-medium;
+}
+
+.main-page__image {
+    padding: 10px 0;
+    text-align: center;
+    position: relative;
+}
+
+.main-page__another-extension {
+    position: relative;
+}
+
+@media (prefers-color-scheme: dark) {
+    :global(body):where(.document) {
+        background: #242728
+    }
+}
+
+.document [hidden] {
+  display: none !important;
+}

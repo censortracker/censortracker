@@ -1,29 +1,20 @@
 const assert = require('node:assert/strict')
 const { test } = require('node:test')
-const load = require('./load.cjs')
+const ui = require('./render.cjs')
 
-test('a failed task stops the loader and displays one accessible error', () => {
-  const loading = { style: { display: 'flex' } }
-  let message
-  let handler
-  let count = 0
-  let successVisible = true
-  load('pages/page-errors', {
-    'browser-api': { default: { i18n: { getMessage: () => 'Operation failed' } } },
-  }, {
-    window: { addEventListener: (event, fn) => { handler = fn } },
-    document: {
-      getElementById: id => id === 'loading' ? loading
-        : id === 'popupCompletedSuccessfully'
-          ? { classList: { remove: () => { successVisible = false } } } : message,
-      createElement: () => ({ setAttribute: (key, value) => assert.equal(value, 'alert') }),
-      querySelector: () => ({ prepend: node => { message = node; count++ } }),
-    },
-  })
-  handler()
-  handler()
-  assert.equal(loading.style.display, 'none')
-  assert.equal(message.textContent, 'Operation failed')
-  assert.equal(count, 1)
-  assert.equal(successVisible, false)
+test('a failed task displays one accessible error and removes its listener', async () => {
+  const { PageError } = ui.moduleFor('components/page-error')
+  const view = ui.testing.render(ui.h(PageError))
+  const report = reason => {
+    const event = new window.Event('unhandledrejection')
+    event.reason = reason
+    ui.testing.fireEvent(window, event)
+  }
+  report(new Error('First failure'))
+  report(new Error('Second failure'))
+  await ui.testing.waitFor(() => assert.match(ui.byId('pageError').textContent, /Second failure/))
+  assert.equal(document.querySelectorAll('[role="alert"]').length, 1)
+  view.unmount()
+  report(new Error('After unmount'))
+  assert.equal(document.querySelector('[role="alert"]'), null)
 })

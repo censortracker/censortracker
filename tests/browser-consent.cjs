@@ -21,10 +21,11 @@ for (const firefox of [false, true]) {
       await new Promise(resolve => server.listen(0, '127.0.0.1', resolve))
       const base = `http://127.0.0.1:${server.address().port}`
       await fs.mkdir(profile)
-      await fs.cp(path.resolve(__dirname, `../dist/${firefox ? 'firefox' : 'chrome'}/prod`), addon, { recursive: true })
+      const variant = firefox && process.env.CT_FIREFOX_BUILD === 'modern' ? 'modern' : 'prod'
+      await fs.cp(require('../tasks/build-path.cjs')(firefox ? 'firefox' : 'chrome', variant), addon, { recursive: true })
       const manifest = JSON.parse(await fs.readFile(path.join(addon, 'manifest.json')))
       // The test reads tab URLs to count consent pages.
-      manifest.permissions.push('tabs')
+      if (!manifest.permissions.includes('tabs')) manifest.permissions.push('tabs')
       if (firefox) manifest.browser_specific_settings.gecko.id = 'consent@test.invalid'
       await fs.writeFile(path.join(addon, 'manifest.json'), JSON.stringify(manifest))
       const monitor = `
@@ -83,6 +84,23 @@ for (const firefox of [false, true]) {
               await Promise.all([rpc('setDataConsent', true), rpc('setDataConsent', true)]);
               check((await rpc('dataConsent')).accepted === true, 'accept not saved');
               check((await api.runtime.sendMessage('ct-test-network')).length === 0, 'disabled settings caused network');
+              const routeTab = await api.tabs.create({url: api.runtime.getURL('options.html')});
+              let view;
+              for (let i = 0; i < 50; i++) {
+                view = api.extension.getViews().find(item => item.location.pathname === '/options.html');
+                if (view?.document.getElementById('proxyOptionsButton')) break;
+                await sleep();
+              }
+              check(!!view, 'options view did not load');
+              const originalDocument = view.document;
+              view.document.getElementById('proxyOptionsButton').click();
+              for (let i = 0; i < 50 && view.location.pathname !== '/proxy-options.html'; i++) await sleep();
+              check(view.location.pathname === '/proxy-options.html', 'SPA path changed');
+              check(view.document === originalDocument, 'SPA link reloaded the document');
+              view.history.back();
+              for (let i = 0; i < 50 && view.location.pathname !== '/options.html'; i++) await sleep();
+              check(view.location.pathname === '/options.html', 'SPA history failed');
+              await api.tabs.remove(routeTab.id);
               await rpc('setDataConsent', false);
               check((await api.storage.local.get('ignoredHosts')).ignoredHosts[0] === 'kept.example', 'list lost');
               for (const action of ['synchronize', 'importAntizapret']) {
@@ -116,7 +134,7 @@ for (const firefox of [false, true]) {
         })();
       `)
       const results = new Promise(resolve => { report = resolve })
-      const launchChrome = () => spawn(process.env.CHROMIUM || 'chromium', ['--headless', '--no-sandbox', '--disable-gpu',
+      const launchChrome = () => spawn(process.env.CHROMIUM || 'chromium', [...(process.env.CT_CHROMIUM_HEADLESS === 'off' ? [] : [`--headless=${process.env.CT_CHROMIUM_HEADLESS || 'new'}`]), '--no-sandbox', '--disable-gpu',
         '--disable-dev-shm-usage', '--disable-background-networking', '--disable-component-update',
         '--host-resolver-rules=MAP * 127.0.0.1, EXCLUDE localhost', `--user-data-dir=${profile}`,
         `--disable-extensions-except=${addon}`, `--load-extension=${addon}`, 'about:blank'], { stdio: 'ignore' })
@@ -134,7 +152,11 @@ for (const firefox of [false, true]) {
           '--start-debugger-server', String(port), 'about:blank'],
         { stdio: 'ignore', env: { ...process.env, MOZ_DISABLE_CONTENT_SANDBOX: '1' } })
         remote = await connectWithMaxRetries({ port, maxRetries: 50, retryInterval: 100 })
-        await remote.installTemporaryAddon(addon)
+        try {
+          await remote.installTemporaryAddon(addon)
+        } catch (error) {
+          throw new Error(`Cannot install the consent fixture: ${String(error)}`, { cause: error })
+        }
       } else {
         child = launchChrome()
       }

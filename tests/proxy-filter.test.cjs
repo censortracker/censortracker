@@ -1,7 +1,7 @@
 const assert = require('node:assert/strict')
 const { test } = require('node:test')
 const load = require('./load.cjs')
-const { filterProxies, checkedCountry } = load('pages/proxy-filter')
+const { filterProxies, checkedCountry } = load('../ui/pages/proxy/filter')
 
 const proxies = [{ id: 'builtin', name: 'Censor Tracker' }, { id: 'b', name: 'Bravo' }, { id: 'a', name: 'Alpha' }]
 const checks = { b: { status: 'ok', latency: 50, serverCountry: 'DE', exitCountry: 'US' },

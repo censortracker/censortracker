@@ -5,11 +5,11 @@ const path = require('node:path')
 const { inflateSync } = require('node:zlib')
 const { createHash } = require('node:crypto')
 const load = require('./load.cjs')
-const { readAnimation, frameLogos, logoOffset, logoPosition } = load('pages/animation-data')
-const { kickLogo, stepPhysics, transferPhysics } = load('pages/animation-physics')
+const { readAnimation, frameLogos, logoOffset, logoPosition } = load('../ui/pages/animation/data')
+const { kickLogo, stepPhysics, transferPhysics } = load('../ui/pages/animation/physics')
 
 const readBundled = () => {
-  const png = fs.readFileSync(path.join(__dirname, '../src/shared/animations/bad-apple.png'))
+  const png = fs.readFileSync(path.join(__dirname, '../public/animations/bad-apple.png'))
   const width = png.readUInt32BE(16), height = png.readUInt32BE(20)
   const chunks = []
   for (let offset = 8; offset < png.length;) {
@@ -46,7 +46,7 @@ test('packed masks contain only 30 seconds at 15 fps', () => {
   assert.equal(data.stride, 2)
   assert.equal(data.frames[0] & 1, 1)
   assert.equal(data.frames[data.stride] & 2, 2)
-  const bytes = fs.readFileSync(path.join(__dirname, '../src/shared/animations/bad-apple.png'))
+  const bytes = fs.readFileSync(path.join(__dirname, '../public/animations/bad-apple.png'))
   const video = readBundled()
   assert.deepEqual([video.columns, video.rows, video.fps, video.count], [80, 60, 15, 450])
   assert.ok(bytes.length < 35000)
@@ -66,7 +66,7 @@ test('the browser atlas loader restores packed bytes and rejects invalid headers
   const pixels = new Uint8ClampedArray(buffer.length * 4)
   for (let index = 0; index < buffer.length; index++) pixels[index * 4] = buffer[index]
   let fail = false
-  const { loadAnimation } = load('pages/animation-data', {}, {
+  const { loadAnimation } = load('../ui/pages/animation/data', {}, {
     Image: class { naturalWidth = 16; naturalHeight = 3; async decode() { if (fail) throw new Error('Missing atlas') } },
     document: { createElement: () => ({ getContext: () => ({ drawImage() {}, getImageData: () => ({ data: pixels }) }) }) },
   })
@@ -167,7 +167,7 @@ async function fixture({ reduced = false, fail = '', paired = true } = {}) {
   const queued = new Map()
   const errors = []
   const element = () => ({ handlers: {}, attributes: {},
-    addEventListener(name, handler) { this.handlers[name] = handler },
+    addEventListener(name, handler, options) { this.handlers[name] = handler; options?.signal?.addEventListener('abort', () => { delete this.handlers[name] }) },
     setAttribute(name, value) { this.attributes[name] = value } })
   const elements = { animationCanvas: element() }
   const context = { draws: [], fillRect() { this.draws = [] },
@@ -178,15 +178,15 @@ async function fixture({ reduced = false, fail = '', paired = true } = {}) {
   const document = { hidden: false, documentElement: {}, handlers: {},
     getElementById: id => elements[id],
     createElement: () => ({ getContext: () => ({ drawImage() {} }) }),
-    addEventListener(name, handler) { this.handlers[name] = handler },
+    addEventListener(name, handler, options) { this.handlers[name] = handler; options?.signal?.addEventListener('abort', () => { delete this.handlers[name] }) },
   }
-  const media = { matches: reduced, addEventListener(name, handler) { this.change = handler } }
-  let resize
-  load('pages/animation', {
+  const media = { matches: reduced, addEventListener(name, handler, options) { this.change = handler; options?.signal?.addEventListener('abort', () => { this.change = undefined }) } }
+  let resize, disconnected = false
+  const { mountAnimation } = load('../ui/pages/animation/player', {
     'browser-api': { default: { runtime: { getURL: file => file } } },
     i18n: { initializeLanguage: async () => {}, getUILanguage: () => 'en', getMessage: key => key },
     'page-errors': { showPageError: error => errors.push(error.message) },
-    'animation-data': { frameLogos, logoOffset, logoPosition, loadAnimation: async () => {
+    data: { frameLogos, logoOffset, logoPosition, loadAnimation: async () => {
       if (fail === 'atlas') throw new Error('Atlas failed')
       return readAnimation(fail === 'data' ? new ArrayBuffer(0) : masks(!paired))
     } },
@@ -194,18 +194,21 @@ async function fixture({ reduced = false, fail = '', paired = true } = {}) {
     document, devicePixelRatio: 1, matchMedia: () => media,
     performance: { now: () => now },
     Image: class { async decode() { if (fail === 'logo') throw new Error('Logo failed') } },
-    ResizeObserver: class { constructor(callback) { resize = callback } observe() {} },
+    ResizeObserver: class { constructor(callback) { resize = callback } observe() {} disconnect() { disconnected = true } },
     requestAnimationFrame: callback => { queued.set(++next, callback); return next },
     cancelAnimationFrame: id => queued.delete(id),
   })
-  for (let index = 0; index < 20 && !queued.size && !errors.length; index++) await Promise.resolve()
+  const controller = new AbortController()
+  const cleanup = await mountAnimation(canvas, controller.signal).catch(error => errors.push(error.message))
   const step = (elapsed) => {
     now += elapsed
     const callbacks = [...queued.values()]
     queued.clear()
     for (const callback of callbacks) callback(now)
   }
-  return { elements, canvas, context, document, media, errors, queued, step, resize }
+  return { elements, canvas, context, document, media, errors, queued, step, resize,
+    get disconnected() { return disconnected },
+    dispose: () => { controller.abort(); cleanup?.() } }
 }
 
 test('playback starts automatically, loops repeatedly, and freezes while hidden', async () => {
@@ -327,4 +330,18 @@ test('failed assets show an error without starting the animation', async () => {
     assert.equal(state.errors.length, 1)
     assert.equal(state.queued.size, 0)
   }
+})
+
+test('animation cleanup cancels drawing and removes listeners and the resize observer', async () => {
+  const state = await fixture()
+  state.step(0)
+  assert.equal(state.queued.size, 1)
+  state.dispose()
+  assert.equal(state.queued.size, 0)
+  assert.deepEqual(Object.keys(state.canvas.handlers), [])
+  assert.deepEqual(Object.keys(state.document.handlers), [])
+  assert.equal(state.media.change, undefined)
+  assert.equal(state.disconnected, true)
+  state.resize()
+  assert.equal(state.queued.size, 0)
 })

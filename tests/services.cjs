@@ -4,6 +4,11 @@ const fs = require('node:fs')
 const path = require('node:path')
 const vm = require('node:vm')
 const babel = require('@babel/core')
+const loadUI = require('./load.cjs')
+const loadOperations = (mocks) => loadUI('../ui/pages/settings-operations', {
+  'background-rpc': {}, settings: {}, proxy: {}, server: {},
+  'browser-api': {}, i18n: { getMessage: key => key }, ...mocks,
+})
 
 const root = path.resolve(__dirname, '../src/shared/js/background')
 const clone = value => JSON.parse(JSON.stringify(value))
@@ -86,13 +91,14 @@ function fixture(options = {}) {
   }
   function load(name) {
     if (name.endsWith('.json')) return require(path.resolve(root, name))
-    name = path.basename(name).replace(/\.js$/, '')
+    name = path.basename(name).replace(/\.[jt]s$/, '')
     if (mocks[name]) return { __esModule: true, ...mocks[name] }
     if (modules[name]) return modules[name].exports
     const module = { exports: {} }
     modules[name] = module
-    const source = babel.transformSync(fs.readFileSync(path.join(root, name + '.js'), 'utf8'), {
-      configFile: false, babelrc: false,
+    const source = babel.transformSync(fs.readFileSync(path.join(root, name + '.ts'), 'utf8'), {
+      configFile: false, babelrc: false, filename: name + '.ts',
+      presets: ['@babel/preset-typescript'],
       plugins: ['@babel/plugin-transform-modules-commonjs'],
     }).code
     vm.runInNewContext(source, {
@@ -104,7 +110,7 @@ function fixture(options = {}) {
         events.push('fetch')
         return options.fetch(url, init, { route, storage, listeners })
       },
-    }, { filename: name + '.js' })
+    }, { filename: name + '.ts' })
     return module.exports
   }
   return { load, storage, events, route, original, settings: () => settings, listeners, routeListeners, headerListeners, browser }
@@ -801,36 +807,24 @@ test('GeoIP fallback records its own failure and disables proxy retries', async 
   assert.ok(state.storage.serviceErrors.some(error => error.includes('Proxy list offline')))
 })
 
-test('database update waits for completion and does not report failed sync as success', async () => {
-  const source = fs.readFileSync(path.join(root, '../pages/advanced-options.js'), 'utf8')
-  const handler = source.slice(source.indexOf('updateLocalRegistryBtn.addEventListener'), source.indexOf("document.addEventListener('keydown'"))
+test('database update waits for completion and rejects a failed sync', async () => {
   for (const failed of [false, true]) {
-    let update
-    let finish
-    let completed = 0
-    let error
-    const button = { addEventListener: (name, fn) => { update = fn } }
-    vm.runInNewContext(handler, {
-      updateLocalRegistryBtn: button, togglePopup: () => { completed++ },
-      showPageError: value => { error = value.message },
+    let finish, completed = false
+    const { updateRegistry } = loadOperations({
       server: { synchronize: () => new Promise(resolve => { finish = resolve }) },
-      browser: { storage: { local: { get: async () => ({ serviceErrors: failed ? ['Registry: HTTP 503'] : [] }) } } },
-      ProxyManager: { isEnabled: async () => false },
+      'browser-api': { default: { storage: { local: { get: async () => ({ serviceErrors: failed ? ['Registry: HTTP 503'] : [] }) } } } },
+      proxy: { default: { isEnabled: async () => false } },
     })
-    const pending = update()
-    assert.equal(completed, 0)
-    assert.equal(button.disabled, true)
+    const pending = updateRegistry().then(() => { completed = true })
+    assert.equal(completed, false)
     finish()
-    await pending
-    assert.equal(completed, failed ? 0 : 1)
-    assert.equal(error, failed ? 'Registry: HTTP 503' : undefined)
-    assert.equal(button.disabled, false)
+    if (failed) await assert.rejects(pending, /Registry: HTTP 503/)
+    else await pending
+    assert.equal(completed, !failed)
   }
 })
 
 test('database update applies the new registry routes after an ORI failure', async () => {
-  const source = fs.readFileSync(path.join(root, '../pages/advanced-options.js'), 'utf8')
-  const handler = source.slice(source.indexOf('updateLocalRegistryBtn.addEventListener'), source.indexOf("document.addEventListener('keydown'"))
   const state = fixture({ storage: { currentRegionCode: 'RU', registryRegionCode: 'RU', domains: ['old.example'] },
     mocks: { proxy: null, registry: { default: { getRoutingDomains: async () => state.storage.domains } },
       'service-request': { requestService: async url => {
@@ -840,26 +834,19 @@ test('database update applies the new registry routes after an ORI failure', asy
       } },
     },
   })
-  let update
   let applied = 0
-  let completed = 0
-  let error
-  vm.runInNewContext(handler, {
-    updateLocalRegistryBtn: { addEventListener: (name, fn) => { update = fn } },
-    togglePopup: () => { completed++ }, showPageError: value => { error = value.message },
+  const { updateRegistry } = loadOperations({
     server: { synchronize: () => state.load('server').synchronizeInBackground({ syncProxy: false }) },
-    browser: state.browser,
-    ProxyManager: { isEnabled: async () => true, removeBadProxies: async () => {}, ping: async () => {},
+    'browser-api': { default: state.browser },
+    proxy: { default: { isEnabled: async () => true, removeBadProxies: async () => {}, ping: async () => {},
       setProxy: async () => { applied++; return state.load('proxy').default.setProxyInBackground({ ping: false }) },
-    },
+    } },
   })
-  await update()
+  await assert.rejects(updateRegistry(), /ORI: HTTP 503/)
   assert.deepEqual(state.storage.domains, ['new.example'])
   assert.equal(applied, 1)
   assert.equal(state.route('new.example'), 'HTTPS normal.example:443;')
   assert.equal(state.route('old.example'), 'DIRECT')
-  assert.equal(error, 'ORI: HTTP 503')
-  assert.equal(completed, 0)
 })
 
 for (const value of [{ mode: 'system' }, { mode: 'fixed_servers' }, { proxyType: 'system' }, { proxyType: 'manual' }]) {
@@ -1036,7 +1023,7 @@ test('proxy-all reports failed application but preserves a disabled user prefere
     'background-rpc': { registerBackground: value => { actions = value } },
   } })
   state.browser.proxy.settings.set = async () => { throw new Error('cannot apply') }
-  state.load('background')
+  state.load('background').startBackground()
   await assert.rejects(actions.setProxyAll(true), /could not be applied/)
   assert.equal(state.storage.proxyAll, true)
   state.storage.useProxy = false
@@ -1067,7 +1054,7 @@ for (const outcome of ['enabled', 'disabled', 'failed']) {
         return { data: 'external.example' }
       } },
     } })
-    state.load('background')
+    state.load('background').startBackground()
     const imported = actions.importSettings({ formatVersion: 1, settings: {
       enableExtension: true, useRegistry: false, registrySource: source,
     } })
@@ -1087,8 +1074,6 @@ for (const outcome of ['enabled', 'disabled', 'failed']) {
 
 for (const outcome of ['success', 'no private permission', 'sync failure', 'route failure']) {
   test(`reset applies all defaults before sync and reports success only when ready: ${outcome}`, async () => {
-    const source = fs.readFileSync(path.join(root, '../pages/advanced-options.js'), 'utf8')
-    const handler = source.slice(source.indexOf('confirmResetBtn.addEventListener'), source.indexOf('  const exportFile'))
     const state = fixture({ storage: {
       enableExtension: false, useProxy: false, useRegistry: false, uiLanguage: 'ru',
       useLocalProxy: true, localProxyURI: '127.0.0.1:1080', localProxyAlive: true,
@@ -1113,75 +1098,45 @@ for (const outcome of ['success', 'no private permission', 'sync failure', 'rout
       assert.equal(state.storage.localProxyURI, null)
       assert.equal(state.storage.localProxyAlive, false)
     }
-    const popups = []
-    const errors = []
-    const closed = []
-    let reset
-    const button = { addEventListener: (_, fn) => { reset = fn } }
-
-    vm.runInNewContext(handler, {
-      confirmResetBtn: button,
-      browser: state.browser, Settings: settings, getMessage: key => key,
-      togglePopup: id => popups.push(id), console: { info() {} },
-      document: { getElementById: id => ({ classList: { remove: name => closed.push([id, name]) } }) },
-      showPageError: error => errors.push(error.message),
+    const { resetSettings } = loadOperations({
+      'browser-api': { default: state.browser }, settings: { default: settings },
       server: { synchronize: async () => {
         checkDefaults()
-        assert.deepEqual(popups, [])
         state.storage.serviceErrors = outcome === 'sync failure' ? ['Sync failed'] : []
       } },
-      ProxyManager: { removeBadProxies() {}, ping() { assert.notEqual(outcome, 'no private permission') },
+      proxy: { default: { removeBadProxies() {}, ping() { assert.notEqual(outcome, 'no private permission') },
         requestIncognitoAccess: async () => outcome !== 'no private permission',
         setProxy: async () => { assert.notEqual(outcome, 'no private permission'); checkDefaults(); return outcome !== 'route failure' },
-      },
+      } },
     })
-    const pending = reset()
-    assert.equal(button.disabled, true)
-    await pending
-    assert.equal(button.disabled, false)
-    if (['success', 'no private permission'].includes(outcome)) {
-      assert.deepEqual(popups, ['popupConfirmReset', 'popupCompletedSuccessfully'])
-      assert.deepEqual(errors, [])
-      assert.deepEqual(closed, [])
-    } else {
-      assert.deepEqual(errors, [outcome === 'sync failure' ? 'Sync failed' : 'proxySetupFailed'])
-      assert.deepEqual(closed, [['popupConfirmReset', 'popup-show']])
-      assert.deepEqual(popups, [])
-    }
+    if (['success', 'no private permission'].includes(outcome)) await resetSettings()
+    else await assert.rejects(resetSettings(), outcome === 'sync failure' ? /Sync failed/ : /proxySetupFailed/)
+
   })
 }
 
 test('the last registry choice survives an earlier pending download', async () => {
-  const source = fs.readFileSync(path.join(root, '../pages/registry-options.js'), 'utf8')
-  const handler = source.slice(source.indexOf("  useRegistryCheckbox.addEventListener('change'"),
-    source.indexOf("  document.addEventListener('click'"))
   const state = fixture({ storage: { useRegistry: false }, mocks: { utilities: {} } })
-  let change, release, started
+  let release, started
   const ready = new Promise(resolve => { started = resolve })
-  const checkbox = { checked: true, addEventListener: (_, fn) => { change = fn } }
   const applied = []
-  vm.runInNewContext(handler, {
-    useRegistryCheckbox: checkbox,
-    selectRegion: { classList: { add() {}, remove() {} } },
-    browser: state.browser, Registry: state.load('registry').default,
-    ProxyManager: { setProxy: async () => { applied.push(state.storage.useRegistry) } },
+  const { setRegistryEnabled } = loadUI('../ui/pages/registry-operations', {
+    registry: { default: state.load('registry').default },
+    proxy: { default: { setProxy: async () => { applied.push(state.storage.useRegistry) } } },
     server: { synchronize: () => { started(); return new Promise(resolve => { release = resolve }) } },
   })
-  const enabling = change({ target: checkbox })
+  const enabling = setRegistryEnabled(true)
   await ready
-  checkbox.checked = false
-  await change({ target: checkbox })
+  await setRegistryEnabled(false)
   assert.equal(state.storage.useRegistry, false)
   release()
   await enabling
-  assert.equal(state.storage.useRegistry, checkbox.checked)
+  assert.equal(state.storage.useRegistry, false)
   assert.deepEqual(applied, [false, false])
 })
 
 for (const code of ['RU', 'BY']) {
   test(`manual region ${code} clears mismatched cache before sync with proxy disabled`, async () => {
-    const source = fs.readFileSync(path.join(root, '../pages/registry-options.js'), 'utf8')
-    const handler = source.slice(source.indexOf('for (const option of options)'), source.lastIndexOf('})()'))
     const expected = code === 'RU' ? ['old.example'] : []
     const state = fixture({ storage: { useProxy: false, domains: ['old.example'], localConfig: { countryCode: 'RU' } },
       mocks: { 'service-request': { requestService: async () => {
@@ -1190,16 +1145,11 @@ for (const code of ['RU', 'BY']) {
         throw new Error('offline')
       } } },
     })
-    let selectCountry
-    await vm.runInNewContext('(async () => {' + handler + '})()', {
-      options: [{ addEventListener: (event, fn) => { selectCountry = fn } }],
-      select: { classList: { remove() {} } }, currentOption: { dataset: {} },
-      browser: state.browser, console: { debug() {} },
+    const { setRegistryCountry } = loadUI('../ui/pages/registry-operations', {
+      proxy: {}, registry: {},
       server: { synchronize: options => state.load('server').synchronizeInBackground({ ...options, syncProxy: false }) },
-      mountRegistrySource: async () => {},
-      mountRegistryStatus: async () => {},
     })
-    await selectCountry({ target: { dataset: { value: code }, textContent: code } })
+    await setRegistryCountry(code, code)
     assert.equal(state.storage.currentRegionCode, code)
     assert.deepEqual(state.events, ['refresh', 'refresh'])
   })

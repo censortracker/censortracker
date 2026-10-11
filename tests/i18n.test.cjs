@@ -1,8 +1,8 @@
 const assert = require('node:assert/strict')
 const { test } = require('node:test')
 const load = require('./load.cjs')
-const en = require('../src/shared/_locales/en/messages.json')
-const ru = require('../src/shared/_locales/ru/messages.json')
+const en = require('../src/locales/en/messages.json')
+const ru = require('../src/locales/ru/messages.json')
 
 function fixture(uiLanguage = 'auto') {
   let changed
@@ -111,6 +111,6 @@ test('notifications load the saved language before they generate text', async ()
   })
   await handlers.showDisseminatorWarning('https://host.example')
   assert.match(notification.message, /host\.example/)
-  assert.equal(notification.message, require('../src/shared/_locales/uk/messages.json')
+  assert.equal(notification.message, require('../src/locales/uk/messages.json')
     .cooperationAcceptedMessage.message.replace('$hostname$', 'host.example'))
 })

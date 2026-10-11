@@ -1,0 +1,80 @@
+@use '../styles/tokens';
+
+.btn {
+  display: inline-block;
+  border-radius: 4px;
+  text-align: center;
+  vertical-align: middle;
+  user-select: none;
+  background-color: transparent;
+  padding: 10px 20px;
+  font-size: 16px;
+  line-height: 15px;
+  color: inherit;
+  font-family: inherit;
+}
+
+.btn:hover {
+  cursor: pointer;
+}
+
+.btn-dark {
+  background: tokens.$ink;
+  color: #fff;
+  margin-right: tokens.$space-large;
+  border: 1px solid transparent;
+  box-shadow: 0 0.598509px 3.52455px rgba(15, 13, 11, 0.079074), 0 1.12694px 6.63642px rgba(15, 13, 11, 0.0655718), 0 2.01027px 11.8382px rgba(15, 13, 11, 0.055);
+}
+
+.btn-dark:hover {
+  background: #4f4740;
+}
+
+.btn-dark:active {
+  background: #352e27;
+  border: 1px solid transparent;
+}
+
+.btn-dark:active > .btn__text {
+  opacity: 1;
+}
+
+.btn-dark:hover > .btn__text {
+  opacity: 0.9;
+}
+
+.btn__text {
+  pointer-events: none;
+}
+
+.btn-light {
+  border: 1px solid tokens.$ink;
+}
+
+.btn-light:hover {
+  border: 1px solid #625c55;
+}
+
+.btn-light:hover > .btn__text {
+  color: #625c55;
+}
+
+.btn-light:active > .btn__text {
+  color: #352e27;
+}
+
+.btn-light:active {
+  border: 1px solid #352e27;
+}
+
+.btn-light {
+  color: #2c2c2c;
+  padding: 5px 20px;
+  font-size: 14px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-light:hover {
+  background-color: rgba(251, 236, 236, 0.77);
+}

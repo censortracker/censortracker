@@ -121,3 +121,6 @@ dist.crx
 dist/
 releases/
 mock/
+
+.wxt/
+.output/

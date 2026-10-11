@@ -29,11 +29,13 @@ jobs:
         cache: npm
     - run: npm ci
     - run: npm test
+    - run: npm run typecheck
     - run: npm run lint
     - run: npm run stylelint
     - run: npm run test:reproducible
     - run: npm run build:chrome:prod
     - run: npm run build:firefox:prod
+    - run: npm run build:firefox:modern
     - run: npm run locales:check
       env:
         CI: true
@@ -42,11 +44,17 @@ jobs:
       uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
       with:
         name: censortracker-chrome-${{ github.sha }}
-        path: dist/chrome/prod/
+        path: .output/chrome-mv3/
         if-no-files-found: error
     - name: Upload Firefox extension
       uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
       with:
         name: censortracker-firefox-${{ github.sha }}
-        path: dist/firefox/prod/
+        path: .output/firefox-mv2/
+        if-no-files-found: error
+    - name: Upload modern Firefox extension
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      with:
+        name: censortracker-firefox-modern-${{ github.sha }}
+        path: .output/firefox-mv2-modern/
         if-no-files-found: error

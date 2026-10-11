@@ -2,43 +2,28 @@ const assert = require('node:assert/strict')
 const { test } = require('node:test')
 const fs = require('node:fs')
 const path = require('node:path')
+const { extensionManifest, browserTargets } = require('./load.cjs')('../../manifest')
 
-test('build targets match the declared minimum browser versions', () => {
-  const read = file => JSON.parse(fs.readFileSync(path.join(__dirname, '..', file)))
-  const targets = read('.babelrc').targets
-  assert.equal(targets.chrome, read('src/chrome/manifest/chrome.json').minimum_chrome_version)
-  assert.equal(targets.firefox, read('src/firefox/manifest/firefox.json')
-    .browser_specific_settings.gecko.strict_min_version.split('.')[0])
+test('WXT preserves API permissions, consent metadata and browser versions', () => {
+  for (const [browser, modern, name] of [['chrome', false, 'chrome'], ['firefox', false, 'firefox'], ['firefox', true, 'firefox-modern']]) {
+    const expected = JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures/manifests', name + '.json')))
+    for (const field of ['author', 'background', 'options_ui', 'version', 'manifest_version']) delete expected[field]
+    if (browser === 'chrome') delete expected.action.default_name
+    delete expected[browser === 'firefox' ? 'browser_action' : 'action'].default_popup
+    if (browser === 'firefox') expected.content_security_policy = { extension_pages: expected.content_security_policy }
+    assert.deepEqual(JSON.parse(JSON.stringify(extensionManifest(browser, modern))), expected)
+  }
+  assert.deepEqual(Array.from(browserTargets), ['chrome108', 'firefox91'])
 })
 
-test('development and production bundles use CSP-safe source maps', () => {
-  const root = path.resolve(__dirname, '..')
-  const configPath = path.join(root, 'webpack.config.js')
-  const original = { ...process.env }
-  try {
-    for (const BROWSER of ['chrome', 'firefox']) {
-      for (const NODE_ENV of ['development', 'production']) {
-        Object.assign(process.env, { BROWSER, NODE_ENV })
-        delete require.cache[configPath]
-        for (const config of require(configPath)) {
-          assert.equal(typeof config.devtool, 'string', `${BROWSER} ${NODE_ENV}`)
-          assert.doesNotMatch(config.devtool, /eval/, `${BROWSER} ${NODE_ENV}`)
-          const copy = config.plugins?.find(plugin => plugin.constructor.name === 'CopyPlugin')
-          const merge = copy?.patterns.find(pattern => pattern.to === 'manifest.json')
-          if (merge) {
-            const manifests = [`src/${BROWSER}/manifest/${BROWSER}.json`, 'src/shared/manifest/base.json']
-              .map(file => fs.readFileSync(path.join(root, file)))
-            assert.deepEqual(JSON.parse(merge.transformAll(manifests.map(data => ({ data })))),
-              Object.assign({}, ...manifests.map(data => JSON.parse(data))))
-          }
-        }
-      }
-    }
-  } finally {
-    for (const key of Object.keys(process.env)) {
-      if (!Object.hasOwn(original, key)) delete process.env[key]
-    }
-    Object.assign(process.env, original)
-    delete require.cache[configPath]
-  }
+test('WXT uses Preact, shared CSS modules, and the minimum browser targets', async () => {
+  const { loadConfig } = await import('c12')
+  const { config } = await loadConfig({ name: 'wxt', cwd: path.resolve(__dirname, '..') })
+  const vite = config.vite({ mode: 'production' })
+  assert.equal(config.srcDir, 'src')
+  assert.equal(config.imports, false)
+  assert.deepEqual(vite.build.target, Array.from(browserTargets))
+  assert.equal(vite.build.minify, 'terser')
+  assert.equal(vite.build.terserOptions.compress.inline, false)
+  assert.ok(vite.plugins.flat().some(plugin => plugin.name.startsWith('preact:')))
 })

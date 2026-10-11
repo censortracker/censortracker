@@ -6,7 +6,7 @@ const { spawn } = require('node:child_process')
 const fs = require('node:fs/promises')
 const path = require('node:path')
 const os = require('node:os')
-const webpack = require('webpack')
+const buildFixture = require('./build-fixture.cjs')
 
 test('Firefox routes a large registry, authenticates proxies, and inspects page resources', { timeout: 60000 }, async () => {
   const temporary = await fs.mkdtemp(path.join(os.tmpdir(), 'ct-firefox-auth-'))
@@ -122,11 +122,11 @@ test('Firefox routes a large registry, authenticates proxies, and inspects page 
     ]
     const entry = path.join(temporary, 'entry.js')
     await fs.writeFile(entry, `
-      import browser from ${JSON.stringify(path.join(root, 'browser-api.js'))};
-      import manager from ${JSON.stringify(path.join(root, 'proxy.js'))};
-      import { registerProxyAuth } from ${JSON.stringify(path.join(root, 'proxy-auth.js'))};
-      import { setProbeRoute, withProxyLock } from ${JSON.stringify(path.join(root, 'proxy-route.js'))};
-      import { findRelatedDomains } from ${JSON.stringify(path.join(root, 'related-domains.js'))};
+      import browser from ${JSON.stringify(path.join(root, 'browser-api.ts'))};
+      import manager from ${JSON.stringify(path.join(root, 'proxy.ts'))};
+      import { registerProxyAuth } from ${JSON.stringify(path.join(root, 'proxy-auth.ts'))};
+      import { setProbeRoute, withProxyLock } from ${JSON.stringify(path.join(root, 'proxy-route.ts'))};
+      import { findRelatedDomains } from ${JSON.stringify(path.join(root, 'related-domains.ts'))};
       registerProxyAuth();
       (async () => {
         const results = [];
@@ -195,10 +195,7 @@ test('Firefox routes a large registry, authenticates proxies, and inspects page 
         await fetch('http://127.0.0.1:${origin.address().port}/report?data=' + encodeURIComponent(JSON.stringify(results)));
       })();
     `)
-    await new Promise((resolve, reject) => webpack({ mode: 'none', target: 'web', entry,
-      output: { path: addon, filename: 'background.js' },
-      resolve: { alias: { Background: root } },
-    }, (error, stats) => error || stats.hasErrors() ? reject(error || new Error(stats.toString())) : resolve()))
+    await buildFixture(entry, addon)
     await fs.writeFile(path.join(addon, 'manifest.json'), JSON.stringify({ manifest_version: 2,
       name: 'Isolated authentication test', version: '1', browser_action: {},
       browser_specific_settings: { gecko: { id: 'auth-test@censortracker.invalid' } },

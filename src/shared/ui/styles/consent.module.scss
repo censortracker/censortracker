@@ -1,0 +1,109 @@
+@use 'tokens';
+@value main-page__info, options-page-card, main-page__image, main-page, btn from './options.module.scss';
+@value default-btn from './popup.module.scss';
+@value default-btn as settings-default-btn from './options.module.scss';
+
+.consent-page .main-page__info {
+  min-width: 0;
+  width: 100%;
+}
+
+.consent-page .options-page-card,
+.consent-status {
+  box-sizing: border-box;
+  overflow-wrap: anywhere;
+}
+
+.consent-page h2 {
+  margin-top: 0;
+}
+
+.consent-page li {
+  margin-bottom: tokens.$space-small;
+}
+
+.consent-page ul {
+  padding-left: tokens.$space-medium;
+}
+
+.consent-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: tokens.$space-small;
+  margin-top: 24px;
+}
+
+.consent-actions .btn,
+.consent-status .btn {
+  margin-right: 0;
+  box-sizing: border-box;
+  min-height: 37px;
+  padding: 10px 20px;
+  font-size: 16px;
+}
+
+.consent-status {
+  margin-bottom: 24px;
+}
+
+.consent-status p {
+  margin: 0 0 12px;
+}
+
+.consent-status .btn + .btn {
+  margin-left: tokens.$space-small;
+}
+
+.consent-actions button:focus-visible,
+.notice-link:focus-visible,
+.consent-status button:focus-visible {
+  outline: 2px solid currentcolor;
+  outline-offset: 3px;
+}
+
+.notice-link {
+  color: inherit;
+  text-decoration: underline;
+}
+
+.consent-actions button:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+
+@media (max-width: tokens.$mobile) {
+  .consent-page .main-page__image {
+    position: static;
+    height: auto;
+  }
+
+  .consent-page .main-page__image img {
+    width: 120px;
+    height: auto;
+  }
+}
+
+.main-page [hidden] {
+  display: none;
+}
+
+.consent-status .default-btn,
+.consent-status .settings-default-btn {
+  margin-bottom: 0;
+  border: 0;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.consent-summary-row {
+  display: flex;
+  align-items: center;
+  gap: tokens.$space-medium;
+}
+
+.consent-summary-row img {
+  flex: 0 0 64px;
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+}

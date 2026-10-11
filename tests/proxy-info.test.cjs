@@ -1,6 +1,7 @@
 const assert = require('node:assert/strict')
 const { test } = require('node:test')
 const load = require('./load.cjs')
+const ui = require('./render.cjs')
 const { proxyFingerprint } = load('background/proxy-check-data')
 const plain = value => JSON.parse(JSON.stringify(value))
 
@@ -69,43 +70,34 @@ test('route descriptions discard a snapshot if routing changes while metadata is
 })
 
 test('popup renders text safely and clears the old exit when another extension takes proxy control', async () => {
-  class Element {
-    children = []
-    textContent = ''
-    set innerHTML(value) { throw new Error('Must not parse HTML') }
-    replaceChildren() { this.children = [] }
-    append(node) { this.children.push(node) }
-  }
-  const elements = Object.fromEntries(['proxyRouteSummary', 'proxyRouteExit', 'proxyingDetailsText'].map(id => [id, new Element()]))
   let info = { type: 'proxy', proxy: { name: '<img src=x>', protocol: 'HTTP', host: 'proxy.example', port: 80 },
     check: { status: 'ok', checkedAt: 123456, exitIP: '8.8.8.8', exitCountry: 'US' },
     region: '<script>bad()</script>', domainCount: 42, fallbackCount: 1 }
-  let controlChanged
-  let scheduled
-  const { mountProxyInfo } = load('pages/proxy-info', {
-    'browser-api': { default: { i18n: { getUILanguage: () => 'en', getMessage: (key, values) => `${key} ${[].concat(values || []).join(' ')}` },
-      proxy: { settings: { onChange: { addListener: handler => { controlChanged = handler } } } },
-      storage: { onChanged: { addListener() {} } } } },
+  const state = ui.storageFixture()
+  const listeners = new Set()
+  state.browser.proxy = { settings: { onChange: { addListener: fn => listeners.add(fn), removeListener: fn => listeners.delete(fn) } } }
+  const { ProxyInfo } = ui.moduleFor('pages/popup/proxy-info', {
+    'browser-api': { default: state.browser },
     'background-rpc': { callBackground: async () => info },
-  }, { document: { getElementById: id => elements[id], createElement: () => new Element() },
-    setTimeout: callback => { scheduled = callback; return 1 }, clearTimeout() {},
-    fetch: () => { throw new Error('Popup must not request the network') },
-  })
-  await mountProxyInfo('https://protected.example')
-  assert.match(elements.proxyRouteSummary.textContent, /<img src=x>/)
-  assert.match(elements.proxyRouteExit.textContent, /8\.8\.8\.8.*United States/)
-  assert.ok(elements.proxyingDetailsText.children.some(node => node.textContent.includes('<script>bad()</script>')))
-  assert.ok(elements.proxyingDetailsText.children.some(node => node.textContent.includes('popupRouteCheckedAt')))
-  info.proxy.name = 'Censor Tracker'
-  controlChanged()
-  await scheduled()
-  assert.match(elements.proxyRouteSummary.textContent, /Censor Tracker/)
-  assert.match(elements.proxyRouteExit.textContent, /proxyExitCountry.*United States \(US\)/)
-  assert.doesNotMatch(elements.proxyRouteExit.textContent, /8\.8\.8\.8/)
-  assert.ok(elements.proxyingDetailsText.children.every(node => !/proxy\.example|HTTP|popupRouteCheckedAt|proxyStatus_|popupRouteFallbacks/.test(node.textContent)))
+  }, { fetch: () => { throw new Error('Popup must not request the network') } })
+  const view = ui.testing.render(ui.h(ProxyInfo, { url: 'https://protected.example', open: true, hidden: false, onToggle() {} }))
+  const summary = ui.byId('proxyRouteSummary'), exit = ui.byId('proxyRouteExit'), details = ui.byId('proxyingDetailsText')
+  await ui.testing.waitFor(() => assert.match(summary.textContent, /<img src=x>/))
+  assert.match(exit.textContent, /8\.8\.8\.8.*United States/)
+  assert.match(details.textContent, /<script>bad\(\)<\/script>/)
+  assert.equal(details.querySelector('script'), null)
+  assert.match(details.textContent, /popupRouteCheckedAt/)
+  info = { ...info, proxy: { ...info.proxy, name: 'Censor Tracker' } }
+  for (const listener of listeners) listener()
+  await ui.testing.waitFor(() => assert.match(summary.textContent, /Censor Tracker/))
+  assert.match(exit.textContent, /proxyExitCountry.*United States \(US\)/)
+  assert.doesNotMatch(exit.textContent, /8\.8\.8\.8/)
+  assert.doesNotMatch(details.textContent, /proxy\.example|HTTP|popupRouteCheckedAt|proxyStatus_|popupRouteFallbacks/)
   info = { type: 'disabled' }
-  controlChanged({ levelOfControl: 'controlled_by_other_extensions' })
-  await scheduled()
-  assert.equal(elements.proxyRouteExit.textContent, '')
-  assert.match(elements.proxyRouteSummary.textContent, /popupRoute_disabled/)
+  for (const listener of listeners) listener({ levelOfControl: 'controlled_by_other_extensions' })
+  await ui.testing.waitFor(() => assert.match(summary.textContent, /popupRoute_disabled/))
+  assert.equal(exit.textContent, '')
+  view.unmount()
+  assert.equal(listeners.size, 0)
+  assert.equal(state.listeners.size, 0)
 })

@@ -1,8 +1,0 @@
-{
-  "targets": {
-    "chrome": "108",
-    "firefox": "91"
-  },
-  "presets": ["@babel/preset-env"],
-  "plugins": ["@babel/plugin-transform-runtime"]
-}

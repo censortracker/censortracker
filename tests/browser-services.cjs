@@ -8,7 +8,7 @@ const { spawn, execFile } = require('node:child_process')
 const fs = require('node:fs/promises')
 const path = require('node:path')
 const os = require('node:os')
-const webpack = require('webpack')
+const buildFixture = require('./build-fixture.cjs')
 
 for (const firefox of [false, true]) {
   test(`service redirects work across hosts in ${firefox ? 'Firefox' : 'Chrome'}`, { timeout: 60000 }, async () => {
@@ -78,8 +78,8 @@ for (const firefox of [false, true]) {
       const root = path.resolve(__dirname, '../src/shared/js/background')
       const entry = path.join(temporary, 'entry.js')
       await fs.writeFile(entry, `
-        import browser from ${JSON.stringify(path.join(root, 'browser-api.js'))};
-        import { requestService } from ${JSON.stringify(path.join(root, 'service-request.js'))};
+        import browser from ${JSON.stringify(path.join(root, 'browser-api.ts'))};
+        import { requestService } from ${JSON.stringify(path.join(root, 'service-request.ts'))};
         const base = 'http://first.api.example:${origin.address().port}';
         (async () => {
           const results = [];
@@ -123,9 +123,7 @@ for (const firefox of [false, true]) {
           await fetch('http://127.0.0.1:${origin.address().port}/report?data=' + encodeURIComponent(JSON.stringify(results)));
         })();
       `)
-      await new Promise((resolve, reject) => webpack({ mode: 'none', target: 'web', entry,
-        output: { path: addon, filename: 'background.js' }, resolve: { alias: { Background: root } },
-      }, (error, stats) => error || stats.hasErrors() ? reject(error || new Error(stats.toString())) : resolve()))
+      await buildFixture(entry, addon)
       await fs.writeFile(path.join(addon, 'manifest.json'), JSON.stringify({
         name: 'Isolated service test', version: '1',
         manifest_version: firefox ? 2 : 3,
@@ -153,7 +151,7 @@ for (const firefox of [false, true]) {
         remote = await connectWithMaxRetries({ port, maxRetries: 50, retryInterval: 100 })
         await remote.installTemporaryAddon(addon)
       } else {
-        child = spawn(process.env.CHROMIUM || 'chromium', ['--headless', '--no-sandbox', '--disable-gpu',
+        child = spawn(process.env.CHROMIUM || 'chromium', [...(process.env.CT_CHROMIUM_HEADLESS === 'off' ? [] : [`--headless=${process.env.CT_CHROMIUM_HEADLESS || 'new'}`]), '--no-sandbox', '--disable-gpu',
           '--ignore-certificate-errors', // Self-signed certificates in this isolated local test only.
           '--disable-dev-shm-usage', '--disable-background-networking', '--disable-component-update',
           '--host-resolver-rules=MAP * 127.0.0.1, EXCLUDE localhost', `--user-data-dir=${profile}`,

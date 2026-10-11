@@ -1,0 +1,54 @@
+@use '../styles/tokens';
+@value options-page-card from './card.module.scss';
+
+.options-page-card .checkbox__group:last-child {
+  margin-bottom: 0;
+}
+
+.main-page__link {
+  margin-top: 50px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.link-ignored {
+  margin-top: 0;
+  margin-bottom: 7px;
+}
+
+.main-page__link svg {
+  fill: tokens.$ink;
+}
+
+.main-page__link:hover svg {
+  fill: #625c55;
+}
+
+.state-title {
+  opacity: 0.5;
+  color: #3B332B;
+  font-size: 13px;
+  line-height: 17px;
+  margin-left: 400px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .main-page__link svg {
+    fill: tokens.$dark-text;
+  }
+
+  .state-title {
+    color: tokens.$dark-text;
+    opacity: 0.5;
+    font-size: 13px;
+    line-height: 17px;
+    margin-left: 400px;
+  }
+
+  .main-page__link:hover,
+  .link-ignored:hover {
+    color: tokens.$dark-text;
+    opacity: 0.8;
+  }
+}

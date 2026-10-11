@@ -1,0 +1,115 @@
+@use '../../styles/tokens';
+
+.main-page__block {
+    margin-bottom: tokens.$space-medium;
+}
+
+.icon__status {
+    width: 20px;
+    height: 20px;
+    margin-left: tokens.$space-large;
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.block__title {
+    font-style: normal;
+    font-weight: 500;
+    position: relative;
+    margin-bottom: 5px;
+    padding-right: 40px;
+}
+
+.block__btn {
+    font-weight: 400;
+    font-size: 13px;
+    line-height: 14px;
+    display: flex;
+    align-items: center;
+}
+
+.btn-about {
+    opacity: 0.6;
+}
+
+.block__btn:hover {
+    color: #625c55;
+    cursor: pointer;
+}
+
+.block__btn:active {
+    color: #2b251f;
+    cursor: pointer;
+}
+
+.block__btn:hover path {
+    stroke: #625c55;
+}
+
+.btn-ok {
+    border: 1px solid tokens.$ink;
+    box-sizing: border-box;
+    border-radius: 4px;
+    padding: 5px 10px;
+    margin-right: tokens.$space-medium;
+}
+
+.block__text {
+    font-size: 14px;
+    line-height: 20px;
+    border-radius: 4px;
+    display: none;
+    margin-top: 10px;
+    padding: 15px;
+    transition: all 1s ease-out;
+}
+
+.block__footer {
+    display: flex;
+    padding-top: 10px;
+}
+
+.text-normal {
+    background: rgba(237, 242, 247, 0.6);
+}
+
+.text-warning {
+    background: #f7eded;
+}
+
+.btn-text a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.proxying-details code {
+    font-size: 12px;
+}
+
+@media (prefers-color-scheme: dark) {
+    .btn-what-this-mean svg path {
+        stroke: tokens.$dark-text
+    }
+
+    .btn-what-this-mean:hover svg path {
+        stroke: hsla(0deg, 12%, 95%, .84)
+    }
+
+    .text-normal {
+        background-color: #2b323b;
+        color: tokens.$dark-text
+    }
+
+    .btn-ok {
+        border: 1px solid tokens.$dark-text
+    }
+
+    .text-warning {
+        background-color: #382e2e
+    }
+
+    .proxy_info {
+        opacity: .6
+    }
+}

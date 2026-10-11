@@ -7,7 +7,7 @@ help:
 
 .PHONY: clean
 clean:
-	rm -rf dist/ releases/
+	rm -rf .output/ .wxt/ releases/
 
 .PHONY: chrome
 chrome:

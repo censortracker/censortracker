@@ -1,6 +1,8 @@
 export default {
-  extends: 'stylelint-config-standard',
+  extends: 'stylelint-config-standard-scss',
   rules: {
+    'scss/at-rule-no-unknown': [true, { ignoreAtRules: ['value'] }],
+    'selector-pseudo-class-no-unknown': [true, { ignorePseudoClasses: ['global', 'local'] }],
     // Keep the existing BEM class names, camelCase IDs and CodeMirror classes.
     'selector-class-pattern': '^[a-z][a-zA-Z0-9_-]*$',
     'selector-id-pattern': '^[a-z][a-zA-Z0-9_-]*$',

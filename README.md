@@ -67,7 +67,7 @@ Censor Tracker requires the following permissions:
 Requirements
 ============
 
-The manifests specify these minimum browser versions:
+The standard builds support these minimum browser versions:
 
 - Mozilla Firefox 91.1.0 or higher
 - Chromium (Google Chrome, Brave, Edge, Opera etc.) 108 or higher
@@ -87,14 +87,22 @@ Install dependencies from the repository root:
 
 Build commands and output directories:
 
-    npm run build:chrome        # dist/chrome/dev/
-    npm run build:firefox       # dist/firefox/dev/
-    npm run build:chrome:prod   # dist/chrome/prod/
-    npm run build:firefox:prod  # dist/firefox/prod/
+    npm run build:chrome         # .output/chrome-mv3-dev/
+    npm run build:firefox        # .output/firefox-mv2-dev/
+    npm run build:chrome:prod    # .output/chrome-mv3/
+    npm run build:firefox:prod   # .output/firefox-mv2/
+    npm run build:firefox:modern # .output/firefox-mv2-modern/ (Firefox 140+)
+
+The standard Firefox build supports Firefox 91.1.0+ and uses the extension consent
+page. The modern build also includes Firefox's native data consent metadata.
+Firefox 91 rejects this [manifest field](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/manifest.json/browser_specific_settings).
+Both builds use the same code, assets, and API permissions. Use
+`npm run release:firefox:modern` to save the modern archive in `releases/firefox-modern/`.
 
 Run tests and all lint checks from the repository root:
 
     npm test
+    npm run typecheck
     npm run lint
     npm run stylelint
     npm run locales:check
@@ -102,8 +110,58 @@ Run tests and all lint checks from the repository root:
 For browser tests, build the production bundles, then run `npm run test:browser`. The tests need `chromium`,
 `firefox` and `openssl` on `PATH`; use `CHROMIUM` and `FIREFOX` to specify other browser executable paths.
 To test the Chrome development bundle, build it and set `CT_BROWSER_BUILD=dev`.
+To test modern Firefox consent, set `CT_FIREFOX_BUILD=modern` and run
+`node --test --test-name-pattern='Firefox=true' tests/browser-consent.cjs`.
+For Chromium 108, use a display or `xvfb-run` with `CT_CHROMIUM_HEADLESS=off`.
+Newer versions use the default `new` headless mode.
+Use fixed browser binaries. For archived Firefox builds, set the
+`DisableAppUpdate` distribution policy so the binary cannot update during tests.
 
-The Build workflow runs on each push and uploads the Chrome and Firefox production folders as artifacts.
+The proxy authentication test uses website navigation. Chromium 108 does not
+send authentication events for extension fetches. On that version, background
+proxy checks need credentials cached by an authenticated website request.
+See the [Chromium issue](https://issues.chromium.org/issues/40275804).
+
+Extension sources use strict TypeScript modules. Background services and their
+types are in `src/shared/js/background/`. `background-rpc.ts` defines the message
+contract for callers and handlers. The `Background` import alias is unchanged.
+Pages use Preact TSX in `src/shared/ui/pages/`. Shared components, hooks, and Sass
+definitions are in `src/shared/ui/`. Components use SCSS Modules; shared values
+are in `styles/_tokens.scss`. Keep rich catalog messages in `RichMessage` so
+dynamic substitutions are escaped.
+
+WXT uses Vite and the Preact plugin to compile TypeScript, JSX, and external CSS.
+The targets remain Chromium 108+ (Manifest V3) and Firefox 91.1.0+ (Manifest V2).
+Type checks run separately. Node tests use Babel to load TypeScript modules.
+Build configuration and task scripts remain JavaScript.
+Functions used by PAC generation must remain self-contained when serialized.
+
+WXT entrypoints are in `src/entrypoints/`. The background entrypoint calls
+`startBackground` synchronously. Static assets are in `public/`. Translation
+catalogs are in `src/locales/`. WXT copies them to `_locales/` in each build.
+`src/manifest.ts` keeps the browser permissions and compatibility metadata.
+
+Pages share one Preact app and use History API routing. Each original `.html`
+path has a WXT HTML entrypoint, so direct loads and reloads use the same URLs.
+Internal links use absolute paths. New tabs and external links keep their original
+behaviour. Page state and subscriptions reset when the route changes.
+Use `npm run dev` or `npm run dev:firefox` for WXT development with live reload.
+
+To compare page screenshots, keep the original build directory and run:
+
+    CHROMIUM=/path/to/chrome node tests/visual.cjs /path/to/original/.output .output /tmp/ct-visual
+
+The runner fixes data, timestamps, and animation frames. It checks three languages,
+both themes, page states, and layout boundaries. It saves screenshots, differences,
+and the browser version in `report.json`. For the Firefox rendering engine, use
+`CT_VISUAL_ENGINE=firefox FIREFOX=/path/to/playwright/firefox`. The browser must
+match the installed `playwright-core` version. Chromium can vary by a few pixels
+at toggle edges even when both inputs use the same build. Use a baseline control
+comparison to identify this rendering variance. Use `CT_VISUAL_CASES`,
+`CT_VISUAL_LANGUAGES`, or `CT_VISUAL_WIDTHS` to check a smaller set during development.
+Run `npm run test:reproducible` to compare release files and archives from two paths.
+
+The Build workflow runs on each push and uploads the Chrome and both Firefox production folders as artifacts.
 
 **Troubleshooting**: If you're getting error on building an extension using `npm`, please make sure that your
 shell supports per-command environment variables (i.e something like this

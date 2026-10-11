@@ -1,15 +1,7 @@
 const assert = require('node:assert/strict')
 const { test } = require('node:test')
-const fs = require('node:fs')
-const path = require('node:path')
-const { parse } = require('parse5')
 const load = require('./load.cjs')
-
-const findElement = (node, id) => node.attrs?.some(attr => attr.name === 'id' && attr.value === id)
-  ? node : node.childNodes?.map(child => findElement(child, id)).find(Boolean)
-const visible = node => !(node.hidden ?? node.attrs?.some(attr => attr.name === 'hidden')) &&
-  !node.attrs?.some(attr => attr.name === 'class' && attr.value.split(/\s+/).includes('hidden')) &&
-  (!node.parentNode || visible(node.parentNode))
+const ui = require('./render.cjs')
 
 async function fixture(options = {}) {
   let allowed = options.allowed ?? true
@@ -26,33 +18,30 @@ async function fixture(options = {}) {
       local: {
         get: async keys => typeof keys === 'string' ? { [keys]: storage[keys] } : { ...keys, ...storage },
         set: async values => Object.assign(storage, values), remove: async key => { delete storage[key] },
-      }, onChanged: { addListener() {} },
+      }, onChanged: { addListener() {}, removeListener() {} },
     },
   }
   const manager = load('background/proxy', { 'browser-api': { default: browser } }).default
   manager.setProxy = async () => { applied++; return options.apply ? options.apply() : options.success !== false }
-  const markup = parse(fs.readFileSync(path.join(__dirname, '../src/shared/pages/options.html'), 'utf8'))
-  const warning = findElement(markup, 'privateBrowsingPermissionsRequiredMessage')
-  warning.after = node => nodes.push(node)
-  const button = findElement(markup, 'grantPrivateBrowsingPermissionsButton')
-  button.classList = { toggle: (value, enabled) => {
-    const classes = button.attrs.find(attr => attr.name === 'class')
-    classes.value = classes.value.split(/\s+/).filter(entry => entry !== value).join(' ')
-    if (enabled) classes.value += ` ${value}`
-  } }
-  button.addEventListener = (name, fn) => { events.click = fn }
-  const page = load('pages/private-browsing', {
+  const { PrivateBrowsing } = ui.moduleFor('components/private-browsing', {
     'browser-api': { default: browser }, proxy: { default: manager },
     settings: { default: { extensionEnabled: async () => storage.enableExtension } },
-  }, {
-    window: { addEventListener: (name, fn) => { events[name] = fn } },
-    document: { visibilityState: 'visible', addEventListener: (name, fn) => { events[name] = fn },
-      createElement: () => ({ setAttribute(key, value) { this[key] = value } }),
-    },
   })
-  await page.mountPrivateBrowsing({ warning, button, onSuccess: () => { completed++ } })
-  return { browser, manager, storage, warning, button, events, status: nodes[0], buttonVisible: () => visible(button),
+  ui.testing.render(ui.h(PrivateBrowsing, { onSuccess: () => { completed++ } }))
+  const warning = ui.byId('privateBrowsingPermissionsRequiredMessage')
+  const button = ui.byId('grantPrivateBrowsingPermissionsButton')
+  const settle = () => new Promise(resolve => setTimeout(resolve, 20))
+  await settle()
+  return { browser, manager, storage, warning, button,
+    events: {
+      click: async () => { ui.testing.fireEvent.click(button); await settle() },
+      focus: async () => { ui.testing.fireEvent(window, new window.Event('focus')); await settle() },
+      visibilitychange: async () => { Object.defineProperty(document, 'visibilityState', { configurable: true, value: 'visible' }); ui.testing.fireEvent(document, new window.Event('visibilitychange')); await settle() },
+    },
+    get status() { return document.querySelector('p[role]') },
+    buttonVisible: () => !button.hidden,
     allow: value => { allowed = value }, badge: () => badge, applied: () => applied, completed: () => completed }
+
 }
 
 test('a stale permission warning is cleared without enabling disabled proxy use', async () => {
@@ -120,7 +109,7 @@ test('confirmation enables proxy use and reports completion', async () => {
   assert.equal(state.applied(), 1)
   assert.equal(state.completed(), 1)
   assert.equal(state.status.textContent, 'proxySetupDone')
-  assert.equal(state.status.role, 'status')
+  assert.equal(state.status.getAttribute('role'), 'status')
   assert.equal(state.button.disabled, false)
   assert.equal(state.buttonVisible(), false)
 })
@@ -134,7 +123,7 @@ for (const [options, expected] of [
     const state = await fixture(options)
     await state.events.click()
     assert.equal(state.status.textContent, expected)
-    assert.equal(state.status.role, 'alert')
+    assert.equal(state.status.getAttribute('role'), 'alert')
     assert.equal(state.completed(), 0)
     assert.equal(state.button.disabled, false)
     assert.equal(state.applied(), options.success === false ? 1 : 0)
@@ -152,7 +141,7 @@ test('pending confirmation reports progress and prevents repeated activation', a
   assert.equal(state.applied(), 1)
   finish(true)
   await pending
-  assert.equal(state.status.textContent, 'proxySetupDone')
+  await ui.testing.waitFor(() => assert.equal(state.status.textContent, 'proxySetupDone'))
 })
 
 test('service proxy selection uses current country checks without loading the registry', async () => {

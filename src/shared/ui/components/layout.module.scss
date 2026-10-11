@@ -1,0 +1,186 @@
+@use '../styles/tokens';
+
+:global(body):where(.document) {
+  display: block;
+  width: 100%;
+  margin: 0;
+  font-family: tokens.$font;
+  color: tokens.$ink;
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 22px;
+  min-width: 320px;
+}
+
+:where(:global(body).document) a {
+  text-decoration: none;
+  color: tokens.$ink;
+}
+
+.options-body .main-page__image {
+  position: sticky;
+  height: 200px;
+  display: block;
+  top: 0;
+}
+
+.main-container {
+  width: 100%;
+  margin: 30px auto;
+  padding: 0;
+}
+
+.main-page {
+  display: flex;
+  left: calc(50% - 455px);
+  max-width: 910px;
+  height: auto;
+  margin: 50px auto;
+  padding: 0 20px;
+}
+
+.main-container__after-install .main-page {
+  left: calc(50% - 360px);
+  max-width: 720px;
+}
+
+.main-page__info {
+  max-width: tokens.$content-width;
+  margin-top: tokens.$space-large;
+  width: tokens.$content-width;
+}
+
+.main-page__info.main-page__info-proxy_options {
+  max-width: 640px;
+  width: 640px;
+}
+
+.main-container__after-install .main-page__info {
+  margin-right: 44px;
+}
+
+.main-page__image {
+  margin-right: 70px;
+}
+
+.main-container__after-install .main-page__image {
+  margin-right: 0;
+}
+
+.main-container__after-install .main-page__content {
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 30px;
+}
+
+@media (max-width: tokens.$mobile) {
+  .main-page {
+    flex-direction: column;
+    left: 0;
+    top: 20%;
+  }
+
+  .main-page__info {
+    margin-left: 0;
+    margin-top: tokens.$space-medium;
+  }
+}
+
+.options-body :global(#grantPrivateBrowsingPermissionsButton) {
+  border: 0;
+  font-family: inherit;
+  margin-bottom: 25px;
+}
+
+.options-body :global(#uiLanguage) {
+  display: block;
+}
+
+@media (prefers-color-scheme: dark) {
+  .options-body, :global(body):where(.document) {
+    background-color: tokens.$dark-page;
+    color: tokens.$dark-text;
+  }
+}
+
+.settings-page {
+  --settings-border: #{tokens.$border};
+  --settings-surface: #fff;
+  --settings-muted: #{tokens.$muted};
+  --settings-hover: #f4f7fa;
+  --settings-primary: #{tokens.$ink};
+  --settings-error: #b3261e;
+
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.settings-page .main-page__info {
+  width: 100%;
+  min-width: 0;
+}
+
+.settings-page :global(#proxySelectionSummary) {
+  margin: 0 0 8px;
+}
+
+.settings-page :global(#proxyListOptions) {
+  margin-top: tokens.$space-small;
+}
+
+.settings-page :global(#proxyForm) {
+  border-top: 1px solid var(--settings-border);
+  padding-top: 16px;
+}
+
+.settings-page :is(button, input, select, textarea):disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.settings-page :focus-visible {
+  outline: 2px solid #6c9e2c;
+  outline-offset: 3px;
+}
+
+.settings-page [role="status"],
+.settings-page [role="alert"] {
+  font-size: 14px;
+  line-height: 20px;
+  overflow-wrap: anywhere;
+}
+
+.settings-page [role="status"] {
+  color: var(--settings-muted);
+}
+
+.settings-page [role="alert"] {
+  color: var(--settings-error);
+}
+
+.settings-page [hidden] {
+  display: none !important;
+}
+
+@media (max-width: tokens.$settings-mobile) {
+  .settings-page .main-page__image {
+    display: none;
+  }
+
+  .settings-page .main-page {
+    margin: 24px auto;
+    max-width: tokens.$content-width;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .settings-page {
+    --settings-border: #484c51;
+    --settings-surface: #242728;
+    --settings-muted: #b4b1b1;
+    --settings-hover: #303436;
+    --settings-primary: #484c51;
+    --settings-error: #ff8b83;
+  }
+}

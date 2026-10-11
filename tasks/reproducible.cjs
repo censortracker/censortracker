@@ -6,7 +6,7 @@ const os = require('node:os')
 const path = require('node:path')
 const { promisify } = require('node:util')
 
-const inputs = ['src', 'tasks', 'package.json', 'package-lock.json', 'webpack.config.js', '.babelrc', 'eslint.config.mjs']
+const inputs = ['src', 'public', 'tests/fixtures/manifests', 'tasks', 'package.json', 'package-lock.json', 'wxt.config.mjs', 'tsconfig.json', 'eslint.config.mjs', 'stylelint.config.mjs']
 const digest = bytes => createHash('sha256').update(bytes).digest('hex')
 async function hashes(directory, prefix = '') {
   const result = {}
@@ -38,20 +38,31 @@ async function main() {
       }
     }
     await npm(['ci', '--no-audit', '--no-fund'], 'install.log')
-    const browsers = index ? ['chrome', 'firefox'] : ['firefox', 'chrome']
-    for (const browser of browsers) {
-      const output = path.join(cwd, 'dist', browser, 'prod')
+    const browsers = index ? ['chrome:prod', 'firefox:prod', 'firefox:modern'] : ['firefox:modern', 'firefox:prod', 'chrome:prod']
+    for (const build of browsers) {
+      const [browser, variant] = build.split(':')
+      const output = require('./build-path.cjs')(browser, variant, path.join(cwd, '.output'))
       await fs.mkdir(output, { recursive: true })
       await fs.writeFile(path.join(output, 'stale-file.txt'), 'Must not enter the release')
-      await npm(['run', `build:${browser}:prod`], `${browser}.log`)
+      await npm(['run', `build:${build}`], `${browser}-${variant}.log`)
+      const expected = JSON.parse(await fs.readFile(path.join(cwd, 'tests/fixtures/manifests',
+        (variant === 'modern' ? 'firefox-modern' : browser) + '.json')))
+      assert.deepEqual(JSON.parse(await fs.readFile(path.join(output, 'manifest.json'))), expected,
+        'WXT must preserve the complete production manifest')
       await assert.rejects(fs.access(path.join(output, 'stale-file.txt')))
       // Archive contents must not depend on filesystem timestamps.
       for (const file of Object.keys(await hashes(output))) {
         await fs.utimes(path.join(output, file), 0, index ? 1700000000 : 1000000000)
       }
     }
+    const legacy = await hashes(path.join(cwd, '.output/firefox-mv2'))
+    const modern = await hashes(path.join(cwd, '.output/firefox-mv2-modern'))
+    delete legacy['manifest.json']
+    delete modern['manifest.json']
+    assert.deepEqual(modern, legacy, 'Firefox variants must use the same extension code and assets')
     await npm(['run', 'release'], 'release.log')
-    results.push({ files: await hashes(path.join(cwd, 'dist')), archives: await hashes(path.join(cwd, 'releases')) })
+    await npm(['run', 'release:firefox:modern'], 'release-modern.log')
+    results.push({ files: await hashes(path.join(cwd, '.output')), archives: await hashes(path.join(cwd, 'releases')) })
   }
   for (const group of ['files', 'archives']) {
     const first = results[0][group], second = results[1][group]

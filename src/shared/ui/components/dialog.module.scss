@@ -1,0 +1,62 @@
+@use '../styles/tokens';
+
+.popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  background: rgba(255, 255, 255, 0.97);
+  padding: 10px;
+  box-sizing: border-box;
+  overflow: auto;
+  z-index: 15;
+  display: none;
+}
+
+.popup.popup-show {
+  display: block;
+}
+
+.popup .popup-content {
+  max-width: 567px;
+  margin: 140px auto;
+}
+
+.popup .popup-content .popup-title {
+  margin-bottom: 10px;
+}
+
+.popup .popup-content .popup-text {
+  font-weight: 400;
+  margin-bottom: 40px;
+}
+
+
+.popup .popup-content .close-popup {
+  position: absolute;
+  top: 25px;
+  right: 25px;
+}
+
+.popup .popup-content .close-popup path {
+  stroke: #3B332B;
+}
+
+.popup .popup-content .close-popup:hover {
+  cursor: pointer;
+}
+
+.popup .popup-content .close-popup:hover path {
+  stroke: #625C55;
+}
+
+@media (prefers-color-scheme: dark) {
+  .popup {
+    background-color: tokens.$dark-page;
+  }
+
+  .popup .popup-content .close-popup path {
+    stroke: #F1F1F1;
+  }
+}

@@ -1,6 +1,7 @@
 const assert = require('node:assert/strict')
 const { test } = require('node:test')
 const load = require('./load.cjs')
+const ui = require('./render.cjs')
 
 function fixture() {
   const state = {}
@@ -20,7 +21,7 @@ function fixture() {
           listeners.forEach(listener => listener(changes, 'local'))
         },
       },
-      onChanged: { addListener: listener => listeners.push(listener) },
+      onChanged: { addListener: listener => listeners.push(listener), removeListener: listener => { const index = listeners.indexOf(listener); if (index >= 0) listeners.splice(index, 1) } },
     },
     runtime: { getURL: path => `extension://${path}` },
     tabs: {
@@ -69,97 +70,74 @@ test('opening notices reuses and focuses their existing tab', async () => {
   assert.equal(focus[1].focused, true)
 })
 
-function element() {
-  return {
-    children: [], listeners: {}, hidden: false, disabled: false,
-    setAttribute() {},
-    append(...nodes) { this.children.push(...nodes) },
-    prepend(node) { this.children.unshift(node) },
-    addEventListener(event, listener) { this.listeners[event] = listener },
-  }
-}
-
-const flush = () => new Promise(resolve => setImmediate(resolve))
-
-function view(f, closeWhenEmpty = false) {
+async function view(f, closeWhenEmpty = false) {
   let closed = 0
-  const host = element()
-  const { mountNotices } = load('pages/notice-panel', {
-    ...f.mocks,
-    'extension-notices': f.api,
-    i18n: { initializeLanguage: async () => {}, getMessage: key => key },
-  }, {
-    document: { createElement: element },
-    window: { close: () => { closed++ } },
+  const { Notices } = ui.moduleFor('components/notices', {
+    ...f.mocks, 'extension-notices': f.api,
   })
-  return { host, closed: () => closed,
-    mount: () => mountNotices(host, closeWhenEmpty ? () => { closed++ } : undefined) }
+  const result = ui.testing.render(ui.h(Notices, {
+    onEmpty: closeWhenEmpty ? async () => { closed++ } : undefined,
+  }))
+  await require('preact/test-utils').act(() => {})
+  return { ...result, section: result.container.querySelector('section'), closed: () => closed }
 }
 
 test('dismissal advances all views, persists, and closes only the dedicated page', async () => {
   const f = fixture()
   f.api.extensionNotices.push({ id: 'next', title: 'nextTitle', text: 'nextText', events: ['install'] })
   await f.api.activateNotices('install')
-  const popup = view(f)
-  const consent = view(f)
-  const page = view(f, true)
-  await Promise.all([popup.mount(), consent.mount(), page.mount()])
-  const [title, , button] = popup.host.children[0].children
-  assert.equal(title.textContent, 'release21Title')
-  await button.listeners.click()
-  await flush()
-  assert.equal(title.textContent, 'nextTitle')
-  assert.equal(consent.host.children[0].children[0].textContent, 'nextTitle')
-  assert.equal(page.host.children[0].children[0].textContent, 'nextTitle')
+  const popup = await view(f), consent = await view(f), page = await view(f, true)
+  const button = popup.section.querySelector('button')
+  await ui.testing.waitFor(() => assert.equal(popup.section.querySelector('h2').textContent, 'release21Title'))
+  ui.testing.fireEvent.click(button)
+  await ui.testing.waitFor(() => assert.equal(popup.section.querySelector('h2').textContent, 'nextTitle'))
+  assert.equal(consent.section.querySelector('h2').textContent, 'nextTitle')
+  assert.equal(page.section.querySelector('h2').textContent, 'nextTitle')
   assert.equal(page.closed(), 0)
-  await button.listeners.click()
-  await flush()
-  assert.equal(popup.host.children[0].hidden, true)
+  await ui.testing.waitFor(() => assert.equal(button.disabled, false))
+  ui.testing.fireEvent.click(button)
+  await ui.testing.waitFor(() => assert.ok(page.closed() > 0))
+  assert.equal(popup.section.hidden, true)
   assert.equal(consent.closed(), 0)
-  assert.ok(page.closed() > 0)
-  const reopened = view(f)
-  await reopened.mount()
-  assert.equal(reopened.host.children[0].hidden, true)
+  const reopened = await view(f)
+  assert.equal(reopened.section.hidden, true)
   assert.equal(f.state.dataConsent, undefined)
 })
 
 test('failed dismissal leaves the notice visible and permits retry', async () => {
   const f = fixture()
   await f.api.activateNotices('update')
-  const popup = view(f)
-  await popup.mount()
-  const section = popup.host.children[0]
-  const [, , button, error] = section.children
+  const popup = await view(f)
+  const button = popup.section.querySelector('button')
+  await ui.testing.waitFor(() => assert.equal(popup.section.hidden, false))
   f.fail(true)
-  await button.listeners.click()
-  assert.equal(section.hidden, false)
+  ui.testing.fireEvent.click(button)
+  await ui.testing.waitFor(() => assert.equal(popup.section.querySelector('[role="alert"]').textContent, 'operationFailed'))
+  assert.equal(popup.section.hidden, false)
   assert.equal(button.disabled, false)
-  assert.equal(error.textContent, 'operationFailed')
   f.fail(false)
-  await button.listeners.click()
-  assert.equal(section.hidden, true)
+  ui.testing.fireEvent.click(button)
+  await ui.testing.waitFor(() => assert.equal(popup.section.hidden, true))
 })
 
 for (const accepted of [undefined, true, false]) {
   test(`after notices, show consent only without a saved choice: ${accepted}`, async () => {
-    const state = {}
-    const navigations = []
+    const state = {}, navigations = []
     let closed = false
-    load('pages/notifications', {
-      'browser-api': { default: { storage: { local: {
-        set: async values => Object.assign(state, values),
-      } } } },
-      'data-consent': { CONSENT_VERSION: 1,
-        getDataConsent: async () => accepted === undefined ? null : { version: 1, accepted } },
-      i18n: { initializeLanguage: async () => {}, getUILanguage: () => 'en' },
-      'notice-panel': { mountNotices: async (host, onEmpty) => onEmpty() },
-    }, {
-      document: { documentElement: {}, getElementById: () => ({}) },
-      window: { close: () => { closed = true },
-        location: { replace: path => navigations.push(path) } },
-    })
-    await flush()
-    assert.deepEqual(navigations, accepted === undefined ? ['consent.html'] : [])
+    const { NotificationsPage } = ui.moduleFor('pages/notifications', {
+      'browser-api': { default: { storage: { local: { set: async values => Object.assign(state, values) } } } },
+      'data-consent': { CONSENT_VERSION: 1, getDataConsent: async () => accepted === undefined ? null : { version: 1, accepted } },
+      'key-sequence': { useKeySequence() {} },
+      navigation: { navigate: (path, replace) => { assert.equal(replace, true); navigations.push(path) } },
+      notices: { Notices: ({ onEmpty }) => {
+        require('preact/hooks').useEffect(() => { onEmpty() }, [])
+        return null
+      } },
+    }, { window: { close: () => { closed = true }, location: { replace: path => navigations.push(path) },
+      addEventListener: window.addEventListener.bind(window), removeEventListener: window.removeEventListener.bind(window) } })
+    ui.testing.render(ui.h(NotificationsPage))
+    await ui.testing.waitFor(() => assert.equal(navigations.length + Number(closed), 1))
+    assert.deepEqual(navigations, accepted === undefined ? ['/consent.html'] : [])
     assert.equal(state.consentPromptVersion, accepted === undefined ? 1 : undefined)
     assert.equal(closed, accepted !== undefined)
   })

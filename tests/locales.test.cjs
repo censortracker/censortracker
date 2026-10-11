@@ -4,7 +4,7 @@ const fs = require('node:fs')
 const path = require('node:path')
 
 test('all supported locales contain the same nonempty messages', () => {
-  const read = locale => JSON.parse(fs.readFileSync(path.join(__dirname, '../src/shared/_locales', locale, 'messages.json')))
+  const read = locale => JSON.parse(fs.readFileSync(path.join(__dirname, '../src/locales', locale, 'messages.json')))
   const keys = Object.keys(read('en')).sort()
   for (const locale of ['ru', 'uk']) {
     const messages = read(locale)

@@ -1,6 +1,8 @@
 import { callBackground } from './background-rpc'
+import { forEachBatch } from './batches'
 import browser from './browser-api'
 import { ConsentRequiredError, hasDataConsent } from './data-consent'
+import { setRegistryState } from './index-cache'
 import ProxyManager from './proxy'
 import type { RegistryCache } from './registry-request'
 import { isRegistryCancellation } from './registry-request'
@@ -207,9 +209,12 @@ const requestCustomRegistry = async (config: RegionConfig,
 
 const fetchRegistry = async (config: RegionConfig, mirrors: ServiceMirrors) => {
   const { countryCode } = config
-  const { registryRegionCode, registryCache, domains: previousDomains } =
+  const {
+    registryRegionCode, registryCache, domains: previousDomains,
+    domainsRevision,
+  } =
     await browser.storage.local.get({
-      registryRegionCode: '', registryCache: null, domains: [],
+      registryRegionCode: '', registryCache: null, domains: [], domainsRevision: '',
     })
   const cache: BuiltinRegistryCache =
     registryCache?.countryCode === countryCode ? registryCache : {
@@ -220,13 +225,16 @@ const fetchRegistry = async (config: RegionConfig, mirrors: ServiceMirrors) => {
     }
 
   cache.backend ||= []
-  let changed = registryRegionCode !== countryCode || !cache.validators
+  let changed = registryRegionCode !== countryCode || !cache.validators ||
+    (previousDomains.length === 0 &&
+      [cache.primary, cache.custom, cache.backend]
+        .some((names) => names.length > 0))
   let cacheChanged = changed
 
   cache.validators ||= {}
 
   if (registryRegionCode !== countryCode) {
-    await browser.storage.local.set({
+    await setRegistryState({
       domains: [], registryRegionCode: countryCode,
     })
     await ProxyManager.setProxy()
@@ -260,9 +268,22 @@ const fetchRegistry = async (config: RegionConfig, mirrors: ServiceMirrors) => {
         continue
       }
       const { data } = result
-      const filtered = data!.filter(validDomain)
+      const filtered: string[] = []
+      const previous = cache[source]
+      let sourceChanged = false
 
-      changed ||= JSON.stringify(cache[source]) !== JSON.stringify(filtered)
+      await forEachBatch(data!.length, (start, end) => {
+        for (let index = start; index < end; index++) {
+          const domain = data![index]
+
+          if (validDomain(domain)) {
+            sourceChanged ||= previous?.[filtered.length] !== domain
+            filtered.push(domain)
+          }
+        }
+      })
+
+      changed ||= sourceChanged || previous?.length !== filtered.length
       cache[source] = filtered
       const omitted = data!.length - filtered.length
 
@@ -281,16 +302,31 @@ const fetchRegistry = async (config: RegionConfig, mirrors: ServiceMirrors) => {
       errors.push(`${source}: ${error.message}`)
     }
   }
-  const domains = changed ? [...new Set([
-    ...cache.primary, ...cache.custom, ...cache.backend,
-  ])] : previousDomains
+  const domains = changed ? [] : previousDomains
+
+  if (changed) {
+    const seen = new Set<string>()
+
+    for (const names of [cache.primary, cache.custom, cache.backend]) {
+      await forEachBatch(names.length, (start, end) => {
+        for (let index = start; index < end; index++) {
+          const domain = names[index]
+
+          if (!seen.has(domain)) {
+            seen.add(domain)
+            domains.push(domain)
+          }
+        }
+      })
+    }
+  }
   const state = domains.length > 0 ? 'ready' : 'empty'
 
   if (errors.length === 0 && cacheChanged) {
     cache.updatedAt = Date.now()
   }
-  await browser.storage.local.set({
-    ...(changed ? { domains } : {}),
+  await setRegistryState({
+    ...(changed || !domainsRevision ? { domains } : {}),
     ...(cacheChanged ? { registryCache: cache } : {}),
     registryRegionCode: countryCode,
     registryStatus: {
@@ -334,7 +370,7 @@ export const synchronizeInBackground = (options: SynchronizeOptions = {}) => {
         await browser.storage.local.get(['registryRegionCode', 'localConfig'])
       const previousRegion = registryRegionCode || localConfig.countryCode
 
-      await browser.storage.local.set({
+      await setRegistryState({
         currentRegionCode: region.countryCode,
         currentRegionName: region.countryName,
         ...(region.countryCode && region.countryCode !== previousRegion ? {

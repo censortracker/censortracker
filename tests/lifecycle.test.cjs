@@ -82,6 +82,22 @@ test('domain import cancels a download on close and ignores a late response', as
   assert.equal(closed, 1)
 })
 
+test('domain imports keep unsaved edits and previous imports', async () => {
+  let draft = 'draft.example', closed = 0
+  const { DomainImport } = moduleFor('components/domain-import', {
+    request: { requestText: async () => `import${closed}.example\ndraft.example` },
+  })
+  ui.testing.render(h(DomainImport, { open: true, onClose: () => closed++,
+    editor: { current: { getValue: () => draft, setValue: value => { draft = value }, focusEnd() {} } },
+  }))
+  ui.testing.fireEvent.input(ui.byId('sourceURL'), { target: { value: 'https://source.example/list' } })
+  for (let index = 0; index < 2; index++) {
+    ui.testing.fireEvent.click(ui.byId('loadFromURLButton'))
+    await ui.testing.waitFor(() => assert.equal(closed, index + 1))
+  }
+  assert.equal(draft, 'draft.example\nimport0.example\nimport1.example\n')
+})
+
 test('proxy form keeps multiple draft changes and restores a repeated edit', async () => {
   const { ProxyForm } = moduleFor('pages/proxy/form', {
     'browser-api': { default: { isFirefox: false } },

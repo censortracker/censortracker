@@ -1,3 +1,4 @@
+import { forEachBatch, sortBatched } from './batches'
 import { normalizeHostname } from './hostname'
 
 export interface DomainIndexData {
@@ -47,25 +48,29 @@ export const buildDomainIndex = async (names: string[],
   current = () => true) => {
   const buckets: Record<string, string[]> = {}
 
-  for (let offset = 0; offset < names.length; offset++) {
-    const host = normalizeHostname(names[offset])
+  if (!await forEachBatch(names.length, (start, end) => {
+    for (let offset = start; offset < end; offset++) {
+      const host = normalizeHostname(names[offset])
 
-    if (host) {
-      (buckets[host.length] ||= []).push(host)
-    }
-    if (offset > 0 && offset % 2000 === 0) {
-      await new Promise((resolve) => setTimeout(resolve, 0))
-      if (!current()) {
-        return null
+      if (host) {
+        (buckets[host.length] ||= []).push(host)
       }
     }
+  }, current)) {
+    return null
   }
   const joined: Record<string, string> = {}
 
   for (const width of Object.keys(buckets)) {
-    joined[width] = buckets[width].sort().join('')
-    await new Promise((resolve) => setTimeout(resolve, 0))
-    if (!current()) {
+    const sorted = await sortBatched(buckets[width], current)
+
+    if (!sorted) {
+      return null
+    }
+    joined[width] = ''
+    if (!await forEachBatch(sorted.length, (start, end) => {
+      joined[width] += sorted.slice(start, end).join('')
+    }, current)) {
       return null
     }
   }

@@ -21,12 +21,18 @@ export const isRegistryCancellation = (error: unknown): boolean =>
 
 // Metadata is committed by the caller only after the body is validated.
 export const requestRegistry = async <T>(url: string, cache: Partial<RegistryCache> | null | undefined, request: (method: 'HEAD' | 'GET') => Promise<RegistryResponse<T>>, signal?: AbortSignal) => {
-  signal?.throwIfAborted()
+  const checkAborted = () => {
+    if (signal?.aborted) {
+      throw Object.assign(new Error('Registry request cancelled'), { name: 'AbortError' })
+    }
+  }
+
+  checkAborted()
   if (cache?.url === url && cache.etag) {
     try {
       const result = await request('HEAD')
 
-      signal?.throwIfAborted()
+      checkAborted()
 
       if (result.etag === cache.etag && result.finalUrl === cache.finalUrl) {
         return { unchanged: true as const }
@@ -37,7 +43,7 @@ export const requestRegistry = async <T>(url: string, cache: Partial<RegistryCac
       }
     }
   }
-  signal?.throwIfAborted()
+  checkAborted()
   const result = await request('GET')
 
   return {

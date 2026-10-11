@@ -326,6 +326,7 @@ export const handleTabState = async (
   { url, incognito }: { url?: string; incognito?: boolean } = {},
 ) => {
   if (url && status === browser.tabs.TabStatus.LOADING) {
+    Settings.setDefaultIcon(tabId)
     Settings.extensionEnabled().then((enabled) => {
       if (enabled) {
         Ignore.contains(url).then(async (isIgnored) => {

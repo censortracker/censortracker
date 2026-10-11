@@ -16,8 +16,10 @@ export interface StorageState extends SettingsData {
   proxies: ProxyRecord[] | null
   selectedProxyIds: string[] | null
   domains: string[]
+  domainsRevision: string
   disseminators: { url: string; cooperationRefused: boolean; name?: string }[]
   externalRegistry: ExternalRegistry | null
+  externalRegistryRevision: string
   registrySource: RegistrySource
   registryRegionCode: string
   registryStatus: { state: string; skipped: number; error: string } | null

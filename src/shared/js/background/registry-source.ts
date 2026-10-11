@@ -1,6 +1,7 @@
 import { parseAnticensority } from './anticensority'
 import browser from './browser-api'
 import { isConsentError } from './data-consent'
+import { setRegistryState } from './index-cache'
 import ProxyManager from './proxy'
 import { proxyAllowed, withProxyLock } from './proxy-route'
 import { requestRegistry } from './registry-request'
@@ -33,7 +34,7 @@ export const getRegistrySourceState = async () => {
 
 export const updateRegistrySource = (source: unknown) =>
   withProxyLock(async () => {
-    await browser.storage.local.set({
+    await setRegistryState({
       registrySource: validateRegistrySource(source),
     })
     if (!await ProxyManager.setProxyInBackground({ ping: false }) &&
@@ -95,7 +96,7 @@ export const refreshRegistrySource = async ({ automatic = false } = {}) => {
           !current.registrySource.autoUpdate))) {
         return undefined
       }
-      await browser.storage.local.set({
+      await setRegistryState({
         externalRegistry: {
           source: registrySourceKey(source),
           domains,

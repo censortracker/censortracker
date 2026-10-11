@@ -103,7 +103,7 @@ function fixture(options = {}) {
     }).code
     vm.runInNewContext(source, {
       module, exports: module.exports, require: load,
-      URL, AbortController, TextEncoder, crypto: require('node:crypto').webcrypto, console: { warn() {}, info() {}, error() {}, group() {}, groupEnd() {}, log() {}, table() {} },
+      URL, AbortController, TextEncoder, performance, crypto: require('node:crypto').webcrypto, console: { warn() {}, info() {}, error() {}, group() {}, groupEnd() {}, log() {}, table() {} },
       setTimeout: (fn, delay) => setTimeout(fn, options.fastTimeout ? 5 : delay), clearTimeout,
       fetch: async (url, init) => {
         if (url.startsWith('data:')) return { text: async () => decodeURIComponent(url.split(',').slice(1).join(',')) }
@@ -1183,6 +1183,29 @@ test('disable aborts direct requests and releases temporary proxy routes', async
   assert.ok(state.events.includes('clear'))
 })
 
+test('returning after a cancelled region change restores unchanged cached domains', async () => {
+  let cancel = true
+  const state = fixture({ storage: {
+    currentRegionCode: 'RU', registryRegionCode: 'RU', domains: ['blocked.example'],
+    registryCache: { countryCode: 'RU', primary: ['blocked.example'], custom: [],
+      backend: [], validators: { primary: {}, custom: {}, backend: {} } },
+  }, mocks: { 'service-request': { requestService: async url => {
+    if (cancel) throw Object.assign(new Error('cancelled'), { name: 'AbortError' })
+    if (url.includes('/api/config/')) return { data: { customRegistryUrl: null } }
+    if (url.includes('disseminators')) return { data: [] }
+    return { unchanged: true }
+  } } } })
+  const sync = code => state.load('server').synchronizeInBackground({
+    syncProxy: false, region: { countryCode: code, countryName: code },
+  })
+  await assert.rejects(sync('BY'))
+  assert.deepEqual(state.storage.domains, [])
+  cancel = false
+  await sync('RU')
+  assert.deepEqual(state.storage.domains, ['blocked.example'])
+  assert.equal(state.storage.registryStatus.state, 'ready')
+})
+
 test('queued region selection cannot be overwritten by an old-country download', async () => {
   let release
   let started
@@ -1514,6 +1537,34 @@ for (const failure of ['timeout', 'cancel', 'exclusion']) {
     assert.equal(state.storage.serviceRouteSnapshot, undefined)
   })
 }
+
+test('large registry updates yield, merge duplicates, and preserve unchanged storage', async () => {
+  const names = Array.from({ length: 50000 }, (_, index) => `site${index}.example`)
+  let primary = [...names, 'bad/path', names[0]]
+  let ticked = false
+  const state = fixture({ storage: { currentRegionCode: 'RU', registryRegionCode: 'RU' },
+    mocks: { 'service-request': { requestService: async url => {
+      if (url.includes('ct-domains')) {
+        setTimeout(() => { ticked = true }, 0)
+        return { data: primary }
+      }
+      if (url.includes('/api/config/')) return { data: {} }
+      return { data: url.includes('/api/domains/') ? [names[0], 'backend.example'] : [] }
+    } } },
+  })
+  const sync = () => state.load('server').synchronizeInBackground({ syncProxy: false })
+  await sync()
+  assert.equal(ticked, true)
+  assert.deepEqual(state.storage.domains, [...names, 'backend.example'])
+  assert.equal(state.storage.registryStatus.skipped, 1)
+  const saved = state.storage.domains
+  await sync()
+  assert.equal(state.storage.domains, saved)
+  primary = [...names.slice(1), 'changed.example']
+  await sync()
+  assert.deepEqual(state.storage.domains, [...primary, names[0], 'backend.example'])
+  assert.equal(state.storage.registryStatus.skipped, 0)
+})
 
 test('registry HEAD checks preserve domain storage and clear previous errors', async () => {
   const calls = []

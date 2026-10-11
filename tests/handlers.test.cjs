@@ -188,6 +188,34 @@ test('a queued settings event reads current choices after it acquires the route 
   }
 })
 
+test('navigation clears the previous site warning icon', async () => {
+  for (const warning of ['blocked', 'danger']) {
+    let icon = 'default'
+    const state = fixture({}, {}, {
+      settings: { default: {
+        extensionEnabled: async () => true,
+        setDefaultIcon: () => { icon = 'default' },
+        setBlockedIcon: () => { icon = 'blocked' },
+        setDangerIcon: () => { icon = 'danger' },
+      } },
+      ignore: { default: { contains: async () => false } },
+      registry: { default: {
+        contains: async url => url.includes('warning') && warning === 'blocked',
+        retrieveDisseminator: async url => url.includes('warning') && warning === 'danger'
+          ? { url, cooperationRefused: false } : {},
+      } },
+    })
+    state.browser.tabs.TabStatus = { LOADING: 'loading' }
+    for (const [host, expected] of [['warning', warning], ['ordinary', 'default']]) {
+      await state.handlers.handleTabState(1, { status: 'loading' }, {
+        url: `https://${host}.example`, incognito: true,
+      })
+      await new Promise(setImmediate)
+      assert.equal(icon, expected)
+    }
+  }
+})
+
 function notificationFixture(showNotifications = true) {
   const storage = { notifiedHosts: ['previous.example'], showNotifications }
   const notifications = []
@@ -208,6 +236,7 @@ function notificationFixture(showNotifications = true) {
     'browser-api': { default: browser },
     settings: { default: {
       extensionEnabled: async () => true,
+      setDefaultIcon() {},
       setDangerIcon: id => icons.push(id),
       getName: () => 'Censor Tracker',
       getDangerIcon: () => 'icon.png',

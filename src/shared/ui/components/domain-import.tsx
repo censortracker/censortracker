@@ -1,4 +1,3 @@
-import browser from 'Background/browser-api'
 import { getMessage } from 'Background/i18n'
 import { requestText } from 'Background/request'
 import { isValidURL, removeDuplicates } from 'Background/utilities'
@@ -33,11 +32,8 @@ export const DomainImport = ({ open, onClose, editor }: {
     revision.current++
     request.current?.abort()
   }, [])
-  const update = async (domains: string[], ticket: number) => {
-    const { customProxiedDomains } = await browser.storage.local.get({
-      customProxiedDomains: [],
-    })
-    const all = [...customProxiedDomains, ...domains]
+  const update = (domains: string[], ticket: number) => {
+    const all = removeDuplicates([...readLines(editor.current?.getValue() || ''), ...domains])
 
     if (ticket !== revision.current) {
       return true
@@ -74,7 +70,7 @@ export const DomainImport = ({ open, onClose, editor }: {
       }
       if (domains.length === 0) {
         setUrlError('fetchURLError')
-      } else if (!await update(domains, ticket)) {
+      } else if (!update(domains, ticket)) {
         setUrlError('maxDomainsExceededError')
       }
     } catch {
@@ -100,7 +96,7 @@ export const DomainImport = ({ open, onClose, editor }: {
     }
     if (domains.length === 0) {
       setFileError('emptyFileError')
-    } else if (!await update(domains, ticket)) {
+    } else if (!update(domains, ticket)) {
       setFileError('maxDomainsExceededError')
     }
   }

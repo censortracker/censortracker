@@ -2,6 +2,7 @@ import browser from './browser-api'
 import type { DomainIndex } from './domain-index'
 import { buildDomainIndex, createDomainIndex } from './domain-index'
 import { findHostMatch } from './host-match'
+import { indexCache, registryWrites, setRegistryState } from './index-cache'
 import { externalRegistryDomains, registrySourceDefaults } from './registry-source-data'
 import type { Disseminator } from './service-config'
 import type { StorageState } from './storage'
@@ -19,29 +20,57 @@ const membershipDefaults = [
   { ignoredHosts: [] },
 ]
 
-if (browser.storage?.onChanged) {
-  browser.storage.onChanged.addListener((changes, area) => {
-    if (area !== 'local') {
-      return
-    }
-    const changed = membershipDefaults.map((defaults) =>
-      Object.keys(defaults).some((key) => changes[key]))
+const invalidateMembership = (keys: string[]) => {
+  const changed = membershipDefaults.map((defaults, position) =>
+    Object.keys(defaults).some((key) => keys.includes(key)) ||
+    keys.includes(['domainsRevision', 'externalRegistryRevision'][position]))
 
-    if (changed.some(Boolean)) {
-      membership = null
-      membershipIndexes = membershipIndexes.map((index, position) =>
-        changed[position] ? null : index)
-    }
-  })
+  if (changed.some(Boolean)) {
+    membership = null
+    membershipIndexes = membershipIndexes.map((index, position) =>
+      changed[position] ? null : index)
+  }
 }
+
+registryWrites.add(invalidateMembership)
+browser.storage?.onChanged?.addListener((changes, area) => {
+  if (area === 'local') {
+    invalidateMembership(Object.keys(changes))
+  }
+})
 
 const loadMembership = async () => {
   const indexes = membershipIndexes
+  const current = () => indexes === membershipIndexes
+  const revisions: string[] = []
+
+  if (typeof indexedDB !== 'undefined' && (!indexes[0] || !indexes[1])) {
+    const { domainsRevision, externalRegistryRevision, registrySource } =
+      await browser.storage.local.get({
+        domainsRevision: '',
+        externalRegistryRevision: '',
+        registrySource: registrySourceDefaults,
+      })
+
+    revisions.push(domainsRevision, externalRegistryRevision &&
+      JSON.stringify([externalRegistryRevision, registrySource]))
+    await Promise.all(revisions.map(async (revision, position) => {
+      if (!indexes[position] && revision) {
+        const data = await indexCache(String(position), revision)
+
+        if (data && current()) {
+          indexes[position] = createDomainIndex(data) as DomainIndex
+        }
+      }
+    }))
+  }
+  if (!current()) {
+    return indexes
+  }
   const state = await browser.storage.local.get(Object.assign({},
     ...membershipDefaults.filter((defaults, position) => !indexes[position]))) as Pick<StorageState, 'domains' | 'registrySource' | 'externalRegistry' | 'customProxiedDomains' | 'ignoredHosts'>
   const lists = [state.domains, externalRegistryDomains(state),
     state.customProxiedDomains, state.ignoredHosts]
-  const current = () => indexes === membershipIndexes
 
   for (const [position, names] of lists.entries()) {
     if (indexes[position]) {
@@ -53,6 +82,10 @@ const loadMembership = async () => {
       return indexes
     }
     indexes[position] = createDomainIndex(data) as DomainIndex
+    if (revisions[position]) {
+      // Do not delay routing while the optional snapshot is saved.
+      indexCache(String(position), revisions[position], data)
+    }
   }
   return indexes
 }
@@ -214,7 +247,7 @@ class Registry {
   }
 
   async clearRegistry () {
-    await browser.storage.local.set({ domains: [] })
+    await setRegistryState({ domains: [] })
   }
 }
 

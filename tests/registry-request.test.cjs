@@ -6,6 +6,21 @@ const url = 'https://registry.example/list'
 const cache = { url, finalUrl: url, etag: 'W/"1"' }
 const plain = value => JSON.parse(JSON.stringify(value))
 
+test('legacy abort signals support downloads and cancellation before or after HEAD', async () => {
+  for (const stage of ['none', 'before', 'head']) {
+    const signal = { aborted: stage === 'before' }
+    const calls = []
+    const pending = requestRegistry(url, cache, async method => {
+      calls.push(method)
+      signal.aborted = stage === 'head'
+      return { ...cache, etag: '"2"', data: [] }
+    }, signal)
+    if (stage === 'none') await pending
+    else await assert.rejects(pending, { name: 'AbortError' })
+    assert.deepEqual(calls, stage === 'before' ? [] : stage === 'head' ? ['HEAD'] : ['HEAD', 'GET'])
+  }
+})
+
 test('registry ETags require the same source URL and final URL', async () => {
   for (const [saved, headers, methods] of [
     [null, cache, ['GET']], [{}, cache, ['GET']],

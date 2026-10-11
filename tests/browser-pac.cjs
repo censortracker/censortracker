@@ -657,7 +657,8 @@ test('Chromium applies PAC rules and manages proxies', { timeout: 60000 }, async
     assert.equal(imported.registrySource.enabled || imported.registrySource.autoUpdate || imported.proxySubscriptionsEnabled || imported.proxyRecoveryEnabled, false)
     assert.equal(registryHits, 0, 'A backup cannot grant consent to download its URLs')
     assert.equal(await evaluate("chrome.runtime.sendMessage({type: 'ct-background', action: 'importSettings', args: {formatVersion: 1, settings: window.beforeForkImport}}).then(result => result.error || 'OK')"), 'OK')
-    await evaluate("chrome.storage.local.set({useRegistry: true, domains: ['builtin-only.example'], customProxiedDomains: ['manual.example']})")
+    // Registry fixtures include the revision written by setRegistryState.
+    await evaluate("chrome.storage.local.set({useRegistry: true, domains: ['builtin-only.example'], domainsRevision: 'test-builtin', customProxiedDomains: ['manual.example']})")
     await evaluate("location.href = chrome.runtime.getURL('registry.html')")
     await until("document.querySelector('#registrySourceSave')?.disabled === false")
     assert.equal(await evaluate("document.querySelector('#registrySourceOptions').open"), true)
@@ -714,12 +715,13 @@ test('Chromium applies PAC rules and manages proxies', { timeout: 60000 }, async
     assert.equal(await evaluate(`fetch('http://ignored.provider.example:${origin.address().port}/ignored').then(response => response.text())`), 'DIRECT')
     await evaluate(`chrome.storage.local.get('registrySource').then(({registrySource}) => chrome.storage.local.set({proxyAll: false, useRegistry: false,
       proxies: [{id: 'large', name: 'Large list test', protocol: 'HTTP', host: '127.0.0.1', port: ${proxy.address().port}}], selectedProxyIds: ['large'],
+      externalRegistryRevision: 'test-large',
       externalRegistry: {source: JSON.stringify([registrySource.kind, registrySource.url]), updatedAt: Date.now(),
         domains: Array.from({length: 660000}, (_,i) => 'site' + i + '.large-registry.example')}}))`)
     await evaluate("chrome.runtime.sendMessage({type: 'ct-background', action: 'setProxy'}).then(result => {if (result.error) throw new Error(result.error); return result.value})")
     assert.equal(await evaluate(`fetch('http://site659999.large-registry.example:${origin.address().port}/large').then(response => response.text())`), 'PROXY')
     assert.equal(await evaluate(`fetch('http://unlisted.large-registry.example:${origin.address().port}/large').then(response => response.text())`), 'DIRECT')
-    await evaluate("chrome.storage.local.set({externalRegistry: null}).then(() => chrome.runtime.sendMessage({type: 'ct-background', action: 'setProxy'}))")
+    await evaluate("chrome.storage.local.set({externalRegistry: null, externalRegistryRevision: 'test-empty'}).then(() => chrome.runtime.sendMessage({type: 'ct-background', action: 'setProxy'}))")
     await evaluate('chrome.storage.local.set({enableExtension: false, useProxy: true})')
     await until("chrome.proxy.settings.get({}).then(data => data.value.mode !== 'pac_script')")
     assert.equal(await evaluate("chrome.storage.local.get('useProxy').then(data => data.useProxy)"), true,

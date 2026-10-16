@@ -1,3 +1,5 @@
+import { getMessage } from 'Background/i18n'
+
 import componentStyles from './icons.module.scss'
 
 export const ArrowIcon = () => <svg width="8" height="14"
@@ -11,7 +13,8 @@ export const BackIcon = () => <svg width="24" height="16"
 </svg>
 
 export const BackLink = () => <div class={componentStyles['main-page__return']}>
-  <a class={componentStyles['return-link']} href="/options.html"><BackIcon /></a>
+  <a class={componentStyles['return-link']} href="/options.html"
+    aria-label={getMessage('back')}><BackIcon /></a>
 </div>
 
 export const UploadIcon = () => <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">

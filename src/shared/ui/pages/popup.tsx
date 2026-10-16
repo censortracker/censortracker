@@ -1,60 +1,66 @@
+import type { SiteChoice } from 'Background/background-rpc'
 import { callBackground } from 'Background/background-rpc'
 import browser from 'Background/browser-api'
-import { hasDataConsent } from 'Background/data-consent'
 import { getMessage } from 'Background/i18n'
-import ProxyManager from 'Background/proxy'
-import Settings from 'Background/settings'
-import { useEffect, useState } from 'preact/hooks'
+import { useState } from 'preact/hooks'
 
-import { ConsentStatus } from '../components/consent-status'
+import button from '../components/button.module.scss'
 import { RichMessage } from '../components/message'
 import { Notices } from '../components/notices'
-import { PageError } from '../components/page-error'
 import { PopupLayout } from '../components/popup-layout'
-import { usePrivateBrowsing } from '../components/private-browsing'
-import { useResource, useStorageChanges } from '../hooks/async'
+import { PrivateBrowsingStatus } from '../components/private-browsing-status'
+import { useAction, useResource, useStorageChanges } from '../hooks/async'
+import { usePageError } from '../hooks/errors'
 import { useKeySequence } from '../hooks/key-sequence'
+import { usePrivateBrowsing } from '../hooks/private-browsing'
 import { navigate } from '../navigation'
+import type { PageView } from '../routes'
 import styles from '../styles/popup.module.scss'
+import { PopupConsentStatus } from './popup/consent-status'
 import { InfoBlock } from './popup/info-block'
 import { ProxyInfo } from './popup/proxy-info'
 import { RelatedDomains } from './popup/related-domains'
 import { readPopup } from './popup/state'
 
+const plain = `${button.plain} ${button['plain-block']}`
+const siteChoices = [
+  { id: 'siteActionAuto', choice: 'auto', label: 'Auto' },
+  { id: 'siteActionProxy', choice: 'always', label: 'Always' },
+  { id: 'siteActionIgnore', choice: 'never', label: 'Never' },
+] as const satisfies { id: string; choice: SiteChoice; label: string }[]
+
+const reloadKeys = ['useLocalProxy', 'localProxyAlive', 'useProxy', 'dataConsent'] as const
+
 export const PopupPage = () => {
   useKeySequence()
-  const { value, error } = useResource(readPopup)
+  const { value, error: readError } = useResource(readPopup)
   const { allowed, failure, status } = usePrivateBrowsing()
+  const { error, run } = useAction()
   const [actions, setActions] = useState(false)
   const [details, setDetails] = useState('')
-  const [choice, setChoice] = useState('auto')
+  const [chosen, setChosen] = useState<SiteChoice>()
   const state = value?.consent ? value : undefined
+  const choice = chosen ?? state?.choice ?? 'auto'
 
-  useEffect(() => {
-    if (state) {
-      setChoice(state.choice)
-    }
-  }, [state])
+  usePageError(error || readError)
   useStorageChanges((changes) => {
-    if (['useLocalProxy', 'localProxyAlive', 'useProxy', 'dataConsent'].some((key) =>
+    if (reloadKeys.some((key) =>
       changes[key] && changes[key].newValue !== changes[key].oldValue)) {
       window.location.reload()
     }
   })
-  const enable = async () => {
-    if (!await hasDataConsent()) {
+  const enable = () => run(async () => {
+    if (!(await callBackground('dataConsent'))?.accepted) {
       await callBackground('openDataConsent')
       return
     }
-    await Settings.enableExtension()
-    await Settings.enableNotifications()
-    await ProxyManager.enableProxy()
+    await callBackground('setExtensionEnabled', true)
     window.location.reload()
-  }
-  const disable = async () => {
-    await Settings.disableExtension()
+  })
+  const disable = () => run(async () => {
+    await callBackground('setExtensionEnabled', false)
     window.location.reload()
-  }
+  })
   const toggleDetails = (id: string) => setDetails(details === id ? '' : id)
   const warning = Boolean(state?.disseminator.url &&
     !state.disseminator.cooperationRefused)
@@ -65,7 +71,7 @@ export const PopupPage = () => {
       ? 'disseminatorCoopRefused' : 'disseminatorDesc'
   }
   const hideInfo = !state?.enabled || actions || Boolean(state.network)
-  const choiceKey = { auto: 'Auto', always: 'Always', never: 'Never' }[choice]
+  const choiceKey = siteChoices.find((item) => item.choice === choice)?.label
   const image = value?.consent === false ? 'images/popup/disabled.png'
     : `images/icons/512x512/${state?.image || 'normal'}.png`
   let restrictionTitle = 'notBlockedTitle'
@@ -75,29 +81,41 @@ export const PopupPage = () => {
     restrictionTitle = state.domain.blocked ? 'blockedTitle' : 'customProxiedTitle'
     restrictionDescription = state.domain.blocked ? 'blockedDesc' : 'customProxiedDesc'
   }
+  const footerLinks = [
+    {
+      id: 'backendIsIntermittentPopupMessage',
+      message: 'backendIsIntermittentPopupMessage',
+      show: state?.backendIsIntermittent,
+      click: () => browser.runtime.openOptionsPage(),
+    },
+    {
+      id: 'proxyConnectionIssuesButton',
+      message: 'proxyConnectionIssuesMessage',
+      show: state?.connectionIssues,
+      click: () => browser.tabs.create({ url: 'https://t.me/censortracker_feedback' }),
+    },
+    {
+      id: 'controlledByOtherExtensionsButton',
+      message: 'controlledByOtherExtensionsMessage',
+      show: state?.controlled,
+      click: () => navigate('/controlled.html'),
+    },
+  ]
   const footer = <>
-    {[
-      ['backendIsIntermittentPopupMessage', 'backendIsIntermittentPopupMessage', state?.backendIsIntermittent,
-        () => browser.runtime.openOptionsPage()],
-      ['proxyConnectionIssuesButton', 'proxyConnectionIssuesMessage', state?.connectionIssues,
-        () => browser.tabs.create({ url: 'https://t.me/censortracker_feedback' })],
-      ['controlledByOtherExtensionsButton', 'controlledByOtherExtensionsMessage', state?.controlled,
-        () => {
-          navigate('/controlled.html')
-        }],
-    ].map(([id, message, show, click]) => <div class={styles['footer-btn']} id={id as string}
-      key={id as string} hidden={!show} onClick={click as () => void}>
-      <div>{getMessage(message as string)}</div>
-    </div>)}
-    <div id="privateBrowsingPermissionsRequiredButton" hidden={allowed !== false}
-      onClick={() => {
-        navigate('/incognito-required-popup.html')
-      }}>
-      <div>{getMessage('privateBrowsingPermissionsRequiredMessage')}</div>
-    </div>
-    {browser.isFirefox && <p hidden={!failure && !status} role={failure ? 'alert' : 'status'}>
-      {failure instanceof Error ? failure.message : status}
-    </p>}
+    {footerLinks.map(({ id, message, show, click }) => <button type="button"
+      class={`${styles['footer-btn']} ${plain}`} id={id} key={id} hidden={!show}
+      onClick={() => run(async () => {
+        await click()
+      })}>
+      <span>{getMessage(message)}</span>
+    </button>)}
+    <button type="button" id="privateBrowsingPermissionsRequiredButton"
+      class={`${styles['footer-btn']} ${plain}`}
+      hidden={allowed !== false} onClick={() => navigate('/incognito-required-popup.html')}>
+      <span>{getMessage('privateBrowsingPermissionsRequiredMessage')}</span>
+    </button>
+    {browser.isFirefox &&
+      <PrivateBrowsingStatus failure={failure} status={status} />}
     <div class={`${styles.footer} ${styles.unselectable}`} id="footerExtensionIsOn" hidden={!state?.enabled}>
       <div class={styles['censor-tracker']}>
         <div class={styles['censor-tracker__column']}>
@@ -121,51 +139,58 @@ export const PopupPage = () => {
             hidden={!state || state.proxying || Boolean(state.useLocalProxy)}>{getMessage('popupProxyDisabled')}</div>
         </div>
         <div class={styles['censor-tracker__column']}>
-          <div class={styles['censor-tracker__btn']} id="disableExtension" onClick={disable}>
+          <button type="button" class={`${styles['censor-tracker__btn']} ${plain}`} id="disableExtension"
+            aria-label={getMessage('disableExtension')} onClick={disable}>
             <img class={styles['image__turn-tracker']} src="images/icons/512x512/btn_stop.svg" width="11px" height="16px" alt="" />
-          </div>
+          </button>
         </div>
       </div>
     </div>
   </>
 
   return <PopupLayout footer={footer} image={<div class={styles['main-page__image']} id="statusImageDiv">
-    <img id="statusImage" class={styles.image__status} src={image} width="75px" height="auto" alt="Status" />
+    <img id="statusImage" src={image} width="75px" height="auto" alt="Status" />
     <span id="highlightOptionsIcon" class={styles['red-dot']} hidden={!state?.highlight} />
-    <a id="openOptionsPage" class={styles.icon__settings} target="_blank" onClick={() => browser.runtime.openOptionsPage()} />
+    <a id="openOptionsPage" class={styles.icon__settings} href="/options.html" target="_blank"
+      aria-label={getMessage('optionsPageTitle')} onClick={(event) => {
+        event.preventDefault()
+        run(() => browser.runtime.openOptionsPage())
+      }} />
   </div>}>
-    <PageError error={error} />
-    <Notices compact />
-    <ConsentStatus variant="popup" />
+    <Notices classes={{
+      title: styles.block__title, button: styles['default-btn'],
+    }} />
+    <PopupConsentStatus />
     <div class={`${styles['main-page__title']} ${styles['title-domain']}`} hidden={value?.consent === false}>
       <div class={`${styles['current-domain']} ${styles['title-normal']} ${styles.unselectable} ${warning ? styles['title-ori'] : ''}`}
         id="currentDomainHeader" style={{ fontSize: state?.fontSize }}>
         {state && (state.valid ? state.hostname : getMessage('popupNewTabMessage'))}
       </div>
-      <span class={`${styles.icon__site_settings} ${actions ? styles['icon-hide'] : styles['icon-show']}`}
-        id="toggleSiteActions" hidden={!state?.valid || !state.enabled || Boolean(state.network)} onClick={() => setActions(!actions)} />
+      <button type="button" id="toggleSiteActions" aria-expanded={actions}
+        aria-label={getMessage('siteActionTitle')}
+        class={`${styles.icon__site_settings} ${actions ? styles['icon-hide'] : styles['icon-show']} ${button.plain}`}
+        hidden={!state?.valid || !state.enabled || Boolean(state.network)}
+        onClick={() => setActions(!actions)} />
     </div>
     <div class={`${styles['main-page__block']} ${styles['main-page-setting']} ${styles.unselectable}`} id="siteActions" hidden={!actions}>
       <div class={styles.block__title}>{getMessage('siteActionTitle')}</div>
       <div class={styles['site-actions-group']}>
-        {[
-          ['siteActionAuto', 'auto', 'Auto'], ['siteActionProxy', 'always', 'Always'], ['siteActionIgnore', 'never', 'Never'],
-        ].map(([id, mode, label]) => <div class={styles['site-actions-group-item']} key={id}>
+        {siteChoices.map(({ id, choice: mode, label }) => <div class={styles['site-actions-group-item']} key={id}>
           <input id={id} type="radio" name="site-action-radio" value={mode} checked={choice === mode}
-            onChange={async () => {
-              await callBackground('setSiteChoice', { url: state?.url, choice: mode })
-              setChoice(mode)
-            }} />
+            onChange={() => run(async () => {
+              await callBackground('setSiteChoice', { url: state?.url ?? '', choice: mode })
+              setChosen(mode)
+            })} />
           <label for={id}>{getMessage(`siteActionItemLabel${label}`)}</label>
         </div>)}
       </div>
       <div class={styles.proxy_info} id="siteActionDescription">{getMessage(`siteAction${choiceKey}Desc`)}</div>
       {state?.valid && <RelatedDomains tabId={state.tabId} url={state.url} />}
     </div>
-    {['tor', 'i2p'].map((network) => <div class={styles['network-description']} id={`${network}Network`}
+    {(['tor', 'i2p'] as const).map((network) => <div class={styles['network-description']} id={`${network}Network`}
       key={network} hidden={!state?.enabled || state.network !== network}>
       <RichMessage as="div" class={styles.network__title} message={`${network}NetworkTitle`} />
-      <div class={styles.network__about}>{getMessage('overlayNetworkDesc')}</div>
+      <div>{getMessage('overlayNetworkDesc')}</div>
     </div>)}
     <InfoBlock id="ori" title={warning ? 'disseminatorTitle' : 'notDisseminatorTitle'}
       icon={warning ? 'danger' : 'ok'} warning={warning} hidden={hideInfo}
@@ -175,7 +200,8 @@ export const PopupPage = () => {
       icon={state?.domain?.blocked || state?.domain?.custom ? 'info' : 'ok'} hidden={hideInfo}
       open={details === 'restrictions'} onToggle={() => toggleDetails('restrictions')}
       description={restrictionDescription} link="https://blockedin.org/ru/" />
-    {state?.enabled && state.hostname && <ProxyInfo url={state.url}
+    {state?.enabled && state.hostname && <ProxyInfo key={state.url}
+      url={state.url}
       hidden={hideInfo}
       open={details === 'proxy'} onToggle={() => toggleDetails('proxy')} />}
     <div class={`${styles['main-page__info']} ${styles.unselectable}`} id="extensionIsOff" hidden={!state || state.enabled}>
@@ -184,11 +210,16 @@ export const PopupPage = () => {
         <div class={`${styles.block__title} ${styles['text-about']} ${styles['block-disabled']}`}>
           <span>{getMessage('turnOnExtensionToCheckWebsite')}</span>
         </div>
-        <div class={`${styles['censor-tracker__btn']} ${styles['btn-on']}`} id="enableExtension" onClick={enable}>
+        <button type="button" class={`${styles['censor-tracker__btn']} ${styles['btn-on']} ${plain}`}
+          id="enableExtension" aria-label={getMessage('enableExtension')} onClick={enable}>
           <img class={`${styles['image__turn-tracker']} ${styles['image__turn-tracker-on']}`}
             src="images/icons/512x512/btn_power.svg" width="36px" height="36px" alt="" />
-        </div>
+        </button>
       </div>
     </div>
   </PopupLayout>
+}
+
+export const page: PageView = {
+  component: PopupPage, bodyClass: styles.document ?? '',
 }

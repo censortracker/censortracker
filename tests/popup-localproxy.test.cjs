@@ -8,9 +8,9 @@ test('the open popup reloads only when local routing values change', async () =>
   const { PopupPage } = ui.moduleFor('pages/popup', {
     'browser-api': { default: state.browser },
     state: { readPopup: async () => ({ consent: false }) },
-    notices: { Notices: () => null }, 'consent-status': { ConsentStatus: () => null },
-    'page-error': { PageError: () => null }, 'background-rpc': {},
-    'data-consent': {}, proxy: {}, settings: {},
+    notices: { Notices: () => null }, 'consent-status': { PopupConsentStatus: () => null },
+    'page-error': { PageError: () => null },
+    'background-rpc': {},
     'proxy-info': {}, 'related-domains': {}, 'key-sequence': { useKeySequence() {} },
     'private-browsing': { usePrivateBrowsing: () => ({ allowed: true }) },
   }, { window: { location: { reload: () => { reloads++ } } } })

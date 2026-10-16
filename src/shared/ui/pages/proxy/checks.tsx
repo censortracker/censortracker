@@ -4,7 +4,9 @@ import { getMessage } from 'Background/i18n'
 import { useEffect, useRef } from 'preact/hooks'
 
 import { Check, SettingsSection } from '../../components/form'
-import { useAction, useLatest, useResource, useStorageChanges } from '../../hooks/async'
+import {
+  detach, useAction, useLatest, useResource, useStorageChanges,
+} from '../../hooks/async'
 import { usePageError } from '../../hooks/errors'
 import styles from '../../styles/options.module.scss'
 
@@ -19,13 +21,8 @@ export const ProxyRecovery = () => {
 
   return <Check id="proxyRecoveryEnabled" title="proxyRecoveryEnabled"
     checked={value?.proxyRecoveryEnabled || false} disabled={busy}
-    onChange={(checked) => run(async () => {
-      try {
-        await callBackground('setProxyRecovery', checked)
-      } finally {
-        await refresh()
-      }
-    })} />
+    onChange={(checked) =>
+      run(() => callBackground('setProxyRecovery', checked), refresh)} />
 }
 
 export const ProxyChecks = ({ refreshProxies }: {
@@ -43,7 +40,7 @@ export const ProxyChecks = ({ refreshProxies }: {
     if (changes.proxyChecks && timer.current === null) {
       timer.current = window.setTimeout(() => {
         timer.current = null
-        refreshCatalog.current()
+        detach(refreshCatalog.current())
       }, 300)
     }
   })
@@ -56,8 +53,7 @@ export const ProxyChecks = ({ refreshProxies }: {
     const { selectedProxyIds } = await callBackground('proxies', { operation: 'list' })
 
     await callBackground('startProxyChecks', onlySelected ? { ids: selectedProxyIds } : {})
-    await refresh()
-  })
+  }, refresh)
   const state = value?.run
   let status = state?.total === undefined ? '' : getMessage('proxyCheckProgress', [
     String(state.completed || 0), String(state.total),
@@ -74,10 +70,9 @@ export const ProxyChecks = ({ refreshProxies }: {
       <button type="button" id="proxyCheckAll" disabled={busy || state?.running}
         onClick={() => start(false)}>{getMessage('proxyCheckAll')}</button>
       <button type="button" id="proxyCheckStop" disabled={busy || !state?.running}
-        onClick={() => run(async () => {
-          await callBackground('stopProxyChecks')
-          await refresh()
-        })}>{getMessage('proxyCheckStop')}</button>
+        onClick={() => run(() => callBackground('stopProxyChecks'), refresh)}>
+        {getMessage('proxyCheckStop')}
+      </button>
     </div>
     <p id="proxyCheckStatus" role="status">{status}</p>
     <p id="proxyCheckError" role="alert" hidden={!error && !readError}>

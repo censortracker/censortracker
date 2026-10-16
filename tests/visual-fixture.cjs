@@ -53,7 +53,7 @@ module.exports = function visualFixture({ language, scenario, firefox, messages 
   const tab = { id: 1, windowId: 1, url: scenario === 'tor' ? 'http://example.onion/' : scenario === 'i2p' ? 'http://example.i2p/' : 'https://example.com/' }
   const rpc = async ({ action, args }) => {
     await new Promise(resolve => setTimeout(resolve, 0))
-    if (scenario === 'error' && ['setDataConsent', 'synchronize', 'updateRegistrySource', 'importProxies', 'startProxyChecks'].includes(action)) {
+    if (scenario === 'error' && ['setDataConsent', 'synchronize', 'updateRegistry', 'updateRegistrySource', 'importProxies', 'startProxyChecks'].includes(action)) {
       return { error: 'Fixture failure' }
     }
     let value
@@ -77,6 +77,25 @@ module.exports = function visualFixture({ language, scenario, firefox, messages 
       case 'removeProxy':
       case 'ping': break
       case 'setProxy': value = true; break
+      case 'updateRegistry': break
+      case 'incognitoAccess': value = { allowed: scenario !== 'permission', restore: false }; break
+      case 'proxyControl': value = { controlled: conflict, extensions: conflict ? await api.management.getAll() : [] }; break
+      case 'notices': value = state['noticeActive:release-21'] && !state['noticeRead:release-21']
+        ? [{ id: 'release-21', title: 'release21Title', text: 'release21Text', link: { label: 'noticeSupport', path: 'options.html#contacts' } }] : []; break
+      case 'popupState': {
+        const enabled = state.enableExtension, proxying = state.useProxy, alive = state.proxyIsAlive
+        const hostname = new URL(tab.url).hostname
+        value = !state.dataConsent.accepted ? { consent: false } : {
+          consent: true, url: tab.url, tabId: tab.id, hostname, valid: true, proxying, enabled,
+          useLocalProxy: state.useLocalProxy, localProxyAlive: state.localProxyAlive, backendIsIntermittent: state.backendIsIntermittent,
+          alive, connectionIssues: proxying && !alive && !state.useLocalProxy && !(firefox && scenario === 'permission'),
+          domain: enabled ? { blocked: warning, custom: false, ignored: false } : null,
+          disseminator: enabled && state.disseminators.find(({ url }) => url === hostname) || {},
+          controlled: !firefox && conflict, highlight: warning, choice: 'auto',
+          network: ['tor', 'i2p'].includes(scenario) ? scenario : '',
+        }
+        break
+      }
       default: throw new Error('Missing visual RPC fixture: ' + action)
     }
     return { value }

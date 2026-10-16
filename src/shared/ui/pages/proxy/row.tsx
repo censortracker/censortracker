@@ -3,16 +3,16 @@ import { getMessage, getUILanguage } from 'Background/i18n'
 import type { CheckAttempt, ProxyCheck } from 'Background/proxy-check-data'
 import { checkAttempts } from 'Background/proxy-check-data'
 import type { ProxyListAction } from 'Background/proxy-list'
-import type { ProxyRecord } from 'Background/proxy-record'
+import type { ManagedProxy } from 'Background/proxy-record'
 import { proxyAuthSupported } from 'Background/proxy-record'
 
 export const ProxyRow = ({ proxy, check, selected, busy, run, edit }: {
-  proxy: ProxyRecord
+  proxy: ManagedProxy
   check?: ProxyCheck
   selected: boolean
   busy: boolean
   run: (action: ProxyListAction) => void
-  edit: (proxy: ProxyRecord) => void
+  edit: (proxy: ManagedProxy) => void
 }) => {
   let address = proxy.host ? `${proxy.protocol} ${proxy.host}:${proxy.port}`
     : getMessage('proxyUnavailable')
@@ -33,10 +33,11 @@ export const ProxyRow = ({ proxy, check, selected, busy, run, edit }: {
     getMessage(`proxyCheckReason_${attempt.code.replaceAll('-', '_')}`),
     attempt.netError, attempt.httpStatus,
   ].filter(Boolean).join(' · ')
+  const last = attempts.at(-1)
   let status = getMessage(`proxyStatus_${check?.status || 'unchecked'}`)
 
-  if (check?.status === 'failed' && attempts.length > 0) {
-    status += ` · ${describe(attempts.at(-1)!)}`
+  if (check?.status === 'failed' && last) {
+    status += ` · ${describe(last)}`
   }
   if (check?.status === 'ok') {
     status += ` · ${check.latency} ms`

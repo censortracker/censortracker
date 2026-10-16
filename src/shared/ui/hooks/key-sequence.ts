@@ -33,5 +33,5 @@ export const useKeySequence = (
 
     document.addEventListener('keydown', keydown)
     return () => document.removeEventListener('keydown', keydown)
-  }, [])
+  }, [callback])
 }

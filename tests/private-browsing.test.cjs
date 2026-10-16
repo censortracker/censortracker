@@ -23,9 +23,14 @@ async function fixture(options = {}) {
   }
   const manager = load('background/proxy', { 'browser-api': { default: browser } }).default
   manager.setProxy = async () => { applied++; return options.apply ? options.apply() : options.success !== false }
-  const { PrivateBrowsing } = ui.moduleFor('components/private-browsing', {
-    'browser-api': { default: browser }, proxy: { default: manager },
+  const operations = load('background/operations', {
+    'browser-api': { default: browser }, proxy: { default: manager }, i18n: { getMessage: key => key },
     settings: { default: { extensionEnabled: async () => storage.enableExtension } },
+  })
+  const { PrivateBrowsing } = ui.moduleFor('pages/options/private-browsing', {
+    'browser-api': { default: browser },
+    'background-rpc': { callBackground: (action, args) => operations[action](args)
+      .catch(error => { throw new Error(error.message) }) },
   })
   ui.testing.render(ui.h(PrivateBrowsing, { onSuccess: () => { completed++ } }))
   const warning = ui.byId('privateBrowsingPermissionsRequiredMessage')

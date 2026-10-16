@@ -7,6 +7,11 @@ import { BackLink } from './icons'
 import componentStyles from './layout.module.scss'
 import { PageError } from './page-error'
 
+export const settingsDocument =
+  `${componentStyles.document} ${componentStyles['settings-page']}`
+export const mainDocument =
+  `${componentStyles.document} ${componentStyles['options-body']}`
+
 export const SettingsHeader = ({ title, id, class: extra = styles['page-main-title'] }: {
   title: string
   id?: string

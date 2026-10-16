@@ -1,32 +1,31 @@
 import { callBackground } from 'Background/background-rpc'
 import { getMessage, getUILanguage } from 'Background/i18n'
+import type { RegistrySource as Source } from 'Background/registry-source-data'
 import { registrySourceDefaults, registrySourceUrls } from 'Background/registry-source-data'
-import { useLayoutEffect, useState } from 'preact/hooks'
+import { useState } from 'preact/hooks'
 
-import { useAction, useResource } from '../hooks/async'
-import styles from '../styles/options.module.scss'
-import { Button } from './button'
-import { Check, Field, SettingsSection } from './form'
+import { Button } from '../../components/button'
+import { Check, Field, SettingsSection } from '../../components/form'
+import { useAction, useResource } from '../../hooks/async'
+import { usePageError } from '../../hooks/errors'
+import styles from '../../styles/options.module.scss'
 
 export const RegistrySource = () => {
-  const { value, refresh } = useResource(() => callBackground('registrySourceState'))
-  const [draft, setDraft] = useState(registrySourceDefaults)
+  const { value, error: readError, refresh } =
+    useResource(() => callBackground('registrySourceState'))
+  const [edited, setDraft] = useState<Source>()
+  const draft = edited ?? value?.source ?? registrySourceDefaults
   const { busy, error, run } = useAction()
 
-  useLayoutEffect(() => {
-    if (value) {
-      setDraft(value.source)
-    }
-  }, [value])
+  usePageError(readError)
   const save = (download: boolean) => run(async () => {
-    try {
-      await callBackground('updateRegistrySource', { ...draft, url: draft.url.trim() })
-      if (download) {
-        await callBackground('refreshRegistrySource')
-      }
-    } finally {
-      await refresh()
+    await callBackground('updateRegistrySource', { ...draft, url: draft.url.trim() })
+    if (download) {
+      await callBackground('refreshRegistrySource')
     }
+  }, async () => {
+    await refresh()
+    setDraft(undefined)
   })
 
   return <SettingsSection class={`${styles.option} ${styles['settings-section']}`}

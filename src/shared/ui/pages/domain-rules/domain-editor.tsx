@@ -1,25 +1,27 @@
+import './domain-editor.scss'
+
 import type { RefObject } from 'preact'
 import { useLayoutEffect, useRef } from 'preact/hooks'
 
 import { createDomainEditor } from './domain-editor-view'
 
 export type DomainEditorHandle = ReturnType<typeof createDomainEditor>
+export type DomainEditorRef = RefObject<DomainEditorHandle | null>
 
-export const DomainEditor = ({ editor, ignored }: {
-  editor: RefObject<DomainEditorHandle | null>
-  ignored: boolean
-}) => {
+export const DomainEditor = ({ editor }: { editor: DomainEditorRef }) => {
   const textarea = useRef<HTMLTextAreaElement>(null)
 
   useLayoutEffect(() => {
-    const instance = createDomainEditor(textarea.current!)
+    if (!textarea.current) {
+      return undefined
+    }
+    const instance = createDomainEditor(textarea.current)
 
     editor.current = instance
     return () => {
       instance.destroy()
       editor.current = null
     }
-  }, [])
-  return <textarea id="textarea" ref={textarea}
-    data-type={ignored ? 'ignoredDomains' : 'proxiedDomains'} />
+  }, [editor])
+  return <textarea id="textarea" ref={textarea} />
 }

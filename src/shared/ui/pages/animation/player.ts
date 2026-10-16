@@ -19,8 +19,13 @@ export const mountAnimation = async (
   if (signal.aborted) {
     return () => {}
   }
-  const context = canvas.getContext('2d')!
+  const context = canvas.getContext('2d')
   const sprite = document.createElement('canvas')
+  const spriteContext = sprite.getContext('2d')
+
+  if (!context || !spriteContext) {
+    throw new Error('Canvas is unavailable')
+  }
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)')
   const pointer = { x: 0, y: 0, strength: 0 }
   let time = 0
@@ -90,8 +95,8 @@ export const mountAnimation = async (
         const gap = (cellSize - sprite.width) / 2
 
         context.drawImage(sprite,
-          (column + physics[cell * 4]) * cellSize + gap,
-          (row + physics[cell * 4 + 1]) * cellSize + gap)
+          (column + (physics[cell * 4] ?? 0)) * cellSize + gap,
+          (row + (physics[cell * 4 + 1] ?? 0)) * cellSize + gap)
       }
       context.globalAlpha = 1
       lastFrame = frame
@@ -109,7 +114,7 @@ export const mountAnimation = async (
     cellSize = canvas.width / data.columns
     sprite.width = Math.max(1, Math.round(cellSize * 0.9))
     sprite.height = sprite.width
-    sprite.getContext('2d')!.drawImage(logo, 0, 0, sprite.width, sprite.height)
+    spriteContext.drawImage(logo, 0, 0, sprite.width, sprite.height)
     lastFrame = -1
     requestDraw()
   }

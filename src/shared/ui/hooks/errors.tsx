@@ -16,11 +16,12 @@ export const PageErrors = ({ children }: { children: ComponentChildren }) => {
 
 export const usePageError = (error?: unknown) => {
   const context = useContext(Errors)
+  const report = context?.report
 
   useLayoutEffect(() => {
     if (error) {
-      context?.report(error)
+      report?.(error)
     }
-  }, [error])
+  }, [report, error])
   return context?.error
 }

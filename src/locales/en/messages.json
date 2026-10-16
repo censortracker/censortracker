@@ -822,12 +822,6 @@
   "registrySelectRegionTitle": {
     "message": "Region to bypass country-specific censorship"
   },
-  "registryTypeComplete": {
-    "message": "Use a complete registry of blocked domains (400k+ domains)"
-  },
-  "registryTypeLightweight": {
-    "message": "Use lightweight registry of blocked domains (100k+ domains)"
-  },
   "resetToDefaultDesc": {
     "message": "Reset all settings to default and generate PAC file for your current region. Use this option if there are availability problems with blocked websites."
   },
@@ -995,5 +989,20 @@
   },
   "consentPaused": {
     "message": "Network functions are paused until you agree. CT is not routing traffic; your browser may connect directly or use another proxy."
+  },
+  "close": {
+    "message": "Close"
+  },
+  "back": {
+    "message": "Back"
+  },
+  "disableExtension": {
+    "message": "Disable Censor Tracker"
+  },
+  "enableExtension": {
+    "message": "Enable Censor Tracker"
+  },
+  "searchPlaceholder": {
+    "message": "Search..."
   }
 }

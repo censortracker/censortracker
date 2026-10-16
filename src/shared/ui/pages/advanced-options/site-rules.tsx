@@ -1,30 +1,29 @@
 import { callBackground } from 'Background/background-rpc'
 import browser from 'Background/browser-api'
-import { getMessage, getUILanguage } from 'Background/i18n'
+import { getMessage } from 'Background/i18n'
 import { useRef, useState } from 'preact/hooks'
 
-import { useAction, useResource } from '../hooks/async'
-import styles from '../styles/options.module.scss'
-import { Button } from './button'
-import { Field, SettingsSection } from './form'
+import { Button } from '../../components/button'
+import { Field, SettingsSection } from '../../components/form'
+import { countryLabel } from '../../country'
+import { useAction, useResource } from '../../hooks/async'
+import { usePageError } from '../../hooks/errors'
+import styles from '../../styles/options.module.scss'
 
 export const SiteRules = () => {
-  const { value, refresh } = useResource(() =>
+  const { value, error: readError, refresh } = useResource(() =>
     browser.storage.local.get({ siteCountryRules: {} }))
   const [host, setHost] = useState('')
   const [countries, setCountries] = useState('')
   const input = useRef<HTMLInputElement>(null)
   const { busy, error, run } = useAction()
-  const names = new Intl.DisplayNames([getUILanguage()], { type: 'region' })
+
+  usePageError(readError)
   const save = (hostname: string, codes: string[] | null) => run(async () => {
-    try {
-      await callBackground('siteCountryRule', { host: hostname, countries: codes })
-      setHost('')
-      setCountries('')
-    } finally {
-      await refresh()
-    }
-  })
+    await callBackground('siteCountryRule', { host: hostname, countries: codes })
+    setHost('')
+    setCountries('')
+  }, refresh)
 
   return <SettingsSection class={`${styles.option} ${styles['settings-section']}`}
     id="siteRuleOptions" title="siteRulesTitle">
@@ -55,7 +54,7 @@ export const SiteRules = () => {
       {Object.entries(value?.siteCountryRules || {}).map(([hostname, codes]) =>
         <li key={hostname}>
           <span>{`${hostname}: ${codes.length > 0
-            ? codes.map((code) => `${names.of(code)} (${code})`).join(', ')
+            ? codes.map(countryLabel).join(', ')
             : getMessage('siteRuleUnrestricted')} `}</span>
           <button type="button" disabled={busy} onClick={() => {
             setHost(hostname)

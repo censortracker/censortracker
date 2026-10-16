@@ -3,9 +3,10 @@ import browser from 'Background/browser-api'
 import { getMessage } from 'Background/i18n'
 
 import { Button } from '../components/button'
-import { SettingsLayout } from '../components/layout'
+import { mainDocument, SettingsLayout } from '../components/layout'
 import { useAction } from '../hooks/async'
 import { navigate } from '../navigation'
+import type { PageView } from '../routes'
 import consentStyles from '../styles/consent.module.scss'
 import styles from '../styles/options.module.scss'
 
@@ -54,4 +55,8 @@ export const ConsentPage = () => {
       {error ? getMessage('operationFailed') : ''}
     </p>
   </SettingsLayout>
+}
+
+export const page: PageView = {
+  component: ConsentPage, bodyClass: mainDocument,
 }

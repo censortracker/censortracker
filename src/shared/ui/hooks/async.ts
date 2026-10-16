@@ -2,6 +2,14 @@ import browser from 'Background/browser-api'
 import type { StorageChanges } from 'Background/storage'
 import { useCallback, useLayoutEffect, useRef, useState } from 'preact/hooks'
 
+// Start a task without waiting for it. A failure stays unhandled,
+// so PageError shows it.
+export const detach = (task: Promise<unknown>) => {
+  task.catch((error: unknown) => {
+    throw error
+  })
+}
+
 // Read the latest callback without restarting listeners or timers.
 export const useLatest = <T>(value: T) => {
   const ref = useRef(value)
@@ -22,25 +30,26 @@ export const useAction = () => {
       alive.current = false
     }
   }, [])
-  const run = useCallback(async (operation: () => Promise<unknown>) => {
+  // Handlers can pass this result to JSX: errors stay in `error`.
+  // `settle` runs after the operation even if it fails, e.g. a refresh.
+  const run = useCallback((
+    operation: () => Promise<unknown>, settle?: () => Promise<unknown>,
+  ) => {
     if (running.current || !alive.current) {
       return
     }
-    running.current = true
-    setBusy(true)
-    setError(null)
-    try {
-      await operation()
-    } catch (error_) {
-      if (alive.current) {
-        setError(error_)
-      }
-    } finally {
+    const finish = (failure: unknown) => {
       running.current = false
       if (alive.current) {
+        setError(failure)
         setBusy(false)
       }
     }
+
+    running.current = true
+    setBusy(true)
+    setError(null)
+    operation().finally(settle).then(() => finish(null), finish)
   }, [])
 
   return { busy, error, run }
@@ -60,9 +69,11 @@ export const useStorageChanges = (
 
     browser.storage.onChanged.addListener(listener)
     return () => browser.storage.onChanged.removeListener(listener)
-  }, [])
+  }, [callback])
 }
 
+// Reads on mount and when any of `keys` changes in storage.
+// The first `read` is kept: give the component a key to read other inputs.
 export const useResource = <T>(read: () => Promise<T>, keys: string[] = []) => {
   const callback = useLatest(read)
   const [value, setValue] = useState<T>()
@@ -92,19 +103,19 @@ export const useResource = <T>(read: () => Promise<T>, keys: string[] = []) => {
       }
       return undefined
     }
-  }, [])
+  }, [callback])
 
   useLayoutEffect(() => {
     active.current = true
-    refresh()
+    detach(refresh())
     return () => {
       active.current = false
-      revision.current++
+      invalidate()
     }
-  }, [])
+  }, [refresh, invalidate])
   useStorageChanges((changes) => {
     if (keys.some((key) => key in changes)) {
-      refresh()
+      detach(refresh())
     }
   })
   return { value, error, refresh, invalidate }
@@ -122,7 +133,7 @@ export const useVisiblePolling = (
     const schedule = () => {
       clearTimeout(timer)
       if (active && !running && document.visibilityState === 'visible') {
-        timer = window.setTimeout(poll, ms)
+        timer = window.setTimeout(() => detach(poll()), ms)
       }
     }
     const poll = async () => {
@@ -145,5 +156,5 @@ export const useVisiblePolling = (
       clearTimeout(timer)
       document.removeEventListener('visibilitychange', schedule)
     }
-  }, [ms])
+  }, [callback, ms])
 }

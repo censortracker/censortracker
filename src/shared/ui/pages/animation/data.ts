@@ -1,6 +1,6 @@
-export type AnimationData = ReturnType<typeof readAnimation>
+type AnimationData = ReturnType<typeof readAnimation>
 export type Logo = [source: number, target: number]
-export interface Pointer { x: number; y: number; strength: number }
+interface Pointer { x: number; y: number; strength: number }
 
 export const readAnimation = (buffer: ArrayBuffer) => {
   if (buffer.byteLength < 16) {
@@ -32,7 +32,11 @@ export const loadAnimation = async (url: string) => {
 
   canvas.width = atlas.naturalWidth
   canvas.height = atlas.naturalHeight
-  const context = canvas.getContext('2d', { willReadFrequently: true })!
+  const context = canvas.getContext('2d', { willReadFrequently: true })
+
+  if (!context) {
+    throw new Error('Canvas is unavailable')
+  }
 
   context.drawImage(atlas, 0, 0)
   const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data
@@ -40,7 +44,9 @@ export const loadAnimation = async (url: string) => {
   const bytes = new Uint8Array(16 + canvas.width * (canvas.height - 1))
 
   for (let index = 0; index < bytes.length; index++) {
-    bytes[index] = pixels[(index < 16 ? index : canvas.width + index - 16) * 4]
+    const pixel = index < 16 ? index : canvas.width + index - 16
+
+    bytes[index] = pixels[pixel * 4] ?? 0
   }
   const data = readAnimation(bytes.buffer)
 
@@ -67,7 +73,7 @@ export const frameLogos = (data: AnimationData, frame: number) => {
   const next = (frame + 1) % data.count
   const arrivals = new Set<number>()
   const active = (index: number, cell: number) => {
-    const bits = data.frames[index * data.stride + Math.floor(cell / 8)]
+    const bits = data.frames[index * data.stride + Math.floor(cell / 8)] ?? 0
 
     return Math.floor(bits / 2 ** (cell % 8)) % 2 !== 0
   }
@@ -105,7 +111,8 @@ export const frameLogos = (data: AnimationData, frame: number) => {
   return logos
 }
 
-export const logoOffset = (column: number, row: number, pointer: Pointer) => {
+export const logoOffset = (column: number, row: number,
+  pointer: Pointer): [number, number] => {
   const horizontal = column + 0.5 - pointer.x
   const vertical = row + 0.5 - pointer.y
   const distance = Math.hypot(horizontal, vertical)
@@ -116,7 +123,7 @@ export const logoOffset = (column: number, row: number, pointer: Pointer) => {
 }
 
 export const logoPosition = (source: number, target: number, progress:
-number, columns: number) => {
+number, columns: number): [number, number] => {
   const start = source < 0 ? target : source
   const end = target < 0 ? source : target
   const column = start % columns + (end % columns - start % columns) * progress

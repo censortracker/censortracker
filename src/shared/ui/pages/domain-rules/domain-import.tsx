@@ -1,11 +1,14 @@
+import { callBackground } from 'Background/background-rpc'
+import { removeDuplicates } from 'Background/hostname'
 import { getMessage } from 'Background/i18n'
-import { requestText } from 'Background/request'
-import { isValidURL, removeDuplicates } from 'Background/utilities'
 import { useLayoutEffect, useRef, useState } from 'preact/hooks'
 
-import styles from '../styles/domain-import.module.scss'
-import settings from '../styles/options.module.scss'
-import type { DomainEditorHandle } from './domain-editor'
+import button from '../../components/button.module.scss'
+import { detach } from '../../hooks/async'
+import { useEscape } from '../../hooks/escape'
+import settings from '../../styles/options.module.scss'
+import type { DomainEditorRef } from './domain-editor'
+import styles from './domain-import.module.scss'
 
 const readLines = (text: string) => removeDuplicates(text.split('\n')
   .map((line) => line.trim()).filter((line) => line.length > 0))
@@ -13,24 +16,22 @@ const readLines = (text: string) => removeDuplicates(text.split('\n')
 export const DomainImport = ({ open, onClose, editor }: {
   open: boolean
   onClose: () => void
-  editor: { current: DomainEditorHandle | null }
+  editor: DomainEditorRef
 }) => {
   const [source, setSource] = useState('')
   const [urlError, setUrlError] = useState('')
   const [fileError, setFileError] = useState('')
-  const request = useRef<AbortController | null>(null)
   const revision = useRef(0)
   const close = () => {
     revision.current++
-    request.current?.abort()
     onClose()
     setUrlError('')
     setFileError('')
   }
 
+  useEscape(open, close)
   useLayoutEffect(() => () => {
     revision.current++
-    request.current?.abort()
   }, [])
   const update = (domains: string[], ticket: number) => {
     const all = removeDuplicates([...readLines(editor.current?.getValue() || ''), ...domains])
@@ -49,26 +50,17 @@ export const DomainImport = ({ open, onClose, editor }: {
   const download = async () => {
     const ticket = ++revision.current
 
-    request.current?.abort()
-    const controller = new AbortController()
-
-    request.current = controller
-    if (!isValidURL(source)) {
-      setUrlError('invalidURLError')
-      return
-    }
     try {
-      const text = await requestText(source, {
-        maxBytes: 64000,
-        signal:
-        controller.signal,
-      })
-      const domains = readLines(text)
+      const text = await callBackground('downloadDomains', source)
 
       if (ticket !== revision.current) {
         return
       }
-      if (domains.length === 0) {
+      const domains = readLines(text ?? '')
+
+      if (text === null) {
+        setUrlError('invalidURLError')
+      } else if (domains.length === 0) {
         setUrlError('fetchURLError')
       } else if (!update(domains, ticket)) {
         setUrlError('maxDomainsExceededError')
@@ -101,9 +93,11 @@ export const DomainImport = ({ open, onClose, editor }: {
     }
   }
 
-  return <div class={styles.popup_upload_list} hidden={!open} id="popup">
+  return <div class={styles.popup_upload_list} hidden={!open} id="popup"
+    role="dialog" aria-modal="true" aria-labelledby="popupTitle">
     <div class={styles.popup_upload_list__wrapper}>
-      <div class={`${settings['main-page__title']} ${settings['page-main-title']}`}>
+      <div id="popupTitle"
+        class={`${settings['main-page__title']} ${settings['page-main-title']}`}>
         {getMessage('popupLoadFromSourceTitle')}
       </div>
       <div class={styles.popup__text}>{getMessage('popupDesc')}</div>
@@ -113,7 +107,8 @@ export const DomainImport = ({ open, onClose, editor }: {
             <input type="text" class={styles['input-url-list']} id="sourceURL"
               placeholder="URL" value={source}
               onInput={(event) => setSource(event.currentTarget.value)} />
-            <button class={settings.btn} id="loadFromURLButton" onClick={download}>
+            <button type="button" class={settings.btn} id="loadFromURLButton"
+              onClick={() => detach(download())}>
               <span class={settings.btn__text}>{getMessage('popupLoadButton')}</span>
             </button>
           </div>
@@ -121,11 +116,12 @@ export const DomainImport = ({ open, onClose, editor }: {
             {getMessage(urlError)}
           </div>
         </div>
-        <div id="or">{getMessage('popupOr')}</div>
+        <div class={styles.or}>{getMessage('popupOr')}</div>
         <div class={styles.upload_form__file}>
           <div class={styles['file-upload']}>
             <input id="textFileInput" accept="text/plain" type="file"
-              onChange={(event) => upload(event.currentTarget.files?.[0])} />
+              onChange={(event) =>
+                detach(upload(event.currentTarget.files?.[0]))} />
             <label for="textFileInput" class={`${settings.btn} ${styles.btn_upload_file}`}>
               {getMessage('chooseFileOnComputer')}
             </label>
@@ -136,11 +132,12 @@ export const DomainImport = ({ open, onClose, editor }: {
         </div>
       </div>
     </div>
-    <div class={styles.close_btn} id="closePopup" onClick={close}>
+    <button type="button" class={`${styles.close_btn} ${button.plain}`} id="closePopup"
+      aria-label={getMessage('close')} onClick={close}>
       <svg width="26" height="26" viewBox="0 0 26 26" fill="none"
         xmlns="http://www.w3.org/2000/svg">
         <path d="M1 1L25 25M25 1L1 25" stroke="#3B332B" stroke-opacity="0.5" stroke-width="2" />
       </svg>
-    </div>
+    </button>
   </div>
 }

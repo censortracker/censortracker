@@ -1,60 +1,45 @@
-import browser from 'Background/browser-api'
+import { callBackground } from 'Background/background-rpc'
 import { getMessage } from 'Background/i18n'
-import ProxyManager from 'Background/proxy'
 
-import { useResource } from '../hooks/async'
+import { useAction, useResource } from '../hooks/async'
 import { usePageError } from '../hooks/errors'
-import settings from '../styles/options.module.scss'
-import popup from '../styles/popup.module.scss'
 import { RichMessage } from './message'
-import notice from './notice.module.scss'
 
-export const Conflicts = ({ compact = false }: { compact?: boolean }) => {
-  const { value, error } = useResource(async () => {
-    if (!await ProxyManager.controlledByOtherExtensions()) {
-      return []
-    }
-    const self = await browser.management.getSelf()
-    const installed = await browser.management.getAll()
+// Pages pass their own classes, so each page loads only its own styles.
+export const Conflicts = ({ classes, compact = false }: {
+  classes: { box?: string; title?: string; text?: string; button?: string }
+  compact?: boolean
+}) => {
+  const { value, error: readError } = useResource(async () =>
+    (await callBackground('proxyControl')).extensions)
+  const { error, run } = useAction()
 
-    return installed.filter(({ name, permissions }) =>
-      permissions?.includes('proxy') && name !== self.name)
-  })
-
-  usePageError(error)
-  const styles = compact ? popup : notice
-  const takeControl = async () => {
-    await ProxyManager.takeControl()
-    await ProxyManager.setProxy()
+  usePageError(error || readError)
+  const takeControl = () => run(async () => {
+    await callBackground('takeProxyControl')
     if (compact) {
       window.close()
-    } else {
-      await ProxyManager.controlledByThisExtension()
     }
     window.location.reload()
-  }
-  const title = compact ? `${popup['title-extension']} ${popup['title-disabled']}`
-    : notice.extension__title
-  const description = compact ? popup['text-extension'] : settings.extension__text
-  const controlButton = (message: string) => compact
-    ? <div class={styles['default-btn']} onClick={takeControl}>
-      <span>{getMessage(message)}</span>
-    </div>
-    : <a class={styles['default-btn']} onClick={takeControl}>{getMessage('disableAll')}</a>
+  })
+  const controlButton = (message: string) =>
+    <button type="button" class={classes.button} onClick={takeControl}>
+      {compact ? <span>{getMessage(message)}</span> : getMessage(message)}
+    </button>
 
   return <>
-    <div id="controlledByOtherExtension" class={styles['main-page__extension']}
+    <div id="controlledByOtherExtension" class={classes.box}
       hidden={value?.length !== 1}>
-      <RichMessage as="div" class={title} message="controlledByOtherExtensionTitle"
+      <RichMessage as="div" class={classes.title} message="controlledByOtherExtensionTitle"
         substitutions={value?.[0]?.name} />
-      <RichMessage as="div" class={description} message="controlledByOtherExtensionDesc"
+      <RichMessage as="div" class={classes.text} message="controlledByOtherExtensionDesc"
         substitutions={value?.[0]?.name} />
-      {controlButton('controlledPageDisableExtension')}
+      {controlButton(compact ? 'controlledPageDisableExtension' : 'disableAll')}
     </div>
-    <div id="controlledByOtherExtensions" class={styles['main-page__extension']}
+    <div id="controlledByOtherExtensions" class={classes.box}
       hidden={!value || value.length <= 1}>
-      <div class={title}>{getMessage('controlledByOtherExtensions')}</div>
-      <div class={description}>
+      <div class={classes.title}>{getMessage('controlledByOtherExtensions')}</div>
+      <div class={classes.text}>
         <div>{getMessage('controlledByOtherExtensionsDesc')}</div>
         <ol id="extensionsWhichControlsProxy">
           {value?.map((extension) => <li key={extension.id}>

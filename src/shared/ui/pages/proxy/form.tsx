@@ -2,48 +2,56 @@ import browser from 'Background/browser-api'
 import { getMessage } from 'Background/i18n'
 import { parseProxyAddress } from 'Background/proxy-address'
 import type { ProxyListAction } from 'Background/proxy-list'
-import type { ProxyRecord } from 'Background/proxy-record'
+import type { ManagedProxy } from 'Background/proxy-record'
 import { hasProxyAuth } from 'Background/proxy-record'
 import { useLayoutEffect, useRef, useState } from 'preact/hooks'
 
 import { Button } from '../../components/button'
 import { Field, SettingsSection } from '../../components/form'
 import styles from '../../styles/options.module.scss'
-import { ProtocolOptions } from './protocol-options'
+import type { ProxyProtocol } from './protocol-options'
+import { isProxyProtocol, ProtocolSelect } from './protocol-options'
 
-const empty = { name: '', address: '', protocol: 'HTTPS', username: '', password: '', unrestricted: true }
+interface Draft {
+  name: string
+  address: string
+  protocol: ProxyProtocol
+  username: string
+  password: string
+  unrestricted: boolean
+}
 
-export const ProxyForm = ({ editing, revision, busy, save, cancel, invalid }: {
-  editing?: ProxyRecord
-  revision: number
+const readDraft = (editing?: ManagedProxy): Draft => ({
+  name: editing?.name || '',
+  address: editing?.host ? `${editing.host}:${editing.port}` : '',
+  protocol: editing && isProxyProtocol(editing.protocol) ? editing.protocol : 'HTTPS',
+  username: editing?.username || '',
+  password: editing?.password || '',
+  unrestricted: !editing?.restricted,
+})
+
+// The list gives each edit a new key, so the draft starts from `editing`.
+export const ProxyForm = ({ editing, busy, save, cancel, invalid }: {
+  editing?: ManagedProxy
   busy: boolean
   save: (action: ProxyListAction) => void
   cancel: () => void
   invalid: () => void
 }) => {
-  const [draft, setDraft] = useState(empty)
-  const [auth, setAuth] = useState(false)
+  const [draft, setDraft] = useState(() => readDraft(editing))
+  const [auth, setAuth] =
+    useState(() => Boolean(editing && hasProxyAuth(editing)))
   const address = useRef<HTMLInputElement>(null)
-  const update = <K extends keyof typeof empty>(
-    key: K, value: typeof empty[K],
-  ) => setDraft((previous) => ({ ...previous, [key]: value }))
+  const update = <K extends keyof Draft>(key: K, value: Draft[K]) =>
+    setDraft((previous) => ({ ...previous, [key]: value }))
 
   useLayoutEffect(() => {
-    setDraft(editing ? {
-      name: editing.name || '',
-      address: `${editing.host}:${editing.port}`,
-      protocol: editing.protocol,
-      username: editing.username || '',
-      password: editing.password || '',
-      unrestricted: !editing.restricted,
-    } : empty)
-    setAuth(Boolean(editing && hasProxyAuth(editing)))
     if (editing) {
       address.current?.focus()
     }
-  }, [editing, revision])
+  }, [editing])
 
-  return <form id="proxyForm" class={styles['settings-section']} aria-labelledby="proxyFormTitle"
+  return <form id="proxyForm" class={`${styles['settings-section']} ${styles['proxy-form']}`} aria-labelledby="proxyFormTitle"
     onSubmit={(event) => {
       event.preventDefault()
       try {
@@ -73,8 +81,8 @@ export const ProxyForm = ({ editing, revision, busy, save, cancel, invalid }: {
     </Field>
     <div class={styles['settings-grid']}>
       <Field id="select-toggle" title="proxyProtocol">
-        <select id="select-toggle" disabled={busy} value={draft.protocol}
-          onChange={(event) => update('protocol', event.currentTarget.value)}><ProtocolOptions /></select>
+        <ProtocolSelect id="select-toggle" disabled={busy} value={draft.protocol}
+          onChange={(protocol) => update('protocol', protocol)} />
       </Field>
       <Field id="proxyServerInput" title="proxyAddress">
         <input type="text" required autoComplete="off" spellcheck={false} ref={address}

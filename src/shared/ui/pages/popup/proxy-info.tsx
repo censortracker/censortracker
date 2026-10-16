@@ -3,9 +3,20 @@ import browser from 'Background/browser-api'
 import { getMessage, getUILanguage } from 'Background/i18n'
 import { useLayoutEffect, useRef } from 'preact/hooks'
 
-import { useResource, useStorageChanges } from '../../hooks/async'
+import { countryLabel, regionName } from '../../country'
+import {
+  detach, useLatest, useResource, useStorageChanges,
+} from '../../hooks/async'
 import styles from '../../styles/popup.module.scss'
-import { InfoBlock } from './info-block'
+import { HideDetails, ShowDetails, statusIcon } from './info-block'
+import componentStyles from './info-block.module.scss'
+
+const routeKeys = ['enableExtension', 'useProxy', 'proxyAll', 'proxies',
+  'selectedProxyIds', 'proxyServerURI', 'proxyChecks', 'proxyFailures',
+  'siteCountryRules', 'ignoredHosts', 'domains', 'useRegistry',
+  'customProxiedDomains', 'localProxyURI', 'currentRegionName',
+  'currentRegionCode', 'registryRegionCode', 'activeProxyConfigName',
+  'registrySource', 'externalRegistry', 'antizapret'] as const
 
 export const ProxyInfo = ({ url, open, hidden, onToggle }: {
   url: string; open: boolean; hidden: boolean; onToggle: () => void
@@ -14,31 +25,27 @@ export const ProxyInfo = ({ url, open, hidden, onToggle }: {
     () => callBackground('proxyRouteInfo', { url }),
   )
   const timer = useRef<number | undefined>(undefined)
-  const schedule = () => {
+  const schedule = useLatest(() => {
     invalidate()
     clearTimeout(timer.current)
-    timer.current = window.setTimeout(refresh, 300)
-  }
+    timer.current = window.setTimeout(() => detach(refresh()), 300)
+  })
 
   useLayoutEffect(() => {
-    browser.proxy.settings.onChange?.addListener(schedule)
+    const changed = () => schedule.current()
+
+    browser.proxy.settings.onChange?.addListener(changed)
     return () => {
       clearTimeout(timer.current)
-      browser.proxy.settings.onChange?.removeListener(schedule)
+      browser.proxy.settings.onChange?.removeListener(changed)
     }
-  }, [])
+  }, [schedule])
   useStorageChanges((changes) => {
-    if (['enableExtension', 'useProxy', 'proxyAll', 'proxies',
-      'selectedProxyIds', 'proxyServerURI', 'proxyChecks', 'proxyFailures',
-      'siteCountryRules', 'ignoredHosts', 'domains', 'useRegistry',
-      'customProxiedDomains', 'localProxyURI', 'currentRegionName',
-      'currentRegionCode', 'registryRegionCode', 'activeProxyConfigName',
-      'registrySource', 'externalRegistry', 'antizapret'].some((key) => changes[key])) {
-      schedule()
+    if (routeKeys.some((key) => changes[key])) {
+      schedule.current()
     }
   })
   const lines: string[] = []
-  const names = new Intl.DisplayNames([getUILanguage()], { type: 'region' })
   let summary = error ? getMessage('popupRoute_unavailable') : ''
   let exit = ''
 
@@ -50,7 +57,7 @@ export const ProxyInfo = ({ url, open, hidden, onToggle }: {
     if (builtin && info.check?.exitCountry) {
       const code = info.check.exitCountry
 
-      exit = `${getMessage('proxyExitCountry')}: ${names.of(code)} (${code})`
+      exit = `${getMessage('proxyExitCountry')}: ${countryLabel(code)}`
     }
     if (info.proxy && !builtin) {
       lines.push(`${info.proxy.protocol} ${info.proxy.host}:${info.proxy.port}`,
@@ -61,7 +68,7 @@ export const ProxyInfo = ({ url, open, hidden, onToggle }: {
         getMessage(`proxyStatus_${info.check.status}`))
         if (info.check.exitIP) {
           const code = info.check.exitCountry
-          const country = code ? `${names.of(code)} (${code})` : getMessage('proxyFilterUnknown')
+          const country = code ? countryLabel(code) : getMessage('proxyFilterUnknown')
 
           exit = getMessage('popupRouteExit', [info.check.exitIP, country])
         }
@@ -70,16 +77,29 @@ export const ProxyInfo = ({ url, open, hidden, onToggle }: {
       }
     }
     if (info.domainCount !== undefined) {
-      const region = info.regionCode ? names.of(info.regionCode) : info.region || getMessage('popupAutoMessage')
+      const region = info.regionCode ? regionName(info.regionCode)
+        : info.region || getMessage('popupAutoMessage')
 
       lines.push(`${getMessage('popupYourRegion')}: ${region}`, `${getMessage('popupTotalBlocked')}: ${info.domainCount}`)
     }
     lines.push(getMessage('popupRouteHelp'))
   }
-  return <InfoBlock id="proxying-info" title="popupProxyInfoTitle" icon="question"
-    open={open} onToggle={onToggle} hidden={hidden} route
-    details={<div id="proxyingDetailsText">{lines.map((line, index) => <code key={index}>{line}</code>)}</div>}>
-    <div class={styles.proxy_info} id="proxyRouteSummary" role="status">{summary}</div>
-    <div class={styles.proxy_info} id="proxyRouteExit">{exit}</div>
-  </InfoBlock>
+  return <div id="proxying-info" hidden={hidden} class={componentStyles['main-page__block']}>
+    <div class={componentStyles.block__title}>
+      <span class={styles.unselectable}>{getMessage('popupProxyInfoTitle')}</span>
+      <img class={`${componentStyles.icon__status} ${styles.unselectable}`}
+        src={statusIcon('question')} width="24px" height="24px" alt="" />
+    </div>
+    <div class={`${styles.proxy_info} ${styles['proxy-route']}`} id="proxyRouteSummary" role="status">{summary}</div>
+    <div class={`${styles.proxy_info} ${styles['proxy-route']}`} id="proxyRouteExit">{exit}</div>
+    <ShowDetails open={open} onToggle={onToggle} label="popupProxyInfoShowDetails"
+      class={styles.unselectable} />
+    <div style={{ display: open ? 'block' : 'none' }}
+      class={`${componentStyles.block__text} ${componentStyles['text-normal']} ${componentStyles['proxying-details']}`}>
+      <div id="proxyingDetailsText" class={styles['proxy-route']}>{lines.map((line) => <code key={line}>{line}</code>)}</div>
+      <div class={componentStyles.block__footer}>
+        <HideDetails onToggle={onToggle} />
+      </div>
+    </div>
+  </div>
 }

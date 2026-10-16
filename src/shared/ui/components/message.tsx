@@ -1,13 +1,11 @@
 import { getMessage } from 'Background/i18n'
 import type { HTMLAttributes } from 'preact'
 
-const escapeHTML = (text: string) => text.replace(/[&<>"']/g, (character) => {
-  const entities: Record<string, string> = {
-    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', '\'': '&#39;',
-  }
-
-  return entities[character]
-})
+const entities: Record<string, string> = {
+  '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', '\'': '&#39;',
+}
+const escapeHTML = (text: string) =>
+  text.replace(/[&<>"']/g, (character) => entities[character] ?? character)
 
 type Props = Pick<HTMLAttributes<HTMLElement>, 'id' | 'class' | 'hidden'> & {
   message: string

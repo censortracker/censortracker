@@ -44,12 +44,12 @@ test('visible polling waits after completion, avoids overlap, and stops on unmou
   assert.equal(timers.size, 1)
   const callback = [...timers.values()][0]
   timers.clear()
-  const running = callback()
+  callback()
   assert.equal(calls, 1)
   for (const listener of listeners) listener()
   assert.equal(timers.size, 0)
   request.resolve()
-  await running
+  await new Promise(resolve => setImmediate(resolve))
   assert.equal(timers.size, 1)
   doc.visibilityState = 'hidden'
   for (const listener of listeners) listener()
@@ -62,20 +62,20 @@ test('visible polling waits after completion, avoids overlap, and stops on unmou
   assert.equal(listeners.size, 0)
 })
 
-test('domain import cancels a download on close and ignores a late response', async () => {
-  const state = storageFixture({ customProxiedDomains: ['saved.example'] })
+test('domain import ignores a download that finishes after close', async () => {
   const request = pending()
-  let signal, closed = 0, updates = 0
-  const { DomainImport } = moduleFor('components/domain-import', {
-    'browser-api': { default: state.browser },
-    request: { requestText: (_, options) => { signal = options.signal; return request.promise } },
-    utilities: { isValidURL: () => true, removeDuplicates: domains => domains },
-  }, { AbortController })
+  let closed = 0, updates = 0
+  const { DomainImport } = moduleFor('pages/domain-rules/domain-import', {
+    'browser-api': { default: {} },
+    'background-rpc': { callBackground: async (action, url) => {
+      assert.deepEqual([action, url], ['downloadDomains', 'https://source.example/list'])
+      return request.promise
+    } },
+  })
   ui.testing.render(h(DomainImport, { open: true, onClose: () => closed++, editor: { current: { setValue: () => updates++, focusEnd() {} } } }))
   ui.testing.fireEvent.input(document.getElementById('sourceURL'), { target: { value: 'https://source.example/list' } })
   ui.testing.fireEvent.click(document.getElementById('loadFromURLButton'))
   ui.testing.fireEvent.click(document.getElementById('closePopup'))
-  assert.equal(signal.aborted, true)
   request.resolve('late.example')
   await ui.testing.act(async () => { await request.promise })
   assert.equal(updates, 0)
@@ -84,8 +84,9 @@ test('domain import cancels a download on close and ignores a late response', as
 
 test('domain imports keep unsaved edits and previous imports', async () => {
   let draft = 'draft.example', closed = 0
-  const { DomainImport } = moduleFor('components/domain-import', {
-    request: { requestText: async () => `import${closed}.example\ndraft.example` },
+  const { DomainImport } = moduleFor('pages/domain-rules/domain-import', {
+    'browser-api': { default: {} },
+    'background-rpc': { callBackground: async () => `import${closed}.example\ndraft.example` },
   })
   ui.testing.render(h(DomainImport, { open: true, onClose: () => closed++,
     editor: { current: { getValue: () => draft, setValue: value => { draft = value }, focusEnd() {} } },
@@ -105,14 +106,14 @@ test('proxy form keeps multiple draft changes and restores a repeated edit', asy
   })
   let action
   const proxy = { id: 'one', name: 'Original', host: 'proxy.example', port: 8080, protocol: 'HTTP' }
-  const props = { editing: proxy, revision: 0, busy: false, save: value => { action = value }, cancel() {}, invalid() { assert.fail('Invalid draft') } }
+  const props = { editing: proxy, busy: false, save: value => { action = value }, cancel() {}, invalid() { assert.fail('Invalid draft') } }
   const view = ui.testing.render(h(ProxyForm, props))
   ui.testing.fireEvent.input(document.getElementById('proxyName'), { target: { value: 'New name' } })
   ui.testing.fireEvent.input(document.getElementById('proxyUsername'), { target: { value: 'alice' } })
   ui.testing.fireEvent.submit(document.getElementById('proxyForm'))
   assert.equal(action.proxy.name, 'New name')
   assert.equal(action.proxy.username, 'alice')
-  view.rerender(h(ProxyForm, { ...props, editing: { ...proxy } }))
+  view.rerender(h(ProxyForm, { ...props, key: 1 }))
   assert.equal(document.getElementById('proxyName').value, 'Original')
   assert.equal(document.activeElement.id, 'proxyServerInput')
 })

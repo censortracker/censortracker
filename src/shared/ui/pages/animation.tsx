@@ -1,6 +1,7 @@
 import { useLayoutEffect, useRef, useState } from 'preact/hooks'
 
 import { PageError } from '../components/page-error'
+import type { PageView } from '../routes'
 import styles from './animation/animation.module.scss'
 import { mountAnimation } from './animation/player'
 
@@ -12,7 +13,10 @@ export const AnimationPage = () => {
     const controller = new AbortController()
     let cleanup: (() => void) | undefined
 
-    mountAnimation(canvas.current!, controller.signal).then((dispose) => {
+    if (!canvas.current) {
+      return undefined
+    }
+    mountAnimation(canvas.current, controller.signal).then((dispose) => {
       if (controller.signal.aborted) {
         dispose()
       } else {
@@ -34,4 +38,8 @@ export const AnimationPage = () => {
       <canvas id="animationCanvas" ref={canvas} class={styles.canvas} width="800" height="600" />
     </main>
   </>
+}
+
+export const page: PageView = {
+  component: AnimationPage, bodyClass: styles.document ?? '',
 }

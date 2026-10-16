@@ -1,20 +1,37 @@
 import { callBackground } from 'Background/background-rpc'
 import browser from 'Background/browser-api'
 import { getMessage } from 'Background/i18n'
+import type { ComponentChildren } from 'preact'
 import { useEffect, useRef, useState } from 'preact/hooks'
 
 import { Button } from '../components/button'
 import { ConsentStatus } from '../components/consent-status'
 import { Dialog } from '../components/dialog'
 import { Check } from '../components/form'
-import { SettingsHeader, SettingsLayout } from '../components/layout'
+import { settingsDocument, SettingsHeader, SettingsLayout } from '../components/layout'
 import { RegistryStatus } from '../components/registry-status'
-import { SiteRules } from '../components/site-rules'
 import { useAction, useResource } from '../hooks/async'
 import { usePageError } from '../hooks/errors'
 import { useKeySequence } from '../hooks/key-sequence'
+import type { PageView } from '../routes'
 import styles from '../styles/options.module.scss'
-import { exportFile, importSettings, resetSettings, updateRegistry } from './settings-operations'
+import { SiteRules } from './advanced-options/site-rules'
+import { exportFile, importSettings } from './settings-operations'
+
+const Operation = ({ id, title, busy, onClick, children }: {
+  id: string
+  title: string
+  busy: boolean
+  onClick: () => void
+  children?: ComponentChildren
+}) => <div class={styles.option}>
+  <button type="button" id={id} disabled={busy} onClick={onClick}
+    class={`${styles.option__link} ${styles['settings-link']}`}>
+    {getMessage(`${title}Title`)}
+  </button>
+  <div class={styles['main-page__about']}>{getMessage(`${title}Desc`)}</div>
+  {children}
+</div>
 
 export const AdvancedOptionsPage = () => {
   const [extended, setExtended] = useState(false)
@@ -24,117 +41,68 @@ export const AdvancedOptionsPage = () => {
   const [info, setInfo] = useState('')
   const [copied, setCopied] = useState(false)
   const input = useRef<HTMLInputElement>(null)
-  const textarea = useRef<HTMLTextAreaElement>(null)
   const timer = useRef<number | undefined>(undefined)
-  const updateAction = useAction()
-  const resetAction = useAction()
-  const debugAction = useAction()
-  const exportAction = useAction()
-  const supportAction = useAction()
-  const proxyAction = useAction()
-  const importAction = useAction()
-  const { value, refresh } = useResource(() =>
+  const { busy, error, run } = useAction()
+  const { value, error: readError, refresh } = useResource(() =>
     browser.storage.local.get({ proxyAll: false }))
 
   useKeySequence(() => {
     setExtended(true)
   })
   useEffect(() => () => clearTimeout(timer.current), [])
-  const error = updateAction.error || resetAction.error || debugAction.error ||
-    exportAction.error || supportAction.error ||
-    proxyAction.error || importAction.error
-  const operations = [
-    {
-      id: 'importSettings',
-      title: 'importSettings',
-      busy: false,
-      click: () => input.current?.click(),
-    },
-    {
-      id: 'exportSettings',
-      title: 'exportSettings',
-      busy: exportAction.busy,
-      click: () => exportAction.run(() => exportFile(false)),
-    },
-    {
-      id: 'exportSupport',
-      title: 'exportSupport',
-      busy: supportAction.busy,
-      click: () => supportAction.run(() => exportFile(true)),
-    },
-    {
-      id: 'updateLocalRegistry',
-      title: 'updateLocalRegistry',
-      busy: updateAction.busy,
-      click: () => updateAction.run(async () => {
-        setComplete(false)
-        await updateRegistry()
-        setComplete(true)
-      }),
-    },
-    {
-      id: 'resetSettingsToDefault',
-      title: 'resetToDefault',
-      busy: false,
-      click: () => setReset(!reset),
-    },
-    {
-      id: 'showDebugInfo',
-      title: 'showDebugInfo',
-      busy: debugAction.busy,
-      click: () => debugAction.run(async () => {
-        setInfo(JSON.stringify(await callBackground('diagnosticInfo'), null, 2))
-        setCopied(false)
-        setDebug(!debug)
-      }),
-    },
-  ]
-
-  usePageError(error)
+  usePageError(error || readError)
 
   return <>
     <SettingsLayout linkedImage>
       <SettingsHeader title="advancedOptionsTitle" />
-      <ConsentStatus variant="advanced" />
+      <ConsentStatus advanced />
       <div class={styles.option} id="extendedSettings" hidden={!extended}>
         <Check id="proxyAll" title="proxyAll" checked={value?.proxyAll || false}
-          disabled={proxyAction.busy}
-          onChange={(checked) => proxyAction.run(async () => {
-            try {
-              await callBackground('setProxyAll', checked)
-            } finally {
-              await refresh()
-            }
-          })} />
+          disabled={busy}
+          onChange={(checked) => run(() => callBackground('setProxyAll', checked), refresh)} />
       </div>
       <SiteRules />
-      {operations.map(({ id, title, busy, click }) =>
-        <div class={styles.option} key={id}>
-          <button type="button" id={id} disabled={busy} onClick={click}
-            class={`${styles.option__link} ${styles['settings-link']}`}>
-            {getMessage(`${title}Title`)}
-          </button>
-          <div class={styles['main-page__about']}>{getMessage(`${title}Desc`)}</div>
-          {id === 'importSettings' && <input id="importSettingsInput" ref={input}
-            class={styles.hidden} accept="application/json" type="file"
-            onChange={(event) => {
-              const file = event.currentTarget.files?.[0]
+      <Operation id="importSettings" title="importSettings" busy={false}
+        onClick={() => input.current?.click()}>
+        <input id="importSettingsInput" ref={input}
+          hidden accept="application/json" type="file"
+          onChange={(event) => {
+            const file = event.currentTarget.files?.[0]
 
-              event.currentTarget.value = ''
-              importAction.run(() => importSettings(file))
-            }} />}
-          {id === 'updateLocalRegistry' && <RegistryStatus />}
-        </div>)}
+            event.currentTarget.value = ''
+            run(() => importSettings(file))
+          }} />
+      </Operation>
+      <Operation id="exportSettings" title="exportSettings" busy={busy}
+        onClick={() => run(() => exportFile(false))} />
+      <Operation id="exportSupport" title="exportSupport" busy={busy}
+        onClick={() => run(() => exportFile(true))} />
+      <Operation id="updateLocalRegistry" title="updateLocalRegistry" busy={busy}
+        onClick={() => run(async () => {
+          setComplete(false)
+          await callBackground('updateRegistry')
+          setComplete(true)
+        })}>
+        <RegistryStatus />
+      </Operation>
+      <Operation id="resetSettingsToDefault" title="resetToDefault" busy={false}
+        onClick={() => setReset(!reset)} />
+      <Operation id="showDebugInfo" title="showDebugInfo" busy={busy}
+        onClick={() => run(async () => {
+          setInfo(JSON.stringify(await callBackground('diagnosticInfo'), null, 2))
+          setCopied(false)
+          setDebug(!debug)
+        })} />
     </SettingsLayout>
     <Dialog id="popupConfirmReset" closeId="closePopupReset" open={reset}
       onClose={() => setReset(false)}
       title="areYouSureYouWantToResetSettingsTitle">
       <div class={styles['popup-text']}>{getMessage('areYouSureYouWantToResetSettingsDesc')}</div>
-      <Button id="confirmReset" disabled={resetAction.busy}
-        onClick={() => resetAction.run(async () => {
+      <Button id="confirmReset" disabled={busy}
+        onClick={() => run(async () => {
           setComplete(false)
           try {
-            await resetSettings()
+            await callBackground('resetSettings')
             setComplete(true)
           } finally {
             setReset(false)
@@ -154,15 +122,18 @@ export const AdvancedOptionsPage = () => {
     <Dialog id="popupDebugInformation" closeId="closeDebugInfo" open={debug}
       onClose={() => setDebug(false)} title="debugInfoTitle">
       <div class={styles['popup-text']}>
-        <textarea readOnly id="debugInfoJSON" ref={textarea} value={info} />
+        <textarea readOnly id="debugInfoJSON" class={styles['debug-info']} value={info} />
       </div>
-      <Button id="copyDebugInfoBtn" onClick={() => {
-        textarea.current?.select()
-        document.execCommand('copy')
+      <Button id="copyDebugInfoBtn" onClick={() => run(async () => {
+        await navigator.clipboard.writeText(info)
         setCopied(true)
         clearTimeout(timer.current)
         timer.current = window.setTimeout(() => setDebug(false), 500)
-      }}>{copied ? '✓' : <span class={styles.btn__text}>{getMessage('copyButton')}</span>}</Button>
+      })}>{copied ? '✓' : <span class={styles.btn__text}>{getMessage('copyButton')}</span>}</Button>
     </Dialog>
   </>
+}
+
+export const page: PageView = {
+  component: AdvancedOptionsPage, bodyClass: settingsDocument,
 }

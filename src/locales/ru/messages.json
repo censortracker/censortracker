@@ -822,12 +822,6 @@
   "registrySelectRegionTitle": {
     "message": "Регион для обхода блокировок"
   },
-  "registryTypeComplete": {
-    "message": "Разблокировать все (400 000+ доменов)"
-  },
-  "registryTypeLightweight": {
-    "message": "Разблокировать всё, кроме небезопасных сайтов (100 000+ доменов)"
-  },
   "resetToDefaultDesc": {
     "message": "Сбросить настройки к значениям по умолчанию и пересобрать PAC-файл для вашего текущего региона. Если у вас есть проблемы с доступом к заблокированным сайтам, то эта опция — ваш выбор."
   },
@@ -995,5 +989,20 @@
   },
   "consentPaused": {
     "message": "Сетевые функции приостановлены до согласия. CT не направляет трафик через прокси; браузер может подключаться напрямую или через другой прокси."
+  },
+  "close": {
+    "message": "Закрыть"
+  },
+  "back": {
+    "message": "Назад"
+  },
+  "disableExtension": {
+    "message": "Выключить Censor Tracker"
+  },
+  "enableExtension": {
+    "message": "Включить Censor Tracker"
+  },
+  "searchPlaceholder": {
+    "message": "Поиск..."
   }
 }

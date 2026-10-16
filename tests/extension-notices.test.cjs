@@ -73,7 +73,8 @@ test('opening notices reuses and focuses their existing tab', async () => {
 async function view(f, closeWhenEmpty = false) {
   let closed = 0
   const { Notices } = ui.moduleFor('components/notices', {
-    ...f.mocks, 'extension-notices': f.api,
+    ...f.mocks, 'background-rpc': { callBackground: (action, id) =>
+      action === 'notices' ? f.api.pendingNotices() : f.api.dismissNotice(id) },
   })
   const result = ui.testing.render(ui.h(Notices, {
     onEmpty: closeWhenEmpty ? async () => { closed++ } : undefined,
@@ -125,8 +126,15 @@ for (const accepted of [undefined, true, false]) {
     const state = {}, navigations = []
     let closed = false
     const { NotificationsPage } = ui.moduleFor('pages/notifications', {
-      'browser-api': { default: { storage: { local: { set: async values => Object.assign(state, values) } } } },
-      'data-consent': { CONSENT_VERSION: 1, getDataConsent: async () => accepted === undefined ? null : { version: 1, accepted } },
+      'background-rpc': { callBackground: async action => {
+        assert.equal(action, 'consentPrompt')
+        return load('background/operations', {
+          'browser-api': { default: { storage: { local: {
+            get: async () => ({ dataConsent: accepted === undefined ? undefined : { version: 1, accepted } }),
+            set: async values => Object.assign(state, values),
+          } } } },
+        }).consentPrompt()
+      } },
       'key-sequence': { useKeySequence() {} },
       navigation: { navigate: (path, replace) => { assert.equal(replace, true); navigations.push(path) } },
       notices: { Notices: ({ onEmpty }) => {

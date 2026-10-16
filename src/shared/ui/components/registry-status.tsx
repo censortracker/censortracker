@@ -4,7 +4,6 @@ import { Fragment } from 'preact'
 
 import { useResource } from '../hooks/async'
 import { usePageError } from '../hooks/errors'
-import { navigate } from '../navigation'
 import styles from '../styles/options.module.scss'
 import notice from './notice.module.scss'
 
@@ -28,7 +27,7 @@ export const RegistryStatus = ({ warning = false }: { warning?: boolean }) => {
   return <>
     <p id="builtinRegistryStatus" role="status"
       hidden={value?.state === 'ready' && !value.error}>{value?.text}</p>
-    {warning && <div class={notice['main-page__extension']}
+    {warning && <div class={`${notice['main-page__extension']} ${styles['registry-warning']}`}
       id="optionsRegistryIsEmptyWarning"
       hidden={!value || (!value.empty && value.state !== 'unavailable')}>
       <div class={notice.extension__title}>
@@ -39,15 +38,12 @@ export const RegistryStatus = ({ warning = false }: { warning?: boolean }) => {
         {value?.error || (['ready', 'empty'].includes(value?.state || '')
           ? getMessage('optionsRegistryIsEmptyDesc') : value?.text)}
       </div>
-      {[
-        ['optionsRegistryUpdateDatabaseButton', 'advanced-options.html'],
-        ['optionsRegistryProxyingListButton', 'proxy-list.html'],
-      ].map(([id, href]) => <Fragment key={id}><a class={notice['default-btn']} id={id}
-        onClick={() => {
-          navigate(`/${href}`)
-        }}>
-        {getMessage(id)}
-      </a>{' '}</Fragment>)}
+      {([
+        ['optionsRegistryUpdateDatabaseButton', '/advanced-options.html'],
+        ['optionsRegistryProxyingListButton', '/proxy-list.html'],
+      ] as const).map(([id, href]) => <Fragment key={id}>
+        <a class={notice['default-btn']} id={id} href={href}>{getMessage(id)}</a>{' '}
+      </Fragment>)}
     </div>}
   </>
 }

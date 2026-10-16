@@ -34,12 +34,12 @@ export const RelatedDomains = ({ tabId, url }: {
     }
   })
 
-  return <details id="relatedDomains">
+  return <details id="relatedDomains" class={styles['related-domains']}>
     <summary>{getMessage('relatedDomainsTitle')}</summary>
     <p class={styles.proxy_info}>{getMessage('relatedDomainsHelp')}</p>
     <button id="relatedDomainsScan" class={styles['default-btn']} type="button"
       disabled={busy} onClick={() => execute(false)}>{getMessage('relatedDomainsScan')}</button>
-    <div id="relatedDomainsList">{hosts.map((host) => <label key={host}>
+    <div id="relatedDomainsList" class={styles['related-domains-list']}>{hosts.map((host) => <label key={host}>
       <input type="checkbox" value={host} checked={selected.includes(host)} disabled={busy}
         onChange={(event) => setSelected(event.currentTarget.checked
           ? [...selected, host] : selected.filter((item) => item !== host))}

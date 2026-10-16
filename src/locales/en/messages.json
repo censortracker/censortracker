@@ -584,6 +584,9 @@
   "faqLink": {
     "message": "Frequently asked questions"
   },
+  "faqMirrorLink": {
+    "message": "Frequently asked questions (mirror)"
+  },
   "fetchURLError": {
     "message": "The URL you entered is not available. Please check it and try again."
   },

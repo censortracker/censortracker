@@ -107,6 +107,7 @@ export const OptionsPage = () => {
       <div class={styles['options-links']} id="contacts">
         {[
           ['https://censortracker.org/#faq', 'faqLink'],
+          ['https://storage.googleapis.com/amnezia/censortracker#faq', 'faqMirrorLink'],
           ['https://t.me/censortracker_support_bot', 'supportBotLink'],
           ['https://t.me/censortracker_feedback', 'communityChatLink'],
           ['mailto:support@censortracker.org', 'supportEmailLink'],

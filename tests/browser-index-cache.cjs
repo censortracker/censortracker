@@ -8,7 +8,7 @@ const os = require('node:os')
 const buildFixture = require('./build-fixture.cjs')
 
 for (const firefox of [false, true]) {
-  test(`${firefox ? 'Firefox' : 'Chrome'} restores a large index after extension reload`, { timeout: 60000 }, async context => {
+  test(`${firefox ? 'Firefox' : 'Chrome'} restores a large index after ${firefox ? 'extension reload' : 'browser restart'}`, { timeout: 60000 }, async context => {
     const temporary = await fs.mkdtemp(path.join(os.tmpdir(), 'ct-index-cache-'))
     const addon = path.join(temporary, 'addon')
     const profile = path.join(temporary, 'profile')
@@ -31,7 +31,10 @@ for (const firefox of [false, true]) {
         ...(firefox ? { browser_specific_settings: { gecko: { id: 'index-cache@censortracker.invalid' } } }
           : { host_permissions: ['http://127.0.0.1/*'] }),
       }))
-      const result = new Promise(resolve => { report = resolve })
+      let restart
+      const result = new Promise(resolve => {
+        report = data => data.restart ? restart() : resolve(data)
+      })
       let port
       if (firefox) {
         await fs.writeFile(path.join(profile, 'user.js'), [
@@ -43,18 +46,29 @@ for (const firefox of [false, true]) {
         const { findFreeTcpPort } = await import('../node_modules/web-ext/lib/firefox/remote.js')
         port = await findFreeTcpPort()
       }
-      child = spawn(firefox ? process.env.FIREFOX || 'firefox' : process.env.CHROMIUM || 'chromium', firefox
-        ? ['--headless', '--no-remote', '--profile', profile, '--start-debugger-server', String(port), 'about:blank']
-        : [`--headless=${process.env.CT_CHROMIUM_HEADLESS || 'new'}`, '--remote-debugging-port=0',
-          '--no-sandbox', '--disable-gpu', '--disable-dev-shm-usage',
-          '--disable-background-networking', '--disable-component-update', `--user-data-dir=${profile}`,
-          `--disable-extensions-except=${addon}`, `--load-extension=${addon}`, 'about:blank'],
-      { stdio: 'ignore', env: { ...process.env, MOZ_DISABLE_CONTENT_SANDBOX: '1' } })
+      let fail
       const failure = new Promise((resolve, reject) => {
-        child.on('error', reject)
-        child.on('exit', () => reject(new Error('Browser exited early')))
+        fail = reject
         timer = setTimeout(() => reject(new Error('Index cache test timed out')), 45000)
       })
+      const launch = () => {
+        child = spawn(firefox ? process.env.FIREFOX || 'firefox' : process.env.CHROMIUM || 'chromium', firefox
+          ? ['--headless', '--no-remote', '--profile', profile, '--start-debugger-server', String(port), 'about:blank']
+          : [`--headless=${process.env.CT_CHROMIUM_HEADLESS || 'new'}`, '--remote-debugging-port=0',
+            '--no-sandbox', '--disable-gpu', '--disable-dev-shm-usage',
+            '--disable-background-networking', '--disable-component-update', `--user-data-dir=${profile}`,
+            `--disable-extensions-except=${addon}`, `--load-extension=${addon}`, 'about:blank'],
+        { stdio: 'ignore', env: { ...process.env, MOZ_DISABLE_CONTENT_SANDBOX: '1' } })
+        child.on('error', fail)
+        child.on('exit', () => fail(new Error('Browser exited early')))
+      }
+      restart = async () => {
+        child.removeAllListeners('exit')
+        child.kill('SIGTERM')
+        await new Promise(resolve => child.once('exit', resolve))
+        launch()
+      }
+      launch()
       const run = async () => {
         if (firefox) {
           const { connectWithMaxRetries } = await import('../node_modules/web-ext/lib/firefox/remote.js')

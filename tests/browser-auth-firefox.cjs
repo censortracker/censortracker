@@ -123,10 +123,14 @@ test('Firefox routes a large registry, authenticates proxies, and inspects page 
     const entry = path.join(temporary, 'entry.js')
     await fs.writeFile(entry, `
       import browser from ${JSON.stringify(path.join(root, 'browser-api.ts'))};
-      import manager from ${JSON.stringify(path.join(root, 'proxy.ts'))};
+      import manager, { watchProxyCache } from ${JSON.stringify(path.join(root, 'proxy.ts'))};
       import { registerProxyAuth } from ${JSON.stringify(path.join(root, 'proxy-auth.ts'))};
-      import { setProbeRoute, withProxyLock } from ${JSON.stringify(path.join(root, 'proxy-route.ts'))};
+      import { setProbeRoute, watchRoutes, withProxyLock } from ${JSON.stringify(path.join(root, 'proxy-route.ts'))};
+      import { watchRegistry } from ${JSON.stringify(path.join(root, 'registry.ts'))};
       import { findRelatedDomains } from ${JSON.stringify(path.join(root, 'related-domains.ts'))};
+      watchRoutes();
+      watchRegistry();
+      watchProxyCache();
       registerProxyAuth();
       (async () => {
         const results = [];

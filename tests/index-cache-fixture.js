@@ -1,5 +1,5 @@
 import browser from '../src/shared/js/background/browser-api'
-import registry from '../src/shared/js/background/registry'
+import registry, { watchRegistry } from '../src/shared/js/background/registry'
 import { indexCache, setRegistryState } from '../src/shared/js/background/index-cache'
 
 const check = (value, message) => { if (!value) throw new Error(message) }
@@ -7,6 +7,7 @@ const wait = () => new Promise(resolve => setTimeout(resolve, 10))
 const report = data => fetch(browser.runtime.getManifest().homepage_url +
   '?data=' + encodeURIComponent(JSON.stringify(data)))
 
+watchRegistry()
 ;(async () => {
   try {
     const { stage = 0, coldMs = 0 } = await browser.storage.local.get(['stage', 'coldMs'])
@@ -24,7 +25,9 @@ const report = data => fetch(browser.runtime.getManifest().homepage_url +
         check(saved, 'Snapshot was not saved')
       }
       await browser.storage.local.set({ stage: 1, coldMs })
-      browser.runtime.reload()
+      // Chromium does not load a command-line extension again after reload.
+      if (browser.runtime.getManifest().manifest_version === 3) await report({ restart: true })
+      else browser.runtime.reload()
       return
     }
     const get = browser.storage.local.get.bind(browser.storage.local)
@@ -48,7 +51,7 @@ const report = data => fetch(browser.runtime.getManifest().homepage_url +
     await setRegistryState({ domains: ['fallback.example'] })
     check((await registry.getDomainStatus('fallback.example')).blocked, 'Fallback index')
     indexedDB.open = open
-    await registry.clearRegistry()
+    await setRegistryState({ domains: [] })
     check(!(await registry.getDomainStatus('fallback.example')).blocked, 'Cleared index')
     await report({ coldMs, warmMs })
   } catch (error) {

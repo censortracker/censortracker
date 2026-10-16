@@ -949,7 +949,7 @@
     "message": "Proxy checks: api.ipify.org, api.myip.com, ipwho.is and api.country.is see the test connection IP. cloudflare-dns.com receives the proxy hostname; api.country.is receives its server and exit IPs to identify countries. These lookups do not send visited site domains."
   },
   "consentSources": {
-    "message": "External lists: your IP and the requested URL go to your selected source. Built-in sources: raw.githubusercontent.com/anticensority, p.thenewone.lol:8443 and antizapret.prostovpn.org. Enabled subscriptions update in the background."
+    "message": "External lists: your IP and the address of the list file being downloaded go to your selected source. Addresses of sites you visit are not sent. Built-in sources: raw.githubusercontent.com/anticensority, p.thenewone.lol:8443 and antizapret.prostovpn.org. Enabled subscriptions update in the background."
   },
   "consentLocal": {
     "message": "Local proxy: status, start and stop commands go to localhost:49490. The local app handles traffic in this mode."
@@ -964,7 +964,7 @@
     "message": "Declining or withdrawing consent stops CT network functions and removes its proxy setting. The browser may connect directly or use another proxy. Your settings and lists stay saved."
   },
   "consentControl": {
-    "message": "You can withdraw consent in Settings. Requests already sent cannot be undone; existing browser connections may remain open."
+    "message": "You can withdraw consent in Settings. Withdrawing consent stops further data transfer but does not undo processing that already took place; existing browser connections may remain open."
   },
   "consentAccept": {
     "message": "Agree"

@@ -6,6 +6,10 @@ import type { ProxyRecord } from './proxy-record'
 import { hasProxyAuth, proxyKey } from './proxy-record'
 import { getServiceRoute, noteProbeAuthFailure, proxyRequestAllowed } from './proxy-route'
 
+const firefoxTypes: Partial<Record<string, FirefoxProxyInfo['type']>> = {
+  HTTP: 'http', HTTPS: 'https', SOCKS4: 'socks4', SOCKS5: 'socks',
+}
+
 interface FirefoxProxyInfo {
   type: 'http' | 'https' | 'socks4' | 'socks'
   host: string
@@ -83,7 +87,9 @@ export const createAuthHandler = (
     tried.add(key)
     attempts.set(details.requestId, tried)
     return {
-      authCredentials: { username: proxy.username!, password: proxy.password! },
+      authCredentials: {
+        username: proxy.username || '', password: proxy.password || '',
+      },
     }
   }
 
@@ -94,16 +100,19 @@ export const createAuthHandler = (
 }
 
 export const firefoxProxyInfo = (proxy: ProxyRecord): FirefoxProxyInfo => {
-  const type = ({ HTTP: 'http', HTTPS: 'https', SOCKS4: 'socks4', SOCKS5: 'socks' } as Record<string, FirefoxProxyInfo['type']>)[proxy.protocol]
+  const type = firefoxTypes[proxy.protocol]
 
+  if (!type) {
+    throw new Error('Invalid proxy protocol')
+  }
   return {
     type,
-    host: proxy.host!.replace(/^\[|\]$/g, ''),
+    host: proxy.host.replace(/^\[|\]$/g, ''),
     port: proxy.port,
     failoverTimeout: 8,
     ...(proxy.protocol === 'SOCKS5' ? { proxyDNS: true } : {}),
     ...(proxy.protocol === 'SOCKS5' && hasProxyAuth(proxy)
-      ? { username: proxy.username!, password: proxy.password! } : {}),
+      ? { username: proxy.username || '', password: proxy.password || '' } : {}),
   }
 }
 
@@ -129,7 +138,8 @@ export const registerProxyAuth = () => {
   browser.webRequest.onAuthRequired.addListener(browser.isFirefox
     ? (details) => handle(details).catch(() => ({ cancel: true }))
     : (details, respond) => {
-      handle(details).then(respond!, () => respond!({ cancel: true }))
+      handle(details).then(respond, () => respond?.({ cancel: true }))
+        .catch(() => {})
     }, filter, [browser.isFirefox ? 'blocking' : 'asyncBlocking'])
   browser.webRequest.onCompleted.addListener(clear, filter)
   browser.webRequest.onErrorOccurred.addListener(clear, filter)

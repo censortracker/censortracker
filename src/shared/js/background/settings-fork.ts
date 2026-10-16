@@ -2,6 +2,7 @@ import { parseProxyAddress } from './proxy-address'
 import { MAX_PROXIES } from './proxy-record'
 import { validateSourceUrl } from './proxy-source'
 import { registrySourceUrls } from './registry-source-data'
+import { isRecord } from './value'
 
 const forkKeys = [
   'customProxies', 'proxyChain', 'activeCustomProxyId', 'proxyAllTraffic',
@@ -54,8 +55,8 @@ export const settingsFromFork = (input: Record<string, unknown>) => {
     throw new TypeError('Invalid fork proxy selection')
   }
   const ids = new Map([['builtin', 'builtin']])
-  const converted = proxies.map((proxy, index) => {
-    if (!proxy || typeof proxy.id !== 'string' ||
+  const converted = proxies.map((proxy: unknown, index) => {
+    if (!isRecord(proxy) || typeof proxy.id !== 'string' ||
       !/^[\w-]{1,64}$/.test(proxy.id) || ids.has(proxy.id)) {
       throw new TypeError('Invalid fork proxy ID')
     }
@@ -86,8 +87,8 @@ export const settingsFromFork = (input: Record<string, unknown>) => {
     const selection = chain ?? (active ? [active] : [])
 
     result.proxies = converted
-    const selected = selection.map((id) => {
-      if (!ids.has(id)) {
+    const selected = selection.map((id: unknown) => {
+      if (typeof id !== 'string' || !ids.has(id)) {
         throw new TypeError('Unknown fork proxy ID')
       }
       return ids.get(id)

@@ -1,8 +1,10 @@
 import { findHostMatch } from './host-match'
 import { normalizeHostname } from './hostname'
 import { countryCode } from './proxy-check-data'
+import { isRecord, isStringArray, toRecord } from './value'
 
 export type SiteRules = Record<string, string[]>
+type SiteRule = [host: string, countries: string[]]
 export interface SiteRuleChange {
   host?: string
   countries?: string[] | null
@@ -11,18 +13,17 @@ export interface SiteRuleChange {
 export const hasSiteRestriction = (host: string, rules: SiteRules) => {
   const match = findHostMatch(host, new Set(Object.keys(rules)))
 
-  return Boolean(match && rules[match].length > 0)
+  return Boolean(match && rules[match]?.length)
 }
 
 export const validateSiteRules = (value: unknown): SiteRules => {
-  if (!value || typeof value !== 'object' || Array.isArray(value) ||
-    Object.keys(value).length > 1000) {
+  if (!isRecord(value) || Object.keys(value).length > 1000) {
     throw new TypeError('Invalid site rules')
   }
-  const entries = Object.entries(value).map(([host, codes]) => {
+  const entries: SiteRule[] = Object.entries(value).map(([host, codes]) => {
     const hostname = normalizeHostname(host)
 
-    if (!hostname || !Array.isArray(codes) || codes.length > 676 ||
+    if (!hostname || !isStringArray(codes) || codes.length > 676 ||
       codes.some((code) => !countryCode(code))) {
       throw new TypeError('Invalid site rule')
     }
@@ -32,12 +33,9 @@ export const validateSiteRules = (value: unknown): SiteRules => {
   return Object.fromEntries(entries)
 }
 
-export const changeSiteRule = (current: unknown,
-  {
-    host,
-    countries,
-  }: SiteRuleChange = {
-  }) => {
+// The change comes from a page message.
+export const changeSiteRule = (current: unknown, change: unknown) => {
+  const { host, countries } = toRecord(change)
   const hostname = normalizeHostname(host)
 
   if (!hostname) {

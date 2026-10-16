@@ -28,7 +28,9 @@ const fixture = (request = async () => 'external.example\ncdn.example.co.uk') =>
   }
   const api = load('background/registry-source', mocks)
   api.registerRegistrySource()
-  return { ...api, storage, calls, browser, registry: load('background/registry', mocks).default }
+  const registry = load('background/registry', mocks)
+  registry.watchRegistry()
+  return { ...api, storage, calls, browser, registry: registry.default }
 }
 
 test('external registry parsing keeps full IDNs and nested domains, ignores private entries, and never runs code', async () => {
@@ -72,10 +74,9 @@ test('manual downloads are bounded, keep disabled choices, and isolate the sourc
   assert.deepEqual(state.storage.customProxiedDomains, ['manual.example'])
   assert.equal(state.storage.useProxy, false)
   assert.equal(state.storage.registrySource.enabled, false)
-  assert.deepEqual(plain(await state.registry.getDomains()), ['builtin.example', 'manual.example'])
+  assert.equal((await state.registry.getDomainStatus('external.example')).blocked, false)
   await state.updateRegistrySource({ ...source, enabled: true })
-  state.storage.useRegistry = false
-  assert.deepEqual(plain(await state.registry.getDomains()), ['manual.example', 'external.example', 'cdn.example.co.uk'])
+  assert.equal((await state.registry.getDomainStatus('external.example')).blocked, true)
   assert.equal((await state.registry.getDomainStatus('child.cdn.example.co.uk')).blocked, true)
   await state.browser.storage.local.set({ ignoredHosts: ['external.example'] })
   assert.equal(await state.registry.contains('child.external.example'), false)

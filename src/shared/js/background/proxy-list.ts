@@ -1,26 +1,55 @@
 import browser from './browser-api'
 import { parseProxyAddress } from './proxy-address'
-import type { ProxyRecord } from './proxy-record'
+import type { ManagedProxy, ProxyRecord } from './proxy-record'
 import {
   MAX_PROXIES, newProxyId, proxyKey, proxyStateFromSettings,
   validateProxy, validateProxyList,
 } from './proxy-record'
-import type { StorageState } from './storage'
+import { isRecord, isStringArray } from './value'
 
 export interface ProxyListState {
   proxies: ProxyRecord[]
   selectedProxyIds: string[]
-  builtin: ProxyRecord
+  builtin: ManagedProxy
   added?: number
   skipped?: number
 }
-export interface ProxyListAction {
-  operation?: 'list' | 'save' | 'append' | 'remove' | 'select' | 'toggle'
-  proxy?: Partial<ProxyRecord>
-  proxies?: ProxyRecord[]
-  ids?: string[]
-  id?: string
-  selected?: boolean
+// validateProxy and validateProxyList check the proxy payloads.
+export type ProxyListAction = { operation: 'list' } |
+  { operation: 'save'; proxy: unknown } |
+  { operation: 'append'; proxies: unknown } |
+  { operation: 'remove' | 'select'; ids: string[] } |
+  { operation: 'toggle'; id: string; selected: boolean }
+
+// Messages are untrusted: keep only the fields of a known operation.
+export const proxyListAction = (value: unknown): ProxyListAction => {
+  const action: Record<string, unknown> = isRecord(value) ? value : {}
+  const { operation, ids, id, selected } = action
+
+  if (operation === 'list') {
+    return { operation }
+  }
+  if (operation === 'save') {
+    return { operation, proxy: action.proxy }
+  }
+  if (operation === 'append') {
+    return { operation, proxies: action.proxies }
+  }
+  if (operation === 'remove') {
+    if (!isStringArray(ids)) {
+      throw new Error('Cannot remove the managed proxy')
+    }
+    return { operation, ids }
+  }
+  if (operation === 'select' && isStringArray(ids)) {
+    return { operation, ids }
+  }
+  if (operation === 'toggle' && typeof id === 'string' &&
+    typeof selected === 'boolean') {
+    return { operation, id, selected }
+  }
+  throw new Error(operation === 'select' || operation === 'toggle'
+    ? 'Invalid proxy selection' : 'Unknown proxy operation')
 }
 
 export const readProxyState = async (): Promise<ProxyListState> => {
@@ -32,10 +61,12 @@ export const readProxyState = async (): Promise<ProxyListState> => {
     proxyServerURI: null,
     useOwnProxy: null,
   })
-  const builtin: ProxyRecord = { id: 'builtin', name: 'Censor Tracker', protocol: 'HTTPS' }
+  let builtin: ManagedProxy = {
+    id: 'builtin', name: 'Censor Tracker', protocol: 'HTTPS',
+  }
 
   try {
-    Object.assign(builtin, parseProxyAddress(storage.proxyServerURI))
+    builtin = { ...builtin, ...parseProxyAddress(storage.proxyServerURI) }
   } catch (error) {
     // The managed endpoint may be unavailable before its first successful sync.
   }
@@ -43,34 +74,35 @@ export const readProxyState = async (): Promise<ProxyListState> => {
 }
 
 // The background caller holds the proxy lock across this write and PAC update.
-export const updateProxyList = async ({
-  operation, proxy, proxies, ids, id: proxyId, selected,
-}: ProxyListAction = {}) => {
+export const updateProxyList = async (action: ProxyListAction) => {
   const state = await readProxyState()
 
-  if (operation === 'list') {
+  if (action.operation === 'list') {
     return state
   }
-  if (operation === 'save') {
-    const record = validateProxy({ ...proxy, id: proxy?.id || newProxyId() })
+  if (action.operation === 'save') {
+    const proxy = isRecord(action.proxy) ? action.proxy : {}
+    const record = validateProxy({ ...proxy, id: proxy.id || newProxyId() })
     const index = state.proxies.findIndex(({ id }) => id === record.id)
+    const existing = state.proxies[index]
 
-    if (index < 0) {
+    if (!existing) {
       state.proxies.push(record)
     } else {
-      if (state.proxies[index].provider) {
-        record.provider = state.proxies[index].provider
+      if (existing.provider) {
+        record.provider = existing.provider
         record.restricted = true
       }
       state.proxies[index] = record
     }
-  } else if (operation === 'append') {
+  } else if (action.operation === 'append') {
     const seen = new Map(
       state.proxies.map((record) => [proxyKey(record), record]),
     )
+    const records = validateProxyList(action.proxies)
     let added = 0
 
-    for (const record of validateProxyList(proxies)) {
+    for (const record of records) {
       const existing = seen.get(proxyKey(record))
 
       if (existing?.restricted && record.provider) {
@@ -84,42 +116,47 @@ export const updateProxyList = async ({
       added++
     }
     state.added = added
-    state.skipped = proxies!.length - added
-  } else if (operation === 'remove') {
-    if (!Array.isArray(ids) || ids.includes('builtin')) {
+    state.skipped = records.length - added
+  } else if (action.operation === 'remove') {
+    const { ids } = action
+
+    if (ids.includes('builtin')) {
       throw new Error('Cannot remove the managed proxy')
     }
-    state.proxies = state.proxies.filter(({ id }) => !ids!.includes(id))
+    state.proxies = state.proxies.filter(({ id }) => !ids.includes(id))
     state.selectedProxyIds = state.selectedProxyIds.filter(
-      (id) => !ids!.includes(id),
+      (id) => !ids.includes(id),
     )
-  } else if (operation === 'select' || operation === 'toggle') {
+  } else {
     const available = new Set(['builtin', ...state.proxies.map(({ id }) => id)])
+    let ids = state.selectedProxyIds
 
-    if (operation === 'toggle') {
-      if (!available.has(proxyId!) || typeof selected !== 'boolean') {
+    if (action.operation === 'toggle') {
+      if (!available.has(action.id)) {
         throw new Error('Invalid proxy selection')
       }
-      ids = selected ? [...state.selectedProxyIds, proxyId!]
-        : state.selectedProxyIds.filter((entry) => entry !== proxyId)
+      ids = action.selected ? [...ids, action.id]
+        : ids.filter((entry) => entry !== action.id)
+    } else {
+      ids = action.ids
     }
-    if (!Array.isArray(ids) || ids.some((id) => !available.has(id))) {
+    if (ids.some((id) => !available.has(id))) {
       throw new Error('Invalid proxy selection')
     }
     state.selectedProxyIds = Array.from(new Set(ids))
-  } else {
-    throw new Error('Unknown proxy operation')
   }
-  const runtime: Partial<Pick<StorageState, 'proxyChecks' | 'proxyFailures'>> = {}
+  let runtime = {}
 
-  if (operation === 'remove') {
-    Object.assign(runtime, await browser.storage.local.get({
+  if (action.operation === 'remove') {
+    const { proxyChecks, proxyFailures } = await browser.storage.local.get({
       proxyChecks: {}, proxyFailures: {},
-    }))
-    for (const id of ids!) {
-      delete runtime.proxyChecks![id]
-      delete runtime.proxyFailures![id]
+    })
+
+    for (const id of action.ids) {
+      delete proxyChecks[id]
+      delete proxyFailures[id]
     }
+    runtime = { proxyChecks, proxyFailures }
   }
   await browser.storage.local.set({
     ...runtime,

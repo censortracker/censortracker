@@ -1,19 +1,24 @@
-import type { LocalStorage, StorageChanges } from './storage'
+import type { LocalStorage, ProxySettings, StorageChanges } from './storage'
 
-export interface ProxySettings {
-  mode?: string
-  pacScript?: { data?: string; mandatory?: boolean }
-  proxyType?: string
-  autoConfigUrl?: string
+declare global {
+  // Chromium only; the DOM types do not include it yet.
+  interface Navigator {
+    userAgentData?: {
+      getHighEntropyValues(hints: string[]): Promise<{
+        fullVersionList: { brand: string; version: string }[]
+      }>
+    }
+  }
 }
 interface ProxySettingDetails {
   value: ProxySettings
   levelOfControl: string
 }
-export interface ExtensionBrowser extends Omit<typeof browser, 'storage' | 'proxy' | 'runtime'> {
+interface ExtensionBrowser extends Omit<typeof browser, 'storage' | 'proxy' | 'runtime'> {
   isFirefox: boolean
-  runtime: typeof browser.runtime & typeof chrome.runtime & {
+  runtime: Omit<typeof browser.runtime, 'sendMessage'> & {
     OnInstalledReason: { INSTALL: 'install'; UPDATE: 'update' }
+    sendMessage(message: unknown): Promise<unknown>
   }
   tabs: typeof browser.tabs & { TabStatus: { LOADING: 'loading' } }
   storage: {
@@ -25,8 +30,11 @@ export interface ExtensionBrowser extends Omit<typeof browser, 'storage' | 'prox
         area: string) => void): void
     }
   }
-  proxy: Omit<typeof browser.proxy, 'settings'> & {
+  proxy: Omit<typeof browser.proxy, 'settings' | 'onRequest'> & {
     onProxyError: typeof chrome.proxy.onProxyError
+    // Firefox accepts an asynchronous request listener.
+    onRequest: browser.proxy._ProxyOnRequestEvent<
+      (details: browser.proxy._OnRequestDetails) => Promise<unknown>>
     settings: {
       get(details: { incognito?: boolean }): Promise<ProxySettingDetails>
       set(details: { value: ProxySettings; scope?: string }): Promise<void>
@@ -90,14 +98,8 @@ export const getDetailedBrowserInfo = async () => {
 
       return { name, version }
     }
-    const { fullVersionList } = await (navigator as Navigator & {
-      userAgentData: {
-        getHighEntropyValues(hints: string[]): Promise<{
-          fullVersionList: { brand: string; version: string }[]
-        }>
-      }
-    }).userAgentData
-      .getHighEntropyValues(['fullVersionList'])
+    const { fullVersionList } = await navigator.userAgentData
+      ?.getHighEntropyValues(['fullVersionList']) ?? { fullVersionList: [] }
     const expected = info.name === 'Chrome' ? 'Google Chrome' : info.name
     const version = fullVersionList.find(({ brand }) =>
       brand === expected)?.version

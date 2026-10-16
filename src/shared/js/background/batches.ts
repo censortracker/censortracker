@@ -19,10 +19,8 @@ export const forEachBatch = async (length: number,
 
 export const sortBatched = async (names: string[], current: () => boolean) => {
   if (!await forEachBatch(names.length, (start, end) => {
-    const sorted = names.slice(start, end).sort()
-
-    for (let offset = start; offset < end; offset++) {
-      names[offset] = sorted[offset - start]
+    for (const [index, name] of names.slice(start, end).sort().entries()) {
+      names[start + index] = name
     }
   }, current)) {
     return null
@@ -45,9 +43,17 @@ export const sortBatched = async (names: string[], current: () => boolean) => {
           right = middle
           limit = Math.min(offset + width * 2, input.length)
         }
-        merged[offset] = left < middle &&
-          (right >= limit || input[left] <= input[right])
-          ? input[left++] : input[right++]
+        const head = input[left]
+        const tail = input[right]
+
+        if (head !== undefined && left < middle &&
+          (tail === undefined || right >= limit || head <= tail)) {
+          merged[offset] = head
+          left++
+        } else if (tail !== undefined) {
+          merged[offset] = tail
+          right++
+        }
       }
     }, current)) {
       return null

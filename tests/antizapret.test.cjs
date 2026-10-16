@@ -84,7 +84,9 @@ test('provider routes enforce domain limits in PAC and runtime, including proxy-
   await state.importAntizapret()
   state.storage.selectedProxyIds = [state.storage.proxies[0].id]
   const { proxy, ...mocks } = state.mocks
-  const manager = load('background/proxy', { ...mocks, registry: { default: { getRoutingDomains: async () => ['manual.example'] } } }).default
+  const loaded = load('background/proxy', { ...mocks, registry: { default: { getRoutingDomains: async () => ['manual.example'] } } })
+  loaded.watchProxyCache()
+  const manager = loaded.default
   const { getPacScript } = load('background/pac')
   const { createRouter, routingConfig } = load('background/routing')
   const { findHostMatch } = load('background/host-match')

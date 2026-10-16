@@ -72,9 +72,9 @@ export const indexCache = (
         transaction.addEventListener('abort', () => finish())
         transaction.addEventListener('error', () => finish())
         transaction.addEventListener('complete', () => {
-          const record = operation.result
+          const record: unknown = operation.result
 
-          finish(!data && record?.version === 1 &&
+          finish(!data && isRecord(record) && record.version === 1 &&
             record.revision === revision && validIndex(record.data)
             ? record.data : null)
         })

@@ -10,39 +10,30 @@ import {
   handleStorageChanged,
   handleTabCreate,
   handleTabState,
-  openDataConsent,
   pauseDataTransmission,
   scheduleLocalProxyCheck,
-  setDataConsent,
 } from 'Background/handlers'
 
-import { importAntizapret } from './antizapret'
-import { registerBackground } from './background-rpc'
+import { registerBackground } from './background-actions'
 import browser from './browser-api'
-import { consentAccepted, getDataConsent, hasDataConsent } from './data-consent'
-import { getDiagnosticInfo } from './diagnostics'
-import { normalizeHostname } from './hostname'
+import { consentAccepted, hasDataConsent } from './data-consent'
 import { initializeLanguage } from './i18n'
-import Ignore from './ignore'
-import ProxyManager from './proxy'
+import ProxyManager, { watchProxyCache } from './proxy'
 import { registerProxyAuth } from './proxy-auth'
-import { getProxyCheckState, registerProxyChecks, startProxyChecks, stopProxyChecks } from './proxy-check'
-import { importProxies, refreshSubscription, scheduleSubscriptions, updateSubscriptions } from './proxy-importer'
-import { describeProxyRoute } from './proxy-info'
-import { updateProxyList } from './proxy-list'
+import { registerProxyChecks } from './proxy-check'
+import { scheduleSubscriptions } from './proxy-importer'
 import { registerProxyRecovery } from './proxy-recovery'
-import { proxyAllowed, withProxyLock } from './proxy-route'
-import Registry from './registry'
-import { getRegistrySourceState, refreshRegistrySource, registerRegistrySource, updateRegistrySource } from './registry-source'
-import { addRelatedDomains, findRelatedDomains } from './related-domains'
-import { synchronizeInBackground } from './server'
+import { watchRoutes, withProxyLock } from './proxy-route'
+import { watchRegistry } from './registry'
+import { registerRegistrySource } from './registry-source'
 import { registerServiceMirrors } from './service-mirrors'
-import Settings from './settings'
-import { changeSiteRule } from './site-rules'
 
 export const startBackground = () => {
+  watchRoutes()
+  watchRegistry()
+  watchProxyCache()
   registerProxyAuth()
-  initializeLanguage()
+  initializeLanguage().catch(() => {})
   registerRegistrySource()
   const consentReady = hasDataConsent()
     .then<boolean | void>((accepted) => accepted || pauseDataTransmission())
@@ -52,9 +43,11 @@ export const startBackground = () => {
   consentReady.then(() => registerProxyChecks()).catch(() => console.warn('Could not recover proxy checks'))
   consentReady.then(() => registerProxyRecovery()).catch(() => console.warn('Could not schedule proxy recovery'))
 
-  const rescheduleSubscriptions = () => scheduleSubscriptions().catch(() => {
-    console.warn('Could not schedule proxy subscriptions')
-  })
+  const rescheduleSubscriptions = () => {
+    scheduleSubscriptions().catch(() => {
+      console.warn('Could not schedule proxy subscriptions')
+    })
+  }
 
   consentReady.then(rescheduleSubscriptions).catch(() => {})
   browser.storage.onChanged.addListener((changes, area) => {
@@ -67,121 +60,17 @@ export const startBackground = () => {
     console.error('[Service] Route recovery failed', error)
   })
 
-  registerBackground({
-    dataConsent: getDataConsent,
-    setDataConsent,
-    openDataConsent,
-    diagnosticInfo: getDiagnosticInfo,
-    setLocalProxy: (enabled) => withProxyLock(
-      () => ProxyManager.setLocalProxyInBackground(enabled),
-    ),
-    syncLocalProxy: (options) => withProxyLock(
-      () => ProxyManager.syncLocalProxyInBackground(options),
-    ),
-    findRelatedDomains,
-    addRelatedDomains,
-    domainStatus: (url) => Registry.getDomainStatus(url),
-    registryStatus: () => Registry.getStatus(),
-    registryEmpty: () => Registry.isEmpty(),
-    setSiteChoice: ({ url, choice } = {}) => withProxyLock(async () => {
-      if (!['always', 'never', 'auto'].includes(choice!) ||
-        typeof url !== 'string' || url.length > 8192 || !normalizeHostname(url)) {
-        throw new TypeError('Invalid site choice')
-      }
-      if (choice === 'never') {
-        await Ignore.add(url)
-        await Registry.remove(url)
-      } else {
-        await Ignore.remove(url)
-        if (choice === 'always') {
-          await Registry.add(url)
-        } else {
-          await Registry.remove(url)
-        }
-      }
-      if (!await ProxyManager.setProxyInBackground({ ping: false }) &&
-        await proxyAllowed()) {
-        throw new Error('Site choice saved, but routing could not be applied')
-      }
-    }),
-    registrySourceState: getRegistrySourceState,
-    updateRegistrySource,
-    refreshRegistrySource: () => refreshRegistrySource(),
-    proxyRouteInfo: describeProxyRoute,
-    siteCountryRule: (args) => withProxyLock(async () => {
-      const { siteCountryRules } = await browser.storage.local.get({
-        siteCountryRules: {},
-      })
-      const rules = changeSiteRule(siteCountryRules, args)
+  registerBackground()
 
-      await browser.storage.local.set({ siteCountryRules: rules })
-
-      if (!await ProxyManager.setProxyInBackground({ ping: false }) &&
-        await proxyAllowed()) {
-        throw new Error('Site rule saved, but routing could not be applied')
-      }
-      return rules
-    }),
-    startProxyChecks: ({ ids } = {}) => startProxyChecks({ ids }),
-    setProxyRecovery: async (enabled) => {
-      if (typeof enabled !== 'boolean') {
-        throw new TypeError('Invalid proxy recovery option')
-      }
-      await browser.storage.local.set({ proxyRecoveryEnabled: enabled })
-    },
-    stopProxyChecks,
-    proxyCheckState: getProxyCheckState,
-    importProxies,
-    importAntizapret,
-    subscriptions: updateSubscriptions,
-    refreshSubscription: ({ id }) => refreshSubscription({ id }),
-    setProxyAll: (enabled) => withProxyLock(async () => {
-      if (typeof enabled !== 'boolean') {
-        throw new TypeError('Invalid proxy-all option')
-      }
-      await browser.storage.local.set({ proxyAll: enabled })
-      if (!await ProxyManager.setProxyInBackground() && await proxyAllowed()) {
-        throw new Error('Proxy mode saved, but routing could not be applied')
-      }
-    }),
-    importSettings: (args) => withProxyLock(async () => {
-      await Settings.importSettingsInBackground(args)
-      await ProxyManager.syncLocalProxyInBackground()
-      await ProxyManager.setProxyInBackground()
-    }).then(async () => {
-      const { source } = await getRegistrySourceState()
-
-      if (source.enabled && await hasDataConsent()) {
-        await refreshRegistrySource()
-      }
-    }),
-    proxies: (args) => withProxyLock(async () => {
-      const state = await updateProxyList(args)
-
-      if (args.operation !== 'list') {
-        await ProxyManager.setProxyInBackground()
-      }
-      return state
-    }),
-    synchronize: synchronizeInBackground,
-    ping: (force) => withProxyLock(() => ProxyManager.pingInBackground(force)),
-    setProxy: () => withProxyLock(() => ProxyManager.setProxyInBackground()),
-    removeProxy: () => withProxyLock(
-      () => ProxyManager.removeProxyInBackground(),
-    ),
-  })
-
-  const registerListener = (
-    event: { addListener(...args: never[]): void } | undefined,
+  const registerListener = <A extends unknown[]>(
+    event: { addListener(...args: A): void } | undefined,
     eventName: string,
-    listener: (...args: never[]) => unknown,
-    ...args: unknown[]) => {
+    ...args: NoInfer<A>) => {
     if (typeof event?.addListener !== 'function') {
       console.warn(`[Background] ${eventName} is unavailable.`)
       return
     }
-
-    Reflect.apply(event.addListener, event, [listener, ...args])
+    event.addListener(...args)
   }
 
   // Handle alarms for async tasks
@@ -206,13 +95,19 @@ export const startBackground = () => {
     handleCustomProxiedDomainsChange,
   )
 
+  const beforeRequest = () => {
+    handleBeforeRequest().catch(() => console.warn('Navigation check failed'))
+  }
+
   if (browser.isFirefox) {
     // Firefox-specific handlers
-    registerListener(browser.proxy?.onError, 'proxy.onError', handleProxyError)
+    // This event reports only an Error, without the failed request.
+    registerListener(browser.proxy?.onError, 'proxy.onError',
+      () => handleProxyError({}))
     registerListener(
       browser.webRequest?.onBeforeRequest,
       'webRequest.onBeforeRequest',
-      handleBeforeRequest,
+      beforeRequest,
       {
         urls: [
           'http://*/*',
@@ -234,20 +129,11 @@ export const startBackground = () => {
       },
     )
   } else {
-    // Chrome-specific handlers
+    // Chrome-specific handlers. This event has no URL or type filter.
     registerListener(
       browser.webNavigation?.onBeforeNavigate,
       'webNavigation.onBeforeNavigate',
-      handleBeforeRequest,
-      {
-        urls: [
-          'http://*/*',
-          'https://*/*',
-        ],
-        types: [
-          'main_frame',
-        ],
-      },
+      beforeRequest,
     )
     // «onProxyError» only reports errors in the PAC script itself.
     // Connection failures are reported by webNavigation.
@@ -259,10 +145,12 @@ export const startBackground = () => {
     )
   }
 
-  const checkLocalProxy = () => scheduleLocalProxyCheck()
-    .then(() => ProxyManager.syncLocalProxy()).catch(() => {
-      console.warn('Local proxy check failed')
-    })
+  const checkLocalProxy = () => {
+    scheduleLocalProxyCheck()
+      .then(() => ProxyManager.syncLocalProxy()).catch(() => {
+        console.warn('Local proxy check failed')
+      })
+  }
 
   consentReady.then(checkLocalProxy).catch(() => {})
   browser.storage.onChanged.addListener((changes, area) => {

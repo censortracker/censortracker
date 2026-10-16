@@ -1,4 +1,3 @@
-import { callBackground } from './background-rpc'
 import browser, { getDetailedBrowserInfo } from './browser-api'
 import { settingsDefaults, validateSettings } from './settings-data'
 
@@ -15,17 +14,12 @@ class Settings {
     const title = this.getName()
     const path = browser.runtime.getURL(`images/icons/128x128/${filename}.png`)
 
-    if (browser.isFirefox) {
-      browser.browserAction.setIcon({ tabId, path })
-      browser.browserAction.setTitle({ title, tabId })
-    } else {
-      browser.action.setIcon({ tabId, path })
-      browser.action.setTitle({ title, tabId })
-    }
-  }
+    const action = browser.isFirefox ? browser.browserAction : browser.action
 
-  async showInstalledPage (tabId?: number) {
-    await browser.tabs.create({ url: 'installed.html' })
+    // A tab can close before its icon changes.
+    Promise.all([
+      action.setIcon({ tabId, path }), action.setTitle({ title, tabId }),
+    ]).catch(() => console.warn('Could not update the page icon'))
   }
 
   setDisableIcon (tabId?: number) {
@@ -74,10 +68,6 @@ class Settings {
     await browser.storage.local.set({ showNotifications: true })
   }
 
-  async disableNotifications () {
-    await browser.storage.local.set({ showNotifications: false })
-  }
-
   async exportSettings () {
     const { version, manifest_version: manifestVersion } =
       browser.runtime.getManifest()
@@ -93,10 +83,6 @@ class Settings {
         ...validateSettings(await browser.storage.local.get(null)),
       },
     }
-  }
-
-  async importSettings (settings: unknown) {
-    return callBackground('importSettings', settings)
   }
 
   async importSettingsInBackground (settings: unknown) {

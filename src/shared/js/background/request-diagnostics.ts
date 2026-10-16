@@ -1,8 +1,9 @@
 import browser from './browser-api'
-import type { RequestError } from './value'
+import { isRecord } from './value'
 
 const active = new Set<{ url: string; method: string; ambiguous: boolean }>()
-const nativeCode = (value: unknown) => typeof value === 'string' &&
+const nativeCode = (value: unknown): value is string =>
+  typeof value === 'string' &&
   /^(net::ERR_[A-Z0-9_]+|NS_[A-Z0-9_]+)$/.test(value)
 
 // Only observe this extension's request. Overlapping matches are ambiguous.
@@ -51,9 +52,15 @@ export const watchRequest = (url: string, method = 'GET') => {
     }
   }
   const filter = { urls: [`${target.protocol}//${target.hostname}/*`] }
-  const stop = async (error?: RequestError) => {
+  const release = () => {
+    before.removeListener(onBefore)
+    failed.removeListener(onError)
+    active.delete(entry)
+  }
+  const stop = async (error?: unknown) => {
     // Chromium can reject fetch before it dispatches onErrorOccurred.
-    if (error?.name === 'TypeError' && !netError && !entry.ambiguous) {
+    if (isRecord(error) && error.name === 'TypeError' && !netError &&
+      !entry.ambiguous) {
       await new Promise<void>((resolve) => {
         const timer = setTimeout(resolve, 50)
 
@@ -63,10 +70,8 @@ export const watchRequest = (url: string, method = 'GET') => {
         }
       })
     }
-    before.removeListener(onBefore)
-    failed.removeListener(onError)
-    active.delete(entry)
-    if (error && netError && !entry.ambiguous) {
+    release()
+    if (isRecord(error) && netError && !entry.ambiguous) {
       error.netError = netError
     }
   }
@@ -74,8 +79,8 @@ export const watchRequest = (url: string, method = 'GET') => {
   try {
     before.addListener(onBefore, filter)
     failed.addListener(onError, filter)
-  } catch (error_) {
-    stop()
+  } catch {
+    release()
   }
   return stop
 }
@@ -85,13 +90,12 @@ export const requestFailure = (error: unknown): {
   netError?: string;
   httpStatus?: number
 } => {
-  for (let cause = error as RequestError | undefined;
-    cause;
-    cause = cause.cause) {
+  for (let cause = error; isRecord(cause); cause = cause.cause) {
     if (cause.name === 'TimeoutError') {
       return { code: 'timeout' }
     }
-    if (Number.isInteger(cause.httpStatus)) {
+    if (typeof cause.httpStatus === 'number' &&
+      Number.isInteger(cause.httpStatus)) {
       return { code: 'http', httpStatus: cause.httpStatus }
     }
     if (cause.code === 'invalid-response' || cause.name === 'SyntaxError') {

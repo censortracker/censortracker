@@ -1,4 +1,3 @@
-import { callBackground } from './background-rpc'
 import { forEachBatch } from './batches'
 import browser from './browser-api'
 import { ConsentRequiredError, hasDataConsent } from './data-consent'
@@ -17,9 +16,9 @@ import type { ServiceMirrors } from './service-mirrors'
 import { getServiceMirrors, requestMirroredService } from './service-mirrors'
 import type { ServiceResponse } from './service-request'
 import { requestService } from './service-request'
-import type { RequestError } from './value'
+import { errorMessage } from './value'
 
-export type RegistryPart = 'primary' | 'custom' | 'backend'
+type RegistryPart = 'primary' | 'custom' | 'backend'
 export interface BuiltinRegistryCache {
   countryCode: string
   primary: string[]
@@ -46,17 +45,15 @@ const fetchConfig = async (mirrors: ServiceMirrors) => {
     try {
       const { data } = await requestMirroredService(mirrors, 'geoip', validCountry)
 
-      countryCode = data!.countryCode.toUpperCase()
+      countryCode = data.countryCode.toUpperCase()
       geoIPStatus = 'direct'
-    } catch (error_) {
-      const error = error_ as RequestError
-
+    } catch (error) {
       if (isRegistryCancellation(error)) {
         throw error
       }
-      console.warn(`[GeoIP] Using RU fallback: ${error.message}`)
+      console.warn(`[GeoIP] Using RU fallback: ${errorMessage(error)}`)
       countryCode = 'RU'
-      geoIPStatus = `RU fallback: ${error.message}`
+      geoIPStatus = `RU fallback: ${errorMessage(error)}`
     }
   }
   const config = getRegionConfig(countryCode)
@@ -110,7 +107,7 @@ const fetchProxy = async (mirrors: ServiceMirrors) => {
     const { data: proxyList } =
       await requestMirroredService(mirrors, 'proxyList', validProxies)
 
-    const activeProxies = proxyList!.filter(({ active, weight }) => {
+    const activeProxies = proxyList.filter(({ active, weight }) => {
       return active && Number(weight) > 0
     })
 
@@ -182,7 +179,7 @@ const requestCustomRegistry = async (config: RegionConfig,
 ): Promise<ServiceResponse<unknown[]> | null> => {
   const result = await requestMirroredService(
     mirrors, 'config', validConfig, { countryCode: config.countryCode },
-  ).catch((error) => {
+  ).catch((error: unknown) => {
     if (isRegistryCancellation(error)) {
       throw error
     }
@@ -193,7 +190,7 @@ const requestCustomRegistry = async (config: RegionConfig,
     return null
   }
 
-  config.customRegistryUrl = result.data!.customRegistryUrl || null
+  config.customRegistryUrl = result.data.customRegistryUrl || null
   await browser.storage.local.set({ localConfig: config })
   if (!config.customRegistryUrl) {
     return { data: [] }
@@ -203,7 +200,7 @@ const requestCustomRegistry = async (config: RegionConfig,
   )
 
   return records.unchanged ? records : {
-    ...records, data: records.data!.flatMap((record) => record.domains),
+    ...records, data: records.data.flatMap((record) => record.domains),
   }
 }
 
@@ -232,6 +229,7 @@ const fetchRegistry = async (config: RegionConfig, mirrors: ServiceMirrors) => {
   let cacheChanged = changed
 
   cache.validators ||= {}
+  const { validators } = cache
 
   if (registryRegionCode !== countryCode) {
     await setRegistryState({
@@ -247,11 +245,11 @@ const fetchRegistry = async (config: RegionConfig, mirrors: ServiceMirrors) => {
 
   const sources: [RegistryPart,
     () => Promise<ServiceResponse<unknown[]> | null>][] = [
-    ['primary', () => requestRegistry(config, mirrors, cache.validators!.primary || {})],
-    ['custom', () => requestCustomRegistry(config, mirrors, cache.validators!.custom || {})],
+    ['primary', () => requestRegistry(config, mirrors, validators.primary || {})],
+    ['custom', () => requestCustomRegistry(config, mirrors, validators.custom || {})],
     ['backend', () => requestMirroredService(
-      mirrors, 'domains', validDomains, { countryCode, maxRedirects: 5, cache: cache.validators!.backend || {} },
-    ).catch((error) => {
+      mirrors, 'domains', validDomains, { countryCode, maxRedirects: 5, cache: validators.backend || {} },
+    ).catch((error: unknown) => {
       if (isRegistryCancellation(error)) {
         throw error
       }
@@ -264,7 +262,7 @@ const fetchRegistry = async (config: RegionConfig, mirrors: ServiceMirrors) => {
       const result = await request()
 
       if (result === null || result.unchanged) {
-        skipped += cache.validators[source]?.skipped || 0
+        skipped += validators[source]?.skipped || 0
         continue
       }
       const { data } = result
@@ -272,9 +270,9 @@ const fetchRegistry = async (config: RegionConfig, mirrors: ServiceMirrors) => {
       const previous = cache[source]
       let sourceChanged = false
 
-      await forEachBatch(data!.length, (start, end) => {
+      await forEachBatch(data.length, (start, end) => {
         for (let index = start; index < end; index++) {
-          const domain = data![index]
+          const domain = data[index]
 
           if (validDomain(domain)) {
             sourceChanged ||= previous?.[filtered.length] !== domain
@@ -285,21 +283,19 @@ const fetchRegistry = async (config: RegionConfig, mirrors: ServiceMirrors) => {
 
       changed ||= sourceChanged || previous?.length !== filtered.length
       cache[source] = filtered
-      const omitted = data!.length - filtered.length
+      const omitted = data.length - filtered.length
 
       const validator = { ...result.cache, skipped: omitted }
 
-      cacheChanged ||= changed || JSON.stringify(cache.validators[source]) !==
+      cacheChanged ||= changed || JSON.stringify(validators[source]) !==
         JSON.stringify(validator)
-      cache.validators[source] = validator
+      validators[source] = validator
       skipped += omitted
-    } catch (error_) {
-      const error = error_ as RequestError
-
+    } catch (error) {
       if (isRegistryCancellation(error)) {
         throw error
       }
-      errors.push(`${source}: ${error.message}`)
+      errors.push(`${source}: ${errorMessage(error)}`)
     }
   }
   const domains = changed ? [] : previousDomains
@@ -309,9 +305,7 @@ const fetchRegistry = async (config: RegionConfig, mirrors: ServiceMirrors) => {
 
     for (const names of [cache.primary, cache.custom, cache.backend]) {
       await forEachBatch(names.length, (start, end) => {
-        for (let index = start; index < end; index++) {
-          const domain = names[index]
-
+        for (const domain of names.slice(start, end)) {
           if (!seen.has(domain)) {
             seen.add(domain)
             domains.push(domain)
@@ -353,14 +347,12 @@ export const synchronizeInBackground = (options: SynchronizeOptions = {}) => {
     const run = async (name: string, task: () => Promise<unknown>) => {
       try {
         await task()
-      } catch (error_) {
-        const error = error_ as RequestError
-
+      } catch (error) {
         if (isRegistryCancellation(error)) {
           throw error
         }
-        failures.push(`${name}: ${error.message}`)
-        console.error(`[Service] ${name}: ${error.message}`)
+        failures.push(`${name}: ${errorMessage(error)}`)
+        console.error(`[Service] ${name}: ${errorMessage(error)}`)
       }
     }
 
@@ -399,7 +391,7 @@ export const synchronizeInBackground = (options: SynchronizeOptions = {}) => {
       await run('ORI', async () => {
         const { data } = await requestMirroredService(mirrors, 'ori', validORI)
 
-        await browser.storage.local.set({ disseminators: data! })
+        await browser.storage.local.set({ disseminators: data })
       })
     }
     if (region) {
@@ -421,8 +413,6 @@ export const synchronizeInBackground = (options: SynchronizeOptions = {}) => {
   return result
 }
 
-export const synchronize = (options: SynchronizeOptions = {}) => {
-  return callBackground('synchronize', options)
-}
+export const synchronize = synchronizeInBackground
 
 export default { synchronize }

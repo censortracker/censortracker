@@ -1,6 +1,6 @@
 import { normalizeHostname } from './hostname'
 import { isPrivateHost } from './private-host'
-import type { ProxyRecord } from './proxy-record'
+import type { ManagedProxy } from './proxy-record'
 
 export interface CheckAttempt {
   service: string
@@ -52,8 +52,8 @@ export const checkAttempts = (check?: { attempts?: CheckAttempt[] }) =>
         code,
         ...(typeof netError === 'string' &&
         /^(net::ERR_[A-Z0-9_]+|NS_[A-Z0-9_]+)$/.test(netError) ? { netError } : {}),
-        ...(Number.isInteger(httpStatus) && httpStatus! >= 100 &&
-        httpStatus! <= 599
+        ...(typeof httpStatus === 'number' && Number.isInteger(httpStatus) &&
+        httpStatus >= 100 && httpStatus <= 599
           ? { httpStatus } : {}),
       })) : []
 
@@ -75,7 +75,7 @@ export const countryCode = (value: unknown) => typeof value === 'string' &&
 // Bind runtime results to the endpoint and credentials, not the editable name.
 const fingerprints = new Map<string, { data: string; value: string }>()
 
-export const proxyFingerprint = async (proxy: ProxyRecord) => {
+export const proxyFingerprint = async (proxy: ManagedProxy) => {
   const data = JSON.stringify([
     proxy.protocol, proxy.host, proxy.port, proxy.username || '', proxy.password || '',
   ])
@@ -96,7 +96,7 @@ export const proxyFingerprint = async (proxy: ProxyRecord) => {
 }
 
 export const currentProxyCheck = async <T extends { fingerprint: string }>(
-  proxy: ProxyRecord,
+  proxy: ManagedProxy,
   checks: Record<string,
     T>) => {
   const result = checks[proxy.id]

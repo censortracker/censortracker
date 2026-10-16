@@ -5,7 +5,7 @@ import { getProxyCheckState } from './proxy-check'
 import type { ProxyCheck, ProxyFailure } from './proxy-check-data'
 import { checkAttempts, countryCode, currentProxyCheck } from './proxy-check-data'
 import { readProxyState } from './proxy-list'
-import type { ProxyRecord } from './proxy-record'
+import type { ManagedProxy, ProxyRecord } from './proxy-record'
 import { hasProxyAuth, proxyAuthSupported } from './proxy-record'
 import Registry from './registry'
 import { getRegistrySourceState } from './registry-source'
@@ -22,10 +22,10 @@ const optional = async <T>(read: () => Promise<T>) => {
   }
 }
 
-const redactText = (value: unknown,
+const redactText = (value: string | undefined,
   secrets: string[],
   privateHosts: Set<string>) => {
-  let text = String(value || '').replace(/https?:\/\/[^\s"'<>]+/gi, '[URL]')
+  let text = (value || '').replace(/https?:\/\/[^\s"'<>]+/gi, '[URL]')
 
   text = text.replace(/(?:[\w-]+\.)+[\w-]+/g, (host) =>
     findHostMatch(host, privateHosts) ? '[domain]' : host)
@@ -44,7 +44,7 @@ const describeCheck = (check?: ProxyCheck) => check ? {
   serverCountry: countryCode(check.serverCountry),
 } : null
 
-const describeProxy = async (proxy: ProxyRecord,
+const describeProxy = async (proxy: ManagedProxy,
   state: {
     proxyFailures?: Record<string,
       ProxyFailure>;
@@ -65,7 +65,7 @@ const describeProxy = async (proxy: ProxyRecord,
     hasAuth: hasProxyAuth(proxy),
     authSupported: proxyAuthSupported(proxy, browser.isFirefox),
     selected: state.selectedProxyIds.has(proxy.id),
-    available: Boolean(active && active.retryAt! <= Date.now()),
+    available: active?.retryAt !== undefined && active.retryAt <= Date.now(),
     retryAt: active?.retryAt || failure?.retryAt || null,
     check: describeCheck(checks[proxy.id]),
   }
@@ -73,7 +73,7 @@ const describeProxy = async (proxy: ProxyRecord,
 
 const size = (list?: unknown[]) => list?.length || 0
 
-const describeRegistry = (state: Partial<StorageState>, status: NonNullable<StorageState['registryStatus']>, domainCount: number, external: Awaited<ReturnType<typeof getRegistrySourceState>>, text: (value: unknown) => string) => {
+const describeRegistry = (state: Partial<StorageState>, status: NonNullable<StorageState['registryStatus']>, domainCount: number, external: Awaited<ReturnType<typeof getRegistrySourceState>>, text: (value?: string) => string) => {
   const cache: Partial<BuiltinRegistryCache> = state.registryCache || {}
 
   return {
@@ -110,7 +110,7 @@ const describeHealth = (state: Partial<StorageState>,
 })
 
 const describeErrors = (state: Partial<StorageState>,
-  text: (value: unknown) => string) => ({
+  text: (value?: string) => string) => ({
 
   fallbackReason: text(state.fallbackReason),
   fallbackProxyError: text(state.fallbackProxyError),
@@ -156,7 +156,7 @@ export const getDiagnosticInfo = async () => {
       second.length - first.length)
   const privateHosts = new Set([...state.ignoredHosts,
     ...state.customProxiedDomains, ...Object.keys(state.siteCountryRules)])
-  const text = (value: unknown) => redactText(value, secrets, privateHosts)
+  const text = (value?: string) => redactText(value, secrets, privateHosts)
   const { version, manifest_version: manifestVersion } =
     browser.runtime.getManifest()
   const localConfig = state.localConfig || {}

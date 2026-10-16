@@ -1,14 +1,19 @@
-import type { ProxySettings } from './browser-api'
 import type { Consent } from './data-consent'
 import type { ProxyCheck, ProxyCheckRun, ProxyFailure } from './proxy-check-data'
 import type { ProxyRecord } from './proxy-record'
 import type { Subscription } from './proxy-source'
 import type { ExternalRegistry, RegistrySource } from './registry-source-data'
 import type { BuiltinRegistryCache } from './server'
-import type { RegionConfig } from './service-config'
+import type { Disseminator, RegionConfig } from './service-config'
 import type { ServiceMirrors } from './service-mirrors'
 import type { SettingsData } from './settings-data'
 
+export interface ProxySettings {
+  mode?: string
+  pacScript?: { data?: string; mandatory?: boolean }
+  proxyType?: string
+  autoConfigUrl?: string
+}
 export interface StorageState extends SettingsData {
   dataConsent: Consent | null
   consentPromptVersion: number
@@ -17,7 +22,7 @@ export interface StorageState extends SettingsData {
   selectedProxyIds: string[] | null
   domains: string[]
   domainsRevision: string
-  disseminators: { url: string; cooperationRefused: boolean; name?: string }[]
+  disseminators: Disseminator[]
   externalRegistry: ExternalRegistry | null
   externalRegistryRevision: string
   registrySource: RegistrySource
@@ -65,22 +70,23 @@ export interface StorageState extends SettingsData {
   [key: `noticeActive:${string}`]: boolean
 }
 
-type Stored<K extends PropertyKey> = K extends keyof StorageState
-  ? StorageState[K] : unknown
-type WithDefaults<T> = { [K in keyof T]: K extends keyof StorageState
+type Key = keyof StorageState
+type WithDefaults<T> = { [K in keyof T]: K extends Key
   ? Exclude<StorageState[K], null> | Extract<T[K], null> : T[K] }
 
 export interface LocalStorage {
   get(keys: null): Promise<Partial<StorageState>>
-  get<K extends string>(key: K): Promise<{ [P in K]?: Stored<P> }>
-  get<K extends string>(keys: K[]): Promise<{ [P in K]?: Stored<P> }>
+  get<K extends Key>(key: K): Promise<{ [P in K]?: StorageState[P] }>
+  get<K extends Key>(keys: K[]): Promise<{ [P in K]?: StorageState[P] }>
   get<T extends Record<string, unknown>>(defaults: T): Promise<WithDefaults<T>>
   set(values: Partial<StorageState>): Promise<void>
   remove(keys: string | string[]): Promise<void>
   clear(): Promise<void>
 }
 
-export type StorageChanges = Record<string, {
-  oldValue?: unknown
-  newValue?: unknown
-}>
+export type StorageChanges = {
+  [K in keyof StorageState]?: {
+    oldValue?: StorageState[K]
+    newValue?: StorageState[K]
+  }
+}

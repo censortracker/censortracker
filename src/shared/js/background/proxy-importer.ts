@@ -7,6 +7,7 @@ import { withProxyLock } from './proxy-route'
 import type { Subscription } from './proxy-source'
 import { validateSourceUrl, validateSubscriptions } from './proxy-source'
 import { requestText } from './request'
+import { toRecord } from './value'
 
 export interface ImportOptions {
   text?: string
@@ -36,7 +37,7 @@ const sourceState = () => browser.storage.local.get({
   enableExtension: false,
 })
 
-const append = (text: string,
+const append = (text: unknown,
   options: {
     protocol?: string;
     pac?: boolean
@@ -50,57 +51,63 @@ const append = (text: string,
 
     return {
       added: state.added,
-      skipped: state.skipped! + result.skipped,
+      skipped: (state.skipped ?? 0) + result.skipped,
       truncated: result.truncated,
       fromPac: result.fromPac,
     }
   })
 }
 
-export const importProxies = async ({
-  text,
-  url,
-  protocol,
-  pac,
-}: ImportOptions = {
-}) => {
+// Options come from a page message; the parser checks the text.
+export const importProxies = async (options: unknown) => {
+  const { text, url, pac, protocol } = toRecord(options)
+
+  if (protocol !== undefined && typeof protocol !== 'string') {
+    throw new TypeError('Invalid proxy protocol')
+  }
   if (url !== undefined) {
-    pac = pac || new URL(validateSourceUrl(url)).pathname.toLowerCase().endsWith('.pac')
-    text = await requestText(validateSourceUrl(url), {
+    const source = validateSourceUrl(url)
+
+    return append(await requestText(source, {
       timeout: 60000, maxBytes: MAX_IMPORT_BYTES, redirect: 'error',
+    }), {
+      protocol,
+      pac: Boolean(pac) || new URL(source).pathname.toLowerCase().endsWith('.pac'),
     })
   }
-  return append(text!, { protocol, pac })
+  return append(text, { protocol, pac: Boolean(pac) })
 }
 
-export const updateSubscriptions = (args: SubscriptionAction = {
-}) => withProxyLock(async () => {
-  const state = await sourceState()
+export const updateSubscriptions = (input: unknown) =>
+  withProxyLock(async () => {
+    const args = toRecord(input)
+    const state = await sourceState()
 
-  if (args.operation === 'add') {
-    state.proxySubscriptions.push({
-      id: newProxyId(), url: args.url!, protocol: args.protocol!,
-    })
-  } else if (args.operation === 'remove') {
-    state.proxySubscriptions = state.proxySubscriptions.filter(
-      ({ id }) => id !== args.id,
-    )
-  } else if (args.operation === 'enable') {
-    if (typeof args.enabled !== 'boolean') {
-      throw new TypeError('Invalid subscription option')
+    if (args.operation === 'add') {
+      state.proxySubscriptions = validateSubscriptions([
+        ...state.proxySubscriptions,
+        { id: newProxyId(), url: args.url, protocol: args.protocol },
+      ])
+    } else if (args.operation === 'remove') {
+      state.proxySubscriptions = state.proxySubscriptions.filter(
+        ({ id }) => id !== args.id,
+      )
+    } else if (args.operation === 'enable') {
+      if (typeof args.enabled !== 'boolean') {
+        throw new TypeError('Invalid subscription option')
+      }
+      state.proxySubscriptionsEnabled = args.enabled
+    } else if (args.operation === 'list') {
+      return state
+    } else {
+      throw new Error('Invalid subscription operation')
     }
-    state.proxySubscriptionsEnabled = args.enabled
-  } else if (args.operation === 'list') {
+    await browser.storage.local.set({
+      proxySubscriptions: validateSubscriptions(state.proxySubscriptions),
+      proxySubscriptionsEnabled: state.proxySubscriptionsEnabled,
+    })
     return state
-  } else {
-    throw new Error('Invalid subscription operation')
-  }
-  await browser.storage.local.set({
-    proxySubscriptions: validateSubscriptions(state.proxySubscriptions),
-    proxySubscriptionsEnabled: state.proxySubscriptionsEnabled,
   })
-  return state
-})
 
 export const refreshSubscription = async ({
   id,
@@ -150,7 +157,7 @@ export const refreshSubscription = async ({
 
       return {
         added: appended.added,
-        skipped: appended.skipped! + result.skipped,
+        skipped: (appended.skipped ?? 0) + result.skipped,
         truncated: result.truncated,
         fromPac: result.fromPac,
       }
@@ -178,7 +185,7 @@ export const scheduleSubscriptions = () => withProxyLock(async () => {
     !state.enableExtension || !count) {
     await browser.alarms.clear(SUBSCRIPTION_ALARM)
   } else if (alarm?.periodInMinutes !== 60) {
-    browser.alarms.create(SUBSCRIPTION_ALARM, { periodInMinutes: 60 })
+    await browser.alarms.create(SUBSCRIPTION_ALARM, { periodInMinutes: 60 })
   }
 })
 

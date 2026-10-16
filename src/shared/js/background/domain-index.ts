@@ -11,7 +11,11 @@ export interface DomainIndex {
 }
 
 // PAC can search these strings without allocating one Set entry per domain.
-export const createDomainIndex = (data: string[] | DomainIndexData) => {
+export function createDomainIndex (data: string[]): Set<string>
+export function createDomainIndex (data: DomainIndexData): DomainIndex
+export function createDomainIndex (data: string[] | DomainIndexData):
+  Set<string> | DomainIndex
+export function createDomainIndex (data: string[] | DomainIndexData) {
   if (Array.isArray(data)) {
     return new Set(data)
   }
@@ -61,8 +65,8 @@ export const buildDomainIndex = async (names: string[],
   }
   const joined: Record<string, string> = {}
 
-  for (const width of Object.keys(buckets)) {
-    const sorted = await sortBatched(buckets[width], current)
+  for (const [width, hosts] of Object.entries(buckets)) {
+    const sorted = await sortBatched(hosts, current)
 
     if (!sorted) {
       return null

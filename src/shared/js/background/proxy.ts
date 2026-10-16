@@ -1,6 +1,5 @@
 import { getPacScript } from 'Background/pac'
 
-import { callBackground } from './background-rpc'
 import browser from './browser-api'
 import { hasDataConsent, isConsentError, withDataConsent } from './data-consent'
 import type { DomainIndexData } from './domain-index'
@@ -13,16 +12,16 @@ import { parseProxyAddress } from './proxy-address'
 import { countryCode, currentProxyCheck } from './proxy-check-data'
 import { readProxyState } from './proxy-list'
 import type { ProxyRecord } from './proxy-record'
-import { proxyAuthSupported, proxyKey } from './proxy-record'
+import { hasEndpoint, proxyAuthSupported, proxyKey } from './proxy-record'
 import {
   applyPac, getProbeRoutes, getRouteRevision, proxyAllowed,
-  restoreServiceRoute, setServiceRoute,
+  restoreServiceRoute, setServiceRoute, withProxyLock,
 } from './proxy-route'
 import registry from './registry'
 import type { RouteDecision } from './routing'
 import { createRouter, routingConfig } from './routing'
 import Settings from './settings'
-import type { RequestError } from './value'
+import { errorMessage } from './value'
 
 let cachedRouter: {
   revision: number;
@@ -39,11 +38,13 @@ type ProviderIndex = {
 } | null
 let cachedAntizapret: Promise<ProviderIndex> | null
 
-browser.storage?.onChanged?.addListener((changes, area) => {
-  if (area === 'local' && changes.antizapret) {
-    cachedAntizapret = null
-  }
-})
+export const watchProxyCache = () => {
+  browser.storage.onChanged.addListener((changes, area) => {
+    if (area === 'local' && changes.antizapret) {
+      cachedAntizapret = null
+    }
+  })
+}
 
 const getAntizapret = async (): Promise<ProviderIndex> => {
   const pending: Promise<ProviderIndex> =
@@ -60,9 +61,7 @@ const getAntizapret = async (): Promise<ProviderIndex> => {
     const data = await pending
 
     return cachedAntizapret === pending ? data : getAntizapret()
-  } catch (error_) {
-    const error = error_ as RequestError
-
+  } catch (error) {
     if (cachedAntizapret === pending) {
       cachedAntizapret = null
     }
@@ -95,10 +94,9 @@ class ProxyManager {
     )
 
     const selected = selectedProxyIds.map((id) => catalog.get(id))
-      .filter((proxy): proxy is ProxyRecord =>
-        Boolean(proxy?.host && proxy.port &&
-        (!proxy.restricted || proxy.provider) &&
-        proxyAuthSupported(proxy, browser.isFirefox)))
+      .filter((proxy) => proxy !== undefined).filter(hasEndpoint)
+      .filter((proxy) => (!proxy.restricted || proxy.provider) &&
+        proxyAuthSupported(proxy, browser.isFirefox))
     const { proxyFailures, proxyChecks } =
       await browser.storage.local.get({
         proxyFailures: {}, proxyChecks: {},
@@ -116,8 +114,8 @@ class ProxyManager {
           !antizapret?.proxyKeys.includes(proxyKey(proxy))
           ? Number.MAX_SAFE_INTEGER : failure?.retryAt || 0,
         exitCountry: check?.status === 'ok' ? countryCode(check.exitCountry) : '',
-        countryExpiresAt: Number.isFinite(check?.checkedAt)
-          ? check!.checkedAt + 24 * 60 * 60 * 1000 : 0,
+        countryExpiresAt: check && Number.isFinite(check.checkedAt)
+          ? check.checkedAt + 24 * 60 * 60 * 1000 : 0,
       }
     }))
   }
@@ -168,9 +166,7 @@ class ProxyManager {
 
     try {
       router = await snapshot.pending
-    } catch (error_) {
-      const error = error_ as RequestError
-
+    } catch (error) {
       if (cachedRouter === snapshot) {
         cachedRouter = null
       }
@@ -183,9 +179,13 @@ class ProxyManager {
 
     return {
       ...decision,
-      proxies: decision.proxies.map((id) => {
-        const proxy = router.proxies.get(id)!
+      // The router returns only IDs from its own proxy map.
+      proxies: decision.proxies.flatMap((id) => {
+        const proxy = router.proxies.get(id)
 
+        if (!proxy) {
+          return []
+        }
         return decision.type === 'probe' ? { ...proxy, checking: true } : proxy
       }),
     }
@@ -240,7 +240,7 @@ class ProxyManager {
   }
 
   async setProxy () {
-    return callBackground('setProxy')
+    return withProxyLock(() => this.setProxyInBackground())
   }
 
   async setProxyInBackground ({ ping = true } = {}): Promise<boolean> {
@@ -284,9 +284,9 @@ class ProxyManager {
     try {
       // Firefox's PAC runtime cannot reliably load very large registries.
       // Its request listener uses the same router; the PAC is a fail-closed guard.
-      const pacData = browser.isFirefox
-        ? 'function FindProxyForURL() { return "PROXY 127.0.0.1:0"; }'
-        : getPacScript(options!)
+      const pacData = options
+        ? getPacScript(options)
+        : 'function FindProxyForURL() { return "PROXY 127.0.0.1:0"; }'
 
       await applyPac(pacData, true)
       // An inherited system/manual proxy cannot accept an exact-host override.
@@ -310,16 +310,14 @@ class ProxyManager {
       await this.requestIncognitoAccess()
       console.info('PAC has been set successfully!')
       return true
-    } catch (error_) {
-      const error = error_ as RequestError
-
+    } catch (error) {
       if (isConsentError(error)) {
         await this.removeProxyInBackground()
         return false
       }
-      console.error(`PAC could not be set: ${error}`)
+      console.error(`PAC could not be set: ${String(error)}`)
       await browser.storage.local.set({
-        proxyIsAlive: false, proxySetupError: error.message,
+        proxyIsAlive: false, proxySetupError: errorMessage(error),
       })
       await this.requestIncognitoAccess()
       return false
@@ -327,7 +325,7 @@ class ProxyManager {
   }
 
   async removeProxy () {
-    return callBackground('removeProxy')
+    return withProxyLock(() => this.removeProxyInBackground())
   }
 
   async removeProxyInBackground () {
@@ -343,7 +341,7 @@ class ProxyManager {
   }
 
   async ping (force = false) {
-    return callBackground('ping', force)
+    return withProxyLock(() => this.pingInBackground(force))
   }
 
   // The caller holds the route lock until the direct knock route is restored.
@@ -401,9 +399,7 @@ class ProxyManager {
           type: 'ping',
         }),
       }), controller)
-    } catch (error_) {
-      const error = error_ as RequestError
-
+    } catch (error) {
       if (isConsentError(error)) {
         return undefined
       }
@@ -415,12 +411,6 @@ class ProxyManager {
 
     console.log(`Knock attempted: ${proxyPingURI}`)
     return undefined
-  }
-
-  async usingCustomProxy () {
-    const { id } = await this.getProxyingRules()
-
-    return id !== 'builtin'
   }
 
   async isEnabled () {
@@ -445,18 +435,12 @@ class ProxyManager {
     return levelOfControl === 'controlled_by_other_extensions'
   }
 
-  async controlledByThisExtension () {
-    const { levelOfControl } = await browser.proxy.settings.get({})
-
-    return levelOfControl === 'controlled_by_this_extension'
-  }
-
   async takeControl () {
     const self = await browser.management.getSelf()
     const extensions = await browser.management.getAll()
 
     for (const { id, name, permissions } of extensions) {
-      if (permissions!.includes('proxy') && name !== self.name) {
+      if (permissions?.includes('proxy') && name !== self.name) {
         console.warn(`Disabling ${name}...`)
         await browser.management.setEnabled(id, false)
       }
@@ -464,7 +448,7 @@ class ProxyManager {
   }
 
   async setLocalProxy (enabled: boolean) {
-    return callBackground('setLocalProxy', enabled)
+    return withProxyLock(() => this.setLocalProxyInBackground(enabled))
   }
 
   async setLocalProxyInBackground (enabled: boolean) {
@@ -488,7 +472,7 @@ class ProxyManager {
   }
 
   async syncLocalProxy (options?: { startIfMissing?: boolean }) {
-    return callBackground('syncLocalProxy', options)
+    return withProxyLock(() => this.syncLocalProxyInBackground(options))
   }
 
   async usingLocalProxy () {
@@ -547,13 +531,6 @@ class ProxyManager {
 
   async removeBadProxies () {
     await browser.storage.local.set({ badProxies: [] })
-  }
-
-  async getBadProxies () {
-    const { badProxies } =
-      await browser.storage.local.get({ badProxies: [] })
-
-    return badProxies
   }
 }
 

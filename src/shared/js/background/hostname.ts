@@ -24,3 +24,23 @@ export const normalizeHostname = (value: unknown) => {
     return null
   }
 }
+
+/**
+ * Validate given array of URLs.
+ * @param urls Array of urls.
+ * @returns {Array[string]} Array of valid URLs.
+ */
+export const removeDuplicates = (urls: unknown[]) => {
+  const result = new Set<string>()
+
+  for (const url of urls) {
+    const domain = normalizeHostname(
+      typeof url === 'string' ? url.trim() : url,
+    )
+
+    if (domain) {
+      result.add(domain)
+    }
+  }
+  return Array.from(result)
+}

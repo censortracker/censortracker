@@ -1,7 +1,7 @@
 import browser from './browser-api'
 import { TaskType } from './constants'
 import { CONSENT_VERSION, getDataConsent, hasDataConsent, isConsentError } from './data-consent'
-import { activateNotices, openNotices, pendingNotices } from './extension-notices'
+import { activateNotices, openNotices, openPage, pendingNotices } from './extension-notices'
 import { getMessage, initializeLanguage } from './i18n'
 import Ignore from './ignore'
 import ProxyManager from './proxy'
@@ -21,7 +21,11 @@ import * as utilities from './utilities'
 let lastNavigationPing = -Infinity
 
 export const showDisseminatorWarning = async (url: string) => {
-  const hostname = utilities.extractDomainFromUrl(url)!
+  const hostname = utilities.extractDomainFromUrl(url)
+
+  if (!hostname) {
+    return
+  }
   const {
     notifiedHosts,
     showNotifications,
@@ -86,7 +90,7 @@ export const handleOnAlarm = async ({ name }: { name: string }) => {
   }
 }
 
-export const handleBeforeRequest = async (_details?: unknown) => {
+export const handleBeforeRequest = async () => {
   if (await hasDataConsent() && await Settings.extensionEnabled() &&
       await ProxyManager.isEnabled()) {
     const now = performance.now()
@@ -208,23 +212,12 @@ export const pauseDataTransmission = async () => {
   await withProxyLock(() => ProxyManager.removeProxyInBackground())
 }
 
-export const openDataConsent = async () => {
-  const url = browser.runtime.getURL('consent.html')
-  const tabs = await browser.tabs.query({})
-  const existing = tabs.find((tab) => tab.url === url)
-
-  if (existing) {
-    await browser.tabs.update(existing.id!, { active: true })
-    await browser.windows.update(existing.windowId!, { focused: true })
-  } else {
-    await browser.tabs.create({ url, active: true })
-  }
-}
+export const openDataConsent = () => openPage('consent.html')
 
 let consentWrites: Promise<unknown> = Promise.resolve()
 let consentWork = Promise.resolve()
 
-export const setDataConsent = (accepted: boolean) => {
+export const setDataConsent = (accepted: unknown) => {
   if (typeof accepted !== 'boolean') {
     throw new TypeError('Invalid consent choice')
   }
@@ -320,54 +313,54 @@ export const handleInstalled = async ({ reason }: { reason: string }) => {
   }
 }
 
+const warnDisseminator = async (tabId: number, url: string,
+  incognito?: boolean) => {
+  const { url: disseminatorUrl, cooperationRefused } =
+    await Registry.retrieveDisseminator(url)
+
+  if (disseminatorUrl && !cooperationRefused) {
+    Settings.setDangerIcon(tabId)
+    // Notifications save the domain; require a known non-private tab.
+    if (incognito === false) {
+      await showDisseminatorWarning(url)
+    }
+  }
+}
+
+const markBlocked = async (tabId: number, url: string) => {
+  if (await Registry.contains(url)) {
+    Settings.setBlockedIcon(tabId)
+  }
+}
+
 export const handleTabState = async (
   tabId: number,
   { status = 'loading' }: { status?: string } = {},
   { url, incognito }: { url?: string; incognito?: boolean } = {},
 ) => {
-  if (url && status === browser.tabs.TabStatus.LOADING) {
-    Settings.setDefaultIcon(tabId)
-    Settings.extensionEnabled().then((enabled) => {
-      if (enabled) {
-        Ignore.contains(url).then(async (isIgnored) => {
-          Registry.retrieveDisseminator(url).then(
-            async ({ url: disseminatorUrl, cooperationRefused }) => {
-              if (disseminatorUrl) {
-                if (!cooperationRefused) {
-                  Settings.setDangerIcon(tabId)
-                  // Notifications save the domain; require a known non-private tab.
-                  if (incognito === false) {
-                    await showDisseminatorWarning(url)
-                  }
-                }
-              }
-            },
-          )
-
-          if (!isIgnored) {
-            Registry.contains(url).then((blocked) => {
-              if (blocked) {
-                Settings.setBlockedIcon(tabId)
-              }
-            })
-          }
-        })
-      } else {
-        Settings.setDisableIcon(tabId)
-      }
-    })
+  if (!url || status !== browser.tabs.TabStatus.LOADING) {
+    return
   }
+  Settings.setDefaultIcon(tabId)
+  if (!await Settings.extensionEnabled()) {
+    Settings.setDisableIcon(tabId)
+    return
+  }
+  const ignored = await Ignore.contains(url)
+
+  // Both checks run together; either can set the icon.
+  await Promise.all([
+    warnDisseminator(tabId, url, incognito),
+    ignored ? undefined : markBlocked(tabId, url),
+  ])
 }
 
 export const handleTabCreate = async (tab: { id?: number }) => {
-  Settings.extensionEnabled()
-    .then((enabled) => {
-      if (enabled) {
-        Settings.setDefaultIcon(tab.id)
-      } else {
-        Settings.setDisableIcon(tab.id)
-      }
-    })
+  if (await Settings.extensionEnabled()) {
+    Settings.setDefaultIcon(tab.id)
+  } else {
+    Settings.setDisableIcon(tab.id)
+  }
 }
 
 export const handleProxyError = async (details: ProxyErrorDetails) => {

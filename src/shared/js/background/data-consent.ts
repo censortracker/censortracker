@@ -5,9 +5,10 @@ import { isRecord } from './value'
 export interface Consent { version: number; accepted: boolean }
 
 export const CONSENT_VERSION = 1
-export const validConsent = (value: unknown): value is Consent =>
+const validConsent = (value: unknown): value is Consent =>
   isRecord(value) && value.version === CONSENT_VERSION &&
   typeof value.accepted === 'boolean'
+
 export const consentAccepted = (value: unknown) =>
   validConsent(value) && value.accepted
 export const getDataConsent = async () => {

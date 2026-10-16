@@ -3,20 +3,35 @@ const { test } = require('node:test')
 const load = require('./load.cjs')
 const en = require('../src/locales/en/messages.json')
 const ru = require('../src/locales/ru/messages.json')
+const uk = require('../src/locales/uk/messages.json')
+const catalogs = { en, ru, uk }
+const settle = () => new Promise(resolve => setTimeout(resolve))
 
-function fixture(uiLanguage = 'auto') {
+// Serves the packaged _locales files like the extension origin does.
+function fetchLocales(fetched = []) {
+  return async url => {
+    fetched.push(url)
+    const [, language] = url.match(/^ext:_locales\/(\w+)\/messages\.json$/)
+    return { json: async () => catalogs[language] }
+  }
+}
+
+function fixture(uiLanguage = 'auto', fetch) {
   let changed
   let reads = 0
+  const fetched = []
   const storage = { uiLanguage }
   const browser = {
     i18n: { getUILanguage: () => 'en-US', getMessage: key => `native:${key}` },
+    runtime: { getURL: path => 'ext:' + path },
     storage: {
       local: { get: async defaults => { reads++; return { ...defaults, ...storage } } },
       onChanged: { addListener: listener => { changed = listener } },
     },
   }
-  const api = load('background/i18n', { 'browser-api': { default: browser } })
-  return { ...api, browser, reads: () => reads,
+  const api = load('background/i18n', { 'browser-api': { default: browser } },
+    { fetch: fetch || fetchLocales(fetched) })
+  return { ...api, browser, fetched, reads: () => reads,
     change: (value, area = 'local') => changed({ uiLanguage: { newValue: value } }, area) }
 }
 
@@ -28,6 +43,7 @@ test('all language choices load once and preserve native browser APIs', async ()
     assert.equal(state.getMessage('uiLanguageTitle'), title)
     assert.equal(state.getUILanguage(), language === 'auto' ? 'en-US' : language)
     assert.equal(state.reads(), 1)
+    assert.deepEqual(state.fetched, language === 'auto' ? [] : [`ext:_locales/${language}/messages.json`])
     assert.equal(state.browser.i18n.getMessage, native)
   }
 })
@@ -36,13 +52,17 @@ test('language changes update translations and country names without restarting 
   const state = fixture('en')
   await state.initializeLanguage()
   state.change('ru', 'sync')
+  await settle()
   assert.equal(state.getMessage('uiLanguageTitle'), 'Language')
   state.change('ru')
+  await settle()
   assert.equal(state.getMessage('uiLanguageTitle'), 'Язык')
   assert.equal(new Intl.DisplayNames([state.getUILanguage()], { type: 'region' }).of('SE'), 'Швеция')
   state.change('uk')
+  await settle()
   assert.equal(state.getMessage('uiLanguageTitle'), 'Мова')
   state.change(undefined)
+  await settle()
   assert.equal(state.getMessage('uiLanguageTitle'), 'native:uiLanguageTitle')
 })
 
@@ -57,16 +77,12 @@ test('a language change during startup wins over an old storage read', async () 
   assert.equal(state.getMessage('uiLanguageTitle'), 'Мова')
 })
 
-test('an old native message catalog falls back to the bundled browser language', async () => {
-  for (const [locale, title, auto] of [['en-US', 'Language', 'Browser language'],
-    ['ru-RU', 'Язык', 'Язык браузера'], ['uk-UA', 'Мова', 'Мова браузера'],
-    ['de-DE', 'Language', 'Browser language']]) {
-    const state = fixture()
-    state.browser.i18n.getMessage = () => ''
-    state.browser.i18n.getUILanguage = () => locale
-    await state.initializeLanguage()
-    assert.equal(state.getMessage('uiLanguageTitle'), title)
-    assert.equal(state.getMessage('uiLanguageAuto'), auto)
+test('unreadable or invalid catalogs keep the native browser language', async () => {
+  for (const json of [async () => { throw new Error('missing') }, async () => ({ key: { message: 1 } })]) {
+    const state = fixture('ru', async () => ({ json }))
+    assert.equal(await state.initializeLanguage(), 'auto')
+    assert.equal(state.getMessage('uiLanguageTitle'), 'native:uiLanguageTitle')
+    assert.equal(state.getUILanguage(), 'en-US')
   }
 })
 
@@ -77,16 +93,17 @@ test('message formatting supports numbered, named, and literal dollar placeholde
   await state.initializeLanguage()
   assert.equal(state.getMessage('testFormatting', ['$2', 'host.example']), '$ $2 host.example host.example')
   assert.equal(state.getMessage('cooperationAcceptedMessage', 'host.example'), 'host.example may share your data with third parties.')
-  assert.equal(state.getMessage('missing'), '')
+  assert.equal(state.getMessage('missing'), 'native:missing')
 })
 
-test('missing translations fall back to English and invalid settings use the browser language', async t => {
+test('missing translations fall back to the native catalog and invalid settings use the browser language', async t => {
   const saved = ru.uiLanguageTitle
   delete ru.uiLanguageTitle
   t.after(() => { ru.uiLanguageTitle = saved })
   const state = fixture('ru')
   await state.initializeLanguage()
-  assert.equal(state.getMessage('uiLanguageTitle'), 'Language')
+  assert.equal(state.getMessage('uiLanguageTitle'), 'native:uiLanguageTitle')
+  assert.equal(state.getMessage('uiLanguageAuto'), 'Язык браузера')
   const invalid = fixture('fr')
   await invalid.initializeLanguage()
   assert.equal(invalid.getUILanguage(), 'en-US')
@@ -101,6 +118,7 @@ test('notifications load the saved language before they generate text', async ()
       set: async values => Object.assign(storage, values),
     }, onChanged: { addListener() {} } },
     notifications: { create: async (id, value) => { notification = value } },
+    runtime: { getURL: path => 'ext:' + path },
   }
   const handlers = load('background/handlers', {
     'browser-api': { default: browser },
@@ -108,9 +126,8 @@ test('notifications load the saved language before they generate text', async ()
     utilities: { extractDomainFromUrl: () => 'host.example' },
     proxy: {}, ignore: {}, registry: {}, server: {}, task: {},
     'proxy-route': {}, 'proxy-importer': {}, 'proxy-recovery': {},
-  })
+  }, { fetch: fetchLocales() })
   await handlers.showDisseminatorWarning('https://host.example')
   assert.match(notification.message, /host\.example/)
-  assert.equal(notification.message, require('../src/locales/uk/messages.json')
-    .cooperationAcceptedMessage.message.replace('$hostname$', 'host.example'))
+  assert.equal(notification.message, uk.cooperationAcceptedMessage.message.replace('$hostname$', 'host.example'))
 })

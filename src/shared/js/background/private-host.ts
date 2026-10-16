@@ -3,7 +3,7 @@
 export const isPrivateHost = (hostname: string) => {
   const host = hostname.toLowerCase().replace(/\.$/, '').replace(/^\[|\]$/g, '')
   const privateIPv4 = (parts: number[]) => {
-    const [first, second, third] = parts
+    const [first = 0, second = 0, third = 0] = parts
 
     return first === 0 || first === 10 || first === 127 || first >= 224 ||
       (first === 100 && second >= 64 && second <= 127) ||
@@ -27,29 +27,32 @@ export const isPrivateHost = (hostname: string) => {
 
   // Expand compressed IPv6 and dotted IPv4 tails without a DNS lookup.
   const address = host.replace(/\d+\.\d+\.\d+\.\d+$/, (tail) => {
-    const parts = tail.split('.').map(Number)
+    const [one = 0, two = 0, three = 0, four = 0] = tail.split('.').map(Number)
 
-    return `${((parts[0] << 8) | parts[1]).toString(16)}:${((parts[2] << 8) | parts[3]).toString(16)}`
+    return `${((one << 8) | two).toString(16)}:${((three << 8) | four).toString(16)}`
   })
   const halves = address.split('::')
   const left = halves[0] ? halves[0].split(':') : []
   const right = halves[1] ? halves[1].split(':') : []
   const words = (halves.length === 2
-    ? [...left, ...new Array(8 - left.length - right.length).fill('0'), ...right]
+    ? [...left, ...new Array<string>(8 - left.length - right.length).fill('0'), ...right]
     : left).map((word) => parseInt(word, 16))
-  const first = words[0]
+  // Missing words are zero, as in the bitwise operations below.
+  const wordAt = (index: number) => words[index] ?? 0
+  const first = wordAt(0)
 
   if (words.slice(0, 6).every((word) => word === 0) ||
-    (first === 0x64 && words[1] === 0xFF9B && words[2] === 1)) {
+    (first === 0x64 && wordAt(1) === 0xFF9B && wordAt(2) === 1)) {
     return true
   }
-  if ((words.slice(0, 5).every((word) => word === 0) && words[5] === 0xFFFF) ||
-    (first === 0x64 && words[1] === 0xFF9B &&
-      words.slice(2, 6).every((word) => word === 0))) {
-    return privateIPv4([words[6] >> 8, words[6] & 255,
-      words[7] >> 8, words[7] & 255])
+  if ((words.slice(0, 5).every((value) => value === 0) &&
+    wordAt(5) === 0xFFFF) ||
+    (first === 0x64 && wordAt(1) === 0xFF9B &&
+      words.slice(2, 6).every((value) => value === 0))) {
+    return privateIPv4([wordAt(6) >> 8, wordAt(6) & 255,
+      wordAt(7) >> 8, wordAt(7) & 255])
   }
   return (first & 0xFE00) === 0xFC00 || (first & 0xFFC0) === 0xFE80 ||
     (first & 0xFFC0) === 0xFEC0 || (first & 0xFF00) === 0xFF00 ||
-    (first === 0x2001 && words[1] === 0xDB8)
+    (first === 0x2001 && wordAt(1) === 0xDB8)
 }

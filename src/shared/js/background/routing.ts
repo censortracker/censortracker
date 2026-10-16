@@ -29,6 +29,9 @@ export interface RouteDecision {
   route: string
 }
 
+const finite = (value?: number) =>
+  value !== undefined && Number.isFinite(value) ? value : 0
+
 export const routingConfig = ({
   domains = [], ignoredHosts = [], proxies = [], proxyAll = false, probes = [],
   siteCountryRules = {}, providerDomains = [],
@@ -49,9 +52,9 @@ export const routingConfig = ({
     id,
     provider,
     route: proxyDirective(protocol, `${host}:${port}`),
-    retryAt: Number.isFinite(retryAt) ? retryAt! : 0,
+    retryAt: finite(retryAt),
     exitCountry: countryCode(exitCountry),
-    countryExpiresAt: Number.isFinite(countryExpiresAt) ? countryExpiresAt! : 0,
+    countryExpiresAt: finite(countryExpiresAt),
   })),
   probes: probes.map(({ hostname, proxy, expiresAt }) => ({
     hostname: normalizeHostname(hostname),
@@ -79,7 +82,7 @@ export const createRouter = (
     }
     const probe = probes.get(host)
     const rule = matchHost(host, ruleHosts)
-    const forbidden = rule ? config.siteCountryRules[rule] : []
+    const forbidden = (rule && config.siteCountryRules[rule]) || []
 
     if (probe) {
       return forbidden.length === 0 && Date.now() < probe.expiresAt

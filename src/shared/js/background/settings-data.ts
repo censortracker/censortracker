@@ -8,6 +8,7 @@ import { registrySourceDefaults, validateRegistrySource } from './registry-sourc
 import { settingsFromFork } from './settings-fork'
 import type { SiteRules } from './site-rules'
 import { validateSiteRules } from './site-rules'
+import { isRecord } from './value'
 
 export interface SettingsData {
   uiLanguage: string
@@ -52,15 +53,12 @@ export const settingsDefaults: SettingsData = {
   customProxyProtocol: 'HTTPS',
   customProxyServerURI: '',
 }
-const booleanKeys = new Set(
-  (Object.keys(settingsDefaults) as (keyof SettingsData)[])
-    .filter((key) => typeof settingsDefaults[key] === 'boolean'))
+const booleanKeys = new Set(Object.entries(settingsDefaults)
+  .filter(([, value]) => typeof value === 'boolean').map(([key]) => key))
 const hostKeys = new Set(['ignoredHosts', 'customProxiedDomains'])
-const isObject = (value: unknown): value is Record<string, unknown> => value !== null && typeof value === 'object' &&
-  !Array.isArray(value)
 
 export const validateSettings = (input: unknown) => {
-  if (!isObject(input) || input.reportType !== undefined ||
+  if (!isRecord(input) || input.reportType !== undefined ||
     (input.formatVersion !== undefined &&
     input.formatVersion !== 1)) {
     throw new Error('Invalid settings format')
@@ -69,7 +67,7 @@ export const validateSettings = (input: unknown) => {
     ? input.settings : settingsFromFork(input)
   const result: Record<string, unknown> = {}
 
-  if (!isObject(settings)) {
+  if (!isRecord(settings)) {
     throw new Error('Invalid settings')
   }
   for (const [key, value] of Object.entries(settings)) {
@@ -90,7 +88,7 @@ export const validateSettings = (input: unknown) => {
       }
       result[key] = value
       continue
-    } else if (booleanKeys.has(key as keyof SettingsData)) {
+    } else if (booleanKeys.has(key)) {
       valid = typeof value === 'boolean'
     } else if (hostKeys.has(key)) {
       if (!Array.isArray(value) || value.length > 100000) {

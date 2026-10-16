@@ -1,16 +1,9 @@
 import browser from './browser-api'
 import { findHostMatch } from './host-match'
-import { extractHostnameFromUrl, removeDuplicates } from './utilities'
+import { removeDuplicates } from './hostname'
+import { extractHostnameFromUrl } from './utilities'
 
 export class Ignore {
-  /**
-   * Clears the list of ignored domains.
-   * @returns {Promise<undefined>}
-   */
-  async clear () {
-    await browser.storage.local.set({ ignoredHosts: [] })
-  }
-
   /**
    * Returns the list of all ignored domains.
    * @returns {Promise<string[]>}

@@ -34,10 +34,6 @@ test('settings API keeps runtime state and exports a versioned user-only backup'
   } } }
   const settings = loadSettings({
     'browser-api': { default: browser },
-    'background-rpc': { callBackground: (method, input) => {
-      assert.equal(method, 'importSettings')
-      return settings.importSettingsInBackground(input)
-    } },
   }).default
   const backup = plain(await settings.exportSettings())
   assert.equal(new Date(backup.exportedAt).toISOString(), backup.exportedAt)
@@ -45,10 +41,10 @@ test('settings API keeps runtime state and exports a versioned user-only backup'
   assert.deepEqual(backup.browser, { name: 'Firefox', version: '142.0.1' })
   assert.equal(backup.manifestVersion, 2)
   assert.deepEqual(backup.settings, { ...plain(settingsDefaults), ...defaultProxies, useProxy: true, currentRegionCode: 'BY' })
-  await assert.rejects(settings.importSettings({ useProxy: false, ignoredHosts: [null] }))
-  await assert.rejects(settings.importSettings({ reportType: 'censortracker-diagnostics' }))
+  await assert.rejects(settings.importSettingsInBackground({ useProxy: false, ignoredHosts: [null] }))
+  await assert.rejects(settings.importSettingsInBackground({ reportType: 'censortracker-diagnostics' }))
   assert.equal(writes, 0)
-  await settings.importSettings({ formatVersion: 1, settings: { useProxy: false, serviceRouteSnapshot: {} } })
+  await settings.importSettingsInBackground({ formatVersion: 1, settings: { useProxy: false, serviceRouteSnapshot: {} } })
   assert.equal(storage.useProxy, false)
   assert.deepEqual(storage.domains, ['cached.example'])
   assert.deepEqual(storage.serviceRouteSnapshot, { owned: true })
@@ -56,12 +52,12 @@ test('settings API keeps runtime state and exports a versioned user-only backup'
   storage.customProxyServerURI = 'old.example:80'
   storage.ignoredHosts = ['old.example']
   storage.localProxyURI = '127.0.0.1:10808'
-  await settings.importSettings({ useOwnProxy: false, useLocalProxy: false })
+  await settings.importSettingsInBackground({ useOwnProxy: false, useLocalProxy: false })
   assert.equal(storage.uiLanguage, 'auto')
   assert.equal(storage.customProxyServerURI, '')
   assert.deepEqual(storage.ignoredHosts, [])
   assert.equal(storage.localProxyURI, null)
-  await settings.importSettings({ useLocalProxy: true, localProxyURI: 'evil.example:80' })
+  await settings.importSettingsInBackground({ useLocalProxy: true, localProxyURI: 'evil.example:80' })
   assert.equal(storage.localProxyURI, null)
   assert.equal(storage.localProxyAlive, false)
   assert.deepEqual(storage.domains, ['cached.example'])

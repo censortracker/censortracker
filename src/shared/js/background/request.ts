@@ -1,12 +1,16 @@
 import { withDataConsent } from './data-consent'
-import type { RegistryResponse } from './registry-request'
 import { watchRequest } from './request-diagnostics'
-import type { RequestError } from './value'
+import { requestError } from './value'
 
 export interface RequestOptions extends RequestInit {
   timeout?: number
   maxBytes?: number
   metadata?: boolean
+}
+export interface RegistryResponse<T = string> {
+  data?: T
+  etag?: string
+  finalUrl?: string
 }
 
 // Keep the deadline active until the entire response has been read.
@@ -37,7 +41,7 @@ const readText = async (url: string, {
     })
 
     if (!response.ok) {
-      throw Object.assign(new Error(`HTTP ${response.status}`), {
+      throw requestError(`HTTP ${response.status}`, {
         httpStatus: response.status,
       })
     }
@@ -46,7 +50,10 @@ const readText = async (url: string, {
     if (options.method === 'HEAD') {
       return headers
     }
-    const reader = response.body!.getReader()
+    if (!response.body) {
+      throw requestError('Response has no body', { code: 'invalid-response' })
+    }
+    const reader = response.body.getReader()
     const decoder = new TextDecoder()
     let size = 0
     let text = ''
@@ -60,25 +67,21 @@ const readText = async (url: string, {
       }
       size += value.byteLength
       if (size > maxBytes) {
-        throw Object.assign(new Error('Response is too large'), {
+        throw requestError('Response is too large', {
           code: 'invalid-response',
         })
       }
       text += decoder.decode(value, { stream: true })
     }
-  } catch (error_) {
-    const error = error_ as RequestError
-
+  } catch (error) {
     clearTimeout(timer)
     await stop(error)
     if (timedOut) {
-      throw Object.assign(new Error('Request aborted by timeout'), {
-        name: 'TimeoutError',
-      })
+      throw requestError('Request aborted by timeout', { name: 'TimeoutError' })
     }
     throw error
   } finally {
-    stop()
+    await stop()
     clearTimeout(timer)
     if (signal) {
       signal.removeEventListener('abort', abort)

@@ -1,16 +1,12 @@
 const assert = require('node:assert/strict')
 const { test } = require('node:test')
-const fs = require('node:fs')
-const path = require('node:path')
 const vm = require('node:vm')
-const babel = require('@babel/core')
 const loadUI = require('./load.cjs')
-const loadOperations = (mocks) => loadUI('../ui/pages/settings-operations', {
-  'background-rpc': {}, settings: {}, proxy: {}, server: {},
+const loadOperations = (mocks) => loadUI('background/operations', {
+  settings: {}, proxy: {}, server: {},
   'browser-api': {}, i18n: { getMessage: key => key }, ...mocks,
 })
 
-const root = path.resolve(__dirname, '../src/shared/js/background')
 const clone = value => JSON.parse(JSON.stringify(value))
 const normalPac = 'function FindProxyForURL(url, host) { return "HTTPS normal.example:443"; }'
 
@@ -79,7 +75,6 @@ function fixture(options = {}) {
     'background-rpc': { callBackground: () => { throw new Error('Unexpected RPC') } },
     ...options.mocks,
   }
-  const modules = {}
   const route = host => {
     const value = settings.value
     const script = options.firefox
@@ -89,30 +84,16 @@ function fixture(options = {}) {
     vm.runInNewContext(script, scope)
     return scope.FindProxyForURL('https://' + host, host)
   }
-  function load(name) {
-    if (name.endsWith('.json')) return require(path.resolve(root, name))
-    name = path.basename(name).replace(/\.[jt]s$/, '')
-    if (mocks[name]) return { __esModule: true, ...mocks[name] }
-    if (modules[name]) return modules[name].exports
-    const module = { exports: {} }
-    modules[name] = module
-    const source = babel.transformSync(fs.readFileSync(path.join(root, name + '.ts'), 'utf8'), {
-      configFile: false, babelrc: false, filename: name + '.ts',
-      presets: ['@babel/preset-typescript'],
-      plugins: ['@babel/plugin-transform-modules-commonjs'],
-    }).code
-    vm.runInNewContext(source, {
-      module, exports: module.exports, require: load,
-      URL, AbortController, TextEncoder, performance, crypto: require('node:crypto').webcrypto, console: { warn() {}, info() {}, error() {}, group() {}, groupEnd() {}, log() {}, table() {} },
-      setTimeout: (fn, delay) => setTimeout(fn, options.fastTimeout ? 5 : delay), clearTimeout,
-      fetch: async (url, init) => {
-        if (url.startsWith('data:')) return { text: async () => decodeURIComponent(url.split(',').slice(1).join(',')) }
-        events.push('fetch')
-        return options.fetch(url, init, { route, storage, listeners })
-      },
-    }, { filename: name + '.ts' })
-    return module.exports
-  }
+  const loadEntry = loadUI.createLoader(mocks, {
+    console: { warn() {}, info() {}, error() {}, group() {}, groupEnd() {}, log() {}, table() {} },
+    setTimeout: (fn, delay) => setTimeout(fn, options.fastTimeout ? 5 : delay),
+    fetch: async (url, init) => {
+      if (url.startsWith('data:')) return { text: async () => decodeURIComponent(url.split(',').slice(1).join(',')) }
+      events.push('fetch')
+      return options.fetch(url, init, { route, storage, listeners })
+    },
+  })
+  const load = name => loadEntry('background/' + name)
   return { load, storage, events, route, original, settings: () => settings, listeners, routeListeners, headerListeners, browser }
 }
 
@@ -438,6 +419,7 @@ for (const firefox of [false, true]) {
       assert.equal(route('sub.service.example'), 'HTTPS normal.example:443')
       return response([])
     } })
+    state.load('proxy-route').watchRoutes()
     await state.load('service-request').requestService('https://service.example', Array.isArray)
     if (!firefox) assert.deepEqual(state.settings().value, state.original)
     else assert.equal(state.route('service.example'), 'HTTPS normal.example:443')
@@ -639,6 +621,7 @@ for (const protocol of ['SOCKS5', 'HTTP']) {
       assert.equal(route('service.example'), `${pacProtocol} retry.example:443`)
       return response([])
     } })
+    state.load('proxy-route').watchRoutes()
     await state.load('service-request').requestService('https://service.example', Array.isArray)
     assert.deepEqual(state.settings().value, state.original)
   })
@@ -953,6 +936,7 @@ test('a routing change during port knock cannot install the old proxy', async ()
   }, mocks: {
     proxy: null, registry: { default: { getRoutingDomains: async () => ['example.com'] } },
   } })
+  state.load('proxy-route').watchRoutes()
   const proxy = state.load('proxy').default
   let knocks = 0
   proxy.pingInBackground = async () => {
@@ -1016,17 +1000,15 @@ for (const firefox of [false, true]) {
 }
 
 test('proxy-all reports failed application but preserves a disabled user preference', async () => {
-  let actions
   const state = fixture({ mocks: {
     proxy: null, handlers: { scheduleLocalProxyCheck: async () => {} },
     server: {}, settings: { default: {} },
     'proxy-auth': { registerProxyAuth() {} },
     ignore: { default: {} },
     registry: { default: { getRoutingDomains: async () => [] } },
-    'background-rpc': { registerBackground: value => { actions = value } },
   } })
   state.browser.proxy.settings.set = async () => { throw new Error('cannot apply') }
-  state.load('background').startBackground()
+  const actions = state.load('background-actions').backgroundActions
   await assert.rejects(actions.setProxyAll(true), /could not be applied/)
   assert.equal(state.storage.proxyAll, true)
   state.storage.useProxy = false
@@ -1038,15 +1020,14 @@ test('proxy-all reports failed application but preserves a disabled user prefere
 
 for (const outcome of ['enabled', 'disabled', 'failed']) {
   test(`settings import restores an external registry without auto-update: ${outcome}`, async () => {
-    let actions
     let downloads = 0
     const source = { kind: 'custom', url: 'https://source.example/list',
       enabled: outcome !== 'disabled', autoUpdate: false }
     const state = fixture({ mocks: {
       handlers: { scheduleLocalProxyCheck: async () => {} }, server: {}, utilities: {},
       'proxy-auth': { registerProxyAuth() {} },
-      'background-rpc': { registerBackground: value => { actions = value } },
-      proxy: { default: {
+      'background-actions': { registerBackground() {} },
+      proxy: { watchProxyCache() {}, default: {
         syncLocalProxy: async () => {}, syncLocalProxyInBackground: async () => {},
         setProxyInBackground: async () => { state.events.push('apply'); return true },
       } },
@@ -1058,7 +1039,7 @@ for (const outcome of ['enabled', 'disabled', 'failed']) {
       } },
     } })
     state.load('background').startBackground()
-    const imported = actions.importSettings({ formatVersion: 1, settings: {
+    const imported = state.load('operations').importSettings({ formatVersion: 1, settings: {
       enableExtension: true, useRegistry: false, registrySource: source,
     } })
     if (outcome === 'failed') {
@@ -1068,12 +1049,26 @@ for (const outcome of ['enabled', 'disabled', 'failed']) {
     }
     assert.equal(downloads, source.enabled ? 1 : 0)
     assert.deepEqual(state.storage.registrySource, source)
-    assert.deepEqual(Array.from(await state.load('registry').default.getDomains()),
-      outcome === 'enabled' ? ['external.example'] : [])
+    assert.equal((await state.load('registry').default.getRoutingDomains()).count,
+      outcome === 'enabled' ? 1 : 0)
     assert.equal(state.events.filter(event => event === 'apply').length,
       outcome === 'enabled' ? 2 : 1)
   })
 }
+
+test('background startup invalidates routes on setting changes', () => {
+  const state = fixture({ mocks: {
+    handlers: { scheduleLocalProxyCheck: async () => {} }, server: {},
+    'proxy-auth': { registerProxyAuth() {} },
+    'background-actions': { registerBackground() {} },
+    proxy: { watchProxyCache() {}, default: {} },
+  } })
+  const routes = state.load('proxy-route')
+  state.load('background').startBackground()
+  const revision = routes.getRouteRevision()
+  for (const listener of state.listeners) listener?.({ proxyAll: {} }, 'local')
+  assert.equal(routes.getRouteRevision(), revision + 1)
+})
 
 for (const outcome of ['success', 'no private permission', 'sync failure', 'route failure']) {
   test(`reset applies all defaults before sync and reports success only when ready: ${outcome}`, async () => {
@@ -1087,10 +1082,7 @@ for (const outcome of ['success', 'no private permission', 'sync failure', 'rout
       proxySubscriptions: [{ id: 'source', url: 'https://source.example/proxies', protocol: 'HTTP' }],
       proxySubscriptionsEnabled: true,
       registrySource: { kind: 'custom', url: 'https://source.example/domains', enabled: true, autoUpdate: true },
-    }, mocks: { 'background-rpc': { callBackground: async (action, args) => {
-      assert.equal(action, 'importSettings')
-      await settings.importSettingsInBackground(args)
-    } } } })
+    } })
     const settings = state.load('settings').default
     const expected = { ...state.load('settings-data').settingsDefaults,
       enableExtension: true, proxies: [], selectedProxyIds: ['builtin'] }
@@ -1108,6 +1100,7 @@ for (const outcome of ['success', 'no private permission', 'sync failure', 'rout
         state.storage.serviceErrors = outcome === 'sync failure' ? ['Sync failed'] : []
       } },
       proxy: { default: { removeBadProxies() {}, ping() { assert.notEqual(outcome, 'no private permission') },
+        syncLocalProxyInBackground: async () => {}, setProxyInBackground: async () => true,
         requestIncognitoAccess: async () => outcome !== 'no private permission',
         setProxy: async () => { assert.notEqual(outcome, 'no private permission'); checkDefaults(); return outcome !== 'route failure' },
       } },
@@ -1123,7 +1116,7 @@ test('the last registry choice survives an earlier pending download', async () =
   let release, started
   const ready = new Promise(resolve => { started = resolve })
   const applied = []
-  const { setRegistryEnabled } = loadUI('../ui/pages/registry-operations', {
+  const { setRegistryEnabled } = loadOperations({
     registry: { default: state.load('registry').default },
     proxy: { default: { setProxy: async () => { applied.push(state.storage.useRegistry) } } },
     server: { synchronize: () => { started(); return new Promise(resolve => { release = resolve }) } },
@@ -1148,11 +1141,9 @@ for (const code of ['RU', 'BY']) {
         throw new Error('offline')
       } } },
     })
-    const { setRegistryCountry } = loadUI('../ui/pages/registry-operations', {
-      proxy: {}, registry: {},
-      server: { synchronize: options => state.load('server').synchronizeInBackground({ ...options, syncProxy: false }) },
+    await state.load('server').synchronizeInBackground({
+      syncProxy: false, region: { countryCode: code, countryName: code },
     })
-    await setRegistryCountry(code, code)
     assert.equal(state.storage.currentRegionCode, code)
     assert.deepEqual(state.events, ['refresh', 'refresh'])
   })

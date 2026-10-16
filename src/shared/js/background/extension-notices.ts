@@ -1,4 +1,5 @@
 import browser from './browser-api'
+import type { StorageState } from './storage'
 
 export const extensionNotices = [{
   id: 'release-21',
@@ -8,8 +9,9 @@ export const extensionNotices = [{
   events: ['install', 'update'],
 }]
 
-const activeKey = (id: string) => `noticeActive:${id}`
-const readKey = (id: string) => `noticeRead:${id}`
+const activeKey = (id: string): `noticeActive:${string}` =>
+  `noticeActive:${id}`
+const readKey = (id: string): `noticeRead:${string}` => `noticeRead:${id}`
 
 export const pendingNotices = async () => {
   const state = await browser.storage.local.get(extensionNotices.flatMap(
@@ -27,28 +29,36 @@ export const activateNotices = async (reason: string) => {
   const state = await browser.storage.local.get(notices.flatMap(
     ({ id }) => [activeKey(id), readKey(id)],
   ))
-  const entries = notices.filter(({ id }) =>
-    state[activeKey(id)] !== true && state[readKey(id)] !== true)
-    .map(({ id }) => [activeKey(id), true])
+  const values: Partial<StorageState> = {}
 
-  if (entries.length > 0) {
-    await browser.storage.local.set(Object.fromEntries(entries))
+  for (const { id } of notices) {
+    if (state[activeKey(id)] !== true && state[readKey(id)] !== true) {
+      values[activeKey(id)] = true
+    }
   }
-  return entries.length > 0
+  const changed = Object.keys(values).length > 0
+
+  if (changed) {
+    await browser.storage.local.set(values)
+  }
+  return changed
 }
 
 export const dismissNotice = (id: string) =>
   browser.storage.local.set({ [readKey(id)]: true })
 
-export const openNotices = async () => {
-  const url = browser.runtime.getURL('notifications.html')
+// Focuses an open extension page, or opens it in a new tab.
+export const openPage = async (path: string) => {
+  const url = browser.runtime.getURL(path)
   const tabs = await browser.tabs.query({})
   const existing = tabs.find((tab) => tab.url === url)
 
-  if (existing) {
-    await browser.tabs.update(existing.id!, { active: true })
-    await browser.windows.update(existing.windowId!, { focused: true })
+  if (existing?.id !== undefined && existing.windowId !== undefined) {
+    await browser.tabs.update(existing.id, { active: true })
+    await browser.windows.update(existing.windowId, { focused: true })
   } else {
     await browser.tabs.create({ url, active: true })
   }
 }
+
+export const openNotices = () => openPage('notifications.html')

@@ -2,28 +2,28 @@ import browser from './browser-api'
 import type { DomainIndex } from './domain-index'
 import { buildDomainIndex, createDomainIndex } from './domain-index'
 import { findHostMatch } from './host-match'
-import { indexCache, registryWrites, setRegistryState } from './index-cache'
+import { indexCache, registryWrites } from './index-cache'
 import { externalRegistryDomains, registrySourceDefaults } from './registry-source-data'
 import type { Disseminator } from './service-config'
-import type { StorageState } from './storage'
 import {
   extractDomainFromUrl,
   extractHostnameFromUrl,
 } from './utilities'
 
+// Built-in registry, external registry, custom domains and exclusions.
+type Membership = [DomainIndex, DomainIndex, DomainIndex, DomainIndex]
 let membership: Promise<(DomainIndex | null)[]> | null
 let membershipIndexes: (DomainIndex | null)[] = []
-const membershipDefaults = [
-  { domains: [] },
-  { registrySource: registrySourceDefaults, externalRegistry: null },
-  { customProxiedDomains: [] },
-  { ignoredHosts: [] },
+const membershipKeys = [
+  ['domains', 'domainsRevision'],
+  ['registrySource', 'externalRegistry', 'externalRegistryRevision'],
+  ['customProxiedDomains'],
+  ['ignoredHosts'],
 ]
 
 const invalidateMembership = (keys: string[]) => {
-  const changed = membershipDefaults.map((defaults, position) =>
-    Object.keys(defaults).some((key) => keys.includes(key)) ||
-    keys.includes(['domainsRevision', 'externalRegistryRevision'][position]))
+  const changed = membershipKeys.map((names) =>
+    names.some((key) => keys.includes(key)))
 
   if (changed.some(Boolean)) {
     membership = null
@@ -32,12 +32,14 @@ const invalidateMembership = (keys: string[]) => {
   }
 }
 
-registryWrites.add(invalidateMembership)
-browser.storage?.onChanged?.addListener((changes, area) => {
-  if (area === 'local') {
-    invalidateMembership(Object.keys(changes))
-  }
-})
+export const watchRegistry = () => {
+  registryWrites.add(invalidateMembership)
+  browser.storage.onChanged.addListener((changes, area) => {
+    if (area === 'local') {
+      invalidateMembership(Object.keys(changes))
+    }
+  })
+}
 
 const loadMembership = async () => {
   const indexes = membershipIndexes
@@ -59,7 +61,7 @@ const loadMembership = async () => {
         const data = await indexCache(String(position), revision)
 
         if (data && current()) {
-          indexes[position] = createDomainIndex(data) as DomainIndex
+          indexes[position] = createDomainIndex(data)
         }
       }
     }))
@@ -67,8 +69,14 @@ const loadMembership = async () => {
   if (!current()) {
     return indexes
   }
-  const state = await browser.storage.local.get(Object.assign({},
-    ...membershipDefaults.filter((defaults, position) => !indexes[position]))) as Pick<StorageState, 'domains' | 'registrySource' | 'externalRegistry' | 'customProxiedDomains' | 'ignoredHosts'>
+  const state = await browser.storage.local.get({
+    ...indexes[0] ? {} : { domains: [] },
+    ...indexes[1] ? {} : {
+      registrySource: registrySourceDefaults, externalRegistry: null,
+    },
+    ...indexes[2] ? {} : { customProxiedDomains: [] },
+    ...indexes[3] ? {} : { ignoredHosts: [] },
+  })
   const lists = [state.domains, externalRegistryDomains(state),
     state.customProxiedDomains, state.ignoredHosts]
 
@@ -76,27 +84,33 @@ const loadMembership = async () => {
     if (indexes[position]) {
       continue
     }
-    const data = await buildDomainIndex(names, current)
+    const data = await buildDomainIndex(names || [], current)
+    const revision = revisions[position]
 
     if (!data) {
       return indexes
     }
-    indexes[position] = createDomainIndex(data) as DomainIndex
-    if (revisions[position]) {
+    indexes[position] = createDomainIndex(data)
+    if (revision) {
       // Do not delay routing while the optional snapshot is saved.
-      indexCache(String(position), revisions[position], data)
+      indexCache(String(position), revision, data).catch(() => null)
     }
   }
   return indexes
 }
 
-const getMembership = async (): Promise<DomainIndex[]> => {
+const complete = ([builtin, external, custom, ignored]: (DomainIndex | null)[]):
+  Membership | null => builtin && external && custom && ignored
+  ? [builtin, external, custom, ignored] : null
+
+const getMembership = async (): Promise<Membership> => {
   const pending = membership || (membership = loadMembership())
 
   try {
-    const indexes = await pending
+    const indexes = complete(await pending)
 
-    return membership === pending ? indexes as DomainIndex[] : getMembership()
+    // A superseded load can return before every list is indexed.
+    return membership === pending && indexes ? indexes : getMembership()
   } catch (error) {
     if (membership === pending) {
       membership = null
@@ -106,32 +120,6 @@ const getMembership = async (): Promise<DomainIndex[]> => {
 }
 
 class Registry {
-  /**
-   * Returns array of banned domains from the registry.
-   */
-
-  async getDomains () {
-    const {
-      domains,
-      useRegistry,
-      customProxiedDomains,
-      registrySource,
-      externalRegistry,
-    } = await browser.storage.local.get({
-      domains: [],
-      useRegistry: true,
-      customProxiedDomains: [],
-      registrySource: registrySourceDefaults,
-      externalRegistry: null,
-    })
-
-    return [
-      ...(useRegistry ? domains : []),
-      ...customProxiedDomains,
-      ...externalRegistryDomains({ registrySource, externalRegistry }),
-    ]
-  }
-
   async isEmpty () {
     return await this.getDomainCount() === 0
   }
@@ -244,10 +232,6 @@ class Registry {
 
   async disableRegistry () {
     await browser.storage.local.set({ useRegistry: false })
-  }
-
-  async clearRegistry () {
-    await setRegistryState({ domains: [] })
   }
 }
 

@@ -15,6 +15,7 @@ async function fixture({ saved = false, apply = async () => {}, operations = {} 
         if (failure) throw failure
         return info
       }
+      if (operations[action]) return operations[action]()
       assert.equal(action, 'setProxyAll')
       await apply(value)
       state.data.proxyAll = value
@@ -22,7 +23,7 @@ async function fixture({ saved = false, apply = async () => {}, operations = {} 
     'site-rules': { SiteRules: () => null },
     'registry-status': { RegistryStatus: () => null },
     'consent-status': { ConsentStatus: () => null },
-    'settings-operations': { exportFile: async () => {}, importSettings: async () => {}, resetSettings: async () => {}, updateRegistry: async () => {}, ...operations },
+    'settings-operations': { exportFile: async () => {}, importSettings: async () => {} },
   })
   const view = ui.testing.render(ui.h(AdvancedOptionsPage))
   await ui.testing.waitFor(() => assert.equal(ui.byId('proxyAll').checked, saved))
@@ -55,9 +56,8 @@ test('exports download the correct documents and release each download URL', asy
   window.HTMLAnchorElement.prototype.click = function () { downloads.push({ filename: this.download, blob: blobs.get(this.href) }) }
   try {
     const { exportFile } = ui.moduleFor('pages/settings-operations', {
-      'background-rpc': { callBackground: async () => ({ reportType: 'censortracker-diagnostics' }) },
-      settings: { default: { exportSettings: async () => ({ formatVersion: 1, settings: { useProxy: true } }) } },
-      proxy: {}, server: {}, 'browser-api': {},
+      'background-rpc': { callBackground: async action => action === 'diagnosticInfo'
+        ? { reportType: 'censortracker-diagnostics' } : { formatVersion: 1, settings: { useProxy: true } } },
     }, { URL: { createObjectURL: blob => { const url = 'blob:test-' + blobs.size; blobs.set(url, blob); return url }, revokeObjectURL: url => revoked.push(url) } })
     await exportFile(false)
     await exportFile(true)

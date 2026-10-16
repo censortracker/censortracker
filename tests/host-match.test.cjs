@@ -29,7 +29,9 @@ test('PAC and registry preserve subdomains and multi-label suffixes', async () =
     get: async () => storage,
     set: async values => { Object.assign(storage, values); changed(values, 'local') },
   }, onChanged: { addListener: listener => { changed = listener } } } }
-  const registry = load('background/registry', { 'browser-api': { default: browser } }).default
+  const loaded = load('background/registry', { 'browser-api': { default: browser } })
+  loaded.watchRegistry()
+  const registry = loaded.default
   const { getPacScript } = load('background/pac')
   const context = {}
   vm.runInNewContext(getPacScript({ domains, proxies: [{ protocol: 'HTTPS', host: 'proxy.example', port: 443 }] }), context)
@@ -51,7 +53,7 @@ test('PAC and registry preserve subdomains and multi-label suffixes', async () =
   await registry.remove('https://a.api.site.co.uk')
   assert.deepEqual(Array.from(storage.customProxiedDomains), ['other.example'])
   assert.equal((await registry.getDomainStatus('a.api.site.co.uk')).custom, false)
-  const { removeDuplicates } = load('background/utilities', { 'browser-api': { default: {} } })
+  const { removeDuplicates } = load('background/hostname')
   assert.deepEqual(Array.from(removeDuplicates([' api.example.com ', 'https://api.example.com/x', 'example.com'])),
     ['api.example.com', 'example.com'])
 })

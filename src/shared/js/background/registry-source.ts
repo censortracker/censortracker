@@ -83,7 +83,7 @@ export const refreshRegistrySource = async ({ automatic = false } = {}) => {
     }
     const parse = source.kind === 'anticensority'
       ? parseAnticensority : parseRegistryList
-    const domains = await parse(result.data!, controller.signal)
+    const domains = await parse(result.data, controller.signal)
 
     return await withProxyLock(async () => {
       const current = await readState()

@@ -47,7 +47,9 @@ export const importAntizapret = async () => {
         await proxyAllowed()) {
         throw new Error('Proxy settings could not be applied')
       }
-      return { added: state.added, skipped: state.skipped! + parsed.skipped }
+      return {
+        added: state.added, skipped: (state.skipped ?? 0) + parsed.skipped,
+      }
     })
   } finally {
     controller.abort()

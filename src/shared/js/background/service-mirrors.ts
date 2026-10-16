@@ -4,11 +4,14 @@ import { isRegistryCancellation } from './registry-request'
 import {
   CONFIG_URL, DOMAINS_URL, GEOIP_URL, getRegionConfig, ORI_URL, PROXY_LIST_URL,
 } from './service-config'
-import type { ServiceOptions, Validator } from './service-request'
+import type {
+  ServiceData, ServiceOptions, ServiceResponse, Validator,
+} from './service-request'
 import { requestService } from './service-request'
-import type { RequestError } from './value'
+import { errorMessage, isRecord } from './value'
 
-export type ServiceName = 'geoip' | 'ori' | 'proxyList' | 'config' | 'domains'
+type ServiceName = 'geoip' | 'ori' | 'proxyList' | 'config' | 'domains'
+type MirrorOptions = ServiceOptions & { countryCode?: string }
 export type ServiceMirrors = Partial<Record<ServiceName, string[]>> & {
   registry?: Record<string, string[]>
 }
@@ -22,8 +25,6 @@ const services = {
   config: `${CONFIG_URL}{country}/`,
   domains: `${DOMAINS_URL}{country}/`,
 }
-const isObject = (value: unknown): value is Record<string, unknown> => value !== null && typeof value === 'object' &&
-  !Array.isArray(value)
 const hasOwn = (object: object, key: string) =>
   Object.prototype.hasOwnProperty.call(object, key)
 
@@ -50,7 +51,7 @@ const validateUrls = (values: unknown, template = false) => {
 }
 
 const validateRegistryMirrors = (registry: unknown) => {
-  if (!isObject(registry)) {
+  if (!isRecord(registry)) {
     throw new TypeError('Invalid registry mirrors')
   }
   return Object.fromEntries(Object.entries(registry)
@@ -60,7 +61,7 @@ const validateRegistryMirrors = (registry: unknown) => {
 }
 
 export const validateServiceMirrors = (data: unknown): ServiceMirrors => {
-  if (!isObject(data) || data.formatVersion !== 1 || !isObject(data.mirrors)) {
+  if (!isRecord(data) || data.formatVersion !== 1 || !isRecord(data.mirrors)) {
     throw new TypeError('Invalid mirrors format')
   }
   const mirrors: ServiceMirrors = {}
@@ -79,8 +80,7 @@ export const validateServiceMirrors = (data: unknown): ServiceMirrors => {
 
 export const getServiceUrls = (mirrors: ServiceMirrors, service: ServiceName | 'registry', country = '') => {
   const countryCode = country.toUpperCase()
-  let builtIn = [services[service as ServiceName]]
-  let extra = mirrors[service as ServiceName] || []
+  let urls: string[]
 
   if (service === 'registry') {
     const { registryUrl, registryMirrors } = getRegionConfig(countryCode)
@@ -88,16 +88,25 @@ export const getServiceUrls = (mirrors: ServiceMirrors, service: ServiceName | '
     if (!registryUrl) {
       return []
     }
-    builtIn = [registryUrl, ...registryMirrors]
-    extra = mirrors.registry?.[countryCode] || []
+    urls = [registryUrl, ...registryMirrors,
+      ...mirrors.registry?.[countryCode] || []]
+  } else {
+    urls = [services[service], ...mirrors[service] || []]
   }
-  return [...new Set([...builtIn, ...extra].map((url) =>
+  return [...new Set(urls.map((url) =>
     new URL(url.replaceAll('{country}', countryCode)).href))]
 }
 
-export const requestMirroredService = async <T>(
-  mirrors: ServiceMirrors, service: ServiceName | 'registry', validate: Validator<T>, { countryCode = '', ...options }: ServiceOptions & { countryCode?: string } = {},
-) => {
+export function requestMirroredService<T> (mirrors: ServiceMirrors,
+  service: ServiceName | 'registry', validate: Validator<T>,
+  options?: MirrorOptions & { cache?: undefined }): Promise<ServiceData<T>>
+export function requestMirroredService<T> (mirrors: ServiceMirrors,
+  service: ServiceName | 'registry', validate: Validator<T>,
+  options?: MirrorOptions): Promise<ServiceResponse<T>>
+export async function requestMirroredService<T> (mirrors: ServiceMirrors,
+  service: ServiceName | 'registry', validate: Validator<T>,
+  { countryCode = '', ...options }: MirrorOptions = {},
+): Promise<ServiceResponse<T>> {
   const errors = []
 
   for (const url of getServiceUrls(mirrors, service, countryCode)) {
@@ -106,17 +115,15 @@ export const requestMirroredService = async <T>(
         ...options, ...(service === 'geoip' ? { allowProxyRetry: false } : {}),
       })
 
-      if (service === 'geoip' && result.viaProxy) {
+      if (service === 'geoip' && !result.unchanged && result.viaProxy) {
         throw new Error('GeoIP returned the proxy country, not the user country')
       }
       return result
-    } catch (error_) {
-      const error = error_ as RequestError
-
+    } catch (error) {
       if (isRegistryCancellation(error)) {
         throw error
       }
-      errors.push(error.message)
+      errors.push(errorMessage(error))
     }
   }
   throw new Error(errors.join('; '))
@@ -138,10 +145,10 @@ export const refreshServiceMirrors = () => {
     try {
       const { data } = await requestService(
         MIRRORS_URL,
-        (value: unknown): value is unknown =>
+        // The validator throws a specific error for an invalid record.
+        (value): value is Record<string, unknown> =>
           Boolean(validateServiceMirrors(value)),
         { requireEnabled: true },
-
       )
 
       await browser.storage.local.set({
@@ -149,13 +156,11 @@ export const refreshServiceMirrors = () => {
         mirrorsUpdatedAt: Date.now(),
         mirrorsError: '',
       })
-    } catch (error_) {
-      const error = error_ as RequestError
-
+    } catch (error) {
       if (isRegistryCancellation(error)) {
         throw error
       }
-      await browser.storage.local.set({ mirrorsError: error.message })
+      await browser.storage.local.set({ mirrorsError: errorMessage(error) })
     }
   })().finally(() => {
     pending = null

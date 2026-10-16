@@ -43,9 +43,11 @@ test('large registry lookups share an index, yield during construction, and disc
     return structuredClone(Object.fromEntries(Object.entries(defaults).map(([key, value]) => [key, storage[key] ?? value])))
   }},
     onChanged: {addListener: listener => { changed = listener }}}}
-  const registry = load('background/registry', {'browser-api': {default: browser}}, {
+  const loaded = load('background/registry', {'browser-api': {default: browser}}, {
     performance: {now: () => time += 8},
-  }).default
+  })
+  loaded.watchRegistry()
+  const registry = loaded.default
   const first = registry.getDomainStatus('site9999.example')
   const concurrent = registry.getDomainStatus('site2.example')
   setTimeout(() => { ticked = true; storage.domains = ['new.example']; changed({domains: {}}, 'local') }, 0)

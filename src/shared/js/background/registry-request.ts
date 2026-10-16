@@ -1,29 +1,23 @@
 import { isConsentError } from './data-consent'
-import type { RequestError } from './value'
+import type { RegistryResponse } from './request'
+import { isRecord, requestError } from './value'
 
 export interface RegistryCache {
   url: string
   etag: string
   finalUrl: string
 }
-export interface RegistryResponse<T = string> {
-  data?: T
-  etag?: string
-  finalUrl?: string
-}
 
 export const isRegistryCancellation = (error: unknown): boolean =>
-  isConsentError(error) ||
-  (error as RequestError | null)?.name === 'AbortError' ||
-  Boolean((error as RequestError | null)?.name !== 'TimeoutError' &&
-    (error as RequestError | null)?.cause &&
-    isRegistryCancellation((error as RequestError).cause))
+  isConsentError(error) || (isRecord(error) && (error.name === 'AbortError' ||
+    (error.name !== 'TimeoutError' && Boolean(error.cause) &&
+      isRegistryCancellation(error.cause))))
 
 // Metadata is committed by the caller only after the body is validated.
 export const requestRegistry = async <T>(url: string, cache: Partial<RegistryCache> | null | undefined, request: (method: 'HEAD' | 'GET') => Promise<RegistryResponse<T>>, signal?: AbortSignal) => {
   const checkAborted = () => {
     if (signal?.aborted) {
-      throw Object.assign(new Error('Registry request cancelled'), { name: 'AbortError' })
+      throw requestError('Registry request cancelled', { name: 'AbortError' })
     }
   }
 
@@ -45,8 +39,13 @@ export const requestRegistry = async <T>(url: string, cache: Partial<RegistryCac
   }
   checkAborted()
   const result = await request('GET')
+  const { data, etag = '', finalUrl = '' } = result
 
-  return {
-    ...result, cache: { url, finalUrl: result.finalUrl!, etag: result.etag! },
+  // A GET with metadata always returns its body and headers.
+  if (data === undefined) {
+    throw requestError('Registry response has no data', {
+      code: 'invalid-response',
+    })
   }
+  return { ...result, data, cache: { url, finalUrl, etag } }
 }

@@ -45,7 +45,7 @@ test('UI helpers normalize IDNs and reject malformed extension links', () => {
   const helpers = load('background/utilities', { 'browser-api': { default: {} } })
   assert.equal(helpers.extractDomainFromUrl('https://www.ПРИМЕР.РФ'), 'xn--e1afmkfd.xn--p1ai')
   assert.equal(helpers.extractHostnameFromUrl('https://www.ПРИМЕР.РФ'), 'www.xn--e1afmkfd.xn--p1ai')
-  assert.deepEqual(Array.from(helpers.removeDuplicates([' ПРИМЕР.РФ ', 'xn--e1afmkfd.xn--p1ai'])), ['xn--e1afmkfd.xn--p1ai'])
+  assert.deepEqual(Array.from(load('background/hostname').removeDuplicates([' ПРИМЕР.РФ ', 'xn--e1afmkfd.xn--p1ai'])), ['xn--e1afmkfd.xn--p1ai'])
   assert.equal(helpers.extractDomainFromUrl('moz-extension://id/options?loadFor=%'), null)
   assert.equal(helpers.extractDomainFromUrl(undefined), null)
 })

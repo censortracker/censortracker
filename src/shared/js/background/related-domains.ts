@@ -5,9 +5,10 @@ import { isPrivateHost } from './private-host'
 import ProxyManager from './proxy'
 import { proxyAllowed, withProxyLock } from './proxy-route'
 import { normalizeRegistryDomains } from './registry-source-data'
+import { isRecord, toRecord } from './value'
 
 // Runs in the tab's isolated world. No requests, page code, or history access.
-export const collectPageResources = () => {
+const collectPageResources = () => {
   const hosts = new Set<string>()
 
   for (const entry of performance.getEntriesByType('resource').slice(-2000)) {
@@ -30,16 +31,12 @@ export const collectPageResources = () => {
   return { url: location.href, hosts: Array.from(hosts) }
 }
 
-export const findRelatedDomains = async ({
-  tabId,
-  url,
-}: {
-  tabId?: number;
-  url?: string
-} = {
-}): Promise<string[]> => {
-  if (!Number.isInteger(tabId) || tabId! < 0 || typeof url !== 'string' ||
-    url.length > 8192 || !/^https?:\/\//.test(url)) {
+// The page comes from a page message.
+export const findRelatedDomains = async (page: unknown): Promise<string[]> => {
+  const { tabId, url } = toRecord(page)
+
+  if (typeof tabId !== 'number' || !Number.isInteger(tabId) || tabId < 0 ||
+    typeof url !== 'string' || url.length > 8192 || !/^https?:\/\//.test(url)) {
     throw new TypeError('Invalid page')
   }
   const pageHost = new URL(url).hostname.toLowerCase().replace(/\.$/, '')
@@ -54,29 +51,28 @@ export const findRelatedDomains = async ({
     }
   }
   const inspect = async () => {
-    if ((await browser.tabs.get(tabId!)).url !== url) {
+    if ((await browser.tabs.get(tabId)).url !== url) {
       throw new Error('Page changed')
     }
-    const results = browser.isFirefox
-      ? await browser.tabs.executeScript(tabId!, {
+    // The injected script runs in the page; check its result as page data.
+    const result: unknown = browser.isFirefox
+      ? (await browser.tabs.executeScript(tabId, {
         code: `(${collectPageResources.toString()})();`,
         frameId: 0,
         runAt: 'document_start',
-      })
-      : await browser.scripting.executeScript({
-        target: { tabId: tabId!, frameIds: [0] },
+      }))[0]
+      : (await browser.scripting.executeScript({
+        target: { tabId, frameIds: [0] },
         func: collectPageResources,
         injectImmediately: true,
-      })
-    const result = (browser.isFirefox ? results[0] : results[0]?.result) as
-      ReturnType<typeof collectPageResources>
+      }))[0]?.result
 
-    if (navigated || result?.url !== url || !Array.isArray(result.hosts) ||
-      result.hosts.length > 200 ||
-      (await browser.tabs.get(tabId!)).url !== url) {
+    if (navigated || !isRecord(result) || result.url !== url ||
+      !Array.isArray(result.hosts) || result.hosts.length > 200 ||
+      (await browser.tabs.get(tabId)).url !== url) {
       throw new Error('Page changed or invalid resource list')
     }
-    const hosts = result.hosts.map((host) => typeof host === 'string'
+    const hosts = result.hosts.map((host: unknown) => typeof host === 'string'
       ? host.toLowerCase().replace(/\.$/, '') : null)
 
     if (navigated) {

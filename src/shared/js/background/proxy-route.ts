@@ -21,13 +21,15 @@ const routeKeys = new Set([
   'registrySource', 'externalRegistry', 'antizapret',
 ])
 
-browser.storage.onChanged.addListener((changes, area) => {
-  if ((!area || area === 'local') &&
-    Object.keys(changes).some((key) => routeKeys.has(key))) {
-    revision++
-    permissionCache = null
-  }
-})
+export const watchRoutes = () => {
+  browser.storage.onChanged.addListener((changes, area) => {
+    if ((!area || area === 'local') &&
+      Object.keys(changes).some((key) => routeKeys.has(key))) {
+      revision++
+      permissionCache = null
+    }
+  })
+}
 
 export const getRouteRevision = () => revision
 export const getServiceRoute = () => serviceRoute
@@ -197,7 +199,7 @@ export const setServiceRoute = async (hostname: string, route: string) => {
       throw new Error('Cannot safely override the current proxy configuration')
     }
   } else if (!['direct', 'none'].includes(
-    snapshot.value.mode || snapshot.value.proxyType!,
+    snapshot.value.mode || snapshot.value.proxyType || '',
   )) {
     return false
   }

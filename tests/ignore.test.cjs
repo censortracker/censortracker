@@ -1,14 +1,11 @@
 const assert = require('node:assert/strict')
 const { test } = require('node:test')
 const load = require('./load.cjs')
+const { storageFixture } = require('./storage-fixture.cjs')
 const vm = require('node:vm')
 
 test('exclusions preserve hostnames and IPs and remove inherited rules', async () => {
-  const storage = { ignoredHosts: [] }
-  const browser = { storage: { local: {
-    get: async () => storage,
-    set: async values => Object.assign(storage, values),
-  } } }
+  const { browser, data: storage } = storageFixture({ ignoredHosts: [] })
   const ignore = load('background/ignore', { 'browser-api': { default: browser } }).default
   await ignore.add('https://api.example.co.uk/path')
   await ignore.add('8.8.8.8')
@@ -25,14 +22,13 @@ test('exclusions preserve hostnames and IPs and remove inherited rules', async (
 
 for (const useRegistry of [true, false]) {
   test(`exclusions override parent and child proxy rules with registry=${useRegistry}`, async () => {
-    const storage = { useRegistry, domains: ['example.com', 'api.other.com', '8.8.8.8'],
+    const { browser, data: storage } = storageFixture({ useRegistry, domains: ['example.com', 'api.other.com', '8.8.8.8'],
       customProxiedDomains: ['example.com', 'api.other.com', '8.8.8.8'],
-      ignoredHosts: ['api.example.com', 'other.com', '8.8.8.8'] }
-    const browser = { storage: { local: { get: async () => storage } } }
+      ignoredHosts: ['api.example.com', 'other.com', '8.8.8.8'] })
     const registry = load('background/registry', { 'browser-api': { default: browser } }).default
     const { getPacScript } = load('background/pac')
     const context = {}
-    vm.runInNewContext(getPacScript({ domains: await registry.getDomains(), ignoredHosts: storage.ignoredHosts,
+    vm.runInNewContext(getPacScript({ domains: await registry.getRoutingDomains(), ignoredHosts: storage.ignoredHosts,
       proxies: [{ protocol: 'HTTPS', host: 'proxy.example', port: 443 }] }), context)
     for (const host of ['api.example.com', 'child.api.example.com', 'api.other.com', '8.8.8.8']) {
       assert.equal((await registry.getDomainStatus(host)).ignored, true)

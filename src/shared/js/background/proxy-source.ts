@@ -1,5 +1,6 @@
 import { normalizeHostname } from './hostname'
 import { proxyProtocols } from './proxy-address'
+import { isRecord } from './value'
 
 export interface Subscription {
   id: string
@@ -24,9 +25,11 @@ export const validateSubscriptions = (input: unknown): Subscription[] => {
   if (!Array.isArray(input) || input.length > 20) {
     throw new Error('Invalid subscriptions')
   }
-  const sources = input.map((source) => {
-    if (!source || !/^[a-z0-9-]{1,80}$/i.test(source.id) ||
-      typeof source.id !== 'string' || !proxyProtocols.includes(source.protocol)) {
+  const sources = input.map((source: unknown) => {
+    if (!isRecord(source) || typeof source.id !== 'string' ||
+      !/^[a-z0-9-]{1,80}$/i.test(source.id) ||
+      typeof source.protocol !== 'string' ||
+      !proxyProtocols.includes(source.protocol)) {
       throw new Error('Invalid subscription')
     }
     return {

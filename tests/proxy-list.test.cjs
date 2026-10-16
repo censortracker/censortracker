@@ -62,18 +62,3 @@ test('proxy backups migrate legacy endpoints and reject invalid selections', () 
     assert.throws(() => validateSettings({ proxies: [], selectedProxyIds }))
   }
 })
-
-test('managed recovery follows the active endpoint, not any selected custom proxy', async () => {
-  const storage = { proxyServerURI: 'builtin.example:443',
-    proxies: [{ id: 'one', protocol: 'HTTP', host: 'one.example', port: 80 }],
-    selectedProxyIds: ['builtin', 'one'], useOwnProxy: true }
-  const manager = load('background/proxy', {
-    'browser-api': { default: { storage: { local: {
-      get: async defaults => ({ ...(typeof defaults === 'object' ? defaults : {}), ...storage }),
-    } } } },
-    'proxy-route': {}, registry: { default: {} },
-  }).default
-  assert.equal(await manager.usingCustomProxy(), false)
-  storage.selectedProxyIds = ['one', 'builtin']
-  assert.equal(await manager.usingCustomProxy(), true)
-})

@@ -7,7 +7,7 @@ export const MAX_IMPORT_BYTES = 32 * 1024 * 1024
 export const parseProxyInput = (input: string, defaultProtocol = 'HTTPS') => {
   let address = input.trim()
   const scheme = address.match(/^([a-z0-9]+):\/\//i)
-  const protocol = scheme ? scheme[1].toUpperCase() : defaultProtocol
+  const protocol = scheme?.[1]?.toUpperCase() ?? defaultProtocol
   let username = ''
   let password = ''
 
@@ -77,7 +77,7 @@ function * pacStrings (text: string) {
           index += digits
         } else {
           // Whitespace escapes all separate PAC directives.
-          value += 'nrt'.includes(code) ? ' ' : code || ''
+          value += code && 'nrt'.includes(code) ? ' ' : code || ''
         }
       } else {
         value += text[index]
@@ -89,7 +89,7 @@ function * pacStrings (text: string) {
   }
 }
 
-export const parseProxyImport = (text: string, {
+export const parseProxyImport = (text: unknown, {
   protocol = 'HTTPS', pac = false, limit = MAX_PROXIES,
 } = {}) => {
   if (typeof text !== 'string' || text.length > MAX_IMPORT_BYTES ||
@@ -134,7 +134,7 @@ export const parseProxyImport = (text: string, {
       const proxy = parseProxyInput(token, protocol)
       const key = proxyKey(proxy)
 
-      if (seen.has(key) || (fromPac && isPrivateHost(proxy.host!))) {
+      if (seen.has(key) || (fromPac && isPrivateHost(proxy.host))) {
         skipped++
         continue
       }

@@ -1,4 +1,5 @@
 import { MAX_REGISTRY_BYTES, normalizeRegistryDomains } from './registry-source-data'
+import { isRecord } from './value'
 
 // The publisher stores JSON on one line. Never interpret the surrounding PAC.
 export const parseAnticensority = (text: string, signal?: AbortSignal) => {
@@ -6,17 +7,18 @@ export const parseAnticensority = (text: string, signal?: AbortSignal) => {
     throw new TypeError('Invalid Anticensority response')
   }
   const matches = text.matchAll(/^[\t ]*const inputs = (\{[^\r\n]+\});[\t ]*\r?$/gm)
-  const first = matches.next().value
+  const json = matches.next().value?.[1]
 
-  if (!first || !matches.next().done) {
+  if (!json || !matches.next().done) {
     throw new TypeError('Invalid Anticensority data')
   }
-  const { HOSTNAMES: buckets } = JSON.parse(first[1])
+  const inputs: unknown = JSON.parse(json)
+  const buckets = isRecord(inputs) ? inputs.HOSTNAMES : null
 
-  if (!buckets || typeof buckets !== 'object' || Array.isArray(buckets)) {
+  if (!isRecord(buckets)) {
     throw new TypeError('Invalid Anticensority hostnames')
   }
-  const domains = []
+  const domains: string[] = []
 
   for (const [key, value] of Object.entries(buckets)) {
     const width = Number(key)

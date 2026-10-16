@@ -1,14 +1,14 @@
 import { parseProxyAddress, proxyProtocols } from './proxy-address'
-import { isRecord } from './value'
+import { isRecord, isStringArray } from './value'
 
-export interface ProxyCredentials {
+interface ProxyCredentials {
   username?: string
   password?: string
 }
-export interface ProxyEndpoint {
+interface ProxyEndpoint {
   protocol: string
-  host?: string
-  port?: number
+  host: string
+  port: number
 }
 export interface ProxyRecord extends ProxyEndpoint, ProxyCredentials {
   id: string
@@ -21,7 +21,14 @@ export interface ProxyRecord extends ProxyEndpoint, ProxyCredentials {
   checking?: boolean
 }
 
+// The managed proxy has no endpoint before its first successful sync.
+export type ManagedProxy = Omit<ProxyRecord, 'host' | 'port'> &
+  Partial<ProxyEndpoint>
+
 export const MAX_PROXIES = 5000
+const protocolAliases: Partial<Record<string, string>> = {
+  PROXY: 'HTTP', SOCKS: 'SOCKS4',
+}
 
 export const newProxyId = () => Array.from(
   crypto.getRandomValues(new Uint8Array(16)),
@@ -33,6 +40,9 @@ export const proxyKey = ({ protocol, host, port }: ProxyEndpoint) => `${protocol
 export const hasProxyAuth = (proxy: ProxyCredentials) =>
   Boolean(proxy.username || proxy.password)
 
+export const hasEndpoint = (proxy: ManagedProxy): proxy is ProxyRecord =>
+  Boolean(proxy.host && proxy.port)
+
 export const proxyAuthSupported = (
   proxy: ProxyCredentials & { protocol: string },
   isFirefox: boolean) =>
@@ -43,11 +53,11 @@ export const validateProxy = (input: unknown): ProxyRecord => {
   if (!isRecord(input) ||
     typeof input.id !== 'string' || !/^[a-z0-9-]{1,80}$/i.test(input.id) ||
     input.id === 'builtin' || typeof input.host !== 'string' ||
-    !Number.isInteger(input.port) || typeof input.protocol !== 'string' || !proxyProtocols.includes(input.protocol)) {
+    typeof input.port !== 'number' || !Number.isInteger(input.port) ||
+    typeof input.protocol !== 'string' || !proxyProtocols.includes(input.protocol)) {
     throw new Error('Invalid proxy')
   }
-  const protocol = ({ PROXY: 'HTTP', SOCKS: 'SOCKS4' } as Record<string, string>)[input.protocol] ||
-    input.protocol
+  const protocol = protocolAliases[input.protocol] || input.protocol
   const address = input.host.includes(':') && !input.host.startsWith('[')
     ? `[${input.host}]` : input.host
   const { host, port } = parseProxyAddress(`${address}:${input.port}`)
@@ -62,21 +72,21 @@ export const validateProxy = (input: unknown): ProxyRecord => {
   if (input.provider !== undefined && input.provider !== 'antizapret') {
     throw new Error('Invalid proxy provider')
   }
-  const credentials = {
-    username: input.username === undefined ? '' : input.username,
-    password: input.password === undefined ? '' : input.password,
-  }
   const limit = protocol === 'SOCKS5' ? 255 : 1024
-
-  for (const value of Object.values(credentials)) {
+  const credential = (value: unknown): value is string =>
     // eslint-disable-next-line no-control-regex
-    if (typeof value !== 'string' || /[\u{0}-\u{1F}\u{7F}]/u.test(value) ||
-      new TextEncoder().encode(value).length > limit) {
-      throw new Error('Invalid proxy credentials')
-    }
+    typeof value === 'string' && !/[\u{0}-\u{1F}\u{7F}]/u.test(value) &&
+    new TextEncoder().encode(value).length <= limit
+  const username = input.username === undefined ? '' : input.username
+  const password = input.password === undefined ? '' : input.password
+
+  if (!credential(username) || !credential(password)) {
+    throw new Error('Invalid proxy credentials')
   }
+  const credentials = { username, password }
+
   if ((['HTTP', 'HTTPS'].includes(protocol) &&
-    (credentials.username as string).includes(':')) || (hasProxyAuth(credentials as ProxyCredentials) &&
+    credentials.username.includes(':')) || (hasProxyAuth(credentials) &&
     (protocol === 'SOCKS4' || (protocol === 'SOCKS5' &&
       (!credentials.username || !credentials.password))))) {
     throw new Error('Invalid proxy credentials for protocol')
@@ -89,10 +99,7 @@ export const validateProxy = (input: unknown): ProxyRecord => {
     port,
     ...(input.provider ? { provider: input.provider } : {}),
     ...(input.restricted || input.provider ? { restricted: true } : {}),
-    ...(hasProxyAuth(credentials as ProxyCredentials)
-      ? credentials as ProxyCredentials : {
-      }),
-
+    ...(hasProxyAuth(credentials) ? credentials : {}),
   }
 }
 
@@ -144,13 +151,13 @@ export const proxyStateFromSettings = (settings: {
   const available = new Set(['builtin', ...records.map(({ id }) => id)])
 
   selectedProxyIds = selectedProxyIds ?? ['builtin']
-  if (!Array.isArray(selectedProxyIds) ||
+  if (!isStringArray(selectedProxyIds) ||
     selectedProxyIds.length > MAX_PROXIES + 1 ||
     selectedProxyIds.some((id) => !available.has(id))) {
     throw new Error('Invalid proxy selection')
   }
   return {
     proxies: records,
-    selectedProxyIds: Array.from(new Set(selectedProxyIds as string[])),
+    selectedProxyIds: Array.from(new Set(selectedProxyIds)),
   }
 }

@@ -97,7 +97,9 @@ test('startup uses snapshots, and source changes or resets cannot reuse stale ru
   const restart = () => {
     listeners.clear()
     reads.length = 0
-    return load('background/registry', mocks, { indexedDB: {} }).default
+    const loaded = load('background/registry', mocks, { indexedDB: {} })
+    loaded.watchRegistry()
+    return loaded.default
   }
   const change = values => {
     Object.assign(storage, values)

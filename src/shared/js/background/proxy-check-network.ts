@@ -3,15 +3,8 @@ import { countryCode, publicIP } from './proxy-check-data'
 import type { ProxyRecord } from './proxy-record'
 import type { RequestOptions } from './request'
 import { requestText } from './request'
+import { isRecord, requestError, toRecord } from './value'
 
-interface CheckResponse {
-  ip?: unknown
-  success?: boolean
-  country_code?: unknown
-  cc?: unknown
-  country?: unknown
-  Answer?: { type: number; data: string }[]
-}
 export interface ProbeResult {
   latency: number
   exitIP: string
@@ -25,19 +18,21 @@ export const CHECK_TIMEOUT = 8000
 const json = async (url: string,
   signal: AbortSignal,
   options: RequestOptions & { metadata?: false } = {
-  }): Promise<CheckResponse> => JSON.parse(
-  await requestText(url, {
+  }) => {
+  const data: unknown = JSON.parse(await requestText(url, {
     timeout: CHECK_TIMEOUT, maxBytes: 65536, redirect: 'error', signal, ...options,
-  }),
-)
+  }))
+
+  return toRecord(data)
+}
 
 export const probeProxy = async (url: string, signal: AbortSignal) => {
   const started = performance.now()
   const data = await json(url, signal)
-  const exitIP = publicIP(data?.ip)
+  const exitIP = publicIP(data.ip)
 
   if (!exitIP || data.success === false) {
-    throw Object.assign(new Error('Invalid IP check response'), {
+    throw requestError('Invalid IP check response', {
       code: 'invalid-response',
     })
   }
@@ -80,15 +75,16 @@ export const locateProxy = async <T extends ProbeResult>(proxy: ProxyRecord,
   let exitCountry = result.exitCountry
 
   try {
-    if (!serverIP && !isPrivateHost(proxy.host!)) {
+    if (!serverIP && !isPrivateHost(proxy.host)) {
       // Resolve only the proxy endpoint, never a visited site's hostname.
       for (const type of ['A', 'AAAA']) {
-        const dns = await lookup(`https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(proxy.host!)}&type=${type}`,
+        const dns = await lookup(`https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(proxy.host)}&type=${type}`,
           signal, { headers: { accept: 'application/dns-json' } })
+        const answers: unknown[] = Array.isArray(dns.Answer) ? dns.Answer : []
 
-        serverIP = (dns.Answer || []).filter((answer) =>
-          answer.type === (type === 'A' ? 1 : 28)).map((answer) => publicIP(answer.data))
-          .find(Boolean) || ''
+        serverIP = answers.filter(isRecord)
+          .filter((answer) => answer.type === (type === 'A' ? 1 : 28))
+          .map((answer) => publicIP(answer.data)).find(Boolean) || ''
         if (serverIP) {
           break
         }

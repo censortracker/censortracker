@@ -9,30 +9,35 @@ import {
 } from './proxy-route'
 import type { RegistryCache } from './registry-request'
 import { isRegistryCancellation, requestRegistry } from './registry-request'
+import type { RegistryResponse } from './request'
 import { requestFailure, watchRequest } from './request-diagnostics'
-import type { StorageChanges } from './storage'
-import type { RequestError } from './value'
+import type { StorageChanges, StorageState } from './storage'
+import { errorMessage, isRecord, requestError } from './value'
 
 export type Validator<T> = (data: unknown) => data is T
 export interface ServiceOptions {
   allowProxyRetry?: boolean
   maxRedirects?: number
   requireEnabled?: boolean
-  method?: string
-  metadata?: boolean
   cache?: Partial<RegistryCache>
 }
-interface AttemptResult<T> {
-  data?: T
+type AttemptResult<T> = RegistryResponse<T> & { redirectUrl?: string | null }
+export interface ServiceData<T> {
+  unchanged?: false
+  data: T
   etag?: string
   finalUrl?: string
-  redirectUrl?: string | null
-}
-export interface ServiceResponse<T> extends AttemptResult<T> {
   viaProxy?: boolean
-  unchanged?: boolean
   cache?: RegistryCache
 }
+// Only a request with a cached validator can return «unchanged».
+export type ServiceResponse<T> = { unchanged: true } | ServiceData<T>
+const proxyRouteKeys: (keyof StorageState)[] = [
+  'ignoredHosts', 'siteCountryRules', 'proxies', 'selectedProxyIds',
+  'proxyChecks', 'proxyFailures', 'useLocalProxy', 'localProxyAlive',
+  'localProxyURI', 'proxyServerURI', 'customProxyServerURI',
+  'customProxyProtocol', 'useOwnProxy', 'antizapret',
+]
 
 const siteChoice = async (hostname: string) => {
   if (await mustUseDirect(hostname)) {
@@ -59,7 +64,7 @@ const proxyRoute = async (hostname: string) => {
   if (decision.type !== 'proxy') {
     throw new Error('No eligible proxy: check selection, health, and country rules')
   }
-  return decision.route.split(';')[0].trim()
+  return decision.route.replace(/;.*/s, '').trim()
 }
 
 const attemptRequest = async <T>(
@@ -111,11 +116,7 @@ const attemptRequest = async <T>(
   const onSettingsChanged = (changes: StorageChanges) => {
     if (changes.enableExtension?.newValue === false ||
       changes.useProxy?.newValue === false || changes.customProxiedDomains ||
-      (viaProxy && ['ignoredHosts', 'siteCountryRules', 'proxies',
-        'selectedProxyIds', 'proxyChecks', 'proxyFailures', 'useLocalProxy',
-        'localProxyAlive', 'localProxyURI', 'proxyServerURI',
-        'customProxyServerURI', 'customProxyProtocol', 'useOwnProxy',
-        'antizapret'].some((key) => changes[key]))) {
+      (viaProxy && proxyRouteKeys.some((key) => changes[key]))) {
       abortReason = 'Cancelled because routing settings changed'
       controller.abort()
     }
@@ -169,7 +170,7 @@ const attemptRequest = async <T>(
       return { redirectUrl: redirectUrl || response.headers?.get('location') }
     }
     if (!response.ok) {
-      throw Object.assign(new Error(`HTTP ${response.status}`), {
+      throw requestError(`HTTP ${response.status}`, {
         httpStatus: response.status,
       })
     }
@@ -191,12 +192,12 @@ const attemptRequest = async <T>(
       throw new Error('Response does not match the expected service data')
     }
     return { data, ...headers }
-  } catch (error_) {
-    const error = error_ as RequestError
-
+  } catch (error) {
     clearTimeout(timeout)
     await stop(error)
-    const failure = new Error(`${stage}: ${abortReason || error.netError || error.message}`, { cause: error })
+    const netError = isRecord(error) && typeof error.netError === 'string'
+      ? error.netError : ''
+    const failure = new Error(`${stage}: ${abortReason || netError || errorMessage(error)}`, { cause: error })
 
     if (abortReason.startsWith('Timeout')) {
       failure.name = 'TimeoutError'
@@ -206,7 +207,7 @@ const attemptRequest = async <T>(
     }
     throw failure
   } finally {
-    stop()
+    await stop()
     clearTimeout(timeout)
     browser.storage.onChanged.removeListener(onSettingsChanged)
     if (allowRedirects) {
@@ -259,7 +260,7 @@ const requestDirect = async <T>(
     )
     const after = await setting.get({})
     const knownDirect = ['direct', 'none'].includes(
-      before.value.mode || before.value.proxyType!,
+      before.value.mode || before.value.proxyType || '',
     ) || (direct && before.levelOfControl === 'controlled_by_this_extension')
 
     return {
@@ -319,14 +320,14 @@ const requestHop = async <T>(
       return await requestDirect(
         url, validate, allowRedirects, requireEnabled, method, metadata,
       )
-    } catch (error_) {
-      const error = error_ as RequestError
-
+    } catch (error) {
       if (isRegistryCancellation(error)) {
         throw error
       }
-      directError = new Error(`DIRECT: ${error.message}`, { cause: error })
-      if ([404, 410].includes(requestFailure(error).httpStatus!)) {
+      directError = new Error(`DIRECT: ${errorMessage(error)}`, { cause: error })
+      const { httpStatus } = requestFailure(error)
+
+      if (httpStatus === 404 || httpStatus === 410) {
         throw directError
       }
     }
@@ -343,30 +344,18 @@ const requestHop = async <T>(
     return await requestProxy(
       url, validate, allowRedirects, requireEnabled, method, metadata,
     )
-  } catch (error_) {
-    const error = error_ as RequestError
+  } catch (error) {
+    const errors = [directError?.message, `PROXY: ${errorMessage(error)}`]
 
-    const errors = [directError?.message, `PROXY: ${error.message}`]
-
-    throw new Error(errors.filter(Boolean).join('; '), { cause: error_ })
+    throw new Error(errors.filter(Boolean).join('; '), { cause: error })
   }
 }
 
-export const requestService = <T>(
+const requestRoute = <T>(
   url: string, validate: Validator<T>, {
     allowProxyRetry = true, maxRedirects = 0, requireEnabled = false,
-    method = 'GET', metadata = false, cache,
-  }: ServiceOptions = {},
-): Promise<ServiceResponse<T>> => {
-  if (cache) {
-    return requestRegistry(url, cache, (verb) => requestService(url, validate, {
-      allowProxyRetry,
-      maxRedirects,
-      requireEnabled,
-      method: verb,
-      metadata: true,
-    }))
-  }
+  }: Omit<ServiceOptions, 'cache'>, method: string, metadata: boolean,
+) => {
   const parsed = new URL(url)
   const endpoint = `${parsed.origin}${parsed.pathname}`
 
@@ -406,15 +395,32 @@ export const requestService = <T>(
     } finally {
       try {
         await restoreServiceRoute()
-      } catch (error_) {
-        const error = error_ as RequestError
-
+      } catch (error) {
         await browser.storage.local.set({
-          serviceRouteError: `${endpoint}: route restoration failed: ${error.message}`,
+          serviceRouteError: `${endpoint}: route restoration failed: ${errorMessage(error)}`,
         })
       }
     }
-  }).catch((error) => {
-    throw new Error(`${endpoint}: ${error.message}`, { cause: error })
+  }).catch((error: unknown) => {
+    throw new Error(`${endpoint}: ${errorMessage(error)}`, { cause: error })
+  })
+}
+
+export function requestService<T> (url: string, validate: Validator<T>,
+  options?: ServiceOptions & { cache?: undefined }): Promise<ServiceData<T>>
+export function requestService<T> (url: string, validate: Validator<T>,
+  options?: ServiceOptions): Promise<ServiceResponse<T>>
+export function requestService<T> (url: string, validate: Validator<T>,
+  { cache, ...options }: ServiceOptions = {}): Promise<ServiceResponse<T>> {
+  if (cache) {
+    return requestRegistry(url, cache,
+      (method) => requestRoute(url, validate, options, method, true))
+  }
+  return requestRoute(url, validate, options, 'GET', false).then((result) => {
+    // A GET without a redirect always returns validated data.
+    if (result.data === undefined) {
+      throw new Error('Response does not match the expected service data')
+    }
+    return { ...result, data: result.data }
   })
 }

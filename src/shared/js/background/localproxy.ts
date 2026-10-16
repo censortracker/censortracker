@@ -1,9 +1,12 @@
 import axios from 'axios'
 
 import { isConsentError, withDataConsent } from './data-consent'
-import type { RequestError } from './value'
+import { errorMessage } from './value'
 
 interface LocalProxyResponse { status?: string; proxyPort?: number }
+
+const validPort = (port: unknown): port is number => typeof port === 'number' &&
+  Number.isInteger(port) && port > 0 && port <= 65535
 
 /**
  * ProxyClient handles API communication with the proxy server.
@@ -38,11 +41,9 @@ class ProxyClient {
         axios<LocalProxyResponse>({ ...options, signal }))
 
       return response.data
-    } catch (error_) {
-      const error = error_ as RequestError
-
+    } catch (error) {
       console.error(
-        `[ProxyClient] Request failed: ${method} ${url} - ${error.message}`,
+        `[ProxyClient] Request failed: ${method} ${url} - ${errorMessage(error)}`,
       )
       throw error
     }
@@ -85,9 +86,7 @@ class ProxyClient {
       console.log(`${method} ${endpoint}: ${JSON.stringify(data)}`)
 
       return successCallback ? successCallback(data) : data
-    } catch (error_) {
-      const error = error_ as RequestError
-
+    } catch (error) {
       if (isConsentError(error)) {
         throw error
       }
@@ -111,8 +110,8 @@ class ProxyClient {
       timeout,
     )
 
-    if (status === 'ok' && Number.isInteger(proxyPort) && proxyPort! > 0 && proxyPort! <= 65535) {
-      return proxyPort!
+    if (status === 'ok' && validPort(proxyPort)) {
+      return proxyPort
     }
     return null
   }
@@ -148,8 +147,8 @@ class ProxyClient {
       timeout,
     )
 
-    if (status === 'ok' && Number.isInteger(proxyPort) && proxyPort! > 0 && proxyPort! <= 65535) {
-      return proxyPort!
+    if (status === 'ok' && validPort(proxyPort)) {
+      return proxyPort
     }
     return null
   }

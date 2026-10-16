@@ -6,6 +6,7 @@ import { recordProxyHealth, recoverableProxies } from './proxy-health'
 import { hasProxyAuth } from './proxy-record'
 import { getProbeRoutes, proxyAllowed, withProxyLock } from './proxy-route'
 import { synchronizeInBackground } from './server'
+import type { StorageState } from './storage'
 
 export interface ProxyErrorDetails {
   error?: string
@@ -15,6 +16,9 @@ export interface ProxyErrorDetails {
 }
 
 export const RECOVERY_ALARM = 'proxy-recovery'
+const recoveryKeys: (keyof StorageState)[] = [
+  'dataConsent', 'proxyRecoveryEnabled', 'enableExtension', 'useProxy',
+]
 let recovering = false
 const connectionErrors = new Set([
   'NS_ERROR_UNKNOWN_PROXY_HOST', 'NS_ERROR_PROXY_CONNECTION_REFUSED',
@@ -95,11 +99,12 @@ export const recoverProxy = async ({
             currentProxyServer: null, badProxies: [],
           })
 
-        if (managed.host === failed.host && managed.port === failed.port &&
+        if (currentProxyServer && managed.host === failed.host &&
+          managed.port === failed.port &&
           normalizeHostname(currentProxyServer) === failed.host &&
-          !badProxies.includes(currentProxyServer!)) {
+          !badProxies.includes(currentProxyServer)) {
           await browser.storage.local.set({
-            badProxies: [...badProxies, currentProxyServer!],
+            badProxies: [...badProxies, currentProxyServer],
           })
         }
       }
@@ -140,14 +145,13 @@ const scheduleRecovery = () => withProxyLock(async () => {
   if (!proxyRecoveryEnabled || !await proxyAllowed()) {
     await browser.alarms.clear(RECOVERY_ALARM)
   } else if (alarm?.periodInMinutes !== 60) {
-    browser.alarms.create(RECOVERY_ALARM, { periodInMinutes: 60 })
+    await browser.alarms.create(RECOVERY_ALARM, { periodInMinutes: 60 })
   }
 })
 
 export const registerProxyRecovery = () => {
   browser.storage.onChanged.addListener((changes, area) => {
-    if (area === 'local' && ['dataConsent', 'proxyRecoveryEnabled', 'enableExtension', 'useProxy']
-      .some((key) => changes[key])) {
+    if (area === 'local' && recoveryKeys.some((key) => changes[key])) {
       scheduleRecovery().catch(() => console.warn('Could not schedule proxy recovery'))
     }
   })

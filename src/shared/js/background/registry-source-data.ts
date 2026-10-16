@@ -2,7 +2,7 @@ import { normalizeHostname } from './hostname'
 import { isPrivateHost } from './private-host'
 import { validateSourceUrl } from './proxy-source'
 import type { RegistryCache } from './registry-request'
-import { isRecord } from './value'
+import { isRecord, toRecord } from './value'
 
 export interface RegistrySource {
   kind: 'custom' | 'anticensority'
@@ -75,7 +75,7 @@ export const normalizeRegistryDomains = async (
     if (signal?.aborted) {
       throw new Error('Registry download cancelled')
     }
-    const entry = input[index]
+    const entry: unknown = input[index]
 
     const bare = typeof entry === 'string' && entry.length <= 253 &&
       !/[\s/\\@?#%]/.test(entry) &&
@@ -103,12 +103,12 @@ export const parseRegistryList = (text: unknown, signal?: AbortSignal) => {
     throw new TypeError('Invalid registry response')
   }
   const input = text.trim()
-  let domains
+  let domains: unknown
 
   if (input.startsWith('[') || input.startsWith('{')) {
-    const value = JSON.parse(input)
+    const value: unknown = JSON.parse(input)
 
-    domains = Array.isArray(value) ? value : value.domains
+    domains = Array.isArray(value) ? value : toRecord(value).domains
   } else {
     domains = input.split(/\r?\n/).map((line) => line.trim())
       .filter((line) => line && !line.startsWith('#') && !line.startsWith('//'))

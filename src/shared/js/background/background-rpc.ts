@@ -1,105 +1,98 @@
 import type { importAntizapret } from './antizapret'
 import browser from './browser-api'
-import type { Consent } from './data-consent'
+import type { getDataConsent } from './data-consent'
 import type { getDiagnosticInfo } from './diagnostics'
-import type { ProxyCheck, ProxyCheckRun } from './proxy-check-data'
+import type { pendingNotices } from './extension-notices'
+import type * as operations from './operations'
+import type { readPopupState } from './popup-state'
+import type ProxyManager from './proxy'
+import type { getProxyCheckState, startProxyChecks } from './proxy-check'
 import type { ImportOptions, importProxies, refreshSubscription, SubscriptionAction, updateSubscriptions } from './proxy-importer'
-import type { ProxyRouteInfo } from './proxy-info'
-import type { ProxyListAction, ProxyListState } from './proxy-list'
-import type { getRegistrySourceState } from './registry-source'
+import type { describeProxyRoute } from './proxy-info'
+import type { ProxyListAction, updateProxyList } from './proxy-list'
+import type Registry from './registry'
+import type { getRegistrySourceState, refreshRegistrySource } from './registry-source'
+import type { addRelatedDomains, findRelatedDomains } from './related-domains'
 import type { SynchronizeOptions } from './server'
-import type { SiteRuleChange, SiteRules } from './site-rules'
+import type Settings from './settings'
+import type { changeSiteRule, SiteRuleChange } from './site-rules'
+import { isRecord } from './value'
+
+export type SiteChoice = 'auto' | 'always' | 'never'
+type Result<T extends (...args: never[]) => unknown> = Awaited<ReturnType<T>>
+type SourceState = Result<typeof getRegistrySourceState>
 
 // This map is the shared contract for page calls and background handlers.
-interface Actions {
-  dataConsent: [undefined, Consent | null]
+export interface Actions {
+  dataConsent: [undefined, Result<typeof getDataConsent>]
   setDataConsent: [boolean, void]
   openDataConsent: [undefined, void]
-  diagnosticInfo: [undefined, Awaited<ReturnType<typeof getDiagnosticInfo>>]
+  diagnosticInfo: [undefined, Result<typeof getDiagnosticInfo>]
   setLocalProxy: [boolean, void]
-  syncLocalProxy: [{ startIfMissing?: boolean } | undefined, { alive: boolean }]
-  findRelatedDomains: [{ tabId?: number; url?: string }, string[]]
-  addRelatedDomains: [string[], number]
-  domainStatus: [string,
-    {
-      blocked: boolean;
-      custom: boolean;
-      ignored: boolean
-    }]
-  registryStatus: [undefined, { state: string; skipped: number; error: string }]
+  syncLocalProxy: [{ startIfMissing?: boolean } | undefined,
+    Result<typeof ProxyManager.syncLocalProxy>]
+  findRelatedDomains: [{ tabId?: number; url?: string },
+    Result<typeof findRelatedDomains>]
+  addRelatedDomains: [string[], Result<typeof addRelatedDomains>]
+  registryStatus: [undefined, Result<typeof Registry.getStatus>]
   registryEmpty: [undefined, boolean]
-  setSiteChoice: [{ url?: string; choice?: string }, void]
-  registrySourceState: [undefined,
-    Awaited<ReturnType<typeof getRegistrySourceState>>]
-  updateRegistrySource: [unknown,
-    Awaited<ReturnType<typeof getRegistrySourceState>>]
-  refreshRegistrySource: [undefined,
-Awaited<ReturnType<typeof getRegistrySourceState>> | undefined]
-  proxyRouteInfo: [{ url?: string }, ProxyRouteInfo]
-  siteCountryRule: [SiteRuleChange, SiteRules]
-  startProxyChecks: [{ ids?: string[] } | undefined, ProxyCheckRun]
+  setSiteChoice: [{ url: string; choice: SiteChoice }, void]
+  registrySourceState: [undefined, SourceState]
+  updateRegistrySource: [unknown, SourceState]
+  refreshRegistrySource: [undefined, Result<typeof refreshRegistrySource>]
+  proxyRouteInfo: [{ url?: string }, Result<typeof describeProxyRoute>]
+  siteCountryRule: [SiteRuleChange, ReturnType<typeof changeSiteRule>]
+  startProxyChecks: [{ ids?: string[] } | undefined,
+    Result<typeof startProxyChecks>]
   setProxyRecovery: [boolean, void]
   stopProxyChecks: [undefined, void]
-  proxyCheckState: [undefined,
-    {
-      checks: Record<string,
-        ProxyCheck>;
-      run: ProxyCheckRun
-    }]
-  importProxies: [ImportOptions, Awaited<ReturnType<typeof importProxies>>]
-  importAntizapret: [undefined, Awaited<ReturnType<typeof importAntizapret>>]
-  subscriptions: [SubscriptionAction,
-    Awaited<ReturnType<typeof updateSubscriptions>>]
-  refreshSubscription: [{ id: string },
-    Awaited<ReturnType<typeof refreshSubscription>>]
+  proxyCheckState: [undefined, Result<typeof getProxyCheckState>]
+  importProxies: [ImportOptions, Result<typeof importProxies>]
+  importAntizapret: [undefined, Result<typeof importAntizapret>]
+  subscriptions: [SubscriptionAction, Result<typeof updateSubscriptions>]
+  refreshSubscription: [{ id: string }, Result<typeof refreshSubscription>]
   setProxyAll: [boolean, void]
   importSettings: [unknown, void]
-  proxies: [ProxyListAction, ProxyListState]
+  proxies: [ProxyListAction, Result<typeof updateProxyList>]
   synchronize: [SynchronizeOptions | undefined, void]
-  ping: [boolean | undefined, false | undefined]
+  ping: [boolean | undefined, Result<typeof ProxyManager.ping>]
   setProxy: [undefined, boolean]
   removeProxy: [undefined, void]
-}
-type Handlers = {
-  [K in keyof Actions]: (args: Actions[K][0]) =>
-    Actions[K][1] | Promise<Actions[K][1]>
+  popupState: [undefined, Result<typeof readPopupState>]
+  notices: [undefined, Result<typeof pendingNotices>]
+  dismissNotice: [string, void]
+  consentPrompt: [undefined, boolean]
+  setPreferences: [operations.Preferences, void]
+  setExtensionEnabled: [boolean, void]
+  setProxyEnabled: [boolean, void]
+  incognitoAccess: [undefined, Result<typeof operations.incognitoAccess>]
+  applyProxy: [boolean, void]
+  proxyControl: [undefined, Result<typeof operations.proxyControl>]
+  takeProxyControl: [undefined, void]
+  saveDomains: [{ ignored: boolean; domains: string[] }, string[]]
+  downloadDomains: [string, Result<typeof operations.downloadDomains>]
+  setRegistryEnabled: [boolean, void]
+  updateRegistry: [undefined, void]
+  resetSettings: [undefined, void]
+  restoreSettings: [unknown, void]
+  exportSettings: [undefined, Result<typeof Settings.exportSettings>]
 }
 
-let actions: Handlers | null = null
+// Only this extension's background answers this message type.
+const isReply = <T>(result: unknown): result is { value: T } =>
+  isRecord(result) && !result.error
 
 export const callBackground = async <K extends keyof Actions>(action: K,
   ...[args]: undefined extends Actions[K][0]
     ? [args?: Actions[K][0]] : [args: Actions[K][0]]
 ): Promise<Actions[K][1]> => {
-  if (actions) {
-    return actions[action](args as Actions[K][0])
-  }
   const result = await browser.runtime.sendMessage({
     type: 'ct-background', action, args,
   })
 
-  if (!result || result.error) {
-    throw new Error(result?.error || 'Background request failed')
+  if (!isReply<Actions[K][1]>(result)) {
+    throw new Error(isRecord(result) && typeof result.error === 'string'
+      ? result.error : 'Background request failed')
   }
   return result.value
-}
-
-export const registerBackground = (handlers: Handlers) => {
-  actions = handlers
-  browser.runtime.onMessage.addListener((message, sender, respond) => {
-    if (message?.type !== 'ct-background' || sender.id !== browser.runtime.id) {
-      return false
-    }
-    if (!Object.prototype.hasOwnProperty.call(actions, message.action)) {
-      respond({ error: 'Unknown background action' })
-      return false
-    }
-    const handler = handlers[message.action as keyof Actions] as
-      (args: unknown) => unknown
-
-    Promise.resolve().then(() => handler(message.args))
-      .then((value) => respond({ value }),
-        (error) => respond({ error: error.message }))
-    return true
-  })
 }

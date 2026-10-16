@@ -60,10 +60,10 @@ export const describeProxyRoute = async ({ url }: { url?: string } = {
       }),
     } : null,
     fallbackCount: Math.max(0, route.proxies.length - 1),
-    check: check && Number.isFinite(check.checkedAt) ? {
+    check: check && proxy && Number.isFinite(check.checkedAt) ? {
       status: check.status,
       checkedAt: check.checkedAt,
-      exitIP: check.status === 'ok' && proxy!.id !== 'builtin' ? publicIP(check.exitIP) : '',
+      exitIP: check.status === 'ok' && proxy.id !== 'builtin' ? publicIP(check.exitIP) : '',
       exitCountry: check.status === 'ok' ? countryCode(check.exitCountry) : '',
     } : null,
     region: currentRegionName,

@@ -1,12 +1,12 @@
 import browser from './browser-api'
 import type { ProxyFailure } from './proxy-check-data'
 import { currentProxyCheck, proxyFingerprint } from './proxy-check-data'
-import type { ProxyRecord } from './proxy-record'
+import type { ManagedProxy } from './proxy-record'
 import { hasProxyAuth } from './proxy-record'
 
-export const RETRY_DELAY = 5 * 60 * 1000
+const RETRY_DELAY = 5 * 60 * 1000
 
-export const recoverableProxies = async (proxies: ProxyRecord[],
+export const recoverableProxies = async (proxies: ManagedProxy[],
   failures: Record<string,
     ProxyFailure>) => {
   const due = []
@@ -23,7 +23,7 @@ export const recoverableProxies = async (proxies: ProxyRecord[],
 }
 
 // The caller holds the route lock. Failures never change user selections.
-export const recordProxyHealth = async (proxy: ProxyRecord,
+export const recordProxyHealth = async (proxy: ManagedProxy,
   failed: boolean) => {
   const { proxyFailures } = await browser.storage.local.get({
     proxyFailures: {},

@@ -536,7 +536,7 @@ test('country mappings and validators', () => {
   assert.deepEqual(clone(config.getRegionConfig('PL').registryMirrors), [])
   assert.match(config.getRegionConfig('RU').registryUrl, /registry.ctreserve.de/)
   assert.deepEqual(clone(config.getRegionConfig('RU').registryMirrors),
-    ['https://109.61.17.39/api/v3/ct-domains/'])
+    ['https://109.61.17.39/api/v3/ct-domains/', 'https://storage.mwsapis.ru/b-hecqix/ct-domains.json'])
   assert.equal(config.validCountry({ countryCode: 'PL' }), true)
   assert.equal(config.validCountry({ countryCode: 'invalid' }), false)
   assert.equal(config.validDomains(['example.com']), true)
@@ -549,13 +549,14 @@ for (const result of ['success', 'empty', 'network', 'invalid', 'unavailable']) 
   test(`RU registry mirror: ${result}`, async () => {
     const primary = 'https://registry.ctreserve.de/api/v3/ct-domains/'
     const mirror = 'https://109.61.17.39/api/v3/ct-domains/'
+    const storageMirror = 'https://storage.mwsapis.ru/b-hecqix/ct-domains.json'
     const urls = []
     const state = fixture({ noProxy: true,
       storage: { currentRegionCode: 'RU', registryRegionCode: 'RU', domains: ['cached.example'],
         registryCache: { countryCode: 'RU', primary: ['cached.example'], custom: [], backend: [], updatedAt: 100 } },
       fetch: async url => {
         if (url.includes('/api/config/')) return response({ customRegistryUrl: null })
-        if (![primary, mirror].includes(url)) return response([])
+        if (![primary, mirror, storageMirror].includes(url)) return response([])
         urls.push(url)
         if (result === 'unavailable' || (url === primary && result === 'network')) {
           throw new Error('offline')
@@ -565,7 +566,8 @@ for (const result of ['success', 'empty', 'network', 'invalid', 'unavailable']) 
       },
     })
     await state.load('server').synchronizeInBackground({ syncProxy: false })
-    assert.deepEqual(urls, ['success', 'empty'].includes(result) ? [primary] : [primary, mirror])
+    assert.deepEqual(urls, ['success', 'empty'].includes(result) ? [primary]
+      : result === 'unavailable' ? [primary, mirror, storageMirror] : [primary, mirror])
     assert.deepEqual(state.storage.domains, result === 'unavailable' ? ['cached.example']
       : result === 'empty' ? [] : ['registry.example'])
     assert.equal(state.storage.registryStatus.state, result === 'unavailable' ? 'unavailable'
@@ -574,6 +576,7 @@ for (const result of ['success', 'empty', 'network', 'invalid', 'unavailable']) 
       assert.equal(state.storage.registryCache.updatedAt, 100)
       assert.ok(state.storage.registryStatus.error.includes(primary))
       assert.ok(state.storage.registryStatus.error.includes(mirror))
+      assert.ok(state.storage.registryStatus.error.includes(storageMirror))
     } else {
       assert.ok(state.storage.registryCache.updatedAt > 100)
       assert.equal(state.storage.registryStatus.error, '')

@@ -41,7 +41,8 @@ export const getRegionConfig = (code: string): RegionConfig => {
     countryCode,
     registryUrl,
     registryMirrors: countryCode === 'RU'
-      ? ['https://109.61.17.39/api/v3/ct-domains/'] : [],
+      ? ['https://109.61.17.39/api/v3/ct-domains/',
+          'https://storage.mwsapis.ru/b-hecqix/ct-domains.json'] : [],
     configSource: 'built-in',
   }
 }

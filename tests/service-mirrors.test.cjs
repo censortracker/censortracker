@@ -83,7 +83,8 @@ test('built-in endpoints precede additions, country templates expand, and duplic
   ])
   assert.deepEqual(plain(getServiceUrls(mirrors, 'registry', 'ru')), [
     'https://registry.ctreserve.de/api/v3/ct-domains/',
-    'https://109.61.17.39/api/v3/ct-domains/', 'https://registry.example/ru.json',
+    'https://109.61.17.39/api/v3/ct-domains/', 'https://storage.mwsapis.ru/b-hecqix/ct-domains.json',
+    'https://registry.example/ru.json',
   ])
   assert.deepEqual(plain(getServiceUrls(mirrors, 'registry', 'PL')), [])
 })

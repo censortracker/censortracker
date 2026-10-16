@@ -9,9 +9,10 @@ import regexp from 'eslint-plugin-regexp'
 import sort from 'eslint-plugin-simple-import-sort'
 import unicorn from 'eslint-plugin-unicorn'
 import globals from 'globals'
+import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript'
 
 export default [
-  { ignores: ['dist/**', 'releases/**', 'node_modules/**'] },
+  { ignores: ['releases/**', 'node_modules/**'] },
   {
     files: ['src/**/*.{js,ts,tsx}'],
     languageOptions: {
@@ -19,7 +20,6 @@ export default [
       sourceType: 'module',
       globals: {
         ...globals.browser,
-        ...globals.node,
         chrome: 'readonly',
         browser: 'readonly',
       },
@@ -35,7 +35,8 @@ export default [
       unicorn,
     },
     settings: {
-      'import-x/resolver': { node: { extensions: ['.js', '.ts', '.tsx', '.json'] } },
+      'import-x/parsers': { '@typescript-eslint/parser': ['.ts', '.tsx'] },
+      'import-x/resolver-next': [createTypeScriptImportResolver()],
       'import-x/ignore': ['node_modules', '\\.(css|svg|json)$'],
     },
     // Keep the existing checks; use maintained rules for deprecated checks.
@@ -322,8 +323,8 @@ export default [
         'error',
         {
           groups: [
-            ['builtin', 'external'],
-            ['internal', 'parent'],
+            ['builtin', 'external', 'internal'],
+            ['parent'],
             ['sibling', 'index'],
           ],
           'newlines-between': 'ignore',
@@ -352,6 +353,7 @@ export default [
       'unicorn/no-unreadable-array-destructuring': 'error',
       'unicorn/prefer-dom-node-append': 'error',
       'import-x/named': 'error',
+      'import-x/no-unresolved': 'error',
       'import-x/no-named-as-default-member': 'error',
       'import-x/no-extraneous-dependencies': [
         'error',
@@ -461,9 +463,14 @@ export default [
   },
   {
     files: ['src/**/*.{ts,tsx}'],
-    languageOptions: { parser: tseslint.parser },
+    languageOptions: {
+      parser: tseslint.parser,
+      parserOptions: { projectService: true },
+    },
     plugins: { '@typescript-eslint': tseslint.plugin, 'react-hooks': reactHooks },
     rules: {
+      ...Object.assign({}, ...tseslint.configs.recommendedTypeChecked
+        .map((config) => config.rules)),
       'no-undef': 'off',
       'no-unused-vars': 'off',
       'no-redeclare': 'off',
@@ -473,7 +480,22 @@ export default [
       }],
       '@typescript-eslint/consistent-type-imports': 'error',
       '@typescript-eslint/no-explicit-any': 'error',
+      '@typescript-eslint/no-non-null-assertion': 'error',
       'react-hooks/rules-of-hooks': 'error',
+      'react-hooks/exhaustive-deps': 'error',
+    },
+  },
+  {
+    // Pages call background code through the RPC client only.
+    files: ['src/shared/ui/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': ['error', {
+        patterns: [{
+          regex: '^(?:Background|.*/js/background)/(?!(?:background-rpc|browser-api|hostname|i18n|proxy-address|proxy-check-data|proxy-import|proxy-record|registry-source-data)$)',
+          allowTypeImports: true,
+          message: 'Use Background/background-rpc for background state.',
+        }],
+      }],
     },
   },
 ]

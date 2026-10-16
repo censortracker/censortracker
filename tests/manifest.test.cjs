@@ -14,6 +14,7 @@ test('WXT preserves API permissions, consent metadata and browser versions', () 
     assert.deepEqual(JSON.parse(JSON.stringify(extensionManifest(browser, modern))), expected)
   }
   assert.deepEqual(Array.from(browserTargets), ['chrome108', 'firefox91'])
+  assert.doesNotMatch(extensionManifest('chrome', false, true).content_security_policy.extension_pages, /style-src/)
 })
 
 test('WXT uses Preact, shared CSS modules, and the minimum browser targets', async () => {

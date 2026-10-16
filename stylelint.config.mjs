@@ -3,12 +3,13 @@ export default {
   rules: {
     'scss/at-rule-no-unknown': [true, { ignoreAtRules: ['value'] }],
     'selector-pseudo-class-no-unknown': [true, { ignorePseudoClasses: ['global', 'local'] }],
-    // Keep the existing BEM class names, camelCase IDs and CodeMirror classes.
+    // Keep the existing BEM class names and CodeMirror classes.
     'selector-class-pattern': '^[a-z][a-zA-Z0-9_-]*$',
-    'selector-id-pattern': '^[a-z][a-zA-Z0-9_-]*$',
-    // Chrome 108 needs prefixed masks. Page and theme rules use cascade order.
+    // Chrome 108 needs prefixed masks.
     'property-no-vendor-prefix': [true, { ignoreProperties: ['-webkit-mask'] }],
-    'no-descending-specificity': null,
+    'declaration-no-important': true,
+    'selector-max-id': 0,
+    'selector-no-qualifying-type': [true, { ignore: ['attribute'] }],
     'color-function-notation': 'legacy',
     'color-function-alias-notation': 'with-alpha',
     'alpha-value-notation': 'number',

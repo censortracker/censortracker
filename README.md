@@ -165,7 +165,7 @@ The Build workflow runs on each push and uploads the Chrome and both Firefox pro
 
 **Troubleshooting**: If you're getting error on building an extension using `npm`, please make sure that your
 shell supports per-command environment variables (i.e something like this
-`NODE_ENV=production npm run build:firefox:prod`)
+`CT_FIREFOX_MODERN=1 wxt build -b firefox --mv2` in `npm run build:firefox:modern`)
 
 License
 =======

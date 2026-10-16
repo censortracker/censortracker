@@ -14,8 +14,8 @@ export default defineConfig({
   alias: { Background: resolve('src/shared/js/background') },
   outDirTemplate: process.env.CT_FIREFOX_MODERN === '1'
     ? '{{browser}}-mv{{manifestVersion}}-modern' : undefined,
-  manifest: ({ browser }) => extensionManifest(browser,
-    process.env.CT_FIREFOX_MODERN === '1'),
+  manifest: ({ browser, command }) => extensionManifest(browser,
+    process.env.CT_FIREFOX_MODERN === '1', command === 'serve'),
   hooks: {
     'build:publicAssets': (_wxt, files) => {
       for (const language of ['en', 'ru', 'uk']) {
@@ -26,19 +26,17 @@ export default defineConfig({
       }
     },
     'build:manifestGenerated': (_wxt, manifest) => {
-      // Browsers accept the legacy string form; WXT types only the object form.
-      Object.assign(manifest, { author: '__MSG_appAuthor__' })
+      // Keep the pre-WXT manifest shape. Browsers accept a string author.
+      manifest.author = '__MSG_appAuthor__'
+      delete manifest.browser_action?.default_title
       if (manifest.action) {
         delete manifest.action.default_title
-        Object.assign(manifest.action, { default_name: 'Censor Tracker' })
-      }
-      if (manifest.browser_action) {
-        delete manifest.browser_action.default_title
+        manifest.action.default_name = 'Censor Tracker'
       }
     },
   },
   vite: ({ mode }) => ({
-    plugins: [preact({ devToolsEnabled: false })],
+    plugins: [preact({ devToolsEnabled: false }), SassModuleLoader.valueImports],
     build: {
       target: browserTargets,
       minify: 'terser',

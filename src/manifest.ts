@@ -2,8 +2,15 @@ import type { UserManifest } from 'wxt'
 
 export const browserTargets = ['chrome108', 'firefox91']
 
+// CodeMirror injects a style element, so styles need 'unsafe-inline'.
+// The Vite dev server serves styles and fonts, so it skips those rules.
+const pagePolicy = (serve: boolean) => [
+  'script-src \'self\'', 'object-src \'self\'',
+  ...(serve ? [] : ['style-src \'self\' \'unsafe-inline\'', 'font-src \'self\'']),
+].map((rule) => `${rule};`).join(' ')
+
 export const extensionManifest = (
-  browser: string, modern = false,
+  browser: 'chrome' | 'firefox', modern = false, serve = false,
 ): UserManifest => ({
   name: '__MSG_appName__',
   description: '__MSG_appDesc__',
@@ -27,9 +34,7 @@ export const extensionManifest = (
       },
     },
     browser_action: { default_icon: 'images/icons/128x128/default.png' },
-    content_security_policy: {
-      extension_pages: 'script-src \'self\'; object-src \'self\';',
-    },
+    content_security_policy: { extension_pages: pagePolicy(serve) },
     permissions: ['<all_urls>', 'webRequest', 'webRequestBlocking', 'alarms',
       'activeTab', 'management', 'notifications', 'proxy', 'storage', 'tabs',
       'unlimitedStorage'],
@@ -42,8 +47,6 @@ export const extensionManifest = (
     permissions: ['alarms', 'activeTab', 'management', 'notifications', 'proxy',
       'scripting', 'storage', 'unlimitedStorage', 'webNavigation', 'webRequest',
       'webRequestAuthProvider'],
-    content_security_policy: {
-      extension_pages: 'object-src \'self\'; script-src \'self\';',
-    },
+    content_security_policy: { extension_pages: pagePolicy(serve) },
   }),
 })

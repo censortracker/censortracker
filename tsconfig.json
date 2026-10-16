@@ -1,25 +1,9 @@
 {
   "extends": "./.wxt/tsconfig.json",
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "lib": [
-      "ESNext",
-      "DOM",
-      "DOM.Iterable"
-    ],
     "jsx": "react-jsx",
     "jsxImportSource": "preact",
-    "strict": true,
-    "noUncheckedIndexedAccess": false,
-    "noImplicitOverride": false,
-    "allowJs": false,
-    "noEmit": true,
     "isolatedModules": true,
-    "verbatimModuleSyntax": true,
-    "resolveJsonModule": true,
-    "skipLibCheck": true,
     "types": [
       "chrome-types",
       "firefox-webext-browser"

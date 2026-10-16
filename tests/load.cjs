@@ -4,13 +4,14 @@ const vm = require('node:vm')
 const babel = require('@babel/core')
 
 // Load ES modules with explicit browser and network substitutes.
-module.exports = function loadModule(entry, mocks = {}, globals = {}) {
+// Entries of one loader share module instances.
+function createLoader(mocks = {}, globals = {}) {
   const root = path.resolve(__dirname, '../src/shared/js')
   const modules = new Map()
   function load(file) {
     file = ['.ts', '.tsx', '.js'].map(ext => file.replace(/\.[jt]sx?$/, ext)).find(fs.existsSync) || file
     const name = path.basename(file).replace(/\.[jt]sx?$/, '')
-    if (Object.hasOwn(mocks, name)) return { __esModule: true, ...mocks[name] }
+    if (Object.hasOwn(mocks, name) && mocks[name]) return { __esModule: true, ...mocks[name] }
     if (modules.has(file)) return modules.get(file).exports
     const module = { exports: {} }
     modules.set(file, module)
@@ -41,5 +42,8 @@ module.exports = function loadModule(entry, mocks = {}, globals = {}) {
     }, { filename: file })
     return module.exports
   }
-  return load(path.join(root, entry + '.js'))
+  return entry => load(path.join(root, entry + '.js'))
 }
+
+module.exports = (entry, mocks, globals) => createLoader(mocks, globals)(entry)
+module.exports.createLoader = createLoader

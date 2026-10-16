@@ -50,11 +50,6 @@
   width: tokens.$content-width;
 }
 
-.main-page__info.main-page__info-proxy_options {
-  max-width: 640px;
-  width: 640px;
-}
-
 .main-container__after-install .main-page__info {
   margin-right: 44px;
 }
@@ -86,16 +81,6 @@
   }
 }
 
-.options-body :global(#grantPrivateBrowsingPermissionsButton) {
-  border: 0;
-  font-family: inherit;
-  margin-bottom: 25px;
-}
-
-.options-body :global(#uiLanguage) {
-  display: block;
-}
-
 @media (prefers-color-scheme: dark) {
   .options-body, :global(body):where(.document) {
     background-color: tokens.$dark-page;
@@ -105,7 +90,7 @@
 
 .settings-page {
   --settings-border: #{tokens.$border};
-  --settings-surface: #fff;
+  --settings-surface: #{tokens.$white};
   --settings-muted: #{tokens.$muted};
   --settings-hover: #f4f7fa;
   --settings-primary: #{tokens.$ink};
@@ -121,26 +106,13 @@
   min-width: 0;
 }
 
-.settings-page :global(#proxySelectionSummary) {
-  margin: 0 0 8px;
-}
-
-.settings-page :global(#proxyListOptions) {
-  margin-top: tokens.$space-small;
-}
-
-.settings-page :global(#proxyForm) {
-  border-top: 1px solid var(--settings-border);
-  padding-top: 16px;
-}
-
 .settings-page :is(button, input, select, textarea):disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
 .settings-page :focus-visible {
-  outline: 2px solid #6c9e2c;
+  outline: 2px solid tokens.$accent;
   outline-offset: 3px;
 }
 
@@ -160,7 +132,8 @@
 }
 
 .settings-page [hidden] {
-  display: none !important;
+  /* The hidden attribute must win over any display rule. */
+  display: none !important; /* stylelint-disable-line declaration-no-important */
 }
 
 @media (max-width: tokens.$settings-mobile) {
@@ -176,11 +149,11 @@
 
 @media (prefers-color-scheme: dark) {
   .settings-page {
-    --settings-border: #484c51;
-    --settings-surface: #242728;
+    --settings-border: #{tokens.$dark-control};
+    --settings-surface: #{tokens.$dark-surface};
     --settings-muted: #b4b1b1;
     --settings-hover: #303436;
-    --settings-primary: #484c51;
+    --settings-primary: #{tokens.$dark-control};
     --settings-error: #ff8b83;
   }
 }

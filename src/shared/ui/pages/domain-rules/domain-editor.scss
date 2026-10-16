@@ -1,0 +1,72 @@
+@use '../../styles/tokens';
+
+// CodeMirror renders its own global classes.
+.cm-editor {
+  width: 100%;
+  border: 1px solid tokens.$border;
+  border-radius: 4px;
+  color: tokens.$ink;
+  font-family: tokens.$font;
+  line-height: 24px;
+  font-size: 14px;
+  font-weight: 400;
+  height: calc(100vh - 300px);
+  max-height: 60%;
+  min-height: 25%;
+  background: white;
+}
+
+.cm-editor .cm-scroller {
+  overflow: auto;
+  font-family: inherit;
+  line-height: inherit;
+}
+
+.cm-editor .highlight {
+  background-color: rgba(70, 115, 245, 0.3);
+}
+
+.cm-editor.cm-focused {
+  outline: none;
+}
+
+.cm-editor .cm-gutters {
+  background-color: transparent;
+  border-right: 1px solid tokens.$border;
+  text-align: right;
+  box-sizing: border-box;
+  padding-right: 5px;
+  font-size: 11px;
+}
+
+.cm-editor .cm-lineNumbers {
+  color: tokens.$ink;
+  font-family: tokens.$font;
+  line-height: 24px;
+  font-size: 11px;
+}
+
+.cm-activeLine,
+.cm-focused .cm-activeLine {
+  background: rgba(237, 242, 247, 0.6);
+}
+
+.cm-editor:not(.cm-focused) .cm-activeLine {
+  background: unset;
+}
+
+@media (prefers-color-scheme: dark) {
+  .cm-editor {
+    background: tokens.$dark-surface;
+    color: #cbccc6;
+  }
+
+  .cm-editor .cm-lineNumbers {
+    color: #636466;
+  }
+
+  .cm-editor .cm-gutters {
+    background: tokens.$dark-surface;
+    border-right: 1px solid #484d572e;
+  }
+}

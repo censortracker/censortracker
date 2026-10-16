@@ -1,4 +1,5 @@
-@value btn, btn__text, main-page__title, page-main-title, input-search from './options.module.scss';
+@use '../../styles/tokens';
+@value btn, btn__text, main-page__title, page-main-title, input-search from '../../styles/options.module.scss';
 
 .btn__add_list {
     border-bottom: 1px solid transparent;
@@ -20,7 +21,7 @@
     vertical-align: text-bottom
 }
 
-:global(#or) {
+.or {
     font-size: 20px;
 }
 
@@ -40,8 +41,8 @@
 
 .popup_upload_list .popup_upload_list__wrapper {
     margin: 140px auto 0;
-    max-width: 620px;
-    width: 620px
+    max-width: tokens.$content-width;
+    width: tokens.$content-width
 }
 
 .popup_upload_list .close_btn {
@@ -71,10 +72,10 @@
 }
 
 .popup_upload_list .popup_upload_form .input-url-list {
-    border: 1px solid #c4c2bf;
+    border: 1px solid tokens.$border;
     border-radius: 4px;
     box-sizing: border-box;
-    color: #6d675f;
+    color: tokens.$muted;
     flex-grow: 1;
     height: 35px;
     padding: 0 11px;
@@ -82,7 +83,7 @@
 }
 
 .popup_upload_list .popup_upload_form .input-url-list:active, .popup_upload_list .popup_upload_form .input-url-list:focus {
-    border: 1px solid #2a251f !important;
+    border: 1px solid tokens.$ink-active;
     outline: none
 }
 
@@ -98,13 +99,13 @@
 }
 
 .popup_upload_list .popup_upload_form .btn {
-    border: 1px solid #3b332b;
+    border: 1px solid tokens.$ink;
     height: 35px
 }
 
 .popup_upload_list .popup_upload_form .btn:hover {
-    border-color: #625c55;
-    color: #625c55;
+    border-color: tokens.$ink-hover;
+    color: tokens.$ink-hover;
     cursor: pointer
 }
 
@@ -135,21 +136,20 @@
 
 @media (prefers-color-scheme: dark) {
     .popup_upload_list {
-        background-color: #181a1b
+        background-color: tokens.$dark-page
     }
 
     .close_btn svg path {
-        stroke: #f4f1f1
+        stroke: tokens.$dark-text
     }
 
-    :global(#or) {
-        color: #f4f1f1;
+    .or {
+        color: tokens.$dark-text;
         opacity: .5;
-        font-size: 20px;
     }
 
     .popup__text {
-        color: #f4f1f1;
+        color: tokens.$dark-text;
         opacity: .5
     }
 
@@ -157,24 +157,18 @@
         color: #9f4141
     }
 
-    :where(.proxied) .btn {
-        border-color: #61666b !important
+    .proxied .btn,
+    .popup_upload_list .popup_upload_form .btn,
+    .popup_upload_list .popup_upload_form .btn:hover {
+        border-color: tokens.$dark-hover
     }
 
     .popup_upload_list .popup_upload_form .btn:hover {
         color: #cbccc6;
     }
 
-    .popup_upload_list .popup_upload_form .btn {
-        height: 35px
-    }
-
     .file-upload label {
-        border: 1px solid #f4f1f1;
-        color: #f4f1f1
-    }
-
-    :global(.cm-scroller) {
-        color-scheme: dark;
+        border: 1px solid tokens.$dark-text;
+        color: tokens.$dark-text
     }
 }

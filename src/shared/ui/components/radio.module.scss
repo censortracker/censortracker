@@ -1,0 +1,79 @@
+@use '../styles/tokens';
+@value settings-page from './layout.module.scss';
+
+.radio-buttons-group {
+  display: flex;
+  margin: 5px 0;
+  flex-direction: column;
+}
+
+.radio-button {
+  margin: 15px 0;
+  display: inline-block;
+  position: relative;
+}
+
+.radio-button input[type="radio"] {
+  display: none;
+}
+
+.radio-button input[type="radio"] + label::before {
+  content: "";
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border-radius: 15px;
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  background: tokens.$white;
+  border: 1px solid tokens.$ink;
+}
+
+.radio-button:hover label::after,
+.radio-button input[type="radio"]:checked + label::after {
+  content: "";
+  display: inline-block;
+  position: absolute;
+  left: 6px;
+  bottom: 2px;
+  background: tokens.$accent;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+}
+
+.radio-button label {
+  cursor: pointer;
+  position: relative;
+  padding-left: 45px;
+  display: inline-block;
+  font-size: 16px;
+  line-height: 15px;
+  font-weight: normal;
+}
+
+.settings-page .radio-button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.settings-page .radio-button input[type="radio"] {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  accent-color: tokens.$accent;
+}
+
+.settings-page .radio-button label {
+  padding-left: 0;
+  line-height: 24px;
+}
+
+.settings-page .radio-button input[type="radio"] + label::before,
+.settings-page .radio-button input[type="radio"] + label::after {
+  content: none;
+}

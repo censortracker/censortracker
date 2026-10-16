@@ -31,19 +31,19 @@
   width: 16px;
   height: 16px;
   top: 2px;
-  background: #fff;
-  box-shadow: 0 2.01027px 11.8382px rgba(15, 13, 11, 0.055), 0 1.12694px 6.63642px rgba(15, 13, 11, 0.0655718), 0 0.598509px 3.52455px rgba(15, 13, 11, 0.079074);
+  background: tokens.$white;
+  box-shadow: tokens.$shadow;
   transform: translateX(0);
   transition: all 150ms ease-in-out;
 }
 
 .toggle-button:checked::after {
   transform: translateX(calc(100% + 3px));
-  background-color: #fff;
+  background-color: tokens.$white;
 }
 
 .toggle-button:checked {
-  background: linear-gradient(319.24deg, #3ca55c 0%, #b5ac49 100%), #fff;
+  background: linear-gradient(319.24deg, #3ca55c 0%, #b5ac49 100%), tokens.$white;
 }
 
 .input-proxy {
@@ -57,30 +57,19 @@
   height: 37px;
 }
 
-.input-proxy:active {
+/* Field inputs take their border from the settings page. */
+.settings-page .input-proxy:active {
   outline: none;
-  border: 1px solid #2a251f !important;
-}
-
-.invalid-input {
-  border: 1px solid #f11111 !important;
+  border: 1px solid tokens.$ink-active;
 }
 
 @media (prefers-color-scheme: dark) {
   .toggle-button {
-    background: #61666B;
+    background: tokens.$dark-hover;
   }
 
   .input-proxy {
     border: 1px solid #292828;
-  }
-
-  .input-proxy:active {
-    border: transparent;
-  }
-
-  .invalid-input {
-    border: 1px solid #9e5757 !important;
   }
 }
 
@@ -136,10 +125,6 @@
   margin: 0;
 }
 
-.settings-page :global(#proxyForm) > .settings-grid {
-  grid-template-columns: 130px minmax(0, 1fr);
-}
-
 .settings-page .settings-field :is(input, select, textarea) {
   box-sizing: border-box;
   min-width: 0;
@@ -167,12 +152,12 @@
   cursor: pointer;
 }
 
-.settings-page input[type="checkbox"]:not(.toggle-button) {
+.settings-page [type="checkbox"]:not(.toggle-button) {
   width: 16px;
   height: 16px;
   flex-shrink: 0;
   margin: 4px 0;
-  accent-color: #6c9e2c;
+  accent-color: tokens.$accent;
 }
 
 .settings-page .toggle-button {
@@ -210,7 +195,7 @@
 .settings-page .settings-section .btn-dark {
   background: var(--settings-primary);
   border-color: var(--settings-primary);
-  color: #fff;
+  color: tokens.$white;
 }
 
 .settings-page .settings-section .btn-dark:hover:not(:disabled) {
@@ -249,8 +234,7 @@
 }
 
 @media (max-width: tokens.$single-column) {
-  .settings-page .settings-grid,
-  .settings-page :global(#proxyForm) > .settings-grid {
+  .settings-page .settings-grid {
     grid-template-columns: minmax(0, 1fr);
   }
 }

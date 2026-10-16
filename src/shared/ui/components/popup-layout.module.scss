@@ -37,10 +37,11 @@
 
 @media (prefers-color-scheme: dark) {
     :global(body):where(.document) {
-        background: #242728
+        background: tokens.$dark-surface
     }
 }
 
 .document [hidden] {
-  display: none !important;
+  /* The hidden attribute must win over any display rule. */
+  display: none !important; /* stylelint-disable-line declaration-no-important */
 }

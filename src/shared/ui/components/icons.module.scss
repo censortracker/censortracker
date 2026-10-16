@@ -14,7 +14,7 @@
 
 .main-page__return:hover svg {
   cursor: pointer;
-  fill: #625c55;
+  fill: tokens.$ink-hover;
 }
 
 .return-link {

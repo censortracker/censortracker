@@ -40,7 +40,7 @@
 }
 
 .popup .popup-content .close-popup path {
-  stroke: #3B332B;
+  stroke: tokens.$ink;
 }
 
 .popup .popup-content .close-popup:hover {
@@ -48,7 +48,7 @@
 }
 
 .popup .popup-content .close-popup:hover path {
-  stroke: #625C55;
+  stroke: tokens.$ink-hover;
 }
 
 @media (prefers-color-scheme: dark) {

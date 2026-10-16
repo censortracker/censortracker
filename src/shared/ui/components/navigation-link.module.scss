@@ -22,12 +22,12 @@
 }
 
 .main-page__link:hover svg {
-  fill: #625c55;
+  fill: tokens.$ink-hover;
 }
 
 .state-title {
   opacity: 0.5;
-  color: #3B332B;
+  color: tokens.$ink;
   font-size: 13px;
   line-height: 17px;
   margin-left: 400px;

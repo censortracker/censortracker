@@ -20,10 +20,10 @@
 
 .btn-dark {
   background: tokens.$ink;
-  color: #fff;
+  color: tokens.$white;
   margin-right: tokens.$space-large;
   border: 1px solid transparent;
-  box-shadow: 0 0.598509px 3.52455px rgba(15, 13, 11, 0.079074), 0 1.12694px 6.63642px rgba(15, 13, 11, 0.0655718), 0 2.01027px 11.8382px rgba(15, 13, 11, 0.055);
+  box-shadow: tokens.$shadow;
 }
 
 .btn-dark:hover {
@@ -52,11 +52,11 @@
 }
 
 .btn-light:hover {
-  border: 1px solid #625c55;
+  border: 1px solid tokens.$ink-hover;
 }
 
 .btn-light:hover > .btn__text {
-  color: #625c55;
+  color: tokens.$ink-hover;
 }
 
 .btn-light:active > .btn__text {
@@ -77,4 +77,28 @@
 
 .btn-light:hover {
   background-color: rgba(251, 236, 236, 0.77);
+}
+
+// Native button styles off: the button keeps the look of the element it replaced.
+:where(.plain) {
+  appearance: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  word-spacing: inherit;
+  text-align: inherit;
+  text-indent: inherit;
+  text-shadow: inherit;
+  text-transform: inherit;
+}
+
+// A block button fills its line like a div.
+:where(.plain-block) {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
 }

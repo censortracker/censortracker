@@ -34,17 +34,17 @@
 }
 
 .block__btn:hover {
-    color: #625c55;
+    color: tokens.$ink-hover;
     cursor: pointer;
 }
 
 .block__btn:active {
-    color: #2b251f;
+    color: tokens.$ink-active;
     cursor: pointer;
 }
 
 .block__btn:hover path {
-    stroke: #625c55;
+    stroke: tokens.$ink-hover;
 }
 
 .btn-ok {

@@ -1,7 +1,8 @@
 @use 'tokens';
-@value main-page__info, options-page-card, main-page__image, main-page, btn from './options.module.scss';
-@value default-btn from './popup.module.scss';
-@value default-btn as settings-default-btn from './options.module.scss';
+@value main-page__info, main-page__image, main-page from '../components/layout.module.scss';
+@value options-page-card from '../components/card.module.scss';
+@value btn from '../components/button.module.scss';
+@value default-btn as settings-default-btn from '../components/notice.module.scss';
 
 .consent-page .main-page__info {
   min-width: 0;
@@ -87,7 +88,6 @@
   display: none;
 }
 
-.consent-status .default-btn,
 .consent-status .settings-default-btn {
   margin-bottom: 0;
   border: 0;

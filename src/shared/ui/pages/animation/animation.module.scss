@@ -1,0 +1,24 @@
+@use '../../styles/tokens';
+
+:global(body):where(.document) {
+  margin: 0;
+  padding: 16px;
+  background: tokens.$white;
+  color: #222;
+  font-family: system-ui, sans-serif;
+}
+
+.player {
+  width: min(100%, calc((100vh - 4rem) * 1.3333));
+  max-width: 1280px;
+  margin: auto;
+  background: tokens.$white;
+}
+
+.canvas {
+  display: block;
+  width: 100%;
+  max-width: calc((100vh - 4rem) * 1.3333);
+  aspect-ratio: 4 / 3;
+  cursor: pointer;
+}

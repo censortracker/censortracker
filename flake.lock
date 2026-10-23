@@ -1,0 +1,78 @@
+{
+  "nodes": {
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 1792502884,
+        "narHash": "sha256-IoNisKcGbUjdd45qCqywGMCYmZ5EnkxezvLII0FWwNA=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "02c087f3fe673c9e317f206a627cb6b910336dbe",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs-chromium-min": {
+      "locked": {
+        "lastModified": 1673180965,
+        "narHash": "sha256-gMhL6w9RVluvPs+irJ9n0Q1BphZm+Ek4XGn5Ow7YQ3k=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "0c9aadc8eff6daaa5149d2df9e6c49baaf44161c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "0c9aadc8eff6daaa5149d2df9e6c49baaf44161c",
+        "type": "github"
+      }
+    },
+    "nixpkgs-firefox-min": {
+      "locked": {
+        "lastModified": 1656250965,
+        "narHash": "sha256-2IlNf6jxEJiuCrGymqLOLjxk2SIj4HhVIwEb0kvcs24=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "9a17f325397d137ac4d219ecbd5c7f15154422f4",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "9a17f325397d137ac4d219ecbd5c7f15154422f4",
+        "type": "github"
+      }
+    },
+    "nixpkgs-x86_64-darwin": {
+      "locked": {
+        "lastModified": 1792683697,
+        "narHash": "sha256-P4nss8/EUu51hOQDdkso+pCQBdt0DT/lrfXWaZEDnEA=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "752cbac9446602fbb78bdd1c3597455a3dd38432",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixpkgs-26.05-darwin",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "nixpkgs": "nixpkgs",
+        "nixpkgs-chromium-min": "nixpkgs-chromium-min",
+        "nixpkgs-firefox-min": "nixpkgs-firefox-min",
+        "nixpkgs-x86_64-darwin": "nixpkgs-x86_64-darwin"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}

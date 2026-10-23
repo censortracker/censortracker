@@ -1,0 +1,125 @@
+@use '../styles/tokens';
+
+.select {
+  width: 100%;
+  position: relative;
+}
+
+.select-toggle {
+  display: flex;
+  background-color: tokens.$white;
+  border: 1px solid tokens.$border;
+  border-radius: 4px;
+  cursor: pointer;
+  align-items: center;
+  width: 100%;
+  font-size: 14px;
+  padding: 3px 15px;
+  line-height: 24px;
+  user-select: none;
+  justify-content: space-between;
+  color: tokens.$ink;
+  font-family: inherit;
+}
+
+.select-toggle::after {
+  content: '';
+  width: 12px;
+  height: 8px;
+  flex-shrink: 0;
+  margin-left: 1rem;
+  background-size: cover;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='m6.583 1.084 4.75 4.666a.806.806 0 0 1 0 1.167.806.806 0 0 1-1.167 0L6.083 2.834 2 6.917a.76.76 0 0 1-.584.25c-.5 0-.833-.333-.833-.833 0-.25.083-.417.25-.584L5.583 1c.167-.25.667-.25 1 .084'/%3E%3C/svg%3E");
+  transform: rotate(180deg);
+}
+
+.select-toggle:focus {
+  outline: none;
+  border: 1px solid #767676;
+}
+
+
+.select-toggle:hover {
+  border: 1px solid #767676;
+}
+
+.select-dropdown {
+  display: none;
+  position: absolute;
+  top: 2.5rem;
+  left: 0;
+  right: 0;
+  border: 1px solid tokens.$border;
+  max-height: 14rem;
+  overflow-y: auto;
+  border-radius: 4px;
+  z-index: 2;
+  background-color: tokens.$white;
+  font-size: 14px;
+  font-family: inherit;
+  font-weight: 400;
+  line-height: 24px;
+}
+
+.show-countries .select-toggle::after {
+  transform: rotate(360deg);
+}
+
+.show-countries .select-dropdown {
+  display: block;
+}
+
+.show-countries {
+  display: block;
+}
+
+.select-options {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.select-option {
+  padding: 3px 15px;
+}
+
+.select-option:hover {
+  cursor: pointer;
+  background-color: #f5f5f5;
+  transition: 0.2s background-color ease-in-out;
+}
+
+/* A native select keeps its own layout. */
+.select-toggle.select-native {
+  display: block;
+}
+
+@media (prefers-color-scheme: dark) {
+  .select-options {
+    background: tokens.$dark-surface;
+    color: tokens.$border;
+  }
+
+  .select-option {
+    color: tokens.$border;
+  }
+
+  .select-toggle::after {
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='%23c4c2bf'%3E%3Cpath d='m6.583 1.084 4.75 4.666a.806.806 0 0 1 0 1.167.806.806 0 0 1-1.167 0L6.083 2.834 2 6.917a.76.76 0 0 1-.584.25c-.5 0-.833-.333-.833-.833 0-.25.083-.417.25-.584L5.583 1c.167-.25.667-.25 1 .084'/%3E%3C/svg%3E");
+  }
+
+  .select-option:hover {
+    background-color: #4e52535c;
+  }
+
+  .select-toggle {
+    background: tokens.$dark-surface;
+    color: tokens.$border;
+    border-color: #292828;
+  }
+
+  .select-toggle:focus,
+  .select-toggle:hover {
+    border: 1px solid #292828;
+  }
+}

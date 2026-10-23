@@ -1,0 +1,23 @@
+@use '../styles/tokens';
+
+.options-page-card {
+  padding: 20px 30px;
+  width: 100%;
+  background: tokens.$white;
+  border-bottom: 1px solid #f1f1f1;
+  border-radius: 10px;
+  filter: drop-shadow(0 2px 12px rgba(15, 13, 11, 0.055)) drop-shadow(0 1px 7px rgba(15, 13, 11, 0.0655718)) drop-shadow(0 1px 4px rgba(15, 13, 11, 0.079074));
+  margin-bottom: tokens.$space-medium;
+
+}
+
+.options-page-card:last-child {
+  margin-bottom: 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  .options-page-card {
+    background-color: tokens.$dark-surface;
+    border-bottom: none;
+  }
+}

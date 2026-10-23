@@ -1,0 +1,33 @@
+@use '../styles/tokens';
+
+.main-page__return {
+  width: 270px;
+  height: 30px;
+  text-align: left;
+  padding-top: 2px;
+}
+
+.main-page__return svg {
+  vertical-align: text-bottom;
+  fill: tokens.$ink;
+}
+
+.main-page__return:hover svg {
+  cursor: pointer;
+  fill: tokens.$ink-hover;
+}
+
+.return-link {
+  padding-right: 13px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .main-page__return svg {
+    fill: tokens.$dark-text;
+  }
+
+  .main-page__return:hover svg {
+    fill: tokens.$border;
+    cursor: pointer;
+  }
+}

@@ -1,0 +1,42 @@
+@use '../styles/tokens';
+
+.extension__title {
+  margin-bottom: 10px;
+}
+
+.main-page__extension {
+  margin-top: 25px;
+  margin-bottom: 25px;
+  background-color: #f4f7fa;
+  border-radius: 4px;
+  padding: 20px 30px;
+}
+
+.default-btn {
+  background-color: tokens.$ink;
+  font-size: 14px;
+  line-height: 15px;
+  color: tokens.$white;
+  padding: 9px 20px;
+  display: inline-block;
+  font-weight: 400;
+  box-shadow: tokens.$shadow;
+  border-radius: 4px;
+  margin-right: 15px;
+}
+
+.default-btn:hover {
+  cursor: pointer;
+  background-color: tokens.$ink-hover;
+}
+
+.default-btn:active,
+.default-btn:focus {
+  background-color: tokens.$ink-active;
+}
+
+@media (prefers-color-scheme: dark) {
+  .main-page__extension {
+    background-color: tokens.$dark-surface;
+  }
+}

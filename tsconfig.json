@@ -1,10 +1,17 @@
 {
+  "extends": "./.wxt/tsconfig.json",
   "compilerOptions": {
-    "outDir": "./dist/",
-    "noImplicitAny": true,
-    "module": "es6",
-    "target": "es5",
-    "allowJs": true,
-    "moduleResolution": "node"
-  }
+    "jsx": "react-jsx",
+    "jsxImportSource": "preact",
+    "isolatedModules": true,
+    "types": [
+      "chrome-types",
+      "firefox-webext-browser"
+    ]
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    ".wxt/wxt.d.ts"
+  ]
 }

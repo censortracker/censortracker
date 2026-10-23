@@ -2,24 +2,59 @@ name: Build
 
 on: [push]
 
+permissions:
+  contents: read
+
+# Keep builds for different commits so each commit can publish artifacts.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.sha }}
+  cancel-in-progress: false
+
 jobs:
   build:
-    name: Test on node ${{ matrix.node_version }} and ${{ matrix.os }}
+    name: Test on Node.js ${{ matrix.node-version }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [15.4]
+        node-version: [24]
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        persist-credentials: false
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
       with:
         node-version: ${{ matrix.node-version }}
-    - run: npm install -g node-pre-gyp
-    - run: npm install
+        cache: npm
+    - run: npm ci
+    - run: npm test
+    - run: npm run typecheck
     - run: npm run lint
+    - run: npm run stylelint
+    - run: npm run test:reproducible
+    - run: npm run build:chrome:prod
+    - run: npm run build:firefox:prod
+    - run: npm run build:firefox:modern
     - run: npm run locales:check
       env:
         CI: true
         PROJECT_NAME: censortracker
+    - name: Upload Chrome extension
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      with:
+        name: censortracker-chrome-${{ github.sha }}
+        path: .output/chrome-mv3/
+        if-no-files-found: error
+    - name: Upload Firefox extension
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      with:
+        name: censortracker-firefox-${{ github.sha }}
+        path: .output/firefox-mv2/
+        if-no-files-found: error
+    - name: Upload modern Firefox extension
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      with:
+        name: censortracker-firefox-modern-${{ github.sha }}
+        path: .output/firefox-mv2-modern/
+        if-no-files-found: error

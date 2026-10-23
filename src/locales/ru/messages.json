@@ -1,0 +1,1002 @@
+{
+  "release21Title": {
+    "message": "CensorTracker вернулся!"
+  },
+  "release21Text": {
+    "message": "Обновили расширение и стабилизировали его работу — должно работать лучше, чем раньше. Если возникнут сложности или вопросы, обратитесь в"
+  },
+  "noticeSupport": {
+    "message": "поддержку"
+  },
+  "noticeOkay": {
+    "message": "Окей"
+  },
+  "animationDescription": {
+    "message": "Анимация Bad Apple из логотипов Censor Tracker"
+  },
+  "proxyAll": {
+    "message": "Проксировать всё"
+  },
+  "uiLanguageTitle": {
+    "message": "Язык"
+  },
+  "uiLanguageAuto": {
+    "message": "Язык браузера"
+  },
+  "proxyAdd": {
+    "message": "Добавить прокси"
+  },
+  "proxyEditTitle": {
+    "message": "Редактировать прокси"
+  },
+  "proxyNameOptional": {
+    "message": "Название (необязательно)"
+  },
+  "proxyProtocol": {
+    "message": "Протокол"
+  },
+  "proxyNoMatches": {
+    "message": "Нет прокси, подходящих под эти фильтры."
+  },
+  "relatedDomainsSaveError": {
+    "message": "Не удалось сохранить или применить правила. Некоторые домены уже могли сохраниться. Проверьте настройки прокси перед повторной попыткой."
+  },
+  "relatedDomainsTitle": {
+    "message": "Связанные CDN/API-домены"
+  },
+  "relatedDomainsHelp": {
+    "message": "До 200 доменов из недавних ресурсов основного фрейма страницы. Без новых запросов и просмотра истории. Список может включать рекламу и трекеры и быть неполным. Выберите только нужные домены. Исключения сохраняют приоритет."
+  },
+  "relatedDomainsScan": {
+    "message": "Найти домены"
+  },
+  "relatedDomainsAdd": {
+    "message": "Проксировать выбранные домены"
+  },
+  "relatedDomainsWorking": {
+    "message": "Обработка…"
+  },
+  "relatedDomainsFound": {
+    "message": "Найдено: $1. Выберите домены для добавления."
+  },
+  "relatedDomainsAdded": {
+    "message": "Добавлено: $1. Существующие домены и исключения не изменены."
+  },
+  "relatedDomainsError": {
+    "message": "Не удалось завершить действие. Возможно, страница изменилась или запретила доступ. Откройте popup заново и повторите попытку."
+  },
+  "registrySourceKind": {
+    "message": "Источник"
+  },
+  "registrySourceCustom": {
+    "message": "Свой список доменов"
+  },
+  "registrySourceAnticensority": {
+    "message": "Загружает список доменов из опубликованного PAC Anticensority. Код PAC, адреса прокси и правила IP/подсетей не используются. Некорректные домены пропускаются. Список большой, загрузка может занять несколько секунд."
+  },
+  "proxyAntizapretImport": {
+    "message": "Импортировать или обновить Antizapret"
+  },
+  "proxyAntizapretLimited": {
+    "message": "Только список Antizapret"
+  },
+  "proxyAntizapretHelp": {
+    "message": "Ручная загрузка адресов прокси и разрешённых доменов Antizapret. Эти прокси используются только для сайтов из списка, даже в режиме всего трафика. Выберите импортированные записи самостоятельно. Общая проверка прокси недоступна. Сервис работает только у российских провайдеров; в других странах загрузка может вернуть 403. Для обновления загрузите источник повторно."
+  },
+  "registrySourceTitle": {
+    "message": "Внешний реестр (необязательно)"
+  },
+  "registrySourceHelp": {
+    "message": "Можно загрузить JSON-массив, JSON-объект с массивом domains или текстовый список с одним доменом в строке. Список хранится отдельно от ручных правил. Он дополняет встроенный реестр; отключите встроенный, чтобы использовать только этот список. Загрузка использует текущий маршрут и раскрывает ваш IP источнику. Ограничения: 32 МБ и 30 секунд на загрузку. Ошибка или пустой ответ не удаляют последний корректный список."
+  },
+  "registrySourceUrl": {
+    "message": "URL реестра"
+  },
+  "registrySourceEnabled": {
+    "message": "Использовать этот загруженный список"
+  },
+  "registrySourceAutoUpdate": {
+    "message": "Обновлять автоматически вместе с реестром (каждые 15 минут, когда расширение и прокси включены)"
+  },
+  "registrySourceRefresh": {
+    "message": "Сохранить и загрузить сейчас"
+  },
+  "registrySourceStatus": {
+    "message": "Доменов в кеше: $1. Последняя успешная загрузка: $2."
+  },
+  "registrySourceNotDownloaded": {
+    "message": "не загружен"
+  },
+  "registrySourceError": {
+    "message": "Не удалось сохранить или загрузить источник. Проверьте URL и формат. Последний корректный список не удалён."
+  },
+  "popupRouteProxy": {
+    "message": "Планируемый прокси: $1"
+  },
+  "popupRouteExit": {
+    "message": "Последняя проверка выхода: $1 · $2"
+  },
+  "popupRouteFallbacks": {
+    "message": "Резервных прокси: $1"
+  },
+  "popupRouteCheckedAt": {
+    "message": "Проверено: $1"
+  },
+  "popupRoute_direct": {
+    "message": "Планируемый маршрут: напрямую"
+  },
+  "popupRoute_disabled": {
+    "message": "Проксирование Censor Tracker неактивно"
+  },
+  "popupRoute_blocked": {
+    "message": "Нет подходящего прокси. Этот маршрут заблокирован."
+  },
+  "popupRoute_unavailable": {
+    "message": "Информация о маршруте недоступна"
+  },
+  "popupRouteHelp": {
+    "message": "Это настроенный маршрут, а не измерение соединения страницы. Браузер может использовать резервный прокси или существующее соединение. IP и страна выхода взяты из последней проверки прокси и могли измениться. Открытие popup не отправляет запросов IP или геолокации."
+  },
+  "siteRulesTitle": {
+    "message": "Правила стран выхода для сайтов"
+  },
+  "siteRulesHelp": {
+    "message": "Правило действует, когда сайт использует прокси, включая его поддомены. Приоритет у самого точного правила. Укажите запрещённые двухбуквенные коды стран выхода (например RU, CN). Пустой список отменяет ограничение родительского домена. При ограничении неизвестная страна выхода и проверки старше 24 часов не допускаются. Запустите проверку прокси для обновления. Если подходящих прокси нет, сайт блокируется. Геолокация приблизительна и не гарантирует маршрут существующего соединения."
+  },
+  "siteRuleHost": {
+    "message": "Домен сайта"
+  },
+  "siteRuleCountries": {
+    "message": "Запрещённые страны выхода (двухбуквенные коды)"
+  },
+  "siteRuleUnrestricted": {
+    "message": "Без ограничения страны"
+  },
+  "siteRuleError": {
+    "message": "Не удалось сохранить правило. Проверьте домен и коды стран и повторите попытку."
+  },
+  "proxyFilters": {
+    "message": "Фильтры, сортировка и удаление"
+  },
+  "proxyFilterAny": {
+    "message": "Все страны"
+  },
+  "proxyFilterUnknown": {
+    "message": "Неизвестно"
+  },
+  "proxyFilteredCount": {
+    "message": "Найдено: $1 из $2."
+  },
+  "proxySort": {
+    "message": "Сортировать по"
+  },
+  "proxySortDefault": {
+    "message": "Исходный порядок"
+  },
+  "proxySortName": {
+    "message": "Название (А–Я)"
+  },
+  "proxySortLatency": {
+    "message": "Задержка (сначала быстрые)"
+  },
+  "proxyRemoveFiltered": {
+    "message": "Удалить найденные пользовательские прокси"
+  },
+  "proxyRemoveConfirm": {
+    "message": "Удалить все $1 найденных пользовательских прокси на всех страницах, включая выбранные? Встроенный прокси не будет удалён."
+  },
+  "proxyRecoveryEnabled": {
+    "message": "Разрешить фоновые IP-проверки отказавших выбранных прокси (раз в пять минут). Прокси с сохранёнными учётными данными автоматически не проверяются."
+  },
+  "proxyCheckTitle": {
+    "message": "Проверить прокси"
+  },
+  "proxyCheckResult": {
+    "message": "Последняя проверка"
+  },
+  "proxyCheckPrivacy": {
+    "message": "Проверка обращается к ipify.org, myip.com, ipwho.is и country.is через каждый прокси. Cloudflare DNS и country.is получают адрес или IP прокси для определения его страны. Эти сервисы могут видеть ваш IP. Во время проверки другие запросы к тестовым доменам используют тот же тестируемый прокси. Домены посещённых сайтов не отправляются. Результаты приблизительны и не подтверждают маршрут страницы. До четырёх проверок одновременно; тайм-аут IP-запроса — 8 секунд."
+  },
+  "proxyCheckAll": {
+    "message": "Проверить все"
+  },
+  "proxyCheckSelected": {
+    "message": "Проверить выбранные"
+  },
+  "proxyCheckStop": {
+    "message": "Остановить"
+  },
+  "proxyCheckProgress": {
+    "message": "Проверено: $1 из $2."
+  },
+  "proxyCheckCancelled": {
+    "message": "Остановлено."
+  },
+  "proxyCheckError": {
+    "message": "Не удалось начать или завершить проверку. Включите расширение и проксирование, выберите прокси и убедитесь, что другая проверка не запущена."
+  },
+  "proxyServerCountry": {
+    "message": "Страна сервера"
+  },
+  "proxyExitCountry": {
+    "message": "Страна выхода"
+  },
+  "proxyCheckReason_ok": {
+    "message": "Ответ получен"
+  },
+  "proxyCheckReason_timeout": {
+    "message": "Время ожидания истекло"
+  },
+  "proxyCheckReason_network": {
+    "message": "Ошибка сети"
+  },
+  "proxyCheckReason_http": {
+    "message": "Ошибка HTTP"
+  },
+  "proxyCheckReason_invalid_response": {
+    "message": "Неверный ответ"
+  },
+  "proxyCheckReason_auth": {
+    "message": "Требуется авторизация или доступ отклонён"
+  },
+  "proxyCheckReason_route_setup": {
+    "message": "Не удалось подготовить маршрут проверки"
+  },
+  "proxyStatus_unchecked": {
+    "message": "Не проверен"
+  },
+  "proxyStatus_ok": {
+    "message": "Доступен"
+  },
+  "proxyStatus_failed": {
+    "message": "Проверка не пройдена"
+  },
+  "proxyStatus_auth": {
+    "message": "Требуется авторизация или данные отклонены"
+  },
+  "proxyStatus_restricted": {
+    "message": "Ограничен; не проверен"
+  },
+  "proxyStatus_unsupported": {
+    "message": "Недоступен или не поддерживается"
+  },
+  "proxyImportTitle": {
+    "message": "Импорт прокси и подписки"
+  },
+  "proxyImportPrivacy": {
+    "message": "Загрузка использует текущее соединение и раскрывает ваш IP источнику. Используйте доверенные источники. HTTP-загрузки не шифруются. Новые записи не выбираются автоматически. Удаление подписки сохраняет импортированные прокси."
+  },
+  "proxyPacWarning": {
+    "message": "PAC-файлы не выполняются. Извлекаются только адреса прокси, без правил маршрутизации. Эти прокси заблокированы, пока вы не подтвердите в редакторе, что они обслуживают любые сайты."
+  },
+  "proxyRestricted": {
+    "message": "Ограничен (требуется подтверждение)"
+  },
+  "proxyUnrestricted": {
+    "message": "Подтверждаю, что этот прокси обслуживает любые сайты."
+  },
+  "proxyImportProtocol": {
+    "message": "Протокол для адресов без схемы"
+  },
+  "proxyImportText": {
+    "message": "Вставьте адреса (по одному на строку)"
+  },
+  "proxyImportFile": {
+    "message": "Или выберите текстовый или PAC-файл (до 32 МиБ)"
+  },
+  "proxyImportUrl": {
+    "message": "URL источника"
+  },
+  "proxyImportButton": {
+    "message": "Импортировать"
+  },
+  "proxySubscribe": {
+    "message": "Сохранить подписку"
+  },
+  "proxySubscriptionsEnabled": {
+    "message": "Разрешить автоматическую загрузку подписок (каждый источник раз в час)"
+  },
+  "proxyRefresh": {
+    "message": "Обновить"
+  },
+  "proxyImportWorking": {
+    "message": "Обработка…"
+  },
+  "proxyImportResult": {
+    "message": "Добавлено: $1. Пропущено: $2."
+  },
+  "proxyImportLimit": {
+    "message": "Достигнут лимит импорта. Используйте файлы меньшего размера (до 5 000 прокси)."
+  },
+  "proxyImportFailed": {
+    "message": "Импорт не выполнен. Проверьте источник, размер файла и формат адресов."
+  },
+  "proxyAuthTitle": {
+    "message": "Авторизация (необязательно)"
+  },
+  "proxyUsername": {
+    "message": "Логин"
+  },
+  "proxyPassword": {
+    "message": "Пароль"
+  },
+  "proxyAuthPrivacy": {
+    "message": "Данные авторизации хранятся на этом устройстве и входят в резервные копии настроек. HTTP-прокси не шифруют соединение с прокси."
+  },
+  "proxySocksUnsupported": {
+    "message": "Для SOCKS-авторизации нужен Firefox. Chromium её не поддерживает."
+  },
+  "proxyPoolHelp": {
+    "message": "Выбранные прокси распределяют сайты между собой и заменяют друг друга при отказе. Это не multi-hop."
+  },
+  "useSelectedProxies": {
+    "message": "Использовать выбранные прокси"
+  },
+  "proxyManage": {
+    "message": "Управление прокси"
+  },
+  "proxySelected": {
+    "message": "Использовать"
+  },
+  "proxyName": {
+    "message": "Название"
+  },
+  "proxyAddress": {
+    "message": "Адрес"
+  },
+  "proxyActions": {
+    "message": "Действия"
+  },
+  "proxyPrevious": {
+    "message": "Назад"
+  },
+  "proxyNext": {
+    "message": "Далее"
+  },
+  "proxyNoneSelected": {
+    "message": "Прокси не выбраны."
+  },
+  "proxyUnavailable": {
+    "message": "Адрес недоступен"
+  },
+  "proxyEdit": {
+    "message": "Изменить"
+  },
+  "proxyDelete": {
+    "message": "Удалить"
+  },
+  "proxyListInvalid": {
+    "message": "Не удалось изменить список. Проверьте данные прокси и попробуйте снова."
+  },
+  "privateBrowsingStillRequired": {
+    "message": "Разрешите работу в приватных окнах и попробуйте ещё раз."
+  },
+  "proxySetupExtensionDisabled": {
+    "message": "Расширение выключено. Включите его перед включением прокси."
+  },
+  "proxySetupRunning": {
+    "message": "Применяем настройки прокси…"
+  },
+  "proxySetupDone": {
+    "message": "Настройки прокси применены."
+  },
+  "proxySetupFailed": {
+    "message": "Не удалось применить настройки прокси."
+  },
+  "registryStatus_not_loaded": {
+    "message": "Встроенный реестр ещё не загружен."
+  },
+  "registryStatus_loading": {
+    "message": "Загружаем встроенный реестр…"
+  },
+  "registryStatus_ready": {
+    "message": "Встроенный реестр загружен."
+  },
+  "registryStatus_empty": {
+    "message": "Встроенный реестр пуст."
+  },
+  "registryStatus_unavailable": {
+    "message": "Источник встроенного реестра недоступен. Последняя рабочая база сохранена."
+  },
+  "registryStatus_unsupported": {
+    "message": "Для этого региона нет встроенного реестра."
+  },
+  "registrySkipped": {
+    "message": "Пропущено ошибочных записей: $1."
+  },
+  "operationFailed": {
+    "message": "Не удалось выполнить действие. Попробуйте ещё раз."
+  },
+  "advancedOptionsDesc": {
+    "message": "Вы можете вручную обновить локальную базу данных заблокированных веб-сайтов, обновить конфигурацию Censor Tracker и управлять другими расширенными параметрами."
+  },
+  "advancedOptionsPageTitle": {
+    "message": "Дополнительные настройки"
+  },
+  "advancedOptionsTitle": {
+    "message": "Дополнительные настройки"
+  },
+  "appAuthor": {
+    "message": "Censor Tracker"
+  },
+  "appDesc": {
+    "message": "Расширение для обхода блокировок."
+  },
+  "appName": {
+    "message": "Censor Tracker — Обход блокировок"
+  },
+  "areYouSureYouWantToResetSettingsDesc": {
+    "message": "Переустановить конфиг и обновить локальную базу данных"
+  },
+  "areYouSureYouWantToResetSettingsTitle": {
+    "message": "Вы уверены, что хотите сбросить все настройки?"
+  },
+  "backendIsIntermittentDesc": {
+    "message": "Попробуйте <a href='/advanced-options.html'>сбросить настройки расширения</a> или <a target='_blank' href='https://t.me/censortracker_feedback'>напишите нам в Telegram</a> об этой проблеме."
+  },
+  "backendIsIntermittentPopupMessage": {
+    "message": "Возникли проблемы при получении конфигурации →"
+  },
+  "backendIsIntermittentTitle": {
+    "message": "Возникли проблемы при получении конфигурации расширения."
+  },
+  "blockedDesc": {
+    "message": "Домен находится в реестре заблокированных сайтов для вашего региона. Этот статус не показывает, включён ли прокси и работает ли он."
+  },
+  "blockedTitle": {
+    "message": "Доступ запрещён"
+  },
+  "customProxiedDesc": {
+    "message": "Домен добавлен в ваш список проксируемых сайтов, но отсутствует в реестре заблокированных сайтов для вашего региона. Этот статус не показывает, включён ли прокси и работает ли он."
+  },
+  "customProxiedTitle": {
+    "message": "В списке проксирования"
+  },
+  "cancel": {
+    "message": "Отмена"
+  },
+  "censorshipCircumventionBlockTitle": {
+    "message": "Обход блокировок"
+  },
+  "chooseFileOnComputer": {
+    "message": "Выберите файл на компьютере"
+  },
+  "closeTab": {
+    "message": "Закрыть вкладку"
+  },
+  "communityChatLink": {
+    "message": "Есть вопросы к сообществу? Напишите в community-чат"
+  },
+  "confirmPopupResetSettings": {
+    "message": "Да, сбросить"
+  },
+  "controlledByOtherExtensionDesc": {
+    "message": "Для корректной работы Censor Tracker, отключите &laquo;<div class=\"extension__name\">$name$</div>&raquo;.",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "controlledByOtherExtensionTitle": {
+    "message": "Сейчас другое расширение &laquo;<div class=\"extension__name\">$name$</div>&raquo; контролирует ваши настройки прокси",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "controlledByOtherExtensions": {
+    "message": "Другие расширения контролируют ваши настройки прокси в браузере"
+  },
+  "controlledByOtherExtensionsDesc": {
+    "message": "Для корректной работы Censor Tracker, отключите следующие расширения в настройках браузера:"
+  },
+  "controlledByOtherExtensionsMessage": {
+    "message": "Другое расширение контролирует прокси. Подробнее →"
+  },
+  "controlledPageDisableExtension": {
+    "message": "Отключить"
+  },
+  "cooperationAcceptedMessage": {
+    "message": "$hostname$ может передавать информацию третьим лицам.",
+    "placeholders": {
+      "hostname": {
+        "content": "$1"
+      }
+    }
+  },
+  "copyButton": {
+    "message": "Скопировать"
+  },
+  "countryAUTO": {
+    "message": "Определить автоматически"
+  },
+  "countryAZ": {
+    "message": "Азербайджан"
+  },
+  "countryBY": {
+    "message": "Беларусь"
+  },
+  "countryKG": {
+    "message": "Кыргызстан"
+  },
+  "countryKZ": {
+    "message": "Казахстан"
+  },
+  "countryRU": {
+    "message": "Россия"
+  },
+  "countryUA": {
+    "message": "Украина"
+  },
+  "countryUZ": {
+    "message": "Узбекистан"
+  },
+  "debugInfoTitle": {
+    "message": "Отладочная информация"
+  },
+  "disableAll": {
+    "message": "Отключить все"
+  },
+  "disseminatorCoopRefused": {
+    "message": "Сервис заявил, что он не передает трафик российским государственным органам в автоматическом режиме."
+  },
+  "disseminatorDesc": {
+    "message": "Сервис может передавать ваши личные данные, в том числе сообщения и весь трафик российским государственным органам в автоматическом режиме."
+  },
+  "disseminatorTitle": {
+    "message": "Является организатором распространения информации"
+  },
+  "done": {
+    "message": "Готово!"
+  },
+  "doneDescription": {
+    "message": "Операция выполнена успешно."
+  },
+  "emptyFileError": {
+    "message": "Файл пустой или повреждён. Пожалуйста, проверьте его и попробуйте ещё раз."
+  },
+  "exportSettingsDesc": {
+    "message": "Сохранить полную резервную копию настроек. Файл содержит пароли прокси и URL источников."
+  },
+  "exportSettingsTitle": {
+    "message": "Экспортировать настройки"
+  },
+  "exportSupportDesc": {
+    "message": "Сохранить отчёт диагностики без паролей прокси, URL источников и списков личных доменов."
+  },
+  "exportSupportTitle": {
+    "message": "Экспорт для поддержки"
+  },
+  "extensionDisabledTitle": {
+    "message": "Censor Tracker выключен"
+  },
+  "extensionEnabledTitle": {
+    "message": "включен"
+  },
+  "extensionInstalledDesc": {
+    "message": "Закрепите расширение в панели браузера в два клика, чтобы всегда быть в курсе, какие сайты могут передавать ваши сообщения, личные данные и весь трафик третьим лицам."
+  },
+  "extraBlockTitle": {
+    "message": "Дополнительно"
+  },
+  "faqLink": {
+    "message": "Ответы на вопросы по работе расширения"
+  },
+  "faqMirrorLink": {
+    "message": "Ответы на вопросы (зеркало сайта)"
+  },
+  "fetchURLError": {
+    "message": "Введенный вами URL-адрес недоступен. Пожалуйста, проверьте его и повторите попытку."
+  },
+  "fileSizeError": {
+    "message": "Размер файла не должен превышать 64 КБ"
+  },
+  "good": {
+    "message": "Хорошо"
+  },
+  "grantPrivateBrowsingPermissions": {
+    "message": "Я разрешил, включите прокси"
+  },
+  "howToGrantIncognitoAccess": {
+    "message": "Как это сделать"
+  },
+  "howToGrantIncognitoAccessBtnTitle": {
+    "message": "Как дать разрешение"
+  },
+  "howToGrantIncognitoAccessLink": {
+    "message": "https://mzl.la/46sXBEd"
+  },
+  "i2pNetworkTitle": {
+    "message": "Сайт в сети <span class=\"network__title-i2p\"></span> I2P"
+  },
+  "ignoreEditorPageTitle": {
+    "message": "Игнорируемые сайты"
+  },
+  "ignoredSitesDesc": {
+    "message": "Адреса, которые всегда будут игнорироваться Censor Tracker. Может помочь, если есть проблемы с открытием сайта. Каждый адрес с новой строки."
+  },
+  "ignoredSitesTitle": {
+    "message": "Игнорируемые сайты"
+  },
+  "importSettingsDesc": {
+    "message": "Импортируйте резервную копию JSON из этой или старой версии либо форка avatarDD. После импорта проверьте выбор прокси и источники реестра. Настройки реестра и восстановления прокси будут восстановлены. Автоматическая загрузка подписок прокси останется выключена."
+  },
+  "importSettingsTitle": {
+    "message": "Импортировать настройки"
+  },
+  "incognitoAccessRequiredDescription": {
+    "message": "Чтобы открыть <b>$hostname$</b> через прокси в Firefox требуется разрешение на работу в приватных окнах. Иначе прокси не работает.",
+    "placeholders": {
+      "hostname": {
+        "content": "$1"
+      }
+    }
+  },
+  "incognitoAccessRequiredTitle": {
+    "message": "Сайт недоступен или заблокирован. Разрешите Censor Tracker работать в приватных окнах, чтобы открывать такие сайты"
+  },
+  "incognitoRequiredPageTitle": {
+    "message": "Требуется разрешение для работы в приватных окнах"
+  },
+  "installedAllowIncognitoDescription": {
+    "message": "Это разрешение требуется, чтобы мы могли открывать для вас заблокированные сайты через прокси. В Firefox без этого никак."
+  },
+  "installedAllowIncognitoDescriptionThen": {
+    "message": "После этого откройте расширение и подтвердите, что права выданы."
+  },
+  "installedAllowIncognitoTitle": {
+    "message": "Разрешите работу Censor Tracker в приватных окнах"
+  },
+  "installedPageTitle": {
+    "message": "Censor Tracker установлен"
+  },
+  "invalidURLError": {
+    "message": "Неверный URL. Пожалуйста, проверьте его и попробуйте ещё раз."
+  },
+  "localProxyNotFoundDesc": {
+    "message": "Не удалось подключиться к локальному прокси Amnezia Premium. Откройте AmneziaVPN и включите «Локальный системный прокси»"
+  },
+  "maxDomainsExceededError": {
+    "message": "Максимальное количество доменов, которое можно добавить - 1000. Пожалуйста, сократите список и попробуйте ещё раз."
+  },
+  "notBlockedDesc": {
+    "message": "Если доступ к сайту запретят - Censor Tracker предложит открыть сайт через надёжный прокси."
+  },
+  "notBlockedTitle": {
+    "message": "Ограничений нет"
+  },
+  "notDisseminatorDesc": {
+    "message": "Сервисы из реестра ОРИ могут передавать ваши личные данные, в т.ч. сообщения и весь трафик, государственным органам в автоматическом режиме. Этот сервис не находится в реестре ОРИ."
+  },
+  "notDisseminatorTitle": {
+    "message": "Не является организатором распространения информации"
+  },
+  "notificationsBlockTitle": {
+    "message": "Уведомления"
+  },
+  "okayButton": {
+    "message": "Ясно"
+  },
+  "optionsIgnoredWebsitesDesc": {
+    "message": "Адреса, для которых прокси всегда будет отключён. Может помочь, если есть проблемы с открытием сайта."
+  },
+  "optionsLoadFromSource": {
+    "message": "Загрузить список из файла или URL"
+  },
+  "optionsPageTitle": {
+    "message": "Настройки"
+  },
+  "optionsProxiedWebsitesEditorDesc": {
+    "message": "Вы можете вручную управлять сайтами, которые будут проксироваться расширением."
+  },
+  "optionsProxiedWebsitesEditorTitle": {
+    "message": "Мой список проксируемых сайтов"
+  },
+  "optionsProxyDesc": {
+    "message": "Если сайт заблокирован - Censor Tracker предоставит к нему доступ. Отключите эту настройку, если вы пользуетесь другим сервисом для обхода блокировок (например, VPN), чтобы увеличить скорость соединения."
+  },
+  "optionsProxyPageTitle": {
+    "message": "Настройки прокси"
+  },
+  "optionsProxyStatusTurnedOff": {
+    "message": "Выключен"
+  },
+  "optionsProxyStatusTurnedOn": {
+    "message": "Включен"
+  },
+  "optionsRegistryDesc": {
+    "message": "Censor Tracker ведёт реестры заблокированных сайтов, чтобы автоматически открывать такие сайты через прокси."
+  },
+  "optionsRegistryIsEmptyDesc": {
+    "message": "Для вашего текущего региона пока нечего проксировать, так как реестр заблокированных сайтов пуст, пожалуйста, либо вручную обновите локальную базу, либо добавьте необходимые вам заблокированные сайты в «Проксируемые сайты», чтобы получить к ним доступ."
+  },
+  "optionsRegistryIsEmptyTitle": {
+    "message": "Сайты для проксирования не найдены."
+  },
+  "optionsRegistryPageTitle": {
+    "message": "Регион"
+  },
+  "optionsRegistryProxyingListButton": {
+    "message": "Проксируемые сайты"
+  },
+  "optionsRegistryTitle": {
+    "message": "Регион"
+  },
+  "optionsRegistryUpdateDatabaseButton": {
+    "message": "Обновить базу данных"
+  },
+  "optionsSavedMessage": {
+    "message": "✅ Изменения сохранены"
+  },
+  "optionsTitle": {
+    "message": "Настройки расширения Censor Tracker"
+  },
+  "optionsVersion": {
+    "message": "Версия $VERSION$",
+    "placeholders": {
+      "version": {
+        "content": "$1"
+      }
+    }
+  },
+  "overlayNetworkDesc": {
+    "message": "Censor Tracker позволяет открывать такие сайты в обычном браузере"
+  },
+  "popupAutoMessage": {
+    "message": "Определить автоматически"
+  },
+  "popupDesc": {
+    "message": "В текстовом формате. Каждый домен с новой строки. Допускается добавление не более 1000 доменов."
+  },
+  "popupLoadButton": {
+    "message": "Загрузить"
+  },
+  "popupLoadFromSourceTitle": {
+    "message": "Загрузите список сайтов, которые всегда будут открываться через прокси"
+  },
+  "popupNewTabMessage": {
+    "message": "Новая вкладка"
+  },
+  "popupOr": {
+    "message": "или"
+  },
+  "popupProxyDisabled": {
+    "message": "прокси выключен"
+  },
+  "popupProxyInfoShowDetails": {
+    "message": "подробнее"
+  },
+  "popupProxyInfoTitle": {
+    "message": "Информация о прокси"
+  },
+  "popupProxyStatusError": {
+    "message": "не удалось установить соединение с прокси-сервером"
+  },
+  "popupProxyStatusOk": {
+    "message": "настройки прокси применены"
+  },
+  "popupTotalBlocked": {
+    "message": "Заблокированных сайтов"
+  },
+  "popupYourRegion": {
+    "message": "Ваш регион"
+  },
+  "privateBrowsingPermissionsRequiredMessage": {
+    "message": "Прокси отключён. Требуется разрешение на работу в приватных окнах →"
+  },
+  "privateBrowsingRequired": {
+    "message": "Разрешите работу расширения в приватных окнах"
+  },
+  "privateBrowsingRequiredDesc": {
+    "message": "Чтобы мы могли открывать для вас заблокированные сайты через прокси. В Firefox без этого никак."
+  },
+  "proxiedWebsitesEditorPageDesc": {
+    "message": "Вы можете вручную добавить до 1000 доменов, которые будут проксироваться расширением."
+  },
+  "proxiedWebsitesEditorPageTitle": {
+    "message": "Проксируемые сайты"
+  },
+  "proxiedWebsitesTitle": {
+    "message": "Проксируемые сайты"
+  },
+  "proxyConnectionIssuesMessage": {
+    "message": "Обнаружена проблема с сетью. Пожалуйста, обратитесь в чат поддержки и расскажите нам о проблеме, мы постараемся ее решить →"
+  },
+  "proxyOptionsStatusDesc": {
+    "message": "Можете попробовать отключить проксирование совсем или переключиться на свой прокси."
+  },
+  "proxyOptionsStatusTitle": {
+    "message": "Не удалось установить соединение с прокси-сервером"
+  },
+  "proxySettings": {
+    "message": "Настройки прокси"
+  },
+  "readMoreButton": {
+    "message": "Подробнее →"
+  },
+  "registrySelectRegionDesc": {
+    "message": "Вы можете выбрать регион, чтобы обходить блокировки специфичные для вашей страны. Выбор конкретной страны также отключает автоматическое определение вашей страны (на основе GeoIP), что полезно, если вы используете программное обеспечение, которое изменяет ваш реальный IP-адрес (например, VPN). Эта опция не меняет ваш прокси сервер."
+  },
+  "registrySelectRegionTitle": {
+    "message": "Регион для обхода блокировок"
+  },
+  "resetToDefaultDesc": {
+    "message": "Сбросить настройки к значениям по умолчанию и пересобрать PAC-файл для вашего текущего региона. Если у вас есть проблемы с доступом к заблокированным сайтам, то эта опция — ваш выбор."
+  },
+  "resetToDefaultTitle": {
+    "message": "Сбросить все настройки"
+  },
+  "saveChanges": {
+    "message": "Сохранить изменения"
+  },
+  "saveCustomProxyButton": {
+    "message": "Сохранить"
+  },
+  "showDebugInfoDesc": {
+    "message": "Показать отладочную информацию расширения."
+  },
+  "showDebugInfoTitle": {
+    "message": "Отладочная информация"
+  },
+  "showNotificationsDesc": {
+    "message": "Предупредим, когда какой-то сайт передаёт ваши сообщения, личные данные и весь трафик третьим лицам в автоматическом режиме."
+  },
+  "showNotificationsTitle": {
+    "message": "Показывать системные уведомления"
+  },
+  "siteActionAlwaysDesc": {
+    "message": "Всегда открывать этот сайт через прокси"
+  },
+  "siteActionAutoDesc": {
+    "message": "Открывать сайт через прокси, только если сайт окажется недоступен из-за блокировки"
+  },
+  "siteActionItemLabelAlways": {
+    "message": "Всегда"
+  },
+  "siteActionItemLabelAuto": {
+    "message": "Авто"
+  },
+  "siteActionItemLabelNever": {
+    "message": "Никогда"
+  },
+  "siteActionNeverDesc": {
+    "message": "Никогда не открывать этот сайт через прокси (даже если сайт окажется недоступен из-за блокировки)"
+  },
+  "siteActionTitle": {
+    "message": "Когда следует использовать прокси для открытия этого сайта?"
+  },
+  "supportBotLink": {
+    "message": "Бот поддержки в Telegram: @censortracker_support_bot"
+  },
+  "supportEmailLink": {
+    "message": "Или напишите нам на почту: support@censortracker.org"
+  },
+  "thankYou": {
+    "message": "Спасибо!"
+  },
+  "torNetworkTitle": {
+    "message": "Сайт в сети <span class=\"network__title-tor\"></span> Tor"
+  },
+  "turnOnExtensionToCheckWebsite": {
+    "message": "Включите, чтобы получить доступ к заблокированным сайтам."
+  },
+  "updateAvailableButtonTitle": {
+    "message": "Обновить"
+  },
+  "updateAvailableDesc": {
+    "message": "Доступна новая версия Censor Tracker. Пожалуйста, обновите расширение."
+  },
+  "updateAvailableTitle": {
+    "message": "Доступно обновление"
+  },
+  "updateLocalRegistryDesc": {
+    "message": "Обновить локальную базу данных для вашего региона."
+  },
+  "updateLocalRegistryTitle": {
+    "message": "Принудительно обновить локальную базу данных расширения"
+  },
+  "useLocalProxy": {
+    "message": "Локальный прокси Amnezia Premium"
+  },
+  "useProxy": {
+    "message": "Использовать прокси"
+  },
+  "useRegistry": {
+    "message": "Открывать сайты из реестра заблокированных сайтов"
+  },
+  "useRegistryDesc": {
+    "message": "Мы ведём реестры заблокированных сайтов, чтобы предоставлять к ним доступ через прокси. Если эта опция выключена, то будут проксироваться только сайты из вашего списка Проксируемых сайтов."
+  },
+  "whatThisMean": {
+    "message": "что это значит"
+  },
+  "moreAboutLocalProxy": {
+    "message": "Подробнее об Amnezia Premium VPN"
+  },
+  "moreAboutAmneziaPremium": {
+    "message": "https://storage.googleapis.com/amnezia/amnezia.org?m-path=premium"
+  },
+  "whereToFindAddressAndPort": {
+    "message": "Где найти адрес и порт"
+  },
+  "whereToFindAddressLink": {
+    "message": "https://storage.googleapis.com/amnezia/docs?m-path=/documentation/instructions/local-proxy"
+  },
+  "successLocalProxySet": {
+    "message": "Соединение установлено! Используется локальный прокси Amnezia Premium."
+  },
+  "consentTitle": {
+    "message": "Политика конфиденциальности Censor Tracker"
+  },
+  "consentIntro": {
+    "message": "Censor Tracker не собирает историю браузера и не отправляет данные о сайтах, которые вы открываете или которые у вас не открылись. В расширении нет аналитики, трекеров и идентификаторов пользователя. Сетевые функции работают только после вашего согласия. Если вы его отзовёте, запросы прекращаются, а прокси отключается."
+  },
+  "consentTraffic": {
+    "message": "Ваш трафик идёт через выбранный прокси: встроенный, ваш собственный или из подписки. Прокси видит ваш IP и адреса сайтов. HTTPS-соединения остаются зашифрованными, а незашифрованный HTTP-трафик прокси видит целиком. Логин и пароль прокси передаются только самому этому прокси."
+  },
+  "consentServices": {
+    "message": "Служебные запросы к серверам Censor Tracker нужны, чтобы определить страну и загрузить реестры блокировок, списки прокси и настройки. Серверы видят ваш IP и код страны. Часть реестров и список зеркал загружается с GitHub, и он тоже видит ваш IP. Зеркала могут добавлять другие служебные адреса. Чтобы проверить, что встроенный прокси доступен, расширение отправляет на него пинг напрямую с вашего IP."
+  },
+  "consentChecks": {
+    "message": "Проверка прокси идёт через сторонние сервисы: ipify, myip.com, ipwho.is, country.is и Cloudflare DNS. Они видят адрес прокси и IP, с которого выходит трафик."
+  },
+  "consentSources": {
+    "message": "Внешние списки (Антизапрет, anticensority), а также реестры и подписки, которые вы добавили сами, загружаются с их источников. Источники видят ваш IP. Включённые подписки обновляются в фоне."
+  },
+  "consentLocal": {
+    "message": "Доступность сайтов проверяется только на вашем устройстве: реестр скачивается целиком, и сведения о доменах никуда не отправляются."
+  },
+  "consentSourceTitle": {
+    "message": "Где проверить"
+  },
+  "consentSourceCode": {
+    "message": "Исходный код расширения открыт:"
+  },
+  "consentAccept": {
+    "message": "Согласиться"
+  },
+  "consentDecline": {
+    "message": "Отказаться"
+  },
+  "consentUninstall": {
+    "message": "Удалить расширение"
+  },
+  "consentReview": {
+    "message": "Условия согласия"
+  },
+  "consentRevoke": {
+    "message": "Отозвать согласие"
+  },
+  "consentGranted": {
+    "message": "Передача данных разрешена. Отзыв снимет настройку прокси CT; браузер может подключаться напрямую или через другой прокси."
+  },
+  "consentSummary": {
+    "message": "Для обхода ограничений Censor Tracker передаёт трафик через прокси и обновляет списки в фоне. Серверы CT не сохраняют данные пользователей и журналы прокси."
+  },
+  "consentSummaryDecline": {
+    "message": "Без согласия сетевые функции CT отключены. Браузер может подключаться напрямую или через другой прокси. Выбор можно изменить в настройках."
+  },
+  "consentDetails": {
+    "message": "Что и куда передаётся"
+  },
+  "consentPaused": {
+    "message": "Сетевые функции приостановлены до согласия. CT не направляет трафик через прокси; браузер может подключаться напрямую или через другой прокси."
+  },
+  "close": {
+    "message": "Закрыть"
+  },
+  "back": {
+    "message": "Назад"
+  },
+  "disableExtension": {
+    "message": "Выключить Censor Tracker"
+  },
+  "enableExtension": {
+    "message": "Включить Censor Tracker"
+  },
+  "searchPlaceholder": {
+    "message": "Поиск..."
+  }
+}

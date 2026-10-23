@@ -4,11 +4,13 @@
   </a>
 </p>
 
+<p align="center"><b>English</b> | <a href="README_RU.md">Русский</a></p>
+
 <p align="center">
- <b>Censor Tracker</b> is a powerful <strong>censorship circumvention</strong> browser extension.<br>
+ <b><a href="https://censortracker.org/">Censor Tracker</a></b> (<a href="https://storage.googleapis.com/amnezia/censortracker">mirror</a>) is a powerful <strong>censorship circumvention</strong> browser extension.<br>
 </p>
 
-<p align="center">It supports custom proxies and the local SOCKS5 proxy in <a href="https://amnezia.org/premium">Amnezia Premium</a>.</p>
+<p align="center">It supports custom proxies and the local SOCKS5 proxy in <a href="https://amnezia.org/premium">Amnezia Premium</a> (<a href="https://storage.googleapis.com/amnezia/amnezia.org?m-path=/premium">mirror</a>).</p>
 
 <p align="center">
   <a href="https://chrome.google.com/webstore/detail/censor-tracker/gaidoampbkcknofoejhnhbhbhhifgdop" target="_blank">
@@ -17,6 +19,10 @@
   <a href="https://addons.mozilla.org/ru/firefox/addon/censor-tracker/" target="_blank">
       <img src="https://img.shields.io/amo/v/censor-tracker" alt="Test">
   </a>
+</p>
+
+<p align="center">
+  <img src=".github/media/censortracker_popup_en.png" alt="Censor Tracker popup">
 </p>
 
 
@@ -31,7 +37,7 @@ Censor Tracker offers a range of useful features, including:
 - Proxy imports from text, files, URLs and PAC files
 - Built-in resistance to censorship
 - Warnings for websites that share user data with third parties
-- Support for the [Amnezia Premium](https://amnezia.org/premium) local proxy (enable **Local system proxy** in AmneziaVPN)
+- Support for the [Amnezia Premium](https://amnezia.org/premium) ([mirror](https://storage.googleapis.com/amnezia/amnezia.org?m-path=/premium)) local proxy (enable **Local system proxy** in AmneziaVPN)
 
 Permissions
 ===========

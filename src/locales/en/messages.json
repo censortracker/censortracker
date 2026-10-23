@@ -928,37 +928,31 @@
     "message": "Connected! Using Amnezia Premium local proxy."
   },
   "consentTitle": {
-    "message": "Censor Tracker: data transmission"
+    "message": "Censor Tracker Privacy Policy"
   },
   "consentIntro": {
-    "message": "Consent covers the connections below. Optional features connect only when enabled or requested."
+    "message": "Censor Tracker does not collect your browser history and does not send data about sites that you open or that failed to open. The extension has no analytics, trackers or user IDs. Network functions work only after you give consent. If you withdraw it, requests stop and the proxy is turned off."
   },
   "consentTraffic": {
-    "message": "Selected proxy: your IP, destination domains and routed traffic. HTTPS content stays encrypted; HTTP content is visible to the proxy. Saved proxy credentials go only to that proxy."
+    "message": "Your traffic goes through the selected proxy: built-in, your own or from a subscription. The proxy sees your IP and site addresses. HTTPS connections stay encrypted, but the proxy sees unencrypted HTTP traffic in full. Proxy login and password go only to that proxy."
   },
   "consentServices": {
-    "message": "CT services: your IP and requests for your country, proxy lists and site registries. Hosts: geo.ctreserve.de, registry.ctreserve.de, cozyquokka.net, censortracker.github.io and configured mirrors. raw.githubusercontent.com supplies the mirror list. The built-in proxy also receives availability checks from your IP."
+    "message": "Service requests to Censor Tracker servers are necessary to identify your country and download block registries, proxy lists and settings. The servers see your IP and country code. Some registries and the mirror list are downloaded from GitHub, which also sees your IP. Mirrors can add other service addresses. To check that the built-in proxy is available, the extension pings it directly from your IP."
   },
   "consentChecks": {
-    "message": "Proxy checks: api.ipify.org, api.myip.com, ipwho.is and api.country.is see the test connection IP. cloudflare-dns.com receives the proxy hostname; api.country.is receives its server and exit IPs to identify countries. These lookups do not send visited site domains."
+    "message": "Proxy checks use third-party services: ipify, myip.com, ipwho.is, country.is and Cloudflare DNS. They see the proxy address and the IP that traffic exits from."
   },
   "consentSources": {
-    "message": "External lists: your IP and the address of the list file being downloaded go to your selected source. Addresses of sites you visit are not sent. Built-in sources: raw.githubusercontent.com/anticensority, p.thenewone.lol:8443 and antizapret.prostovpn.org. Enabled subscriptions update in the background."
+    "message": "External lists (Antizapret, anticensority), and registries and subscriptions that you added, are downloaded from their sources. The sources see your IP. Enabled subscriptions update in the background."
   },
   "consentLocal": {
-    "message": "Local proxy: status, start and stop commands go to localhost:49490. The local app handles traffic in this mode."
+    "message": "Site availability is checked only on your device: the full registry is downloaded, and no domain data is sent anywhere."
   },
-  "consentRetention": {
-    "message": "The operator states that CT servers store no user data, CT proxies keep no logs, and CT uses no tracking IDs."
+  "consentSourceTitle": {
+    "message": "Where to verify"
   },
-  "consentThirdParties": {
-    "message": "Third-party services and custom proxies have their own data practices. These statements do not cover them. A proxy does not guarantee anonymity."
-  },
-  "consentPause": {
-    "message": "Declining or withdrawing consent stops CT network functions and removes its proxy setting. The browser may connect directly or use another proxy. Your settings and lists stay saved."
-  },
-  "consentControl": {
-    "message": "You can withdraw consent in Settings. Withdrawing consent stops further data transfer but does not undo processing that already took place; existing browser connections may remain open."
+  "consentSourceCode": {
+    "message": "The extension source code is open:"
   },
   "consentAccept": {
     "message": "Agree"

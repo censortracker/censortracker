@@ -10,6 +10,8 @@ import type { PageView } from '../routes'
 import consentStyles from '../styles/consent.module.scss'
 import styles from '../styles/options.module.scss'
 
+const REPOSITORY_URL = 'https://github.com/censortracker/censortracker'
+
 export const ConsentPage = () => {
   const { busy, error, run } = useAction()
   const consent = (accepted: boolean) => run(async () => {
@@ -29,17 +31,20 @@ export const ConsentPage = () => {
         </div>)}
     </section>
     <section class={styles['options-page-card']}>
-      <h2 class={styles.block__title}>{getMessage('consentDetails')}</h2>
       <p class={styles.disclaimer__text}>{getMessage('consentIntro')}</p>
+      <h2 class={styles.block__title}>{getMessage('consentDetails')}</h2>
       <ul class={styles.disclaimer__text}>
-        {['Traffic', 'Services', 'Checks', 'Sources', 'Local'].map((key) =>
+        {['Traffic', 'Services', 'Checks', 'Sources'].map((key) =>
           <li key={key}>{getMessage(`consent${key}`)}</li>)}
       </ul>
-      <p class={styles.disclaimer__text}>{getMessage('consentRetention')}</p>
-      <p class={styles.disclaimer__text}>{getMessage('consentThirdParties')}</p>
+      <p class={styles.disclaimer__text}>{getMessage('consentLocal')}</p>
+      <h2 class={styles.block__title}>{getMessage('consentSourceTitle')}</h2>
+      <p class={styles.disclaimer__text}>{getMessage('consentSourceCode')}{' '}
+        <a class={consentStyles['notice-link']} href={REPOSITORY_URL} target="_blank">
+          {REPOSITORY_URL}
+        </a>
+      </p>
     </section>
-    <p class={styles.disclaimer__text}>{getMessage('consentPause')}</p>
-    <p class={styles.disclaimer__text}>{getMessage('consentControl')}</p>
     <div class={consentStyles['consent-actions']}>
       <Button id="acceptConsent" disabled={busy} onClick={() => consent(true)}>
         {getMessage('consentAccept')}

@@ -28,7 +28,7 @@
         in
         {
           default = pkgs.mkShell {
-            packages = [ pkgs.nodejs_24 chromium-latest firefox-latest chromium-min firefox-min ];
+            packages = [ pkgs.nodejs_24 pkgs.gnumake chromium-latest firefox-latest chromium-min firefox-min ];
             # Browser tests read these variables.
             CHROMIUM = "${chromium-latest}/bin/chromium-latest";
             FIREFOX = "${firefox-latest}/bin/firefox-latest";

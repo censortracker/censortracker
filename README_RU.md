@@ -71,7 +71,9 @@ Censor Tracker запрашивает следующие разрешения:
 
 Также может пригодиться:
 
-- [`nvm`](https://github.com/nvm-sh/nvm)
+- [nvm](https://github.com/nvm-sh/nvm)
+- [Nix](https://nixos.org/): `nix develop` (или `direnv allow`) даёт Node.js и
+  `chromium-latest`, `chromium-min`, `firefox-latest`, `firefox-min` для браузерных тестов
 
 Сначала установите зависимости:
 

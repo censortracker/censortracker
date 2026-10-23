@@ -73,7 +73,9 @@ Use Node.js 24.15.0 or higher and the npm version included with it.
 
 Optionally, you may like:
 
-- [`nvm`](https://github.com/nvm-sh/nvm)
+- [nvm](https://github.com/nvm-sh/nvm)
+- [Nix](https://nixos.org/): `nix develop` (or `direnv allow`) gives Node.js and
+  `chromium-latest`, `chromium-min`, `firefox-latest`, `firefox-min` for browser tests
 
 Firstly, you will need to install dependencies:
 

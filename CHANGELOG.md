@@ -1,4 +1,4 @@
-# Unreleased (21.0.0)
+# 21.0.0
 
 - Added a consent page before extension data transmission, with controls to review or withdraw consent in settings and the popup. Rewrote the privacy policy text.
 - Added notices after installation and updates, with a support link and saved dismissal state. Notices appear before the consent page and in the popup.

@@ -29,15 +29,21 @@
 Features
 ========
 
-Censor Tracker offers a range of useful features, including:
+Censor Tracker is an extension that bypasses internet restrictions. It helps you open restricted sites and warns you about sites that share data with government agencies. It works in Russia, Ukraine, Belarus, Kazakhstan, Kyrgyzstan, Uzbekistan, Azerbaijan, Georgia, Turkey and other countries.
 
-- Built-in and custom HTTP, HTTPS, SOCKS4 and SOCKS5 proxies
-- Country-specific proxy routing
-- Customizable proxy and exclusion lists
-- Proxy imports from text, files, URLs and PAC files
-- Built-in resistance to censorship
-- Warnings for websites that share user data with third parties
-- Support for the [Amnezia Premium](https://amnezia.org/premium) ([mirror](https://storage.googleapis.com/amnezia/amnezia.org?m-path=/premium)) local proxy (enable **Local system proxy** in AmneziaVPN)
+With the extension, you can:
+
+- Bypass restrictions, including DPI-based blocking
+- Hide your IP from the sites you visit with built-in proxy servers
+- Add your own proxies and proxy list subscriptions
+- Use the extension together with the [Amnezia VPN](https://amnezia.org/premium) ([mirror](https://storage.googleapis.com/amnezia/amnezia.org?m-path=/premium)) app (Premium) with the "Amnezia Local Proxy" option
+- Manage your own lists of sites to open through a proxy
+- Learn about sites that share your data with third parties (Russia only)
+- Open `*.onion` and `*.i2p` sites without additional software
+
+Censor Tracker does not collect your browser history and does not send data about the sites you open. It has no analytics or trackers. Network functions turn on only after you give consent. For details, see the [privacy policy](https://github.com/censortracker/censortracker/wiki/Privacy-Policy).
+
+If something does not work, try to reinstall the extension or contact support on Telegram: [@censortracker_support_bot](https://t.me/censortracker_support_bot) or by email: support@censortracker.org
 
 Permissions
 ===========

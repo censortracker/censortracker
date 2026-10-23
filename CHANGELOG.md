@@ -1,19 +1,21 @@
 # Unreleased (21.0.0)
 
-- Added a consent page before extension data transmission, with controls to review or withdraw consent in settings and the popup.
+- Added a consent page before extension data transmission, with controls to review or withdraw consent in settings and the popup. Rewrote the privacy policy text.
 - Added notices after installation and updates, with a support link and saved dismissal state. Notices appear before the consent page and in the popup.
 - Ported Amnezia Premium local proxy support with dynamic ports, connection checks, recovery and updated settings.
 - Added a shared list for built-in and custom proxies, site distribution, failover and proxy authentication.
 - Added proxy imports, optional subscriptions, parallel checks, filtering, sorting and bulk deletion.
+- Added proxy check retries and failure reasons. The health flag now shows the selected proxy availability.
 - Added site exit-country restrictions; local addresses and exclusions stay direct. Removed the proxy-all switch from settings.
 - Added external registries, Anticensority hostname lists and Antizapret proxies limited to provider-listed domains.
 - Merged regional, custom and optional API domain lists with separate caches. Added registry load status and redirect support.
-- Added automatic API mirror updates and a backup mirror for the Russian registry.
-- Improved domain lookup performance for large registries.
+- Added automatic API mirror updates, backup and storage mirrors for the Russian registry, and an FAQ mirror link.
+- Added ETag caching for downloads, decreased background task frequency to 60 minutes and increased the service request timeout to 60 seconds.
+- Improved domain lookup performance for large registries and cached the domain index in IndexedDB.
 - Added planned route details, last checked exit information and related page domain selection to the popup.
 - Added validated settings imports and exports, including legacy and avatarDD fork backups.
 - Fixed restoration of registry and proxy recovery settings from backups, including external registry reloads. Kept the latest registry selection when requests finish out of order.
-- Fixed settings reset to restore all user settings before synchronization.
+- Fixed settings reset to restore all user settings before synchronization, also without granted permissions.
 - Fixed hostname matching, proxy endpoint validation, stale routing updates and recovery of failed proxies.
 - Added built-in service endpoints and direct requests with proxy fallback.
 - Fixed port knocks to use a temporary direct route, including in proxy-all mode.
@@ -24,8 +26,12 @@
 - Added an interface language selector for English, Russian and Ukrainian, with English fallback for missing translations.
 - Fixed translations, popup layout and dark theme styles. Removed unused translation keys and updated support links to blockedin.org.
 - Added an animated Easter egg.
+- Migrated the build from webpack and JavaScript to WXT and TypeScript. Page logic now runs in the background, with one bundle per page.
+- Cleaned up styles, optimized assets and tightened lint, type and CSP configuration.
 - Updated dependencies and the domain editor; added tests, current lint tools and CI build artifacts.
 - Made production bundles and release archives reproducible.
+- Actualized README and images in it.
+- Added direnv Nix based development shell.
 
 Special thanks to [@avatarDD fork](https://github.com/avatarDD/censortracker) for some feature inspirations!
 

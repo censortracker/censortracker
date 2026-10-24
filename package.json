@@ -37,7 +37,7 @@
     "axios": "^1.20.0",
     "preact": "^11.0.1",
     "preact-router": "4.1.2",
-    "tldts": "^7.4.12",
+    "tldts": "^7.4.18",
     "validator": "^13.15.35"
   },
   "devDependencies": {

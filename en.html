@@ -107,7 +107,7 @@
             <div class="mb-5">
                 <h3>We will check if the website is banned</h3>
                 <p class="text-secondary">Censor Tracker team monitors the register of websites being banned in World.
-                    Currently have over 400,000 URLs in our list (and that's just sites from Russia). 
+                    Currently have over 700,000 URLs in our list (and that's just sites from Russia). 
                     We also maintain registries of blocked sites in many other countries - <b>Kazakhstan</b>, <b>Ukraine</b>, <b>Belarus</b>, <b>Azerbaijan</b>, <b>Turkey</b>.</p>
             </div>
 
@@ -157,11 +157,13 @@
 
             <div id="collapse13" class="collapse" aria-labelledby="heading13" data-parent="#accordionExample">
                 <div class="card-body  text-secondary">
-                    The Censor Tracker extension can only be downloaded <b>from official extension stores</b> <a href="https://addons.mozilla.org/en-US/firefox/addon/censor-tracker/">Mozilla Addons</a> and 
-                   <a href="https://chrome.google.com/webstore/detail/censor-tracker-%E2%80%93-proxy-fo/gaidoampbkcknofoejhnhbhbhhifgdop">Google Web Store</a>, and can also alternatively be set with the <a href="https://github.com/censortracker/censortracker/releases">Zip</a> from GitHub.
-                   <br>
-                   <br>
-                   The Censor Tracker Team <b>does not recommend</b> that you install an extension from sources other than those listed above, and we are not responsible for the functionality and security of extensions found on other sites.
+                    Install Censor Tracker only from official sources:
+                    <ul>
+                        <li><a href="https://addons.mozilla.org/en-US/firefox/addon/censor-tracker/" target="_blank">Firefox Browser Add-ons</a> — for Firefox;</li>
+                        <li><a href="https://chromewebstore.google.com/detail/gaidoampbkcknofoejhnhbhbhhifgdop" target="_blank">Chrome Web Store</a> — for Chrome, Edge, Brave, Opera, Yandex Browser and other Chromium-based browsers;</li>
+                        <li><a href="https://github.com/censortracker/censortracker/releases" target="_blank">GitHub releases page</a> — archives for manual installation if the store is not available.</li>
+                    </ul>
+                    Copies of the extension from other sites can be modified, so the Censor Tracker team cannot be responsible for how they work or for their security.
                 </div>
             </div>
         </div>
@@ -177,21 +179,23 @@
 
             <div id="collapse0" class="collapse" aria-labelledby="heading0" data-parent="#accordionExample">
                 <div class="card-body  text-secondary">
-                    If you want to access a blocked resource, and you are in a country for which we do not have a database of sites, you can get access in 2 ways:
-                    <ul class="lead list-unstyled">
-                        <h3>The first way:</h3>
-                        <li>1. Click on the extension icon &mdash;&gt; click the settings button in the upper right corner of the new window &mdash;&gt; go to <code>"Proxying List"</code> -> 
-                            enter the desired domain in the input field &mdash;&gt; press Enter to save your changes.</li>
-                        <li>2. Done, the site is added to the "Forced proxy list" and you can access it through a reliable proxy.</li>
-                    </ul>
-                    <ul class="lead list-unstyled">
-                        <h3>The second way:</h3>
-                        <li>1. Click on extension icon &mdash;&gt; click on <kbd class="spec-symbol"> ⁝ </kbd> &mdash;&gt; choose <code>"Always"</code> mode to always proxy this site &mdash;&gt; reload the page</li>
-                        <li>2. Done, the site is added to the "Forced proxy list" and you can access it through a reliable proxy.</li>
-                    </ul>   
-                    </br>
-                    <p>If nothing from above helped you to fix the problem, please get in touch <a href="https://t.me/CensorTracker_feedback"
-                        target="_blank">with us</a>!</p>
+                    <p>Censor Tracker automatically opens sites from the registry of blocked sites for your region through a proxy. Sites that are slowed down or blocked outside the registry (for example, YouTube and Telegram in Russia) are not in the registry, so you must add them manually.</p>
+                    <p>Large sites load content from several addresses. For example, the YouTube page comes from <code>youtube.com</code>, but thumbnails and videos come from <code>ytimg.com</code> and <code>googlevideo.com</code>. So you add a site in two steps: first the main address, so that the page opens, then the related addresses, so that images and videos load.</p>
+                    <b>Step 1. The main address of the site</b>
+                    <ol>
+                        <li>Open the extension settings —&gt; <kbd>Proxying List</kbd>.</li>
+                        <li>Enter the main address of the site without <code>https://</code> and <code>www</code> — for example, <code>youtube.com</code>. Subdomains are included automatically: <code>youtube.com</code> covers <code>www.youtube.com</code> and <code>m.youtube.com</code>.</li>
+                        <li>Click <kbd>Save changes</kbd>.</li>
+                    </ol>
+                    <b>Step 2. Related addresses</b>
+                    <ol>
+                        <li>Open the site and wait until the page fully loads. If the site has a video, start it, so that the browser connects to the video servers.</li>
+                        <li>Click the Censor Tracker icon, then click <kbd>⁝</kbd> next to the site address.</li>
+                        <li>Expand <kbd>Related CDN/API domains</kbd> and click <kbd>Find domains</kbd>.</li>
+                        <li>Select the addresses that belong to the site and click <kbd>Proxy selected domains</kbd>.</li>
+                        <li>Reload the page.</li>
+                    </ol>
+                    <p>The extension looks for addresses among the resources that the page has already loaded, so step 2 works only after the site opens. Usually you need the addresses that contain the name of the site or its owner.</p>
                 </div>
             </div>
         </div>
@@ -207,7 +211,22 @@
 
             <div id="collapse1" class="collapse" aria-labelledby="heading1" data-parent="#accordionExample">
                 <div class="card-body  text-secondary">
-                    Please check the version of your browser, the extension supports <kbd>Firefox 98+</kbd> and <kbd>Google Chrome 94+</kbd>.
+                    <p>Most problems are solved by one of the steps below. After each step, check if the site opens. Go to the next step only if it does not.</p>
+                    <p>If YouTube, Telegram or other sites that are slowed down outside the registry do not open, add them to the extension manually. See <a href="#heading0">How do I get to a blocked site?</a></p>
+                    <p>To open the extension settings, click the Censor Tracker icon in the browser toolbar —&gt; click the gear in the upper right corner of the window.</p>
+                    <ol>
+                        <li><b>Browser version.</b> The extension works in Google Chrome 108 and later (and in browsers based on it) and in Firefox 91.1 and later. The latest browser version is best.</li>
+                        <li><b>Permission to run in private windows (Firefox only).</b> Without this permission, Firefox does not let the extension control the proxy (<a href="https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/proxy/settings" target="_blank">more on the Firefox developer site</a>).
+                            To allow it: open <code>about:addons</code> —&gt; <kbd>Extensions</kbd> —&gt; Censor Tracker —&gt; <kbd>Details</kbd> tab —&gt; set <kbd>Run in Private Windows</kbd> to <kbd>Allow</kbd>.</li>
+                        <li><b>Other VPN and proxy extensions.</b> Only one extension can control the proxy in the browser, so Censor Tracker does not work together with other extensions that bypass blocking. Disable them in the browser settings — <code>chrome://extensions</code> in Chrome, <code>about:addons</code> in Firefox. The off button inside the other extension is not sufficient: an extension that is turned off this way can still keep control of the proxy. After you disable them, restart the browser. Also disable the VPN client on your device while you check: with it, the extension can detect the wrong country.</li>
+                        <li><b>Antivirus.</b> Antivirus software that inspects HTTPS traffic can interfere with the proxy. Disable the HTTPS inspection module in the antivirus. If there is no such setting, check if it helps to temporarily disable the antivirus.</li>
+                        <li><b>Region.</b> The extension detects your country automatically and can make a mistake, especially when a VPN is on. You can select the region manually: settings —&gt; <kbd>Region</kbd>.</li>
+                        <li><b>Database update.</b> Settings —&gt; <kbd>Advanced Options</kbd> —&gt; <kbd>Force update the extension's local database</kbd>. You must do this step after you change the region: without it, the list of blocked sites stays the same.</li>
+                        <li><b>Proxy check.</b> Settings —&gt; <kbd>Proxy Settings</kbd> —&gt; expand <kbd>Manage proxies</kbd> —&gt; below, expand <kbd>Check proxies</kbd> —&gt; <kbd>Check selected</kbd>. After a few seconds, the <kbd>Last check</kbd> column shows the result: <kbd>Available</kbd> — the server responds, <kbd>Check failed</kbd> — the server is not available, and you should <a href="https://t.me/censortracker_support_bot" target="_blank">contact us</a>.</li>
+                        <li><b>Reset settings.</b> Settings —&gt; <kbd>Advanced Options</kbd> —&gt; <kbd>Reset to default</kbd>. If you added your own sites, save them first with <kbd>Export Settings</kbd>, and after the reset restore them with <kbd>Import Settings</kbd>.</li>
+                        <li><b>Reinstall.</b> Sometimes after an extension update, only a reinstall helps.</li>
+                    </ol>
+                    <p>If nothing from above helped, <a href="https://t.me/censortracker_support_bot" target="_blank">contact us</a> — we will help you solve the problem.</p>
                 </div>
             </div>
         </div>
@@ -293,8 +312,53 @@
             </div>
             <div id="collapse6" class="collapse" aria-labelledby="heading6" data-parent="#accordionExample">
                 <div class="card-body  text-secondary">
-                    Yes, we have a <a href="https://t.me/CensorTracker_feedback" target="_blank">Telegram chat</a>
-                    dedicated to the discussion of the issues discovered and reported by our users, and to the discussion of the operation of our extension.
+                    Yes. You can use these channels:
+                    <ul>
+                        <li>support bot in Telegram — <a href="https://t.me/censortracker_support_bot" target="_blank">@censortracker_support_bot</a>;</li>
+                        <li>email — <a href="mailto:support@censortracker.org">support@censortracker.org</a>;</li>
+                        <li><a href="https://t.me/censortracker_feedback" target="_blank">community chat in Telegram</a> — for questions to the community and discussion of the extension.</li>
+                    </ul>
+                    To help us solve the problem faster, include:
+                    <ol>
+                        <li>The browser name and version.</li>
+                        <li>Which site does not open and what happens: an error, endless loading, a page without images or videos.</li>
+                        <li>The extension debug information: settings —&gt; <kbd>Advanced Options</kbd> —&gt; <kbd>Debug information</kbd> —&gt; <kbd>Copy</kbd>. It has no browsing history or passwords — only the extension settings and state. Site addresses in error messages are hidden.</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header bg-transparent" id="heading9">
+                <h2 class="mb-0">
+                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse"
+                            data-target="#collapse9" aria-expanded="false" aria-controls="collapse9">
+                            Can I upload my own list of sites to proxy?
+                    </button>
+                </h2>
+            </div>
+            <div id="collapse9" class="collapse" aria-labelledby="heading9" data-parent="#accordionExample">
+                <div class="card-body  text-secondary">
+                    <p>Yes, in two ways — it depends on the size of the list.</p>
+                    <b>Small list — up to 1,000 domains</b>
+                    <p>Settings —&gt; <kbd>Proxying List</kbd> —&gt; <kbd>Load from a file or URL</kbd>. You can select a text file on your device or enter a link to a file on the internet — for example, on <a href="https://gist.github.com/" target="_blank">GitHub Gist</a>. The domains are added to the list. Then click <kbd>Save changes</kbd>.</p>
+                    List requirements:
+                    <ul>
+                        <li>one domain on each line;</li>
+                        <li>not more than 1,000 domains in the list, including the domains that are already added;</li>
+                        <li>for upload from a device — a text file of up to 64 KB.</li>
+                    </ul>
+                    <p>Duplicate domains are removed automatically.</p>
+                    <b>Large list — up to 1,000,000 domains</b>
+                    <p>Settings —&gt; <kbd>Region</kbd> —&gt; <kbd>External registry (optional)</kbd>:</p>
+                    <ol>
+                        <li>In <kbd>Source</kbd>, select <kbd>Custom hostname list</kbd>.</li>
+                        <li>In <kbd>Registry URL</kbd>, enter the link to the list.</li>
+                        <li>Select <kbd>Use this downloaded list</kbd>.</li>
+                        <li>Optionally, select <kbd>Update automatically with the registry</kbd> — then the list updates every 15 minutes while the extension and the proxy are on.</li>
+                        <li>Click <kbd>Save and download now</kbd>.</li>
+                    </ol>
+                    <p>You can use a text list with one domain on each line, a JSON array or a JSON object with a <code>domains</code> array. Limits: 32 MB and 30 seconds for the download. The external registry adds to the built-in registry, it does not replace it. If the download fails, the extension keeps the last valid list.</p>
+                    <p>The list is downloaded from your device, so the owner of the source can see your IP address. Use sources that you trust.</p>
                 </div>
             </div>
         </div>

@@ -243,6 +243,10 @@ hr {
     display: block !important;
 }
 
+.browsers .col {
+    break-inside: avoid;
+}
+
 @media (max-width: 400px) {
     .ml-md-0, .mx-md-0 {
         margin-right: 0.5rem !important;

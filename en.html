@@ -232,24 +232,6 @@
             </div>
         </div>
         <div class="card">
-            <div class="card-header bg-transparent" id="heading2">
-                <h2 class="mb-0">
-                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse"
-                            data-target="#collapse2" aria-expanded="false" aria-controls="collapse2">
-                            Can I use my own proxy server?
-                    </button>
-                </h2>
-            </div>
-            <div id="collapse2" class="collapse" aria-labelledby="heading2" data-parent="#accordionExample">
-                <div class="card-body  text-secondary">
-                    Yes, the extension allows you to do so.
-                    To use your own proxy server, please click the extension button in your browser —> click the settings button in the upper right corner of the new window —> Proxy settings.
-                    The extension supports only proxies using HTTPS. The correct input looks like this: in the first window please enter the <code>username:password@hostname</code>,
-                    in the second please enter the port.
-                </div>
-            </div>
-        </div>
-        <div class="card">
             <div class="card-header bg-transparent" id="heading3">
                 <h2 class="mb-0">
                     <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse"
@@ -277,28 +259,6 @@
             <div id="collapse4" class="collapse" aria-labelledby="heading4" data-parent="#accordionExample">
                 <div class="card-body  text-secondary">
                     It is ok, our servers are based in the EU, including Germany.
-                </div>
-            </div>
-        </div>
-        <div class="card">
-            <div class="card-header bg-transparent" id="heading5">
-                <h2 class="mb-0">
-                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse"
-                            data-target="#collapse5" aria-expanded="false" aria-controls="collapse5">
-                            Can I use Censor Tracker on my mobile?
-                    </button>
-                </h2>
-            </div>
-            <div id="collapse5" class="collapse" aria-labelledby="heading5" data-parent="#accordionExample">
-                <div class="card-body  text-secondary">
-                    At the moment, the main browsers for mobile devices (Chrome for Android and Safari for iOS) do not support the extension.
-                    We cannot take responsibility and recommend users third-party browsers which support it.
-                    </br>
-                    </br>
-                    Censor Tracker is a proxy extension specifically for web browsers, not a VPN. We do not plan to add VPN function to the Censor Tracker yet. If you need a good VPN,
-                    you can use the website <a href="https://vpnlove.me/">VPN Love</a> to choose a reliable ISP (Internet Service Provider or install <a href="https://ru.amnezia.org/">AmneziaVPN</a>,
-                    which is a graduate of the Privacy Accelerator (organized by our experts).
-
                 </div>
             </div>
         </div>
@@ -360,56 +320,6 @@
                     </ol>
                     <p>You can use a text list with one domain on each line, a JSON array or a JSON object with a <code>domains</code> array. Limits: 32 MB and 30 seconds for the download. The external registry adds to the built-in registry, it does not replace it. If the download fails, the extension keeps the last valid list.</p>
                     <p>The list is downloaded from your device, so the owner of the source can see your IP address. Use sources that you trust.</p>
-                </div>
-            </div>
-        </div>
-        <div class="card">
-            <div class="card-header bg-transparent" id="heading8">
-                <h2 class="mb-0">
-                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse"
-                            data-target="#collapse8" aria-expanded="false" aria-controls="collapse8">
-                            What are alternative ways to install the extension?
-                    </button>
-                </h2>
-            </div>
-            <div id="collapse8" class="collapse" aria-labelledby="heading8" data-parent="#accordionExample">
-                <div class="card-body  text-secondary">
-                    You can use the <a href="https://github.com/censortracker/censortracker/releases">GitHub repository</a> to install the extension.
-                    <ul class="lead list-unstyled">
-                        <h3>Install the extension in Firefox</h3>
-                        <li>1. Download <a href="https://github.com/censortracker/censortracker/releases">the latest archive</a> with the extension from our GitHub repository.</li>
-                        <img src="./guide/ff/archive.JPG" alt="Archive with extension" />
-                        <li>2. Unzip the Extension into a new folder.</li>
-                        <img class="en-instr-1" src="./guide/ff/en/1.png" alt="Unzip the extension" />
-                        <li>3. Open a <code>"New Tab"</code> and go to this address: <code>about:debugging#/runtime/this-firefox</code>.</li>
-                        <li>4. Next, click the <kbd>Download temporary add-on button</kbd>.</li>
-                        <img class="en-instr-2" src="/guide/ff/en/2.png" alt="Installing inside the browser" />
-                        <li>5. Go to the folder where you unpacked the extension and select the <code>manifest.json</code>.</li>
-                        <img class="en-instr-2" src="./guide/ff/en/3.png" alt="Installing inside the browser" />
-                        <li>Ready! You can use the extension.</li>
-                        <li>*You will need to do this every time you start the browser.</li>
-                    </ul>
-                    <ul class="lead list-unstyled">
-                        <h3>Install the extension in Google Chrome</h3>
-                        <li>1. Download <a href="https://github.com/censortracker/censortracker/releases"> the latest archive</a> with the extension from our GitHub repository.</li>
-                        <img src="./guide/gc/archive.JPG" alt="Archive with extension" />
-                        <li>2. Unzip the Extension into a new folder.</li>
-                        <img class="en-instr-2" src="./guide/gc/en/1.png" alt="Unzip the extension" />
-                        <li>3. Open a <code>"New Tab"</code> and go to this address: <code>chrome://extensions</code>.</li>
-                        <li>4. In the upper right corner, turn on <code>"Developer Mode"</code>.</li>
-                        <img class="en-instr-2" src="./guide/gc/en/2.png" alt="Developer Mode" />
-                        <li>5. Next, click on the button <kbd>Download the unpacked file</kbd>.</li>
-                        <li>6. Select the folder where you unzipped the extension.</li>
-                        <img class="en-instr-2" src="./guide/gc/en/3.png" alt="Installing inside the browser" />
-                        <li>Ready! You can use the extension.</li>
-                    </ul>
-                    <!--
-                    <ul class="lead list-unstyled">
-                        <h3>Установка расширения с сайта Censor Tracker</h3>
-                        <li>Вы можете перейти по этой ссылке и установка начнется сама, вам только нужно будет следовать указанным там инструкциям.</li>
-                        <li>Также вы можете подняться наверх страницы и увидеть кнопку для установки в ваш браузер.</li>
-                    </ul>
-                    -->
                 </div>
             </div>
         </div>

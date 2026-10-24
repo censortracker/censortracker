@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="uk">
+
+<head>
+    <meta charset="utf-8">
+    <title>Censor Tracker | Розширення для обходу цензури</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Censor Tracker | Розширення для обходу цензури">
+    <meta name="keywords" content="обхід блокувань, зайти на заблокований сайт, censortracker, цензор трекер, зайти на заборонений сайт,
+                                   обійти блокування, цензура, проксі, обхід цензури, розширення для браузера, розблокування">
+    <meta property="og:type" content="website"/>
+    <meta property="og:title" content="Censor Tracker"/>
+    <meta property="og:url" content="https://censortracker.org/uk.html"/>
+    <meta property="og:image" content="https://censortracker.org/static/img/preview.png" />
+    <meta property="og:site_name" content="Censor Tracker">
+    <meta property="og:description" content="Розширення для обходу цензури" />
+    <meta name="twitter:title" content="Censor Tracker"/>
+    <meta name="twitter:description" content="Розширення для обходу цензури" />
+    <meta name="twitter:image" content="https://censortracker.org/static/img/preview.png" />
+    <meta name="twitter:card" content="summary_large_image"/>
+
+    <link rel="shortcut icon" href="/static/img/favicon.ico" type="image/x-icon">
+
+    <!-- Bootstrap core CSS -->
+    <link href="static/css/bootstrap.min.css" rel="stylesheet">
+
+    <!--Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+
+    <link href="static/css/styles.css" rel="stylesheet">
+    <script defer data-domain="censortracker.org" src="https://a-pl.censortracker.org/js/script.js"></script>
+
+    <!-- SEO -->
+    <script type='application/ld+json'>
+        {
+          "@context": "https://schema.org",
+          "@type": "Organization",
+           "name": "Censor Tracker",
+           "url": "https://censortracker.org/",
+           "logo": "https://censortracker.org/static/img/preview.png"
+         }
+    </script>
+
+</head>
+
+<body>
+<nav class="container nav-content pt-3 ">
+    <div>
+        <a class="navbar-quokka" href="/">
+            <img src="static/img/quokka_nav.svg" class="vertical" alt="Логотип розширення" />
+        </a>
+    </div>
+    <div>
+        <a class="floating-link s-version" href="index.html">RU</a>
+        <a class="floating-link s-version" href="en.html">EN</a>
+    </div>
+</nav>
+
+<section class="container pb-5 pl-md-5">
+    <div class="row">
+        <div class="col-lg-6 order-lg-2 text-center">
+            <img src="static/img/quokka_big.svg" class="image-big" alt="Звірятко з логотипа" />
+            <small class="floating-link"><a href="https://uk.wikipedia.org/wiki/%D0%9A%D0%B2%D0%BE%D0%BA%D0%B0"
+                                            target="_blank">Квока</a></small>
+        </div>
+        <div class="col-lg-6 order-lg-1 text-center text-md-left pt-md-5">
+            <h1 class="mt-5">Censor Tracker</h1>
+            <p class="lead">Розширення для обходу цензури та виявлення сайтів, які стежать за вами. Ми не
+                заробляємо на наших користувачах і не зазираємо у ваш трафік.</p>
+            <ul class="lead list-unstyled">
+                <li>
+                    <a href="https://chromewebstore.google.com/detail/gaidoampbkcknofoejhnhbhbhhifgdop"
+                       target="_blank">
+                        <button class="btn btn-lg btn-primary download-btn">
+                            <img src="static/img/chrome.svg" alt="Магазин Google, де розширення доступне для встановлення" />
+                            Встановити в Chrome
+                        </button>
+                    </a>
+                </li>
+                <li>
+                    <a href="https://addons.mozilla.org/uk/firefox/addon/censor-tracker/" target="_blank">
+                        <button class="btn btn-lg btn-primary download-btn">
+                            <img width="31" height="28" src="static/img/ff.svg" alt="Магазин Mozilla, де розширення доступне для встановлення" />
+                            Встановити у Firefox
+                        </button>
+                    </a>
+                </li>
+
+                <li><a href="https://github.com/censortracker/censortracker/releases">Завантажити архів із розширенням</a>
+                </li>
+                <li><a href="https://github.com/censortracker/censortracker" target="_blank">Вихідний код на GitHub</a>
+                </li>
+                <li><a href="https://t.me/censortracker_support_bot" target="_blank">Якщо у вас є проблема — повідомте
+                    нам!</a></li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<hr>
+
+<section class="container mt-5 mb-md-5 py-5 px-md-5">
+    <div class="row px-md-5">
+        <div class="col-md-6 order-md-2 text-center text-md-right mx-5 mx-md-0">
+            <img src="static/img/proton-en.svg" class="shadow animated responsive" alt="Заблокований сайт" />
+        </div>
+
+        <div class="col-md-6 mt-md-5 mb-5 pt-5 order-md-1 double">
+            <div class="mb-5">
+                <h3>Перевіримо, чи заблоковано сайт</h3>
+                <p class="text-secondary">Команда Censor Tracker стежить за реєстрами заблокованих сайтів в
+                    <b>Україні</b>, <b>Росії</b>, <b>Білорусі</b>, <b>Казахстані</b>, <b>Азербайджані</b>, <b>Туреччині</b>
+                    та інших країнах. Тільки в російському реєстрі зараз понад 700 000 адрес.</p>
+            </div>
+
+            <div class="spacer d-none d-lg-block"></div>
+
+            <div>
+                <h3>Допоможемо відкрити сайти, яких немає в реєстрі</h3>
+                <p class="text-secondary">Сайти з реєстру вашого регіону відкриваються автоматично. Інші сайти
+                    можна додати до <a href="#faq">власного списку</a>.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<hr>
+
+<section class="container py-5 px-md-5 my-md-5">
+    <div class="row pt-4">
+        <div class="col-lg-6">
+            <h3>Ми не зберігаємо і не передаємо третім особам зв’язок між вами та вашою історією браузера</h3>
+        </div>
+        <div class="col-lg-6">
+            <p class="text-secondary">
+                На відміну від більшості комерційних розширень, ми не зберігаємо логи.</p>
+            <p class="text-secondary">
+                Ви можете переконатися в цьому самі, вивчивши вихідний код Censor Tracker на <a
+                    href="https://github.com/censortracker/censortracker" target="_blank">GitHub</a>.
+            </p>
+
+        </div>
+    </div>
+</section>
+<hr>
+<section class="container py-5 px-md-5 my-md-5">
+    <h2 id="faq" class="h2 py-5 text-center mb-4">Відповіді на часті запитання</h2>
+    <div class="accordion" id="accordionExample">
+        <div class="card">
+            <div class="card-header bg-transparent" id="heading1">
+                <h2 class="mb-0">
+                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse"
+                            data-target="#collapse1" aria-expanded="true" aria-controls="collapse1">
+                        Де я можу встановити ваше розширення?
+                    </button>
+                </h2>
+            </div>
+
+            <div id="collapse1" class="collapse" aria-labelledby="heading1" data-parent="#accordionExample">
+                <div class="card-body  text-secondary">
+                    Встановлюйте Censor Tracker тільки з офіційних джерел:
+                    <ul>
+                        <li><a href="https://addons.mozilla.org/uk/firefox/addon/censor-tracker/" target="_blank">Firefox Browser Add-ons</a> — для Firefox;</li>
+                        <li><a href="https://chromewebstore.google.com/detail/gaidoampbkcknofoejhnhbhbhhifgdop" target="_blank">Інтернет-магазин Chrome</a> — для Chrome, Edge, Brave, Opera та інших браузерів на основі Chromium;</li>
+                        <li><a href="https://github.com/censortracker/censortracker/releases" target="_blank">сторінка релізів на GitHub</a> — архіви для ручного встановлення, якщо магазин недоступний.</li>
+                    </ul>
+                    Копії розширення з інших сайтів можуть бути змінені, тому команда Censor Tracker не може відповідати за їхню роботу та безпеку.
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header bg-transparent" id="heading2">
+                <h2 class="mb-0">
+                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse"
+                            data-target="#collapse2" aria-expanded="true" aria-controls="collapse2">
+                        У мене не працює розширення, що робити?
+                    </button>
+                </h2>
+            </div>
+
+            <div id="collapse2" class="collapse" aria-labelledby="heading2" data-parent="#accordionExample">
+                <div class="card-body  text-secondary">
+                    <p>Більшість проблем вирішується одним із кроків нижче. Після кожного кроку перевірте, чи відкривається потрібний сайт, і переходьте до наступного, тільки якщо не відкривається.</p>
+                    <p>Якщо потрібний сайт не входить до реєстру вашого регіону, його треба додати до розширення вручну — як це зробити, описано у <a href="#heading4">відповіді про сайти, яких немає в реєстрі</a>.</p>
+                    <p>Налаштування розширення відкриваються так: іконка Censor Tracker на панелі браузера —&gt; шестерня у правому верхньому куті вікна, що з’явилося.</p>
+                    <ol>
+                        <li><b>Версія браузера.</b> Розширення працює в Google Chrome 108 і новіших (а також у браузерах на його основі) та у Firefox 91.1 і новіших. Найкраще — остання версія браузера.</li>
+                        <li><b>Дозвіл на роботу в приватних вікнах (тільки Firefox).</b> Без цього дозволу Firefox не дає розширенню керувати проксі (<a href="https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/proxy/settings" target="_blank">докладніше на сайті розробників Firefox</a>).
+                            Як надати: в адресному рядку відкрити <code>about:addons</code> —&gt; розділ <kbd>Розширення</kbd> —&gt; Censor Tracker —&gt; вкладка <kbd>Подробиці</kbd> —&gt; у пункті <kbd>Запуск у приватних вікнах</kbd> вибрати <kbd>Дозволити</kbd>.</li>
+                        <li><b>Сторонні VPN і проксі-розширення.</b> Керувати проксі в браузері може тільки одне розширення, тому Censor Tracker не працює одночасно з іншими розширеннями для обходу блокувань. Вимикати їх треба в налаштуваннях браузера — <code>chrome://extensions</code> у Chrome, <code>about:addons</code> у Firefox. Кнопка вимкнення всередині самого розширення не підходить: розширення, вимкнене таким способом, продовжує утримувати керування проксі. Після вимкнення перезапустіть браузер. VPN-клієнт на пристрої на час перевірки теж краще вимкнути: з ним розширення може неправильно визначити країну.</li>
+                        <li><b>Антивірус.</b> Антивіруси з перевіркою HTTPS-трафіку можуть заважати роботі проксі. Вимкніть в антивірусі модуль перевірки HTTPS-з’єднань, а якщо такого налаштування немає — перевірте, чи допомагає тимчасове вимкнення антивіруса.</li>
+                        <li><b>Регіон.</b> Розширення визначає країну автоматично і може помилитися, особливо з увімкненим VPN. Регіон можна вибрати вручну: налаштування —&gt; <kbd>Регіон</kbd>.</li>
+                        <li><b>Оновлення бази.</b> Налаштування —&gt; <kbd>Додаткові налаштування</kbd> —&gt; <kbd>Примусово оновити локальну базу даних розширення</kbd>. Цей крок обов’язковий після зміни регіону: без нього список заблокованих сайтів залишиться попереднім.</li>
+                        <li><b>Перевірка проксі.</b> Налаштування —&gt; <kbd>Налаштування проксі</kbd> —&gt; розгорнути блок <kbd>Керування проксі</kbd> —&gt; нижче розгорнути блок <kbd>Перевірити проксі</kbd> —&gt; <kbd>Перевірити вибрані</kbd>. Через кілька секунд у колонці <kbd>Остання перевірка</kbd> з’явиться результат: <kbd>Доступний</kbd> — сервер відповідає, <kbd>Перевірку не пройдено</kbd> — сервер недоступний, і варто <a href="https://t.me/censortracker_support_bot" target="_blank">написати нам</a>.</li>
+                        <li><b>Скидання налаштувань.</b> Налаштування —&gt; <kbd>Додаткові налаштування</kbd> —&gt; <kbd>Скинути всі налаштування</kbd>. Якщо ви додавали до розширення власні сайти, заздалегідь збережіть їх через <kbd>Експортувати налаштування</kbd>, а після скидання поверніть через <kbd>Імпортувати налаштування</kbd>.</li>
+                        <li><b>Перевстановлення.</b> Іноді після оновлення розширення допомагає тільки перевстановлення.</li>
+                    </ol>
+                    <p>Якщо нічого з цього не допомогло, <a href="https://t.me/censortracker_support_bot" target="_blank">напишіть нам</a> — допоможемо розібратися з проблемою.</p>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header bg-transparent" id="heading4">
+                <h2 class="mb-0">
+                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse"
+                            data-target="#collapse4" aria-expanded="false" aria-controls="collapse4">
+                        Як відкрити сайт, якого немає в реєстрі?
+                    </button>
+                </h2>
+            </div>
+
+            <div id="collapse4" class="collapse" aria-labelledby="heading4" data-parent="#accordionExample">
+                <div class="card-body  text-secondary">
+                    <p>Censor Tracker автоматично відкриває через проксі сайти з реєстру заблокованих сайтів вашого регіону. Сайти, які сповільнюються або блокуються поза реєстром, треба додати вручну.</p>
+                    <p>Великі сайти завантажують вміст із кількох адрес. Наприклад, сторінка YouTube надходить із <code>youtube.com</code>, а прев’ю та відео — з <code>ytimg.com</code> і <code>googlevideo.com</code>. Тому сайт додається у два кроки: спочатку основна адреса, щоб сторінка відкрилася, потім пов’язані з нею адреси, щоб завантажилися зображення та відео.</p>
+                    <b>Крок 1. Основна адреса сайту</b>
+                    <ol>
+                        <li>Відкрити налаштування розширення —&gt; <kbd>Мій список сайтів, які проксуються</kbd>.</li>
+                        <li>Вписати основну адресу сайту без <code>https://</code> і <code>www</code> — наприклад, <code>youtube.com</code>. Піддомени враховуються автоматично: <code>youtube.com</code> охоплює і <code>www.youtube.com</code>, і <code>m.youtube.com</code>.</li>
+                        <li>Натиснути <kbd>Зберегти зміни</kbd>.</li>
+                    </ol>
+                    <b>Крок 2. Пов’язані адреси</b>
+                    <ol>
+                        <li>Відкрити сайт і дочекатися повного завантаження сторінки. Якщо на сайті є відео — запустити його, щоб браузер звернувся до відеосерверів.</li>
+                        <li>Натиснути на іконку Censor Tracker, потім на значок <kbd>⁝</kbd> поруч з адресою сайту.</li>
+                        <li>Розгорнути блок <kbd>Пов’язані CDN/API-домени</kbd> і натиснути <kbd>Знайти домени</kbd>.</li>
+                        <li>Позначити адреси, які належать до сайту, і натиснути <kbd>Проксі для вибраних доменів</kbd>.</li>
+                        <li>Оновити сторінку.</li>
+                    </ol>
+                    <p>Розширення шукає адреси серед того, що сторінка вже встигла завантажити, тому другий крок працює тільки після того, як сайт відкрився. Як правило, потрібні адреси, у назві яких впізнається сам сайт або його власник.</p>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header bg-transparent" id="heading6">
+                <h2 class="mb-0">
+                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse"
+                            data-target="#collapse6" aria-expanded="false" aria-controls="collapse6">
+                        Чи можу я взяти участь у розробці Censor Tracker?
+                    </button>
+                </h2>
+            </div>
+
+            <div id="collapse6" class="collapse" aria-labelledby="heading6" data-parent="#accordionExample">
+                <div class="card-body  text-secondary">
+                    Так! Censor Tracker має <a href="https://github.com/censortracker/censortracker" target="_blank">відкритий вихідний код</a>, і будь-хто може
+                    зробити свій внесок.
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header bg-transparent" id="heading7">
+                <h2 class="mb-0">
+                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse"
+                            data-target="#collapse7" aria-expanded="false" aria-controls="collapse7">
+                        Чи можу я відкрити сайти *.onion і *.i2p?
+                    </button>
+                </h2>
+            </div>
+
+            <div id="collapse7" class="collapse" aria-labelledby="heading7" data-parent="#accordionExample">
+                <div class="card-body  text-secondary">
+                    <p>Так. Вбудовані проксі-сервери Censor Tracker відкривають сайти в мережах Tor та I2P без додаткових програм — достатньо ввести адресу в адресному рядку. Якщо в розширенні вибрано власний проксі, такі сайти відкриються, тільки якщо він сам підтримує Tor та I2P.</p>
+                    <p>Адреси Tor старого формату, з 16 символами перед <code>.onion</code>, не працюють з 2021 року: мережа Tor вимкнула їх підтримку. Чинні адреси складаються з 56 символів.</p>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header bg-transparent" id="heading8">
+                <h2 class="mb-0">
+                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse"
+                            data-target="#collapse8" aria-expanded="false" aria-controls="collapse8">
+                        Чи можу я використовувати Censor Tracker на смартфоні?
+                    </button>
+                </h2>
+            </div>
+            <div id="collapse8" class="collapse" aria-labelledby="heading8" data-parent="#accordionExample">
+                <div class="card-body  text-secondary">
+                    Зараз основні мобільні браузери (Chrome для Android і Safari для iOS) не підтримують розширення.
+                    А брати на себе відповідальність за рекомендації використовувати сторонні браузери (які підтримують) ми не можемо.
+                    <br>
+                    <br>
+                    Censor Tracker — це проксі-розширення саме для веббраузерів, а не VPN. Якщо вам потрібен VPN, ви можете встановити <a href="https://amnezia.org/" target="_blank">AmneziaVPN</a>,
+                    випускника <a href="https://privacyaccelerator.org/" target="_blank">Privacy Accelerator</a>.
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header bg-transparent" id="heading9">
+                <h2 class="mb-0">
+                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse"
+                            data-target="#collapse9" aria-expanded="false" aria-controls="collapse9">
+                        Чи можу я зв’язатися з вами, щоб повідомити про проблему?
+                    </button>
+                </h2>
+            </div>
+            <div id="collapse9" class="collapse" aria-labelledby="heading9" data-parent="#accordionExample">
+                <div class="card-body  text-secondary">
+                    Так. Для цього є кілька каналів:
+                    <ul>
+                        <li>бот підтримки в Telegram — <a href="https://t.me/censortracker_support_bot" target="_blank">@censortracker_support_bot</a>;</li>
+                        <li>пошта — <a href="mailto:support@censortracker.org">support@censortracker.org</a>;</li>
+                        <li><a href="https://t.me/censortracker_feedback" target="_blank">community-чат у Telegram</a> — для запитань спільноті та обговорення роботи розширення.</li>
+                    </ul>
+                    Щоб розібратися швидше, додайте до звернення:
+                    <ol>
+                        <li>Назву та версію браузера.</li>
+                        <li>Який сайт не відкривається і що саме відбувається: помилка, нескінченне завантаження, сторінка без зображень чи відео.</li>
+                        <li>Налагоджувальну інформацію розширення: налаштування —&gt; <kbd>Додаткові налаштування</kbd> —&gt; <kbd>Налагоджувальна інформація</kbd> —&gt; кнопка <kbd>Скопіювати</kbd>. У ній немає історії відвідувань і паролів — тільки налаштування та стан розширення, а адреси сайтів у повідомленнях про помилки приховано.</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header bg-transparent" id="heading11">
+                <h2 class="mb-0">
+                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse"
+                            data-target="#collapse11" aria-expanded="false" aria-controls="collapse11">
+                        Чи можу я завантажити власний список сайтів для проксування?
+                    </button>
+                </h2>
+            </div>
+            <div id="collapse11" class="collapse" aria-labelledby="heading11" data-parent="#accordionExample">
+                <div class="card-body  text-secondary">
+                    <p>Так, двома способами — залежно від розміру списку.</p>
+                    <b>Невеликий список — до 1000 доменів</b>
+                    <p>Налаштування —&gt; <kbd>Мій список сайтів, які проксуються</kbd> —&gt; <kbd>Завантажити список із файлу або URL</kbd>. Можна вибрати текстовий файл на пристрої або вказати посилання на файл в інтернеті — наприклад, на <a href="https://gist.github.com/" target="_blank">GitHub Gist</a>. Завантажені домени додадуться до списку, після чого треба натиснути <kbd>Зберегти зміни</kbd>.</p>
+                    Вимоги до списку:
+                    <ul>
+                        <li>кожен домен — з нового рядка;</li>
+                        <li>не більше 1000 доменів у списку разом із уже доданими;</li>
+                        <li>для завантаження з пристрою — текстовий файл розміром до 64 КБ.</li>
+                    </ul>
+                    <p>Домени, що повторюються, видаляються автоматично.</p>
+                    <b>Великий список — до 1 000 000 доменів</b>
+                    <p>Налаштування —&gt; <kbd>Регіон</kbd> —&gt; блок <kbd>Зовнішній реєстр (необов’язково)</kbd>:</p>
+                    <ol>
+                        <li>У полі <kbd>Джерело</kbd> вибрати <kbd>Власний список доменів</kbd>.</li>
+                        <li>Вказати в полі <kbd>URL реєстру</kbd> посилання на список.</li>
+                        <li>Позначити <kbd>Використовувати цей завантажений список</kbd>.</li>
+                        <li>За бажанням позначити <kbd>Оновлювати автоматично разом із реєстром</kbd> — тоді список оновлюватиметься кожні 15 хвилин, поки розширення та проксі ввімкнено.</li>
+                        <li>Натиснути <kbd>Зберегти й завантажити зараз</kbd>.</li>
+                    </ol>
+                    <p>Підходить текстовий список з одним доменом у рядку, JSON-масив або JSON-об’єкт із масивом <code>domains</code>. Обмеження — 32 МБ і 30 секунд на завантаження. Зовнішній реєстр доповнює вбудований, а не замінює його. Якщо завантаження не вдалося, розширення зберігає останній коректний список.</p>
+                    <p>Список завантажується з пристрою користувача, тому власник джерела може бачити його IP-адресу — краще використовувати перевірені джерела.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<hr>
+<section class="container text-center py-5 px-md-5">
+    <h2 class="h2 py-5 text-center mb-4">Підтримувані браузери</h2>
+    <div class="row mt-5 browsers">
+        <div class="col">
+            <a target="_blank"
+               href="https://chromewebstore.google.com/detail/gaidoampbkcknofoejhnhbhbhhifgdop">
+                <img width="64" src="static/img/google-chrome.svg" alt="Google" />
+                <p class="mt-3 text-dark">Chrome</p>
+            </a>
+        </div>
+        <div class="col">
+            <a target="_blank"
+               href="https://addons.mozilla.org/uk/firefox/addon/censor-tracker/">
+                <img width="64" src="static/img/firefox.png" alt="Firefox" />
+                <p class="mt-3 text-dark">Mozilla Firefox</p>
+            </a>
+        </div>
+        <div class="col">
+            <a target="_blank"
+               href="https://chromewebstore.google.com/detail/gaidoampbkcknofoejhnhbhbhhifgdop">
+                <img width="64" src="static/img/brave.svg" alt="Brave" />
+                <p class="mt-3 text-dark">Brave</p>
+            </a>
+        </div>
+        <div class="col">
+            <a href="https://chromewebstore.google.com/detail/gaidoampbkcknofoejhnhbhbhhifgdop"
+               target="_blank">
+                <img width="64" src="static/img/opera.svg" alt="Opera" />
+                <p class="mt-3 text-dark">Opera</p>
+            </a>
+        </div>
+        <div class="col">
+            <a href="https://chromewebstore.google.com/detail/gaidoampbkcknofoejhnhbhbhhifgdop"
+               target="_blank">
+                <img width="64" src="static/img/edge.svg" alt="Edge" />
+                <p class="mt-3 text-dark">Edge</p>
+            </a>
+        </div>
+    </div>
+</section>
+
+<hr>
+
+<section class="container text-center py-5 px-md-5">
+    <img src="static/img/quokka-logo.svg" alt="CensorTracker">
+    <h2 class="mt-5">Censor Tracker</h2>
+    <ul class="lead list-unstyled">
+        <li>
+            <a href="https://chromewebstore.google.com/detail/gaidoampbkcknofoejhnhbhbhhifgdop"
+               target="_blank">
+                <button class="btn btn-lg btn-primary download-btn">
+                    <img src="static/img/chrome.svg" alt="Магазин Google, де розширення доступне для встановлення" /> Встановити в Chrome
+                </button>
+            </a>
+        </li>
+        <li>
+            <a href="https://addons.mozilla.org/uk/firefox/addon/censor-tracker/" target="_blank">
+                <button class="btn btn-lg btn-primary download-btn">
+                    <img width="31" height="28" src="static/img/ff.svg" alt="Магазин Mozilla, де розширення доступне для встановлення" /> Встановити у Firefox
+                </button>
+            </a>
+        </li>
+        <li>
+            <a href="https://github.com/censortracker/censortracker/releases" target="_blank">
+                Завантажити архів із розширенням
+            </a>
+        </li>
+    </ul>
+</section>
+
+<!-- Bootstrap core JavaScript -->
+<script src="static/js/jquery.slim.min.js"></script>
+<script src="static/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript">
+  $(window).scroll(function () {
+    let offset = $('.animated').parent().offset().top;
+    let fixedCardTop = $(window).scrollTop() + ($(window).height() - $('.animated').height()) / 2;
+    let cardTop = fixedCardTop - offset;
+    let maxCardTop = $('.animated').parent().height() - $('.animated').height();
+    if (cardTop <= 0) {
+      cardTop = 0;
+    } else if (cardTop > maxCardTop) {
+      cardTop = maxCardTop;
+    }
+    $('.animated').css("top", cardTop);
+  });
+</script>
+
+</body>
+
+</html>

@@ -4,8 +4,9 @@ import { findHostMatch } from './host-match'
 import { normalizeHostname } from './hostname'
 import ProxyManager from './proxy'
 import {
-  getServiceRoute, mustUseDirect, proxyAllowed, restoreServiceRoute,
-  setServiceRoute, withProxyLock,
+  acquireServiceRoute, getPacRevision, getServiceRoute, isAppliedProxyValue,
+  mustUseDirect, proxyAllowed, releaseServiceRoute, setServiceRoute,
+  withProxyLock,
 } from './proxy-route'
 import type { RegistryCache } from './registry-request'
 import { isRegistryCancellation, requestRegistry } from './registry-request'
@@ -38,7 +39,7 @@ const proxyRouteKeys: (keyof StorageState)[] = [
   'localProxyURI', 'proxyServerURI', 'customProxyServerURI',
   'customProxyProtocol', 'useOwnProxy', 'antizapret',
 ]
-const HEADERS_TIMEOUT = 10000
+const HEADERS_TIMEOUT = 5000
 const REQUEST_TIMEOUT = 60000
 
 const siteChoice = async (hostname: string) => {
@@ -137,7 +138,7 @@ const attemptRequest = async <T>(
       }
     }
     if (viaProxy) {
-      if (await proxyRoute(hostname) !== getServiceRoute()?.route) {
+      if (await proxyRoute(hostname) !== getServiceRoute(hostname)?.route) {
         throw new Error('Proxy route changed before the request')
       }
     } else if (await siteChoice(hostname) === 'always') {
@@ -240,6 +241,19 @@ const attempt = <T>(...args: [string,
   return withDataConsent(() => attemptRequest(...args, controller), controller)
 }
 
+// Route restoration failures are reported separately from service results.
+const releaseRoute = async (url: string, hostname: string) => {
+  try {
+    await releaseServiceRoute(hostname)
+  } catch (error) {
+    const parsed = new URL(url)
+
+    await browser.storage.local.set({
+      serviceRouteError: `${parsed.origin}${parsed.pathname}: route restoration failed: ${errorMessage(error)}`,
+    })
+  }
+}
+
 const requestDirect = async <T>(
   url: string,
   validate: Validator<T>,
@@ -250,14 +264,8 @@ const requestDirect = async <T>(
 
 ) => {
   const setting = browser.proxy.settings
-  const { levelOfControl } = await setting.get({})
-  let direct = false
-
-  if (await proxyAllowed()) {
-    direct = await setServiceRoute(new URL(url).hostname, 'DIRECT')
-  } else if (levelOfControl === 'controlled_by_this_extension') {
-    await setting.clear({})
-  }
+  const { hostname } = new URL(url)
+  const direct = await acquireServiceRoute(hostname, 'DIRECT')
   let routeChanged = false
   const onRouteChange = () => {
     routeChanged = true
@@ -266,6 +274,7 @@ const requestDirect = async <T>(
   setting.onChange?.addListener(onRouteChange)
   try {
     const before = await setting.get({})
+    const revision = getPacRevision()
     const result = await attempt(
       url, validate, false, allowRedirects, requireEnabled, method, metadata,
     )
@@ -273,15 +282,24 @@ const requestDirect = async <T>(
     const knownDirect = ['direct', 'none'].includes(
       before.value.mode || before.value.proxyType || '',
     ) || (direct && before.levelOfControl === 'controlled_by_this_extension')
+    // Other service requests may rewrite the PAC while this one is active;
+    // only changes made outside CT make the exit unknown.
+    const ownChanges = getPacRevision() !== revision
+    const valueChanged =
+      JSON.stringify(before.value) !== JSON.stringify(after.value)
 
     return {
       ...result,
-      viaProxy: !knownDirect || routeChanged ||
+      viaProxy: !knownDirect ||
         before.levelOfControl !== after.levelOfControl ||
-        JSON.stringify(before.value) !== JSON.stringify(after.value),
+        (routeChanged && !ownChanges) ||
+        (valueChanged && !isAppliedProxyValue(after.value)),
     }
   } finally {
     setting.onChange?.removeListener(onRouteChange)
+    if (direct) {
+      await releaseRoute(url, hostname)
+    }
   }
 }
 
@@ -296,18 +314,26 @@ const requestProxy = async <T>(
 ) => {
   const hostname = new URL(url).hostname
 
-  await proxyRoute(hostname)
-  await ProxyManager.pingInBackground()
-  const route = await proxyRoute(hostname)
+  // The knock and the route choice need exclusive access to proxy settings;
+  // the request itself then runs alongside other service requests.
+  await withProxyLock(async () => {
+    await proxyRoute(hostname)
+    await ProxyManager.pingInBackground()
+    const route = await proxyRoute(hostname)
 
-  if (!await setServiceRoute(hostname, route)) {
-    throw new Error('Proxy request cannot preserve existing browser routes')
-  }
-  return {
-    ...await attempt(
-      url, validate, true, allowRedirects, requireEnabled, method, metadata,
-    ),
-    viaProxy: true,
+    if (!await setServiceRoute(hostname, route)) {
+      throw new Error('Proxy request cannot preserve existing browser routes')
+    }
+  })
+  try {
+    return {
+      ...await attempt(
+        url, validate, true, allowRedirects, requireEnabled, method, metadata,
+      ),
+      viaProxy: true,
+    }
+  } finally {
+    await releaseRoute(url, hostname)
   }
 }
 
@@ -369,50 +395,41 @@ const requestRoute = <T>(
 ) => {
   const parsed = new URL(url)
   const endpoint = `${parsed.origin}${parsed.pathname}`
-
-  return withProxyLock(async () => {
+  const run = async () => {
     const visited = new Set()
     let viaProxy = false
 
-    try {
-      for (let hops = 0; ; hops++) {
-        const current = new URL(url)
+    for (let hops = 0; ; hops++) {
+      const current = new URL(url)
 
-        current.hash = ''
-        if (!['http:', 'https:'].includes(current.protocol)) {
-          throw new Error('Service request requires HTTP or HTTPS')
-        }
-        if (visited.has(current.href)) {
-          throw new Error('Redirect cycle')
-        }
-        visited.add(current.href)
-        const result = await requestHop(
-          url, validate, allowProxyRetry, maxRedirects > 0, requireEnabled,
-          method, metadata,
-        )
+      current.hash = ''
+      if (!['http:', 'https:'].includes(current.protocol)) {
+        throw new Error('Service request requires HTTP or HTTPS')
+      }
+      if (visited.has(current.href)) {
+        throw new Error('Redirect cycle')
+      }
+      visited.add(current.href)
+      const result = await requestHop(
+        url, validate, allowProxyRetry, maxRedirects > 0, requireEnabled,
+        method, metadata,
+      )
 
-        viaProxy ||= result.viaProxy
-        if (!('redirectUrl' in result)) {
-          return { ...result, viaProxy }
-        }
-        if (hops >= maxRedirects) {
-          throw new Error(`Redirect limit exceeded: maximum ${maxRedirects} hops`)
-        }
-        if (!result.redirectUrl) {
-          throw new Error('Redirect has no Location header')
-        }
-        url = new URL(result.redirectUrl, current).href
+      viaProxy ||= result.viaProxy
+      if (!('redirectUrl' in result)) {
+        return { ...result, viaProxy }
       }
-    } finally {
-      try {
-        await restoreServiceRoute()
-      } catch (error) {
-        await browser.storage.local.set({
-          serviceRouteError: `${endpoint}: route restoration failed: ${errorMessage(error)}`,
-        })
+      if (hops >= maxRedirects) {
+        throw new Error(`Redirect limit exceeded: maximum ${maxRedirects} hops`)
       }
+      if (!result.redirectUrl) {
+        throw new Error('Redirect has no Location header')
+      }
+      url = new URL(result.redirectUrl, current).href
     }
-  }).catch((error: unknown) => {
+  }
+
+  return run().catch((error: unknown) => {
     throw new Error(`${endpoint}: ${errorMessage(error)}`, { cause: error })
   })
 }

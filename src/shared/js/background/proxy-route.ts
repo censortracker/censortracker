@@ -5,10 +5,27 @@ import { normalizeHostname } from './hostname'
 import { isPrivateHost } from './private-host'
 import type { ProxyRecord } from './proxy-record'
 import type { ProbeRoute } from './routing'
+import type { ProxySettings } from './storage'
+
+interface ServiceRoute {
+  hostname: string
+  route: string
+  holders: number
+  released: Promise<void>
+  release: () => void
+}
 
 let queue: Promise<unknown> = Promise.resolve()
 let revision = 0
-let serviceRoute: { hostname: string; route: string } | null = null
+// Temporary routes for service hosts; each one is held until its requests end.
+const serviceRoutes = new Map<string, ServiceRoute>()
+let drained: Promise<void> = Promise.resolve()
+let signalDrained: () => void = () => {}
+let exclusiveWaiting = 0
+let exclusiveIdle: Promise<void> = Promise.resolve()
+let signalExclusiveIdle: () => void = () => {}
+let pacRevision = 0
+let appliedValue: string | null = null
 const probes = new Map<string, ProbeRoute>()
 let permissionCache: Promise<boolean> | null
 let watchingControl = false
@@ -32,7 +49,16 @@ export const watchRoutes = () => {
 }
 
 export const getRouteRevision = () => revision
-export const getServiceRoute = () => serviceRoute
+export const getServiceRoute = (hostname?: string) => {
+  const route = hostname === undefined
+    ? serviceRoutes.values().next().value : serviceRoutes.get(hostname)
+
+  return route ? { hostname: route.hostname, route: route.route } : null
+}
+// Counts proxy setting writes made by this extension.
+export const getPacRevision = () => pacRevision
+export const isAppliedProxyValue = (value: unknown) =>
+  appliedValue !== null && JSON.stringify(value) === appliedValue
 export const getProbeRoutes = () => Array.from(probes.values())
 export const noteProbeAuthFailure = (id: string) => {
   for (const probe of probes.values()) {
@@ -57,14 +83,122 @@ export const mustUseDirect = async (hostname: string) => {
     new Set(ignoredHosts.map(normalizeHostname))))
 }
 
-export const withProxyLock = <T>(operation: () => T | Promise<T>) => {
-  const result = queue.then(async () => {
-    await restoreServiceRoute()
-    return operation()
-  })
+const enqueue = <T>(operation: () => T | Promise<T>) => {
+  const result = queue.then(operation)
 
   queue = result.catch(() => {})
   return result
+}
+
+type Outcome<T> = { value: T } | { wait: Promise<void> }
+
+const tryExclusive = <T>(operation: () => T | Promise<T>) =>
+  enqueue(async (): Promise<Outcome<T>> => {
+    if (serviceRoutes.size > 0) {
+      return { wait: drained }
+    }
+    await restoreServiceRoute()
+    return { value: await operation() }
+  })
+
+// Runs an exclusive proxy operation once no service route is active. New
+// service routes wait for it, so a steady stream of requests cannot starve it.
+export const withProxyLock = async <T>(operation: () => T | Promise<T>) => {
+  if (exclusiveWaiting++ === 0) {
+    exclusiveIdle = new Promise((resolve) => {
+      signalExclusiveIdle = resolve
+    })
+  }
+  try {
+    for (;;) {
+      const outcome = await tryExclusive(operation)
+
+      if ('value' in outcome) {
+        return outcome.value
+      }
+      await outcome.wait
+    }
+  } finally {
+    if (--exclusiveWaiting === 0) {
+      signalExclusiveIdle()
+    }
+  }
+}
+
+const tryAcquire = (hostname: string, route: string) =>
+  enqueue(async (): Promise<Outcome<boolean>> => {
+    const current = serviceRoutes.get(hostname)
+
+    if (current && current.route !== route) {
+      return { wait: current.released }
+    }
+    if (!await proxyAllowed()) {
+      const { levelOfControl } = await browser.proxy.settings.get({})
+
+      if (levelOfControl === 'controlled_by_this_extension') {
+        await clearProxyValue()
+      }
+      return { value: false }
+    }
+    return { value: await setServiceRoute(hostname, route) }
+  })
+
+// Adds a temporary route for a service request without blocking other
+// requests. Returns false when proxy use is unavailable or the inherited
+// proxy configuration cannot be overridden; a leftover CT setting is cleared.
+export const acquireServiceRoute = async (hostname: string, route: string) => {
+  for (;;) {
+    if (exclusiveWaiting > 0) {
+      await exclusiveIdle
+      continue
+    }
+    const outcome = await tryAcquire(hostname, route)
+
+    if ('value' in outcome) {
+      return outcome.value
+    }
+    await outcome.wait
+  }
+}
+
+export const releaseServiceRoute = (hostname: string) =>
+  enqueue(() => clearServiceRoute(hostname))
+
+const writeProxyValue = async (value: ProxySettings) => {
+  pacRevision++
+  appliedValue = JSON.stringify(value)
+  await browser.proxy.settings.set(browser.isFirefox
+    ? { value } : { value, scope: 'regular' })
+}
+
+const clearProxyValue = async () => {
+  pacRevision++
+  appliedValue = null
+  await browser.proxy.settings.clear({})
+}
+
+const servicePac = (base: string) => {
+  const routes = Object.fromEntries(Array.from(serviceRoutes.values(),
+    ({ hostname, route }) => [hostname, route]))
+
+  return `${base}
+    var normalRoute = FindProxyForURL;
+    var serviceRoutes = ${JSON.stringify(routes)};
+    FindProxyForURL = function(url, host) {
+      var name = host.toLowerCase().replace(/\\.$/, '');
+      if (Object.prototype.hasOwnProperty.call(serviceRoutes, name)) {
+        return serviceRoutes[name];
+      }
+      return normalRoute(url, host);
+    };`
+}
+
+const forgetServiceRoutes = () => {
+  for (const route of serviceRoutes.values()) {
+    route.release()
+  }
+  serviceRoutes.clear()
+  signalDrained()
 }
 
 export const proxyAllowed = async () => {
@@ -127,43 +261,56 @@ export const applyPac = async (data: string, mandatory = false) => {
     }
     : { mode: 'pac_script', pacScript: { data, mandatory } }
 
-  await browser.proxy.settings.set(browser.isFirefox
-    ? { value } : { value, scope: 'regular' })
+  await writeProxyValue(value)
   if (!await hasDataConsent()) {
-    await browser.proxy.settings.clear({})
+    await clearProxyValue()
     throw new ConsentRequiredError()
   }
 }
 
+// Drops every temporary route and restores the saved proxy configuration.
+// Caller holds the lock.
 export const restoreServiceRoute = async () => {
+  forgetServiceRoutes()
   const { serviceRouteSnapshot } = await browser.storage.local.get(
     'serviceRouteSnapshot',
   )
 
   if (!serviceRouteSnapshot) {
-    serviceRoute = null
     return
   }
   const { levelOfControl } = await browser.proxy.settings.get({})
 
   if (levelOfControl === 'controlled_by_this_extension' &&
     serviceRouteSnapshot.owned && await proxyAllowed()) {
-    const { value } = serviceRouteSnapshot
-
-    await browser.proxy.settings.set(browser.isFirefox
-      ? { value } : { value, scope: 'regular' })
+    await writeProxyValue(serviceRouteSnapshot.value)
     if (!await hasDataConsent()) {
-      await browser.proxy.settings.clear({})
+      await clearProxyValue()
     }
   } else {
     // Clear only CT's setting, not the other extension's setting.
-    await browser.proxy.settings.clear({})
+    await clearProxyValue()
   }
   await browser.storage.local.remove('serviceRouteSnapshot')
-  serviceRoute = null
 }
 
-// Caller holds the lock until the request and restoration have finished.
+// Releases one holder of a temporary route; the last route restores the
+// saved configuration. Caller holds the lock.
+export const clearServiceRoute = async (hostname: string) => {
+  const current = serviceRoutes.get(hostname)
+
+  if (!current || --current.holders > 0) {
+    return
+  }
+  serviceRoutes.delete(hostname)
+  current.release()
+  if (serviceRoutes.size === 0) {
+    await restoreServiceRoute()
+  }
+}
+
+// Adds a temporary route, or another holder of the same route. Caller holds
+// the lock until the route is cleared.
 export const setServiceRoute = async (hostname: string, route: string) => {
   if (route !== 'DIRECT' && await mustUseDirect(hostname)) {
     throw new Error('Proxy request blocked by an exclusion or a private host')
@@ -205,14 +352,26 @@ export const setServiceRoute = async (hostname: string, route: string) => {
   }
 
   await browser.storage.local.set({ serviceRouteSnapshot: snapshot })
-  serviceRoute = { hostname, route }
-  await applyPac(`${base}
-    var normalRoute = FindProxyForURL;
-    FindProxyForURL = function(url, host) {
-      if (host.toLowerCase().replace(/\\.$/, '') === ${JSON.stringify(hostname)}) {
-        return ${JSON.stringify(route)};
-      }
-      return normalRoute(url, host);
-    };`, true)
+  const current = serviceRoutes.get(hostname)
+
+  if (current && current.route === route) {
+    current.holders++
+    return true
+  }
+  if (serviceRoutes.size === 0) {
+    drained = new Promise((resolve) => {
+      signalDrained = resolve
+    })
+  }
+  let release = () => {}
+  const released = new Promise<void>((resolve) => {
+    release = resolve
+  })
+
+  current?.release()
+  serviceRoutes.set(hostname, {
+    hostname, route, holders: 1, released, release,
+  })
+  await applyPac(servicePac(base), true)
   return true
 }

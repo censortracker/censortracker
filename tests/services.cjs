@@ -86,7 +86,8 @@ function fixture(options = {}) {
   }
   const loadEntry = loadUI.createLoader(mocks, {
     console: { warn() {}, info() {}, error() {}, group() {}, groupEnd() {}, log() {}, table() {} },
-    setTimeout: (fn, delay) => setTimeout(fn, options.fastTimeout ? 5 : delay),
+    setTimeout: (fn, delay) => setTimeout(fn, options.fastTimeout ? 5
+      : options.timeoutScale ? delay * options.timeoutScale : delay),
     fetch: async (url, init) => {
       if (url.startsWith('data:')) return { text: async () => decodeURIComponent(url.split(',').slice(1).join(',')) }
       events.push('fetch')
@@ -132,9 +133,11 @@ for (const firefox of [false, true]) {
     assert.deepEqual(urls, [
       ...Array(2).fill('https://cozyquokka.net/api/proxy-list/'), 'https://proxy.mirror.example/list',
       'https://geo.ctreserve.de/get-iso/', 'https://geo.mirror.example/iso',
-      ...Array(2).fill('https://censortracker.github.io/ctconf/registry/by.json'), 'https://registry.mirror.example/by.json',
-      ...Array(2).fill('https://cozyquokka.net/api/config/BY/'), 'https://config.mirror.example/BY/', custom,
-      ...Array(2).fill('https://cozyquokka.net/api/domains/BY/'), 'https://domains.mirror.example/BY/',
+      ...Array(2).fill('https://censortracker.github.io/ctconf/registry/by.json'),
+      ...Array(2).fill('https://cozyquokka.net/api/config/BY/'),
+      ...Array(2).fill('https://cozyquokka.net/api/domains/BY/'),
+      'https://registry.mirror.example/by.json', 'https://config.mirror.example/BY/',
+      'https://domains.mirror.example/BY/', custom,
       ...Array(2).fill('https://registry.ctreserve.de/api/v3/disseminators/refused/'), 'https://ori.mirror.example/list',
     ])
     assert.equal(state.storage.localConfig.countryCode, 'BY')
@@ -735,6 +738,14 @@ for (const success of [false, true]) {
     assert.ok(state.storage.serviceRouteSnapshot)
   })
 }
+
+test('an unresponsive mirror fails before the full request deadline', async () => {
+  const state = fixture({ timeoutScale: 0.001, fetch: async (url, init) =>
+    new Promise((resolve, reject) => init.signal.addEventListener('abort', () => reject(new Error('The operation was aborted')))) })
+  await assert.rejects(state.load('service-request').requestService('https://registry.example/list', Array.isArray, { allowProxyRetry: false }),
+    /registry.example\/list: DIRECT: fetch: Timeout: no response after 10 seconds/)
+  assert.equal(state.storage.serviceRouteSnapshot, undefined)
+})
 
 test('service deadline reports a timeout while reading JSON', async () => {
   const state = fixture({ fastTimeout: true, fetch: async (url, init) => ({ ok: true,
@@ -1343,7 +1354,7 @@ for (const firefox of [false, true]) {
     await state.load('server').synchronizeInBackground()
     const config = state.load('service-config')
     assert.deepEqual([...attempts], [config.PROXY_LIST_URL, config.getRegionConfig('RU').registryUrl,
-      `${config.CONFIG_URL}RU/`, customRegistryUrl, `${config.DOMAINS_URL}RU/`, config.ORI_URL].map(url => [url, 2]))
+      `${config.CONFIG_URL}RU/`, `${config.DOMAINS_URL}RU/`, customRegistryUrl, config.ORI_URL].map(url => [url, 2]))
     assert.deepEqual(state.storage.domains, ['blocked.example', 'custom.example'])
     assert.deepEqual(state.storage.serviceErrors, [])
     assert.equal(state.storage.registryStatus.state, 'ready')

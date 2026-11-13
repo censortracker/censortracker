@@ -257,9 +257,16 @@ const fetchRegistry = async (config: RegionConfig, mirrors: ServiceMirrors) => {
     })],
   ]
 
-  for (const [source, request] of sources) {
+  const pending = sources.map(([source, request]) => {
+    const result = request()
+
+    result.catch(() => {})
+    return [source, result] as const
+  })
+
+  for (const [source, response] of pending) {
     try {
-      const result = await request()
+      const result = await response
 
       if (result === null || result.unchanged) {
         skipped += validators[source]?.skipped || 0

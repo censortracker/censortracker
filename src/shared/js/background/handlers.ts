@@ -127,6 +127,23 @@ export const handleStartup = async () => {
   console.groupEnd()
 }
 
+const refreshAfterStartup = () => {
+  (async () => {
+    if (!await hasDataConsent() || !await Settings.extensionEnabled()) {
+      return
+    }
+    await server.synchronize()
+    if (await ProxyManager.isEnabled() && await Settings.extensionEnabled()) {
+      await ProxyManager.setProxy()
+    }
+  })().catch(() => console.warn('Startup synchronization failed'))
+}
+
+export const handleBrowserStartup = async () => {
+  await handleStartup()
+  refreshAfterStartup()
+}
+
 export const scheduleLocalProxyCheck = () => withProxyLock(async () => {
   const { useLocalProxy } = await browser.storage.local.get('useLocalProxy')
 
@@ -309,7 +326,7 @@ export const handleInstalled = async ({ reason }: { reason: string }) => {
     await browser.storage.local.set({ consentPromptVersion: CONSENT_VERSION })
   }
   if (await hasDataConsent()) {
-    await handleStartup()
+    await handleBrowserStartup()
   }
 }
 

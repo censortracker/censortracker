@@ -38,6 +38,8 @@ const proxyRouteKeys: (keyof StorageState)[] = [
   'localProxyURI', 'proxyServerURI', 'customProxyServerURI',
   'customProxyProtocol', 'useOwnProxy', 'antizapret',
 ]
+const HEADERS_TIMEOUT = 10000
+const REQUEST_TIMEOUT = 60000
 
 const siteChoice = async (hostname: string) => {
   if (await mustUseDirect(hostname)) {
@@ -110,9 +112,10 @@ const attemptRequest = async <T>(
     headersReceived()
   }
   const timeout = setTimeout(() => {
-    abortReason = 'Timeout after 60 seconds'
+    abortReason = `Timeout after ${REQUEST_TIMEOUT / 1000} seconds`
     controller.abort()
-  }, 60000)
+  }, REQUEST_TIMEOUT)
+  let headersTimeout: ReturnType<typeof setTimeout> | undefined
   const onSettingsChanged = (changes: StorageChanges) => {
     if (changes.enableExtension?.newValue === false ||
       changes.useProxy?.newValue === false || changes.customProxiedDomains ||
@@ -151,12 +154,18 @@ const attemptRequest = async <T>(
         types: ['xmlhttprequest'],
       }, ['responseHeaders'])
     }
+    headersTimeout = setTimeout(() => {
+      abortReason = `Timeout: no response after ${HEADERS_TIMEOUT / 1000} seconds`
+      controller.abort()
+    }, HEADERS_TIMEOUT)
     const response = await fetch(url, {
       method,
       signal: controller.signal,
       cache: 'no-store',
       redirect: allowRedirects ? 'manual' : 'error',
     })
+
+    clearTimeout(headersTimeout)
 
     if (controller.signal.aborted) {
       throw new Error(abortReason)
@@ -194,6 +203,7 @@ const attemptRequest = async <T>(
     return { data, ...headers }
   } catch (error) {
     clearTimeout(timeout)
+    clearTimeout(headersTimeout)
     await stop(error)
     const netError = isRecord(error) && typeof error.netError === 'string'
       ? error.netError : ''
@@ -209,6 +219,7 @@ const attemptRequest = async <T>(
   } finally {
     await stop()
     clearTimeout(timeout)
+    clearTimeout(headersTimeout)
     browser.storage.onChanged.removeListener(onSettingsChanged)
     if (allowRedirects) {
       controller.signal.removeEventListener('abort', headersReceived)

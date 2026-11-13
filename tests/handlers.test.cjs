@@ -71,6 +71,21 @@ test('startup checks the local proxy before it applies routing', async () => {
   ])
 })
 
+test('browser startup applies stored routing, then refreshes the registry', async () => {
+  const sync = Promise.withResolvers()
+  const state = fixture({}, {}, { server: { synchronize: () => {
+    state.events.push('sync')
+    return sync.promise
+  } } })
+  await state.handlers.handleBrowserStartup()
+  assert.deepEqual(state.events.slice(-1), ['apply'])
+  await new Promise(resolve => setImmediate(resolve))
+  assert.deepEqual(state.events.slice(-2), ['apply', 'sync'])
+  sync.resolve()
+  await new Promise(resolve => setImmediate(resolve))
+  assert.deepEqual(state.events.slice(-3), ['apply', 'sync', 'apply'])
+})
+
 test('the mirror alarm starts a refresh', async () => {
   const state = fixture()
   await state.handlers.handleOnAlarm({ name: 'service-mirrors' })

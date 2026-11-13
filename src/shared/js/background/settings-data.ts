@@ -5,6 +5,7 @@ import type { Subscription } from './proxy-source'
 import { validateSubscriptions } from './proxy-source'
 import type { RegistrySource } from './registry-source-data'
 import { registrySourceDefaults, validateRegistrySource } from './registry-source-data'
+import { defaultRegistryUpdateInterval, validRegistryUpdateInterval } from './registry-update-data'
 import { settingsFromFork } from './settings-fork'
 import type { SiteRules } from './site-rules'
 import { validateSiteRules } from './site-rules'
@@ -20,6 +21,7 @@ export interface SettingsData {
   proxySubscriptionsEnabled: boolean
   proxyRecoveryEnabled: boolean
   useRegistry: boolean
+  registryUpdateInterval: number
   registrySource: RegistrySource
   showNotifications: boolean
   useOwnProxy: boolean
@@ -42,6 +44,7 @@ export const settingsDefaults: SettingsData = {
   proxySubscriptionsEnabled: false,
   proxyRecoveryEnabled: false,
   useRegistry: true,
+  registryUpdateInterval: defaultRegistryUpdateInterval,
   registrySource: registrySourceDefaults,
   showNotifications: true,
   useOwnProxy: false,
@@ -103,6 +106,8 @@ export const validateSettings = (input: unknown) => {
       }
       result[key] = Array.from(new Set(names))
       continue
+    } else if (key === 'registryUpdateInterval') {
+      valid = validRegistryUpdateInterval(value)
     } else if (key === 'uiLanguage') {
       valid = typeof value === 'string' && ['auto', 'en', 'ru', 'uk'].includes(value)
     } else if (key === 'currentRegionCode') {

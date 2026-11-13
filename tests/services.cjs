@@ -86,7 +86,8 @@ function fixture(options = {}) {
   }
   const loadEntry = loadUI.createLoader(mocks, {
     console: { warn() {}, info() {}, error() {}, group() {}, groupEnd() {}, log() {}, table() {} },
-    setTimeout: (fn, delay) => setTimeout(fn, options.fastTimeout ? 5 : delay),
+    setTimeout: (fn, delay) => setTimeout(fn, options.fastTimeout ? 5
+      : options.timeoutScale ? delay * options.timeoutScale : delay),
     fetch: async (url, init) => {
       if (url.startsWith('data:')) return { text: async () => decodeURIComponent(url.split(',').slice(1).join(',')) }
       events.push('fetch')
@@ -129,12 +130,20 @@ for (const firefox of [false, true]) {
       },
     })
     await state.load('server').synchronizeInBackground()
-    assert.deepEqual(urls, [
+    assert.deepEqual(urls.slice(0, 5), [
       ...Array(2).fill('https://cozyquokka.net/api/proxy-list/'), 'https://proxy.mirror.example/list',
       'https://geo.ctreserve.de/get-iso/', 'https://geo.mirror.example/iso',
-      ...Array(2).fill('https://censortracker.github.io/ctconf/registry/by.json'), 'https://registry.mirror.example/by.json',
-      ...Array(2).fill('https://cozyquokka.net/api/config/BY/'), 'https://config.mirror.example/BY/', custom,
-      ...Array(2).fill('https://cozyquokka.net/api/domains/BY/'), 'https://domains.mirror.example/BY/',
+    ])
+    // The three registry sources download concurrently; their relative order is not fixed.
+    assert.deepEqual(urls.slice(5, -3).sort(), [
+      ...Array(2).fill('https://censortracker.github.io/ctconf/registry/by.json'),
+      ...Array(2).fill('https://cozyquokka.net/api/config/BY/'),
+      ...Array(2).fill('https://cozyquokka.net/api/domains/BY/'),
+      'https://registry.mirror.example/by.json', 'https://config.mirror.example/BY/',
+      'https://domains.mirror.example/BY/', custom,
+    ].sort())
+    assert.ok(urls.indexOf(custom) > urls.indexOf('https://config.mirror.example/BY/'))
+    assert.deepEqual(urls.slice(-3), [
       ...Array(2).fill('https://registry.ctreserve.de/api/v3/disseminators/refused/'), 'https://ori.mirror.example/list',
     ])
     assert.equal(state.storage.localConfig.countryCode, 'BY')
@@ -154,12 +163,15 @@ for (const firefox of [false, true]) {
       return new Promise(resolve => { finish = () => resolve(response([])) })
     } })
     const running = state.load('service-request').requestService('https://busy.example/', Array.isArray)
-    await new Promise(setImmediate)
+    while (urls.length === 0) await new Promise(setImmediate)
+    // A pending proxy operation keeps the download queued until the request ends.
+    const operation = state.load('proxy-route').withProxyLock(() => {})
     const download = state.load('service-mirrors').refreshServiceMirrors()
     await new Promise(setImmediate)
     state.storage.enableExtension = false
     finish()
     await running
+    await operation
     await download
     assert.deepEqual(urls, ['https://busy.example/'])
     assert.equal(state.storage.serviceMirrors, undefined)
@@ -329,6 +341,7 @@ test('a periodic knock waits for the active service request and preserves forced
     },
   })
   const service = state.load('service-request').requestService('https://service.example', Array.isArray)
+  while (requests.length === 0) await new Promise(resolve => setImmediate(resolve))
   const knock = state.load('proxy').default.ping(true)
   await new Promise(resolve => setImmediate(resolve))
   assert.deepEqual(requests, ['https://service.example'])
@@ -595,20 +608,45 @@ test('proxy-only recovery does not request regional services', async () => {
   assert.deepEqual(urls, ['https://cozyquokka.net/api/proxy-list/'])
 })
 
-test('concurrent services have no overlapping temporary routes', async () => {
+test('concurrent services share temporary routes and restore once', async () => {
   let active = 0
+  let overlap = 0
   const state = fixture({ fetch: async (url, init, { route }) => {
-    assert.equal(++active, 1)
+    overlap = Math.max(overlap, ++active)
+    assert.equal(route('first.example'), 'DIRECT')
     assert.equal(route(new URL(url).hostname), 'DIRECT')
+    assert.equal(route('other.example'), 'HTTPS normal.example:443')
     await new Promise(resolve => setTimeout(resolve, 5))
     active--
     return response([])
   } })
   const { requestService } = state.load('service-request')
-  await Promise.all([
+  const results = await Promise.all([
     requestService('https://first.example', Array.isArray),
     requestService('https://second.example', Array.isArray),
   ])
+  assert.equal(overlap, 2)
+  assert.deepEqual(results.map(result => result.viaProxy), [false, false])
+  assert.deepEqual(state.settings().value, state.original)
+  assert.equal(state.storage.serviceRouteSnapshot, undefined)
+  assert.equal(state.events.filter(event => event === 'set').length, 3)
+})
+
+test('a request for a host with an active different route waits for its release', async () => {
+  const routes = []
+  const state = fixture({ fetch: async (url, init, { route }) => {
+    routes.push(route('service.example'))
+    return response([])
+  } })
+  const proxyRoute = state.load('proxy-route')
+  await proxyRoute.withProxyLock(() => proxyRoute.setServiceRoute('service.example', 'HTTPS retry.example:443'))
+  const first = state.load('service-request').requestService('https://service.example', Array.isArray)
+  await new Promise(resolve => setImmediate(resolve))
+  // The direct request waits for the proxied route to be released, not the reverse.
+  assert.deepEqual(routes, [])
+  await proxyRoute.releaseServiceRoute('service.example')
+  await first
+  assert.deepEqual(routes, ['DIRECT'])
   assert.deepEqual(state.settings().value, state.original)
 })
 
@@ -735,6 +773,14 @@ for (const success of [false, true]) {
     assert.ok(state.storage.serviceRouteSnapshot)
   })
 }
+
+test('an unresponsive mirror fails before the full request deadline', async () => {
+  const state = fixture({ timeoutScale: 0.001, fetch: async (url, init) =>
+    new Promise((resolve, reject) => init.signal.addEventListener('abort', () => reject(new Error('The operation was aborted')))) })
+  await assert.rejects(state.load('service-request').requestService('https://registry.example/list', Array.isArray, { allowProxyRetry: false }),
+    /registry.example\/list: DIRECT: fetch: Timeout: no response after 5 seconds/)
+  assert.equal(state.storage.serviceRouteSnapshot, undefined)
+})
 
 test('service deadline reports a timeout while reading JSON', async () => {
   const state = fixture({ fastTimeout: true, fetch: async (url, init) => ({ ok: true,
@@ -1343,7 +1389,7 @@ for (const firefox of [false, true]) {
     await state.load('server').synchronizeInBackground()
     const config = state.load('service-config')
     assert.deepEqual([...attempts], [config.PROXY_LIST_URL, config.getRegionConfig('RU').registryUrl,
-      `${config.CONFIG_URL}RU/`, customRegistryUrl, `${config.DOMAINS_URL}RU/`, config.ORI_URL].map(url => [url, 2]))
+      `${config.CONFIG_URL}RU/`, `${config.DOMAINS_URL}RU/`, customRegistryUrl, config.ORI_URL].map(url => [url, 2]))
     assert.deepEqual(state.storage.domains, ['blocked.example', 'custom.example'])
     assert.deepEqual(state.storage.serviceErrors, [])
     assert.equal(state.storage.registryStatus.state, 'ready')

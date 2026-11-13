@@ -113,3 +113,13 @@ test('language choices survive settings export and import', async () => {
     assert.equal(storage.uiLanguage, uiLanguage)
   }
 })
+
+test('registry update periods accept only the offered choices', () => {
+  assert.deepEqual(plain(validateSettings({ registryUpdateInterval: 180 })),
+    { registryUpdateInterval: 180, ...defaultProxies })
+  assert.deepEqual(plain(validateSettings({ registryUpdateInterval: 0 })),
+    { registryUpdateInterval: 0, ...defaultProxies })
+  for (const value of [45, '60', -60, null, true]) {
+    assert.throws(() => validateSettings({ registryUpdateInterval: value }), /Invalid setting/)
+  }
+})

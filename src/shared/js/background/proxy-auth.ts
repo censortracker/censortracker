@@ -32,7 +32,7 @@ const requestRoute = async (url: string) => {
   if (!hostname || !await proxyRequestAllowed()) {
     return { type: 'inactive', proxies: [] }
   }
-  const override = getServiceRoute()
+  const override = getServiceRoute(hostname)
 
   if (override?.hostname === hostname) {
     return {

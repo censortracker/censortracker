@@ -822,6 +822,36 @@
   "registrySelectRegionTitle": {
     "message": "Region to bypass country-specific censorship"
   },
+  "registryUpdateIntervalTitle": {
+    "message": "Registry updates"
+  },
+  "registryUpdateIntervalDesc": {
+    "message": "How often the extension downloads registry updates while it and proxy use are enabled. Turning updates off keeps the registry that is already downloaded."
+  },
+  "registryUpdateInterval0": {
+    "message": "Disabled"
+  },
+  "registryUpdateInterval30": {
+    "message": "Every 30 minutes"
+  },
+  "registryUpdateInterval60": {
+    "message": "Every hour"
+  },
+  "registryUpdateInterval180": {
+    "message": "Every 3 hours"
+  },
+  "registryUpdateInterval360": {
+    "message": "Every 6 hours"
+  },
+  "registryUpdateInterval720": {
+    "message": "Every 12 hours"
+  },
+  "registryUpdateInterval1440": {
+    "message": "Once a day"
+  },
+  "registryDownloadNow": {
+    "message": "Download now"
+  },
   "resetToDefaultDesc": {
     "message": "Reset all settings to default and generate PAC file for your current region. Use this option if there are availability problems with blocked websites."
   },

@@ -154,7 +154,8 @@ test('extension updates and navigation keep disabled settings disabled', async (
   })
   await handlers.handleInstalled({ reason: 'update' })
   await handlers.handleBeforeRequest({})
-  assert.deepEqual(calls, ['schedule'])
+  // Hourly tasks and the registry update period are scheduled separately.
+  assert.deepEqual(calls, ['schedule', 'schedule'])
   const manager = load('background/proxy', {
     'browser-api': { default: {} }, 'proxy-route': { proxyAllowed: async () => false }, registry: { default: {} },
   }).default

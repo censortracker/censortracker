@@ -72,6 +72,7 @@ export interface Actions {
   saveDomains: [{ ignored: boolean; domains: string[] }, string[]]
   downloadDomains: [string, Result<typeof operations.downloadDomains>]
   setRegistryEnabled: [boolean, void]
+  setRegistryUpdateInterval: [number, void]
   updateRegistry: [undefined, void]
   resetSettings: [undefined, void]
   restoreSettings: [unknown, void]

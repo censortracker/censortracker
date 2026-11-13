@@ -6,6 +6,7 @@ import ProxyManager from './proxy'
 import { withProxyLock } from './proxy-route'
 import Registry from './registry'
 import { getRegistrySourceState, refreshRegistrySource } from './registry-source'
+import { validRegistryUpdateInterval } from './registry-update-data'
 import { requestText } from './request'
 import { synchronize } from './server'
 import Settings from './settings'
@@ -75,6 +76,14 @@ export const setRegistryEnabled = async (enabled: boolean) => {
     await Registry.disableRegistry()
   }
   await ProxyManager.setProxy()
+}
+
+export const setRegistryUpdateInterval = async (minutes: number) => {
+  if (!validRegistryUpdateInterval(minutes)) {
+    throw new TypeError('Invalid registry update interval')
+  }
+  // The alarm follows the stored choice through the storage change handler.
+  await browser.storage.local.set({ registryUpdateInterval: minutes })
 }
 
 export const setExtensionEnabled = async (enabled: boolean) => {

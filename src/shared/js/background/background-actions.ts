@@ -177,6 +177,8 @@ export const backgroundActions: Handlers = {
   downloadDomains: operations.downloadDomains,
   setRegistryEnabled: (enabled) =>
     operations.setRegistryEnabled(flag(enabled)),
+  setRegistryUpdateInterval: (minutes) =>
+    operations.setRegistryUpdateInterval(minutes as number),
   updateRegistry: operations.updateRegistry,
   resetSettings: operations.resetSettings,
   restoreSettings: operations.restoreSettings,

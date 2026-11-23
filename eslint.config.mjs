@@ -491,7 +491,7 @@ export default [
     rules: {
       'no-restricted-imports': ['error', {
         patterns: [{
-          regex: '^(?:Background|.*/js/background)/(?!(?:background-rpc|browser-api|hostname|i18n|proxy-address|proxy-check-data|proxy-import|proxy-record|registry-source-data)$)',
+          regex: '^(?:Background|.*/js/background)/(?!(?:background-rpc|browser-api|hostname|i18n|proxy-address|proxy-check-data|proxy-import|proxy-record|registry-source-data|registry-update-data)$)',
           allowTypeImports: true,
           message: 'Use Background/background-rpc for background state.',
         }],

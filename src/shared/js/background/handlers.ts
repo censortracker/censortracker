@@ -11,6 +11,7 @@ import type { ProxyErrorDetails } from './proxy-recovery'
 import { recoverProxy, RECOVERY_ALARM, retryFailedProxies } from './proxy-recovery'
 import { withProxyLock } from './proxy-route'
 import Registry from './registry'
+import { defaultRegistryUpdateInterval, validRegistryUpdateInterval } from './registry-update-data'
 import * as server from './server'
 import { MIRRORS_ALARM, refreshServiceMirrors, scheduleServiceMirrors } from './service-mirrors'
 import Settings from './settings'
@@ -82,7 +83,15 @@ export const handleOnAlarm = async ({ name }: { name: string }) => {
     const proxyingEnabled = await ProxyManager.isEnabled()
 
     if (proxyingEnabled && await Settings.extensionEnabled()) {
-      await server.synchronize()
+      // The registry follows its own user-chosen period.
+      await server.synchronize({ syncRegistry: false })
+      await ProxyManager.setProxy()
+    }
+  } else if (name === TaskType.UPDATE_REGISTRY) {
+    const proxyingEnabled = await ProxyManager.isEnabled()
+
+    if (proxyingEnabled && await Settings.extensionEnabled()) {
+      await server.synchronize({ syncProxy: false })
       await ProxyManager.setProxy()
     }
   } else {
@@ -124,7 +133,38 @@ export const handleStartup = async () => {
     { name: TaskType.SET_PROXY, minutes: 60 },
     { name: TaskType.REMOVE_BAD_PROXIES, minutes: 60 },
   ])
+  await scheduleRegistryUpdates()
   console.groupEnd()
+}
+
+const refreshAfterStartup = () => {
+  (async () => {
+    if (!await hasDataConsent() || !await Settings.extensionEnabled()) {
+      return
+    }
+    await server.synchronize()
+    if (await ProxyManager.isEnabled() && await Settings.extensionEnabled()) {
+      await ProxyManager.setProxy()
+    }
+  })().catch(() => console.warn('Startup synchronization failed'))
+}
+
+export const handleBrowserStartup = async () => {
+  await handleStartup()
+  refreshAfterStartup()
+}
+
+export const scheduleRegistryUpdates = async () => {
+  const { registryUpdateInterval } = await browser.storage.local.get({
+    registryUpdateInterval: defaultRegistryUpdateInterval,
+  })
+  const minutes = registryUpdateInterval ?? defaultRegistryUpdateInterval
+
+  if (validRegistryUpdateInterval(minutes) && minutes > 0) {
+    await Task.schedule([{ name: TaskType.UPDATE_REGISTRY, minutes }])
+  } else {
+    await browser.alarms.clear(TaskType.UPDATE_REGISTRY)
+  }
 }
 
 export const scheduleLocalProxyCheck = () => withProxyLock(async () => {
@@ -169,10 +209,16 @@ export const handleCustomProxiedDomainsChange = async (
  * @param areaName The storage area in which the changes were made.
  */
 export const handleStorageChanged = async (
-  { enableExtension, useProxy }: StorageChanges = {},
+  { enableExtension, useProxy, registryUpdateInterval }: StorageChanges = {},
   areaName?: string,
 ) => {
-  if ((areaName && areaName !== 'local') || (!enableExtension && !useProxy)) {
+  if (areaName && areaName !== 'local') {
+    return
+  }
+  if (registryUpdateInterval) {
+    await scheduleRegistryUpdates()
+  }
+  if (!enableExtension && !useProxy) {
     return
   }
   // Read current choices inside the queue; old events must not undo new choices.
@@ -309,7 +355,7 @@ export const handleInstalled = async ({ reason }: { reason: string }) => {
     await browser.storage.local.set({ consentPromptVersion: CONSENT_VERSION })
   }
   if (await hasDataConsent()) {
-    await handleStartup()
+    await handleBrowserStartup()
   }
 }
 

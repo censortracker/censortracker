@@ -1,6 +1,7 @@
 const assert = require('node:assert/strict')
 const { test } = require('node:test')
 const load = require('./load.cjs')
+const plain = value => JSON.parse(JSON.stringify(value))
 
 function fixture(values = {}, globals = {}, mocks = {}) {
   const storage = { dataConsent: { version: 1, accepted: true }, enableExtension: true, useProxy: true, ...values }
@@ -69,6 +70,21 @@ test('startup checks the local proxy before it applies routing', async () => {
   assert.deepEqual(state.events, [
     ['create', 'checkLocalProxy', { periodInMinutes: 1 }], 'check local', 'schedule mirrors', 'apply',
   ])
+})
+
+test('browser startup applies stored routing, then refreshes the registry', async () => {
+  const sync = Promise.withResolvers()
+  const state = fixture({}, {}, { server: { synchronize: () => {
+    state.events.push('sync')
+    return sync.promise
+  } } })
+  await state.handlers.handleBrowserStartup()
+  assert.deepEqual(state.events.slice(-1), ['apply'])
+  await new Promise(resolve => setImmediate(resolve))
+  assert.deepEqual(state.events.slice(-2), ['apply', 'sync'])
+  sync.resolve()
+  await new Promise(resolve => setImmediate(resolve))
+  assert.deepEqual(state.events.slice(-3), ['apply', 'sync', 'apply'])
 })
 
 test('the mirror alarm starts a refresh', async () => {
@@ -300,6 +316,50 @@ test('startup schedules hourly tasks and replaces old persisted periods', async 
   const state = fixture({}, {}, { task: { default: task } })
   await state.handlers.handleStartup()
   await state.handlers.handleStartup()
-  assert.deepEqual(created, ['ping', 'setProxy', 'removeBadProxies'])
+  assert.deepEqual(created, ['ping', 'setProxy', 'removeBadProxies', 'updateRegistry'])
   assert.ok([...alarms.values()].every(alarm => alarm.periodInMinutes === 60))
+})
+
+test('registry updates follow the chosen period and stop when disabled', async () => {
+  for (const [interval, expected] of [
+    [undefined, [['schedule', [{ name: 'updateRegistry', minutes: 60 }]]]],
+    [180, [['schedule', [{ name: 'updateRegistry', minutes: 180 }]]]],
+    [0, [['clear', 'updateRegistry']]],
+    [45, [['clear', 'updateRegistry']]],
+  ]) {
+    const state = fixture({ registryUpdateInterval: interval }, {}, {
+      task: { default: { schedule: async tasks => state.events.push(['schedule', tasks]) } },
+    })
+    await state.handlers.scheduleRegistryUpdates()
+    assert.deepEqual(plain(state.events), expected)
+  }
+})
+
+test('changing the update period reschedules without touching proxy routing', async () => {
+  const state = fixture({ registryUpdateInterval: 0 }, {}, {
+    task: { default: { schedule: async tasks => state.events.push(['schedule', tasks]) } },
+  })
+  await state.handlers.handleStorageChanged({ registryUpdateInterval: { newValue: 0 } }, 'sync')
+  assert.deepEqual(state.events, [])
+  await state.handlers.handleStorageChanged({ registryUpdateInterval: { oldValue: 60, newValue: 0 } }, 'local')
+  assert.deepEqual(plain(state.events), [['clear', 'updateRegistry']])
+  state.events.length = 0
+  state.storage.registryUpdateInterval = 1440
+  await state.handlers.handleStorageChanged({ registryUpdateInterval: { newValue: 1440 }, useProxy: { newValue: true } }, 'local')
+  assert.deepEqual(plain(state.events), [['schedule', [{ name: 'updateRegistry', minutes: 1440 }]], 'apply'])
+})
+
+test('registry and proxy list alarms synchronize only their own data', async () => {
+  const state = fixture({}, {}, {
+    server: { synchronize: async options => state.events.push(['sync', options]) },
+  })
+  await state.handlers.handleOnAlarm({ name: 'updateRegistry' })
+  await state.handlers.handleOnAlarm({ name: 'setProxy' })
+  assert.deepEqual(plain(state.events), [
+    ['sync', { syncProxy: false }], 'apply', ['sync', { syncRegistry: false }], 'apply',
+  ])
+  state.events.length = 0
+  state.storage.useProxy = false
+  await state.handlers.handleOnAlarm({ name: 'updateRegistry' })
+  assert.deepEqual(state.events, [])
 })

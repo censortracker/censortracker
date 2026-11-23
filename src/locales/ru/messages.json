@@ -822,6 +822,36 @@
   "registrySelectRegionTitle": {
     "message": "Регион для обхода блокировок"
   },
+  "registryUpdateIntervalTitle": {
+    "message": "Обновление реестра"
+  },
+  "registryUpdateIntervalDesc": {
+    "message": "Как часто расширение скачивает обновления реестра, пока оно и прокси включены. При отключении обновлений уже скачанный реестр сохраняется."
+  },
+  "registryUpdateInterval0": {
+    "message": "Отключено"
+  },
+  "registryUpdateInterval30": {
+    "message": "Каждые 30 минут"
+  },
+  "registryUpdateInterval60": {
+    "message": "Каждый час"
+  },
+  "registryUpdateInterval180": {
+    "message": "Каждые 3 часа"
+  },
+  "registryUpdateInterval360": {
+    "message": "Каждые 6 часов"
+  },
+  "registryUpdateInterval720": {
+    "message": "Каждые 12 часов"
+  },
+  "registryUpdateInterval1440": {
+    "message": "Раз в сутки"
+  },
+  "registryDownloadNow": {
+    "message": "Скачать сейчас"
+  },
   "resetToDefaultDesc": {
     "message": "Сбросить настройки к значениям по умолчанию и пересобрать PAC-файл для вашего текущего региона. Если у вас есть проблемы с доступом к заблокированным сайтам, то эта опция — ваш выбор."
   },

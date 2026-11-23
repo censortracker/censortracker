@@ -1,12 +1,12 @@
 import {
   handleBeforeRequest,
+  handleBrowserStartup,
   handleCustomProxiedDomainsChange,
   handleIgnoredHostsChange,
   handleInstalled,
   handleOnAlarm,
   handleOnUpdateAvailable,
   handleProxyError,
-  handleStartup,
   handleStorageChanged,
   handleTabCreate,
   handleTabState,
@@ -76,7 +76,7 @@ export const startBackground = () => {
   // Handle alarms for async tasks
   registerListener(browser.alarms?.onAlarm, 'alarms.onAlarm', handleOnAlarm)
   // Handle extension lifecycle events
-  registerListener(browser.runtime?.onStartup, 'runtime.onStartup', handleStartup)
+  registerListener(browser.runtime?.onStartup, 'runtime.onStartup', handleBrowserStartup)
   registerListener(browser.runtime?.onInstalled, 'runtime.onInstalled', handleInstalled)
   registerListener(
     browser.runtime?.onUpdateAvailable,

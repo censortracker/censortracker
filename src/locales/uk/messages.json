@@ -822,6 +822,36 @@
   "registrySelectRegionTitle": {
     "message": "Регіон для обходу блокувань"
   },
+  "registryUpdateIntervalTitle": {
+    "message": "Оновлення реєстру"
+  },
+  "registryUpdateIntervalDesc": {
+    "message": "Як часто розширення завантажує оновлення реєстру, поки воно та проксі ввімкнені. Якщо оновлення вимкнено, вже завантажений реєстр зберігається."
+  },
+  "registryUpdateInterval0": {
+    "message": "Вимкнено"
+  },
+  "registryUpdateInterval30": {
+    "message": "Кожні 30 хвилин"
+  },
+  "registryUpdateInterval60": {
+    "message": "Щогодини"
+  },
+  "registryUpdateInterval180": {
+    "message": "Кожні 3 години"
+  },
+  "registryUpdateInterval360": {
+    "message": "Кожні 6 годин"
+  },
+  "registryUpdateInterval720": {
+    "message": "Кожні 12 годин"
+  },
+  "registryUpdateInterval1440": {
+    "message": "Раз на добу"
+  },
+  "registryDownloadNow": {
+    "message": "Завантажити зараз"
+  },
   "resetToDefaultDesc": {
     "message": "Скинути налаштування до значень за замовчуванням і перезібрати PAC-файл для вашого поточного регіону. Якщо у вас є проблеми з доступом до заблокованих сайтів, то ця опція - ваш вибір."
   },

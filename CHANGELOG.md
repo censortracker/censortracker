@@ -1,3 +1,10 @@
+# 21.1.0
+
+- Added a registry update interval setting (off, every 30 minutes, hourly, every 3, 6 or 12 hours, once a day) and a "Download now" button on the registry page.
+- Registry synchronization now starts right after browser startup or installation.
+- Registry sources download concurrently: service requests hold temporary routes for several hosts at once instead of waiting for each other.
+- Decreased the service response timeout to 5 seconds, so an unreachable source fails over to its mirror quickly.
+
 # 21.0.0
 
 - Added a consent page before extension data transmission, with controls to review or withdraw consent in settings and the popup. Rewrote the privacy policy text.
